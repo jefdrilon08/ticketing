@@ -1,0 +1,27 @@
+%li{ class: "#{['members', 'online_applications'].include?(params[:controller]) ? 'active' : ''}" }
+  .icon-link
+    = link_to members_path, class: "" do
+      %i.bi.bi-person-square
+      %span.link-name
+        Employee
+    %i.bi.bi-caret-down.arrow
+  %ul.sub-menu
+    %li
+      = link_to members_path, class: "link-name" do
+        Employee
+    %li
+      = link_to member_form_path, class: "" do
+        %i.bi.bi-plus-circle
+        New Employee
+    %li
+      = link_to members_path(status: "pending"), class: "" do
+        %i.bi.bi-exclamation-circle
+        Pending Employee
+    %li
+      = link_to online_applications_path do
+        %i.bi.bi-globe
+        Online Member Applications
+    %li
+      = link_to members_search_path do
+        %i.bi.bi-pencil-square
+        Member Checker

@@ -1,0 +1,41 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        %table#data-table.display.table.table-bordered.table-hover.table-sm
+          %thead
+            %tr
+              %th
+                Name
+              %th
+                Member Type
+              %th
+                Date of Birth
+              %th
+                Age
+              %th
+                Branch
+              %th
+                Center
+              %th
+                Loan Amounts
+          %tbody
+            - @members.each do |m|
+              %tr
+                %td
+                  = link_to member_path(m) do 
+                    #{m.full_name}
+                %td
+                  #{m.member_type}
+                %td 
+                  #{m.date_of_birth}
+                %td
+                  #{m.age}
+                %td 
+                  #{m.branch.name}
+                %td
+                  #{m.center.name}
+                %td
+                  #{m.loans.active.where("data ->> 'clip_number' != ?", "").sum(:principal)}
+

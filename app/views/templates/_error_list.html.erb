@@ -1,0 +1,12 @@
+<script id="template-error-list" type="x-tmpl-mustache">
+  <div class='alert alert-danger'>
+    <p>
+      <strong>The following errors have occured:</strong>
+    </p>
+    <ul>
+      {{#errors}}
+        <li>{{.}}</li>
+      {{/errors}}
+    </ul>
+  </div>
+</script>

@@ -1,0 +1,11 @@
+.row
+  .col
+    .card
+      .card-body
+        = render partial: "index_filter"
+        - if @activity_logs.any?
+          = render partial: "index_list", locals: { activity_logs: @activity_logs }
+          = paginate @activity_logs
+        - else
+          %p
+            No members found

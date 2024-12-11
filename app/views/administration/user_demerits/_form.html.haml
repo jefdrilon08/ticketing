@@ -1,0 +1,45 @@
+- if @user_demerit.errors.any?
+  .callout.callout-danger
+    %h5
+      Errors
+    %ul
+      - @user_demerit.errors.full_messages.each do |m|
+        %li
+          #{m}
+
+= simple_form_for [:administration, @user, @user_demerit] do |f|
+  .row
+    .col
+      .form-group
+        = f.input :demerit_type, as: :select, collection: UserDemerit::DEMERIT_TYPES, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.association :branch, collection: @branches, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :role, as: :select, collection: @user.roles, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :date_of_action, as: :string, input_html: { type: 'date', class: 'form-control' }
+  .row
+    .col
+      .form-group
+        = f.input :reason, as: :string, input_html: { class: 'form-control' }
+      .from-group
+        = f.input :explanation, input_html: { class: 'form-control' }
+  .row
+    .col
+      .form-group
+        %hr
+        %label
+          Attachment
+        = f.input :file, label: false
+  %hr
+  .row
+    .col
+      %button.btn.btn-success{ type: 'submit' }
+        .fa.fa-check
+        Submit
+      = link_to administration_user_path(@user), class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel

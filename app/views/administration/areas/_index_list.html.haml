@@ -1,0 +1,29 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Short Name
+      %th 
+        Cluster Count
+      %th
+        Actions
+  %tbody
+    - @areas.each do |area|
+      %tr
+        %td
+          #{area.name.upcase}
+        %td
+          #{area.short_name.upcase}
+        %td
+          #{area.clusters.count}
+
+        %td
+          .btn-group
+            = link_to administration_area_path(area), class: 'btn btn-sm btn-primary' do
+              .bi.bi-search
+              Show
+            = link_to edit_administration_area_path(area), class: 'btn btn-sm btn-info' do
+              .fa.fa-pencil-alt
+              Edit

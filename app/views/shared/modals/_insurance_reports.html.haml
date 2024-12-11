@@ -1,0 +1,109 @@
+#modal-nav-insurance-reports.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Insurance Reports
+      .modal-body
+        .row
+          .col-md-6
+            = link_to seriatim_path, class: "btn-nav-square-md" do
+              Seriatim
+          .col-md-6
+            = link_to validations_path, class: "btn-nav-square-md" do
+              Validations Report
+        .mt-4
+        .row
+          .col-md-3
+            = link_to "/reports/collections_clip", class: "btn-nav-square-md" do
+              CLIP
+          .col-md-3
+            = link_to "/reports/collections_blip", class: "btn-nav-square-md" do
+              BLIP
+          .col-md-3
+            = link_to "/reports/hiip_report", class: "btn-nav-square-md" do
+              HIIP Report
+          .col-md-3
+            = link_to members_for_reinsurance_path, class: "btn-nav-square-md" do
+              Members for Reinsurance
+        .mt-4
+        .row
+          .col-md-3
+            = link_to "/reports/member_reports", class: "btn-nav-square-md" do
+              Member Reports
+          .col-md-3
+            = link_to "/reports/member_counts", class: "btn-nav-square-md" do
+              Member Counts
+          .col-md-3
+            = link_to "/reports/member_quarterly_reports", class: "btn-nav-square-md" do
+              Member Quarterly
+          .col-md-3
+            = link_to "/reports/member_dependents", class: "btn-nav-square-md" do
+              Member Dependents
+        .mt-4
+        .row
+          .col-md-3
+            = link_to lapsed_members_path, class: "btn-nav-square-md" do
+              Lapsed Members
+          .col-md-3
+            = link_to insurance_exit_age_members_path, class: "btn-nav-square-md" do
+              Members for Exit age
+          .col-md-3
+            = link_to "/reports/personal_documents", class: "btn-nav-square-md" do
+              Personal Documents
+          .col-md-3
+            = link_to "/reports/insured_loans", class: "btn-nav-square-md" do
+              Insured Loans
+        .mt-4
+        .row
+          .col-md-3
+            = link_to "/data_stores/insurance_member_counts", class: "btn-nav-square-md" do
+              Insurance Member Counts
+          .col-md-3
+            = link_to daily_report_insurance_account_status_path, class: "btn-nav-square-md" do
+              Insurance Account Status
+          .col-md-3
+            = link_to "/reports/insurance_quarterly_reports", class: "btn-nav-square-md" do
+              Insurance Quarterly
+          .col-md-3
+            = link_to "/reports/insurance_interest", class: "btn-nav-square-md" do
+              Insurance Interest
+        .mt-4
+        .row
+          .col-md-3
+            = link_to "/data_stores/claims_counts", class: "btn-nav-square-md" do
+              Claims Counts
+          .col-md-3
+            = link_to "/reports/monthly_remittance", class: "btn-nav-square-md" do
+              Monthly Remittance
+          .col-md-3
+            = link_to "/reports/monthly_collection", class: "btn-nav-square-md" do
+              Monthly Collection
+          .col-md-3
+            = link_to "/reports/summary_of_certificates_and_policies", class: "btn-nav-square-md" do
+              Cert and Policies 
+        - if Settings.activate_microinsurance
+          .mt-4
+          .row
+            .col-md-3
+              = link_to "/reports/savings_insurance_transfer_reports", class: "btn-nav-square-md" do
+                K-BENTE/KALINGA Enrollment Reports
+            .col-md-3
+              = link_to "/reports/claims_processing_time_report", class: "btn-nav-square-md" do
+                Claims Processing Time Reports 
+            .col-md-3
+              = link_to "/reports/claims_processing_time_report_summary", class: "btn-nav-square-md" do
+                Claims Processing Time Reports Summary
+            .col-md-3
+              = link_to "/reports/reclassified_report", class: "btn-nav-square-md" do
+                Reclassified Reports  
+        - else
+          .mt-4
+          .row
+            .col-md-3
+              = link_to "/reports/savings_insurance_transfer_reports", class: "btn-nav-square-md" do
+                Savings Insurance Transfer Reports     
+            .col-md-3
+              = link_to "/reports/insurance_loan_bundle_reports", class: "btn-nav-square-md" do
+                KDAKILA Reports    
+         

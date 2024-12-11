@@ -1,0 +1,34 @@
+<script id="template-member-list" type="x-tmpl-mustache"> 
+  <table class="table table-sm table-bordered">
+    <th>
+      MEMBER
+    </th>
+    <th>
+      SATO
+    </th>
+    <th>
+      ID NUMBER
+    </th>
+    <th>
+      STATUS
+    </th>
+    {{#members}}
+      <tr>
+        <td>
+          <a href="/members/{{id}}/display" target='_blank'>
+            {{last_name}}, {{first_name}} {{middle_name}}
+          </a>
+        </td>
+        <td>
+          {{branch}}
+        </td>
+        <td>
+          {{identification_number}}
+        </td>
+        <td>
+          {{status}}
+        </td>
+      </tr>
+    {{/members}}
+  </table>
+</script>

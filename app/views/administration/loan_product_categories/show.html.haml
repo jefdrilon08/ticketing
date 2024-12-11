@@ -1,0 +1,26 @@
+.row
+  .col
+    .card
+      .card-body
+        %h2
+          #{@loan_product_category}
+          %small.text-mute
+            #{@loan_product_category.code}
+        %hr
+
+        %h5
+          Loan Products
+        - if @loan_products.any?
+          %ul
+            - @loan_products.each do |o|
+              %li
+                = link_to administration_loan_product_path(o.id) do
+                  #{o.name}
+        - else
+          %p
+            No loan products for this category.
+        %hr
+
+        = link_to administration_loan_product_category_path(@loan_product_category), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-block' do
+          .fa.fa-times
+          Delete

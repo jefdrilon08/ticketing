@@ -1,0 +1,19 @@
+#modal-delete-question.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title
+          Delete Survey Question
+      .modal-body
+        .modal-body-content
+          .bs-callout.bs-callout-info
+            Are you sure you want to delete this survey question?
+          .message
+      .modal-footer
+        .controls
+          %button#btn-confirm-delete-question.btn.btn-primary
+            .fa.fa-check
+            Confirm
+          %button.btn{"data-bs-dismiss" => "modal", :type => "button"}
+            .fa.fa-times
+            Cancel

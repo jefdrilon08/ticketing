@@ -1,0 +1,23 @@
+= form_tag "", method: 'GET' do
+  .row
+    .col-md-3
+      .form-group
+        %label
+          Branch
+        = select_tag :branch, options_from_collection_for_select(@branches, :id, :name), id: "select-branch", class: "form-control", prompt: "-- SELECT --"
+    .col-md-3
+      .form-group
+        %label
+          Center Name
+        = select_tag :center, options_from_collection_for_select(@center_select, :id, :name), id: "select-center", class: "form-control select-select2" , prompt: "-- SELECT --"
+    .col-md-3
+      .form-group
+        %label
+          Socioeconomic Officer
+        = select_tag :user, options_from_collection_for_select(@officer, :id, :full_name), id: "select-so", class: "form-control" , prompt: "-- SELECT --"
+    .col-md-3
+      .form-group
+        %label
+          Actions
+        = button_tag type: 'submit', class: 'btn btn-info btn-block' do
+          .bi.bi-search

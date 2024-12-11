@@ -1,0 +1,29 @@
+= form_tag activity_logs_path, html: { novalidate: true }, method: "GET", defaults: { wrapper_html: { class: 'form-group' }, input_html: { class: 'form-control' } } do 
+  .row
+    .col-md-3
+      .form-group
+        %label
+          User
+        = select_tag :user_id, options_from_collection_for_select(User.all, :id, :username, @user_id), class: "form-control select-select2 js-searchable", prompt: "-- SELECT --", id: "filter-user-select"
+    .col-md-4
+      .form-group
+        %label
+          Content
+        = text_field_tag :q, @q, placeholder: "Content", class: "form-control", id: "filter"
+    .col-md-2
+      .form-group
+        %label 
+          Start Date
+        = text_field_tag :start_date, @start_date, class: "datepick form-control", type: "date", placeholder: "Start Date"
+    .col-md-2
+      .form-group
+        %label
+          End Date
+        = text_field_tag :end_date, @end_date, class: "datepick form-control", type: "date", placeholder: "End Date"
+    .col-md-1
+      .form-group
+        %label
+          Actions
+        %br
+        = submit_tag :search, id: "btn-filter", class: "btn btn-primary" do
+          .bi.bi-search

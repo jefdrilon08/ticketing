@@ -1,0 +1,58 @@
+%table.table.table-sm.table-hover.table-bordered
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Category
+      %th.text-end
+        Min Loan Amount
+      %th.text-end
+        Max Loan Amount
+      %th.text-end
+        Denomination
+      %th.text-center
+        Insured
+      %th.text-center
+        Entry Point
+      %th.text-center
+        Monthly I.R.
+      %th.text-center
+        Priority
+  %tbody
+    - @loan_products.each do |o|
+      %tr
+        %td
+          = link_to administration_loan_product_path(o) do
+            %strong
+              #{o.name}
+            %br
+            %small
+              #{o.id}
+        %td
+          #{o.loan_product_category}
+        %td.text-end
+          #{number_to_currency(o.min_loan_amount, unit: "")}
+        %td.text-end
+          #{number_to_currency(o.max_loan_amount, unit: "")}
+        %td.text-end
+          #{number_to_currency(o.denomination, unit: "")}
+        %td
+          %center
+            - if o.insured
+              .badge.bg-success
+                .fa.fa-check
+            - else
+              .badge.bg-danger
+                .fa.fa-times
+        %td.text-center
+          - if o.is_entry_point
+            .badge.bg-success
+              .fa.fa-check
+          - else
+            .badge.bg-danger
+              .fa.fa-times
+        %td.text-center
+          #{number_to_currency(o.monthly_interest_rate * 100, unit: "")} %
+        %td.text-center
+          #{o.priority}

@@ -1,0 +1,63 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Branch
+      %th
+        Center
+      %th
+        ID Number
+      %th
+        Name
+      %th
+        Recognition Date
+      %th
+        Lenght of Stay
+      %th
+        Member Type
+      %th
+        Status
+      %th
+        Insurance Status
+      %th
+        Date of Birth
+      %th
+        Age
+      %th
+        LIFE
+      %th
+        RF
+      %th
+        Lapsed
+  %tbody
+    - @members.find_each(batch_size: 1000) do |m|
+      %tr
+        %td 
+          #{m.branch.name}
+        %td
+          #{m.center.name}
+        %td 
+          #{m.identification_number}
+        %td 
+          #{m.full_name}
+        %td
+          #{m.data.with_indifferent_access[:recognition_date]}
+        %td 
+          #{m.length_of_stay}
+        %td
+          #{m.member_type}
+        %td
+          #{m.status}
+        %td
+          #{m.insurance_status} 
+        %td 
+          #{m.date_of_birth}
+        %td
+          #{m.age}
+        %td
+          #{m.lif_amount}
+        %td
+          #{m.rf_amount}
+        %td
+          #{m.life_number_of_lapsed}
+

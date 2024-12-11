@@ -1,0 +1,47 @@
+#modal-nav-adjustments.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Adjustments
+      .modal-body
+        .row
+          .col
+            = link_to adjustments_subsidiary_adjustments_path, class: "btn-nav-square-md" do
+              Subsidiary
+          .col
+            = link_to adjustments_batch_moratorium_adjustments_path, class: "btn-nav-square-md" do
+              Batch Moratorium
+          .col
+            = link_to adjustments_moratoriums_path, class: "btn-nav-square-md" do
+              Moratoriums
+        .mt-4
+        .row
+          .col
+            = link_to adjustments_accrued_interests_path, class: "btn-nav-square-md" do
+              Accrued Interest
+          .col
+            = link_to adjustments_recompute_restructures_path, class: "btn-nav-square-md" do
+              Recompute Restructure
+          .col
+            = link_to adjustments_make_payments_path, class: "btn-nav-square-md" do
+              Make Payment
+
+        .mt-4
+        .row
+          .col
+            = link_to transfer_member_records_path, class: "btn-nav-square-md" do
+              Transfer Member
+          .col
+            = link_to address_update_path, class: "btn-nav-square-md" do
+              Update Member Address
+        .mt-4
+        .row
+          .col
+            = link_to transfer_savings_path, class: "btn-nav-square-md" do
+              Transfer Savings to Other Savings Account
+        .mt-4
+        .row
+          .col
+            = link_to data_stores_members_project_types_path, class: "btn-nav-square-md" do
+              Update Member Project Type

@@ -1,0 +1,25 @@
+.row
+  .col
+    .card
+      .card-body
+        = form_tag upload_clip_insurance_accounts_path, multipart: true do
+          .row
+            / .col-md-4
+            /   %label
+            /     Branch
+            /   = select_tag :branch_id, options_for_select(@branches.collect{ |o| [o.name, o.id] }), class: "form-control select-select2", id: "branch-select"
+            .col-md-6
+              %label
+                File
+              = file_field_tag :file, class: "form-control"
+            .col-md-6
+              %label
+                Action
+              %br
+              = submit_tag "Upload CLIP", :class => "btn btn-primary"
+          .row
+            .col-md-6
+              - if !flash[:error].nil?
+                - flash[:error].each do |err|
+                  %h4{:style => "color:red;"}
+                    #{err["message"]}    

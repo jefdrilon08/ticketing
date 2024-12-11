@@ -1,0 +1,10 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        - if @users.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No users found

@@ -1,0 +1,68 @@
+%h4
+  Branch Form
+
+= simple_form_for [:administration, branch] do |f|
+  .row
+    .col
+      .form-group
+        = f.association :cluster, as: :select, collection: Cluster.all, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :name, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :short_name, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :member_counter, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :current_date, as: :string, input_html: { class: 'form-control', type: 'date' }
+    .col
+      .form-group
+        = f.input :is_main
+    .col
+      .form-group
+        = f.input :color, as: :string, input_html: { class: 'form-control', type: 'color' }
+  .mt-4
+  %h5
+    OR Configuration
+  .row
+    .col
+      .form-group
+        = f.input :or_prefix, as: :string, label: 'Prefix', input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :or_current_max, as: :string, label: 'Current Max', input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :or_counter, as: :string, label: 'Counter', input_html: { class: 'form-control' }
+  .mt-4
+  %h5
+    AR Configuration
+  .row
+    .col
+      .form-group
+        = f.input :ar_prefix, as: :string, label: 'Prefix', input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :ar_current_max, as: :string, label: 'Current Max', input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :ar_counter, as: :string, label: 'Counter', input_html: { class: 'form-control' }
+
+    
+  %hr
+  .btn-group
+    %button{ type: "submit", class: "btn btn-primary" }
+      .fa.fa-check
+      Save
+    - if branch.new_record?
+      = link_to administration_clusters_path, class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel
+    - else
+      - if branch.cluster.present?
+        = link_to administration_cluster_path(branch.cluster), class: 'btn btn-danger' do
+          .fa.fa-times
+          Cancel

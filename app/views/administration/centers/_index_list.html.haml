@@ -1,0 +1,39 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Branch
+      %th
+        SO
+      %th
+        Meeting Day
+      %th
+        Active Count
+      %th
+        Actions
+  %tbody
+    - @centers.each do |center|
+      %tr
+        %td
+          #{center.name.upcase}
+        %td
+          #{center.branch.to_s}
+        %td
+          #{center.user}
+        %td
+          #{center.meeting_day_display}
+        %td
+          #{center.members.active.count}
+        %td.center
+          .btn-group
+            = link_to administration_center_path(center), class: 'btn btn-sm btn-primary' do
+              .bi.bi-search
+              Show
+            = link_to edit_administration_center_path(center), class: 'btn btn-sm btn-info' do
+              .fa.fa-pencil-alt
+              Edit
+            = link_to administration_center_path(center), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" do
+              .fa.fa-times
+              Delete

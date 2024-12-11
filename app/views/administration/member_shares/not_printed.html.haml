@@ -1,0 +1,42 @@
+.row
+  .col
+    .card
+      .card-body
+        .row
+          .col
+            %h5
+              Non-printed Certificates (#{@member_shares.total_count})
+            .col
+              = render partial: "index_filter"
+            - if @member_shares.any?
+              %table.table.table-sm.table-bordered
+                %thead
+                  %tr
+                    %th
+                      Number
+                    %th
+                      Member
+                    %th
+                      Branch
+                    %th
+                      Date Issued
+                %tbody
+                  - @member_shares.each do |m|
+                    %tr
+                      %td
+                        = link_to member_member_share_path(m.member.id, m.id), target: '_blank' do
+                          #{m.certificate_number}
+                      %td
+                        #{m.member.full_name}
+                      %td
+                        #{m.member.branch.to_s}
+                      %td
+                        #{m.date_of_issue}
+                        
+              = paginate @member_shares
+            - else
+              %p
+                No certificates found
+
+
+#parameters{ data: { controller: "#{params[:controller]}", action: "#{params[:action]}" } }   

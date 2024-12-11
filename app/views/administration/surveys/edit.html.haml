@@ -1,0 +1,14 @@
+.row
+  .col
+    .card
+      .card-body
+        = simple_form_for([:administration, @survey]) do |f|
+          = f.input :name, input_html: { class: 'form-control' }
+          %hr
+          .btn-group
+            %button.btn.btn-success{ type: "submit" }
+              .fa.fa-check
+              Save
+            = link_to administration_survey_path(@survey), class: 'btn btn-danger' do
+              .fa.fa-times
+              Cancel

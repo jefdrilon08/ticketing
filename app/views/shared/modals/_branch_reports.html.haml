@@ -1,0 +1,125 @@
+#modal-nav-branch-reports.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Branch Reports
+      .modal-body
+        .row
+          .col-3
+            = link_to "/data_stores/repayment_rates", class: "btn-nav-square-md", disabled: microinsurance? do
+              Repayment Rates
+          .col-3
+            = link_to "/data_stores/manual_aging", class: "btn-nav-square-md" do
+              Manual Aging
+          .col-3
+            = link_to "/data_stores/branch_loans_stats", class: "btn-nav-square-md" do
+              Loan Stats
+          .col-3
+            = link_to "/data_stores/personal_funds", class: "btn-nav-square-md" do
+              Personal Funds
+
+        .mt-4
+
+        .row
+          .col-3
+            = link_to "/data_stores/insurance_personal_funds", class: "btn-nav-square-md" do
+              Insurance Personal Funds
+          .col-3
+            = link_to "/data_stores/member_counts", class: "btn-nav-square-md" do
+              Member Counts
+          .col-3
+            = link_to "/data_stores/soa_expenses", class: "btn-nav-square-md" do
+              SOA Expenses
+          .col-3
+            = link_to "/data_stores/soa_loans", class: "btn-nav-square-md" do
+              SOA Loans
+
+        .mt-4
+
+        .row
+          .col-3
+            = link_to "/data_stores/soa_funds", class: "btn-nav-square-md" do
+              SOA Funds
+          .col-3
+            = link_to "/data_stores/watchlists", class: "btn-nav-square-md" do
+              Watchlists
+          .col-3
+            = link_to "/data_stores/monthly_new_and_resigned", class: "btn-nav-square-md" do
+              Monthly New / Resigned
+          .col-3
+            = link_to "/data_stores/monthly_incentives", class: "btn-nav-square-md" do
+              Monthly Incentives
+
+        .mt-4
+
+        .row
+          .col-3
+            = link_to "/data_stores/x_weeks_to_pay", class: "btn-nav-square-md" do
+              X Weeks to Pay
+          .col-3
+            = link_to "/data_stores/branch_resignations", class: "btn-nav-square-md" do
+              Branch Resignations
+          .col-3
+            = link_to "/daily_branch_metrics", class: "btn-nav-square-md" do
+              Daily Branch Metrics
+          .col-3
+            = link_to "/data_stores/members_in_good_standing", class: "btn-nav-square-md" do
+              Good Standing
+
+        .mt-4
+
+        .row
+          .col-3
+            = link_to administration_member_shares_path, class: "btn-nav-square-md" do
+              Member Shares
+          .col-3
+            = link_to administration_member_shares_printed_path, class: "btn-nav-square-md" do
+              Printed Certificates
+          .col-3
+            = link_to administration_member_shares_not_printed_path, class: "btn-nav-square-md" do
+              Not Printed Certificates
+          .col-3
+            = link_to administration_member_shares_no_certificates_path, class: "btn-nav-square-md" do
+              No Certificates
+          
+
+        .mt-4
+
+        .row
+          .col-md-3
+            = link_to closing_records_path, class: "btn-nav-square-md" do
+              Closing Records
+          .col-md-3
+            = link_to branch_psr_records_path, class: "btn-nav-square-md" do
+              PSR
+          .col-md-3
+            = link_to psr_schedules_generate_path, class: "btn-nav-square-md" do
+              PSR Schedule
+          .col-md-3
+            = link_to data_stores_project_types_summary_path, class: "btn-nav-square-md" do
+              Project Types
+
+        .mt-4
+
+        .row
+          .col-6
+            = link_to "/data_stores/member_id_generators", class: "btn-nav-square-md" do
+              ID Form
+          .col-6
+            = link_to "/reports/government_identification_numbers", class: "btn-nav-square-md" do
+              Government ID Numbers
+        .mt-4
+        .row
+          .col-6
+            = link_to "/data_stores/share_capital_summary", class: "btn-nav-square-md" do
+              Share Capital Summary
+          .col-6
+            = link_to "/reports/subscriber", class: "btn-nav-square-md" do
+              Subscriber
+          
+        .mt-4
+        .row
+          .col-6
+            = link_to "/data_stores/written_off_report", class: "btn-nav-square-md" do
+              Writen-off Report

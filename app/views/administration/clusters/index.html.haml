@@ -1,0 +1,10 @@
+.row
+  .col
+    .card
+      .card-body
+        - if @clusters.any?
+
+          = render partial: "index_list"
+        - else
+          %p
+            No clusters found

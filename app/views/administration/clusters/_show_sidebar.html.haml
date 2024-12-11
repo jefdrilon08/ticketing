@@ -1,0 +1,15 @@
+.card
+  .card-body
+    %center
+      %h4
+        #{@cluster.name}
+        %br
+        %small.text-muted
+          #{@cluster.short_name}
+    %table.table.table-sm
+      %tr
+        %th
+          Area
+        %td.text-muted.text-end
+          #{@cluster.area.name}
+      

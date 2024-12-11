@@ -1,0 +1,26 @@
+.card
+  .card-body
+    %center
+      %h5
+        #{@referrer.full_name}
+    %table.table.table-sm
+      %tr
+        %th
+          Contact Number
+        %td.text-muted.text-end
+          #{@referrer.contact_number}    
+      %tr
+        %th
+          Status
+        %td.text-muted.text-end
+          #{@referrer.status}
+      %tr
+        %th
+          Date Registered
+        %td.text-muted.text-end
+          #{@referrer.date_registered.strftime("%B %d, %Y")}
+      %tr
+        %th
+          Category
+        %td.text-muted.text-end
+          #{@referrer.category.try(:titleize)}

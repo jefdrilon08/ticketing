@@ -1,0 +1,184 @@
+/* Entry point for your PostCSS build */
+
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons";
+@import 'leaflet.scss';
+
+// Local imports
+@import "./variables";
+@import "./sidebar";
+@import "./login";
+@import "./sk-cube-grid";
+@import "./member";
+@import "./accordion";
+@import "./bootstrap-overrides";
+@import "./toggle-switch";
+
+.clickable {
+  cursor: pointer;
+  color: 'blue';
+}
+
+.btn-nav-square-md {
+  @extend .btn, .btn-primary, .btn-square-md, .d-flex, .align-items-center, .justify-content-center, .mx-auto;
+}
+.navbar-expand-lg-extend{
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.btn-square-md {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  height: 100px !important;
+  text-align: center;
+  padding: 0px;
+  font-size:12px;
+  font-weight: bold;
+}
+
+.btn-label {
+  left: -12px;
+  padding: 6px 12px;
+}
+
+.main-wrapper {
+  padding-top: 14px;
+}
+
+.navbar, .navbar i, .navbar-light .navbar-nav .nav-link {
+  color: $nav-text-color;
+  font-weight: 400;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+  color: #ebebeb;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+label {
+  font-weight: 600;
+}
+
+.pagination {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+}
+
+.pagination a, .pagination span.current, .pagination span.gap {
+  float: left;
+  padding: 0 14px;
+  line-height: 38px;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-left-width: 0;
+}
+
+
+.tableFixHead {
+  overflow: auto;
+  height: 700px;
+  width: 100%;
+}
+
+.tableFixHead table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.tableFixHead th,
+.tableFixHead td {
+  padding: 8px 16px;
+}
+.tableFixHead td:first-child,  
+.tableFixHead th:first-child {
+  position:sticky;
+  left:0;
+  z-index:1;
+  background-color:#f1f1f1;
+}
+.tableFixHead td:nth-child(2), 
+.tableFixHead th:nth-child(2)  { 
+  position:sticky;
+  left:100px;
+  z-index:1;
+  background-color:#f1f1f1;
+  }
+.tableFixHead th {
+  position: sticky;
+  top: 0;
+  background: #f1f1f1;
+  z-index:2
+}
+.tableFixHead th:first-child ,  
+.tableFixHead th:nth-child(2) {
+  z-index:3
+}
+
+
+
+.headcol {
+  position: absolute;
+  width: 5em;
+  left: 0;
+  top: auto;
+  border-top-width: 1px;
+  /*only relevant for first row*/
+  margin-top: -1px;
+  /*compensate for top border*/
+}
+
+.headcol:before {
+  content: 'Row ';
+}
+
+// Federated styles
+input.form-check-input {
+  transition: 0.3s all ease;
+}
+
+
+.tableWritoff {
+  overflow: auto;
+  height: 700px;
+  width: 100%;
+}
+
+.tableWritoff table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.tableWritoff th,
+.tableWritoff td {
+  padding: 8px 16px;
+}
+.tableWritoff td:first-child,  
+.tableWritoff th:first-child {
+  position:sticky;
+  left:0;
+  z-index:1;
+  background-color:#f1f1f1;
+}
+.tableWritoff td:nth-child(2), 
+.tableWritoff th:nth-child(2)  { 
+  position:sticky;
+  left:50px;
+  z-index:1;
+  background-color:#f1f1f1;
+  }
+.tableWritoff th {
+  position: sticky;
+  top: 0;
+  background: #f1f1f1;
+  z-index:2
+}
+.tableWritoff th:first-child ,  
+.tableWritoff th:nth-child(2) {
+  z-index:3
+}

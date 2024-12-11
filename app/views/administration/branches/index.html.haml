@@ -1,0 +1,9 @@
+.col
+  .card
+    .card-body
+      - if @branches.any?
+
+        = render partial: "index_list"
+      - else
+        %p
+          No branches found

@@ -1,0 +1,80 @@
+#modal-nav-accounting-reports.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Accounting Reports
+      .modal-body
+        %h5
+          General
+        %hr
+        .row
+          .col
+            = link_to "/accounting/trial_balances", class: "btn-nav-square-md" do
+              Trial Balance
+          .col
+            = link_to "/accounting/general_ledgers", class: "btn-nav-square-md" do
+              General Ledgers
+          - if Settings.activate_microinsurance
+            .col
+              = link_to "/accounting/general_ledger", class: "btn-nav-square-md" do
+                General Ledger
+        .mt-4
+        %h5
+          Books
+        %hr
+        .row
+          .col-md-3
+            = link_to accounting_books_crb_path, class: "btn-nav-square-md" do
+              Cash Receipts
+          .col-md-3
+            = link_to accounting_books_cdb_path, class: "btn-nav-square-md" do
+              Cash Disbursements
+          .col-md-3
+            = link_to accounting_books_jvb_path, class: "btn-nav-square-md" do
+              General Journal
+          .col-md-3
+            = link_to accounting_books_misc_path, class: "btn-nav-square-md" do
+              Miscellaneous
+
+        .mt-4
+        %h5
+          Financial Statements
+        %hr
+        .row
+          .col
+            = link_to accounting_year_end_closings_path, class: "btn-nav-square-md" do
+              Year End Closing
+          .col
+            = link_to accounting_balance_sheets_path, class: "btn-nav-square-md" do
+              Balance Sheets
+          .col
+            = link_to accounting_income_statements_path, class: "btn-nav-square-md" do
+              Income Statements
+          
+
+        .mt-4
+        %h5
+          Others
+        %hr
+        .row
+          .col
+            = link_to "/data_stores/accounting_entries_summaries", class: "btn-nav-square-md" do
+              Voucher Summmary
+          .col
+            = link_to monthly_accounting_code_summaries_path, class: "btn-nav-square-md" do
+              Monthly AC Summaries
+          .col
+            = link_to "/data_stores/assets_liabilities" , class: "btn-nav-square-md" do
+              Due to / Due From Report
+          .col
+            = link_to branch_cash_flow_path , class: "btn-nav-square-md" do
+              Branch Cash Flow
+        
+        .mt-4
+        %hr
+        .row
+          .col-md-4
+            = link_to "/data_stores/allowance_computation_report" , class: "btn-nav-square-md" do
+              Allowance Computation
+

@@ -1,0 +1,89 @@
+%div{ id: "accounting-entry", class: "card border-success" }
+  %div{ class: "card-header bordered-success" }
+    .row
+      .col-md-6
+        %strong
+          - if accounting_entry[:status] == "approved"
+            #{accounting_entry[:book]}
+            #{accounting_entry[:reference_number]} - 
+            #{accounting_entry[:approved_by]}
+          - else
+            Pending
+      .col-md-6
+        .text-end
+          .text-muted
+            .fa.fa-store
+            #{accounting_entry[:branch].to_s} - #{accounting_entry[:book].to_s}
+  .card-body
+    %table.table.table-sm
+      %tr
+        %th{ width: "50%" }
+          Accounting Code
+        %th.text-end{ width: "25%" }
+          Debit
+        %th.text-end{ width: "25%" }
+          Credit
+      - accounting_entry[:journal_entries].each do |o|
+        - if o[:post_type] == "DR"
+          %tr
+            %td
+              #{o[:code]} - #{o[:accounting_code_name]}
+            %td.text-end
+              #{number_to_currency(o[:amount], unit: "")}
+            %td
+      - accounting_entry[:journal_entries].each do |o|
+        - if o[:post_type] == "CR"
+          %tr
+            %td
+              #{o[:code]} - #{o[:accounting_code_name]}
+            %td
+            %td.text-end
+              #{number_to_currency(o[:amount], unit: "")}
+    %hr
+    .row
+      .col-md-8
+        - if accounting_entry[:book] == "CRB"
+          %strong
+            OR Number: 
+          .text-muted
+            #{accounting_entry[:data]['or_number']}
+        - if accounting_entry[:book] == "CDB"
+          .row
+            - if accounting_entry[:data]["check_number"].present?
+              .col
+                %strong
+                  Check Number:
+                .text-muted
+                  #{accounting_entry[:data]["check_number"]}
+            - if accounting_entry[:data]["check_voucher_number"].present?
+              .col
+                %strong
+                  Check Voucher Number:
+                .text-muted
+                  #{accounting_entry[:data]["check_voucher_number"]}
+            - if accounting_entry[:data]["date_of_check"].present?
+              .col
+                %strong
+                  Date of Check:
+                .text-muted
+                  #{accounting_entry[:data]["date_of_check"]}
+            - if accounting_entry[:data]["payee"].present?
+              .col
+                %strong
+                  Payee:
+                .text-muted
+                  #{accounting_entry[:data]["payee"]}
+        %br
+        .row
+          .col
+            %label
+              Particular
+            %p
+              #{accounting_entry[:particular]}
+      .col-md-4
+        %p.text-end
+          %label
+            %strong
+              Approved By:
+          %br
+          #{accounting_entry[:approved_by]}

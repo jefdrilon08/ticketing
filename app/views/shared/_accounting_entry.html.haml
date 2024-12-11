@@ -1,0 +1,118 @@
+%div{ id: "accounting-entry", class: "card #{accounting_entry.approved? ? 'border-success' : 'border-danger'}" }
+  %div{ class: "card-header #{accounting_entry.approved? ? "bordered-success #{accounting_entry_context_class(accounting_entry.book)} text-white" : 'border-danger'}" }
+    .row
+      .col-md-6
+        %strong
+          = link_to accounting_accounting_entry_path(accounting_entry, book: accounting_entry.book.downcase), class: "text-white" do
+            - if accounting_entry.approved?
+              #{accounting_entry.book}
+              #{accounting_entry.reference_number} - 
+              #{accounting_entry.date_posted.strftime("%B %d, %Y")}
+              -if Settings.activate_microinsurance
+                #{accounting_entry.sub_reference_number}
+            - else
+              .text-black
+                Pending
+      .col-md-6
+        .text-end
+          .text-white
+            .fa.fa-store
+            #{accounting_entry.book} - #{accounting_entry.branch.to_s} - #{accounting_entry.try(:accounting_fund).try(:name)}
+  .card-body
+    %table.table.table-sm
+      %tr
+        %th{ width: "50%" }
+          Accounting Code
+        %th.text-end{ width: "25%" }
+          Debit
+        %th.text-end{ width: "25%" }
+          Credit
+      - accounting_entry.journal_entries.debit.each do |o|
+        %tr
+          %td
+            #{o.accounting_code.code} - #{o.accounting_code.name}
+          %td.text-end
+            #{number_to_currency(o.amount, unit: "")}
+          %td
+      - accounting_entry.journal_entries.credit.each do |o|
+        %tr
+          %td
+            #{o.accounting_code.code} - #{o.accounting_code.name}
+          %td
+          %td.text-end
+            #{number_to_currency(o.amount, unit: "")}
+    %hr
+    .row
+      .col-md-8
+        - if accounting_entry.crb?
+          .row
+            .col
+              %strong
+                OR Number: crb
+              .text-muted
+                #{accounting_entry.data['or_number']}
+            - if accounting_entry.data['si_number'].present?
+              .col                
+                %strong
+                  SI Number:
+                .text-muted
+                  #{accounting_entry.data['si_number']}
+            - if accounting_entry.data["ar_number"].present?
+              .col
+                %strong
+                  AR Number: crb
+                .text-muted
+                  #{accounting_entry.data['ar_number']}
+        - if accounting_entry.cdb?
+          .row
+            - if accounting_entry.data["check_number"].present?
+              .col
+                %strong
+                  Check Number:
+                .text-muted
+                  #{accounting_entry.data["check_number"]}
+            - if accounting_entry.data["check_voucher_number"].present?
+              .col
+                %strong
+                  Check Voucher Number:
+                .text-muted
+                  #{accounting_entry.data["check_voucher_number"]}
+            - if accounting_entry.data["date_of_check"].present?
+              .col
+                %strong
+                  Date of Check:
+                .text-muted
+                  #{accounting_entry.data["date_of_check"]}
+            - if accounting_entry.prepared_by
+              .col
+                %strong
+                  Prepared By:
+                .text-muted
+                  #{accounting_entry.prepared_by}
+        - if accounting_entry.data["payee"].present?
+          %br
+          %strong
+            Payee:
+          .text-muted
+            #{accounting_entry.data["payee"]}
+        %br
+        .row
+          .col
+            %label
+              Particular
+            %p
+              #{accounting_entry.particular}
+      .col-md-4
+        %p.text-end
+          %label
+            %strong
+              Approved By:
+          %br
+          #{accounting_entry.approved_by}
+    .row
+      .col
+        .text-end
+          - if accounting_entry.pending?
+            = link_to accounting_accounting_entry_form_path(id: accounting_entry.id, book: accounting_entry.book), class: 'btn btn-info btn-sm' do
+              .fa.fa-pencil-alt
+              Edit Accounting Entry

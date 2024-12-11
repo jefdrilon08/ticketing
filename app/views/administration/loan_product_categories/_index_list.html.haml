@@ -1,0 +1,20 @@
+- if @loan_product_categories.any?
+  %table.table.table-sm.table-hover.table-bordered
+    %thead
+      %tr
+        %th
+          Name
+        %th
+          Code
+    %tbody
+      - @loan_product_categories.each do |o|
+        %tr
+          %td
+            = link_to administration_loan_product_category_path(o) do
+              %strong
+                #{o.name}
+          %td
+            #{o.code}
+- else
+  %p
+    No categories found.

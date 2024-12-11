@@ -1,0 +1,27 @@
+#modal-nav-admin.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Administration
+      .modal-body
+        .row
+          .mt-4
+          .row
+            .col
+              = link_to administration_users_path, class: "btn-nav-square-md" do
+                Users
+        .mt-4
+        .row
+          - if is_mis_user?
+            .col
+              = link_to administration_areas_path, class: "btn-nav-square-md" do
+                Areas
+            .col
+              = link_to administration_clusters_path, class: "btn-nav-square-md" do
+                Clusters
+          
+          .col
+            = link_to administration_branches_path, class: "btn-nav-square-md" do
+              Branches
+          

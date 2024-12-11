@@ -1,0 +1,22 @@
+.card
+  .card-body
+    %h5.text-muted
+      CLUSTERS
+    .table-responsive
+      %table.table-bordered.table
+        %thead
+          %tr
+            %th Name
+            %th Short Name
+            %th Action
+        %tbody
+          - @area.clusters.each do |cluster|
+            %tr
+              %td= cluster.name
+              %td= cluster.short_name
+              %td
+                = link_to administration_cluster_path(cluster.id), class: "btn btn-primary btn-xs", target: "_blank " do
+                  Details
+
+
+

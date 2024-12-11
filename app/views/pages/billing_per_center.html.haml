@@ -1,0 +1,19 @@
+.row
+  .col
+    .card
+      .card-body
+        %h5
+          Exports Page
+        #filter  
+        = form_tag export_tools_path, html: { novalidate: true }, method: "GET" do
+          .row
+            .col-md-8
+              .form-group
+                %label Branch
+                = select_tag :center_id, options_from_collection_for_select(@centers, :id, :name, @center_id), class: "form-control select-select2 js-searchable", id: "select-center"              
+            .col-md-4
+              .form-group
+                %label Actions
+                = link_to "#", id: 'download-btn', class: 'btn btn-primary btn-block' do
+                  .fa.fa-download
+                  Download

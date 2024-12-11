@@ -1,0 +1,11 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+  %tbody
+    - @membership_types.each do |membership_type|
+      %tr
+        %td
+          = link_to administration_membership_type_path(membership_type) do
+            #{membership_type.name}

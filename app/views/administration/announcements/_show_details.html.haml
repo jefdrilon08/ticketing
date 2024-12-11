@@ -1,0 +1,9 @@
+.card
+  .card-body
+    %h3
+      #{@announcement.title}
+    %span.text-muted
+      #{@announcement.user.full_name}
+
+    %p{:style => "margin-top: 20px;"}
+      #{@announcement.content}

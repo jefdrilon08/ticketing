@@ -1,0 +1,11 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        = render partial: "index_filter"
+        - if @referrers.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No users found

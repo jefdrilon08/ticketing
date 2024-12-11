@@ -1,0 +1,9 @@
+.row
+  .col
+    .card
+      .card-body
+        - if @project_type_categories.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No project type categories found.

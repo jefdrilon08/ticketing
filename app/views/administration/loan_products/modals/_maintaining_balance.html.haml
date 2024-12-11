@@ -1,0 +1,18 @@
+#modal-maintaining-balance.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title
+          Modify Maintaining Balance
+      .modal-body
+        .modal-body-content
+          = text_field_tag :maintaining_balance, @maintaining_balance, type: 'number', class: 'form-control', id: 'input-maintaining-balance'
+          .message
+      .modal-footer
+        .controls
+          %button#btn-confirm-maintaining-balance.btn.btn-primary
+            .fa.fa-check
+            Confirm
+          %button.btn{"data-bs-dismiss" => "modal", :type => "button"}
+            .fa.fa-times
+            Cancel

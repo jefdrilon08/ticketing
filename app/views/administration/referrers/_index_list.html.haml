@@ -1,0 +1,36 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Category
+      %th
+        Date Registered
+      %th
+        Contact Number
+      %th
+        Status
+      %th
+        Actions
+  %tbody
+    - @referrers.each do |referrer|
+      %tr
+        %td
+          #{referrer.full_name}
+        %td
+          #{referrer.category.try(:titleize)}
+        %td
+          #{referrer.date_registered.try(:strftime, "%B %d, %Y")}
+        %td
+          #{referrer.contact_number}
+        %td
+          #{referrer.status}
+        %td
+          .btn-group
+            = link_to administration_referrer_path(referrer), class: 'btn btn-sm btn-primary' do
+              .bi.bi-search
+              Show
+            = link_to edit_administration_referrer_path(referrer), class: 'btn btn-sm btn-info' do
+              .fa.fa-pencil-alt
+              Edit

@@ -1,0 +1,21 @@
+.row
+  .col
+    .card
+      .card-body
+        #filter  
+        = form_tag seriatim_path, html: { novalidate: true }, method: "GET" do
+          .row
+            .col-md-4
+              .form-group
+                %label Branch
+                = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, @branch_id), class: "form-control select-select2", id: "branch-select", prompt: "-- SELECT --"
+            .col-md-4
+              .form-group
+                %label As of
+                = date_field_tag :as_of, @as_of, class: "form-control", placeholder: "yyyy-mm-dd", id: "as-of"
+            .col-md-4
+              .form-group
+                %br
+                = link_to "#", id: 'download-btn', class: "btn btn-primary btn-lg" do
+                  .fa.fa-download
+                  Download

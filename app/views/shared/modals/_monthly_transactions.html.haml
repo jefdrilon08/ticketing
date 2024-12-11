@@ -1,0 +1,26 @@
+#modal-nav-monthly-transactions.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title
+          Collection Modules
+      .modal-body
+        .row
+          .col
+            = link_to monthly_closing_collections_path, class: "btn-nav-square-md" do
+              Monthly Transacions
+        .mt-4
+        .row
+          .col
+            = link_to insurance_monthly_closing_collections_path, class: "btn-nav-square-md" do
+              Insurance Monthly Closing
+        .mt-4
+        .row
+          .col
+            = link_to "/closing_records", class: "btn-nav-square-md" do
+              Closing Records
+        .mt-4
+        .row
+          .col
+            = link_to "data_stores/monthly_incentives", class: "btn-nav-square-md" do
+              Monthly Incentives

@@ -1,0 +1,29 @@
+%table.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+      %th.text-center
+        Questions
+      %th
+        Created By
+      %th
+        Created At
+      %th
+        Updated At
+  %tbody
+    - surveys.each do |o|
+      %tr 
+      %td
+        = link_to administration_survey_path(o) do
+          %strong
+            #{o.name}
+      %td
+        %center
+          #{o.survey_questions.size}
+      %td
+        #{o.created_by}
+      %td
+        #{o.created_at.localtime.strftime("%b %d, %H:%M")}
+      %td
+        #{o.updated_at.localtime.strftime("%b %d, %H:%M")}

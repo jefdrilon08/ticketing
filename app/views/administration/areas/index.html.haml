@@ -1,0 +1,14 @@
+= title
+
+%main.c-main
+  .container-fluid
+    .row
+      .col
+        .card
+          .card-body
+            - if @areas.any?
+
+              = render partial: "index_list"
+            - else
+              %p
+                No areas found

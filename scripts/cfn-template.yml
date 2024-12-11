@@ -1,0 +1,134 @@
+Parameters:
+  VpcCidr:
+    Description: The CIDR value for the VPC
+    Type: String
+    Default: 10.0.0.0/16
+  PublicSubnet1Cidr:
+    Description: The CIDR value for Public Subnet 1
+    Type: String
+    Default: 10.0.1.0/24
+  PrivateSubnet1Cidr:
+    Description: The CIDR value for Private Subnet 1
+    Type: String
+    Default: 10.0.2.0/24
+  KOINSAmiID:
+    Description: The default AMI ID for the KOINS application
+    Type: String
+    Default: ami-011d390f3d8e23372
+  WebServerInstanceType:
+    Description: Instance type for KOINS Web server
+    Type: String
+    Default: t3.small
+  WebServerKeyName:
+    Description: pem file key name
+    Type: String
+    Default: linux-dev
+
+Resources:
+  MainVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        -
+          Key: Name
+          Value: KOINS VPC
+
+  MainInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        -
+          Key: Name
+          Value: KOINS Internet Gateway
+
+  MainInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref MainInternetGateway
+      VpcId: !Ref MainVPC
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MainVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref PublicSubnet1Cidr
+      Tags:
+        -
+          Key: Name
+          Value: "KOINS Public Subnet 1"
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MainVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref PrivateSubnet1Cidr
+      Tags:
+        -
+          Key: Name
+          Value: KOINS Public Subnet 1
+
+  PublicRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MainVPC
+      Tags:
+        -
+          Key: Name
+          Value: "Public Route Table 1"
+
+  # Route traffic to the Internet Gateway
+  PublicDefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref MainInternetGateway
+      RouteTableId: !Ref PublicRouteTable1
+
+
+  # KOINS Webapp server security group
+  WebAppServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows port 80 access
+      VpcId: !Ref MainVPC
+      SecurityGroupIngress:
+        -
+          IpProtocol: TCP
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        -
+          IpProtocol: TCP
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+  
+  # Elastic IP
+  MainElasticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref WebAppServer
+      Tags:
+        -
+          Key: Name
+          Value: "KOINS Web Application Server Elastic IP"
+
+  # Main Webapp server
+  WebAppServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref WebServerInstanceType
+      ImageId: !Ref KOINSAmiID
+      KeyName: !Ref WebServerKeyName
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref WebAppServerSecurityGroup
+      Tags:
+        -
+          Key: Name
+          Value: "KOINS Web Application Server"

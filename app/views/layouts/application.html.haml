@@ -1,0 +1,27 @@
+!!!
+%html
+  %head
+    %title
+      = "[#{App.pipeline.upcase}] " "JEF" 
+    = stylesheet_link_tag "assets/stylesheets/application"
+    = javascript_include_tag "javascript/packs/application"
+    = csrf_meta_tags
+    = csp_meta_tag
+    %meta{ name: "viewport", content: "width=device-width, initial-scale=1, shrink-to-fit=no" }
+    - if Settings.activate_microloans?
+      %meta{ name: "branch-ids", content: "#{{ branch_ids: @branches.pluck(:id) }.to_json}" }
+    %meta{ name: "parameters", content: "#{{ route: "#{params[:controller]}/#{params[:action]}", payload: (@payload || {}) }.to_json}" }
+
+    - if microinsurance?
+      = favicon_link_tag "kmba.ico"
+    - else
+      = favicon_link_tag "logo_thumb.png"
+
+  %body
+    = render partial: "shared/sidebar"
+    %section.main-section
+      = render partial: "shared/top_navigation"
+      .container-fluid.main-wrapper
+        = yield
+    = render partial: "templates/error_list"
+    = render partial: "templates/loader"

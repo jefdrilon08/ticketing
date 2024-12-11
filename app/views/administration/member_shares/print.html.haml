@@ -1,0 +1,51 @@
+.row
+  .col
+    .card
+      .card-body
+        .row
+          .col
+            %h5
+              Printed Share Certificate
+              %br
+            - if @member_shares != nil
+              %table.table.table-sm.table-bordered
+                %thead
+                  %tr
+                    %th
+                                    
+                    %th
+                      Number
+                    %th
+                      Member
+                    %th
+                      No. of certificate
+                    %th
+                      SATO
+                    %th
+                      Center
+                    %th
+                      Date Printed
+                    %th
+                      RECIEVED BY: 
+                %tbody
+                  - @member_shares.sort_by { |item| item.member.center.to_s }.each_with_index do |m , i|
+                    %tr
+                      %td
+                        #{i + 1}
+                      %td
+                        #{m.certificate_number}
+                      %td
+                        #{m.member.full_name}
+                      %td
+                        #{m.number_of_shares}
+                      %td
+                        #{m.member.branch}
+                      %td
+                        #{m.member.center.to_s}
+                      %td
+                        #{m.data["date_printed"]}
+                      %td
+                                      
+            - else
+              %p
+                No certificates found

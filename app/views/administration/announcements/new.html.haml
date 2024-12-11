@@ -1,0 +1,10 @@
+= title
+= render partial: "shared/c_subheader", locals: { items: @subheader_items, side_actions: @subheader_side_actions }
+
+%main.c-main
+  .container-fluid
+    .row
+      .col
+        .card
+          .card-body
+            = render partial: "form", locals: { announcement: @announcement }

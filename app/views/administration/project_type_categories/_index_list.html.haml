@@ -1,0 +1,20 @@
+%table.table.table-bordered.table-sm.table-hover
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Code
+      %th.text-center
+        \# Types
+  %tbody
+    - @project_type_categories.each do |o|
+      %tr
+        %td
+          = link_to administration_project_type_category_path(o.id) do
+            %strong
+              #{o.name}
+        %td
+          #{o.code}
+        %td.text-center
+          #{o.project_types.size}

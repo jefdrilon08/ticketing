@@ -1,0 +1,4 @@
+web: bin/rails server -p 3000 -b 0.0.0.0
+assets: yarn run start
+sidekiq: bundle exec sidekiq
+sidekiq-account: bundle exec sidekiq -C config/sidekiq-accounting.yml

@@ -1,0 +1,50 @@
+.row
+  .col
+    .card
+      .card-body 
+            
+.container-fluid
+.row
+  .col
+    .card
+      .card-body 
+        .row
+          %h5
+            Pending Certificate
+
+          -if @data != nil
+            %table.table.table-sm.table-bordered
+              %thead
+                %tr
+                  %th
+                    Number
+                  %th
+                    Member
+                  %th
+                    SATO
+                  %th
+                    Center
+                  %th
+                    Shares Printed
+                  %th
+                    Shares For Printing
+                  %th
+                    Last Payment - Equity
+              %tbody
+                - @data[:sfp].each_with_index do |sfp, i|
+                  %tr
+                    %td 
+                      #{i + 1} 
+                    %td
+                      = link_to member_path(sfp[:id]), target: '_blank' do
+                        #{sfp[:full_name]}
+                    %td
+                      #{sfp[:branch]}
+                    %td
+                      #{sfp[:center]}
+                    %td
+                      #{sfp[:shares_printed]}
+                    %td
+                      #{sfp[:shares_for_printing]}
+                    %td
+                      #{sfp[:eq_date]}

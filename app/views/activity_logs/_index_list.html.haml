@@ -1,0 +1,14 @@
+%table.ui.green.small.table
+  %thead
+    %tr
+      %th Timestamp
+      %th Activity Type
+      %th User
+      %th{width: "50%"} Content
+  %tbody
+    - activity_logs.each do |activity_log|
+      %tr
+        %td #{activity_log.created_at.strftime("%b %d, %Y %H:%M:%S")}
+        %td #{activity_log.activity_type}
+        %td #{activity_log.user}
+        %td #{activity_log.content}

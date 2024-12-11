@@ -1,0 +1,47 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Short Name
+      %th
+        OR Prefix
+      %th
+        AR Prefix
+      %th
+        Current Date
+      %th
+        Center Count
+      %th
+        Member Counter
+      %th
+        Actions
+  %tbody
+    - @branches.each do |branch|
+      %tr
+        %td{ style: "color: #{branch.color || '#000'}" }
+          %b
+            #{branch.name.upcase}
+        %td
+          #{branch.short_name.upcase}
+        %td
+          #{branch.or_prefix}
+        %td
+          #{branch.ar_prefix}
+        %td
+          #{::Utils::GetCurrentDate.new(config: { branch: branch }).execute!.strftime("%b %d, %Y")}
+        %td
+          #{branch.center_count}
+        %td
+          #{branch.member_counter}
+
+        %td
+          .btn-group
+            = link_to administration_branch_path(branch), class: 'btn btn-sm btn-primary' do
+              .bi.bi-search
+              Show
+            - if current_user.current_roles.include?("MIS")
+              = link_to edit_administration_branch_path(branch), class: 'btn btn-sm btn-info' do
+                .fa.fa-pencil-alt
+                Edit

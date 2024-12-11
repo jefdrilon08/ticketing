@@ -1,0 +1,11 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+  %tbody
+    - @membership_arrangements.each do |membership_arrangement|
+      %tr
+        %td
+          = link_to administration_membership_arrangement_path(membership_arrangement) do
+            #{membership_arrangement.name}

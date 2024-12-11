@@ -1,0 +1,11 @@
+.row
+  .col
+    .card
+      .card-body
+        = render partial: "index_filter"
+        - if @membership_arrangements.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No membership_arrangements found
+        = paginate @membership_arrangements

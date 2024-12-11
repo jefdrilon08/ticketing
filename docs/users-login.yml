@@ -1,0 +1,15 @@
+post:
+  summary: Authenticates a user
+  parameters:
+    -
+      name: username
+      required: true
+      description: Username of the user
+    -
+      name: password
+      required: true
+      description: Password of the user
+    -
+      name: test
+      required: true
+      description: Password of the user

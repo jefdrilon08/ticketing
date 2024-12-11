@@ -1,0 +1,31 @@
+#modal-generate-daily-report.modal.fade
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %h3.modal-title
+          Generate Daily Report
+      .modal-body
+        .modal-body-content
+          .alert.alert-info
+            Creates Repayment Rates and Member Count Records
+          .row
+            .col-md-6.col-sm-12
+              .form-group
+                %label
+                  Branch
+                = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, @branch.try(:id)), class: "form-control select-select2 x-form-control", id: "select-branch", prompt: "-- SELECT --"
+            .col-md-6.col-sm-12
+              .form-group
+                %label
+                  As Of
+                = text_field_tag :as_of, Date.today, type: :date, id: "input-as-of", class: 'form-control x-form-control'
+              
+          .message
+      .modal-footer
+        .controls
+          %button#btn-confirm-generate-daily-report.btn.btn-primary.x-form-control
+            .fa.fa-check
+            Confirm
+          %button.btn.x-form-control{"data-bs-toggle" => "modal", "data-bs-target" => "#modal-generate-daily-report", :type => "button"}
+            .fa.fa-times
+            Cancel

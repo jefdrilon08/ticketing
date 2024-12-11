@@ -1,0 +1,29 @@
+.row
+  .col
+    .card
+      .card-body
+        = form_tag upload_insurance_fund_transfer_collections_path, multipart: true do
+          .row
+            .col-md-4
+              %label
+                Branch
+              = select_tag :branch_id, options_for_select(@branches.collect{ |o| [o.name, o.id] }), class: "form-control select-select2", id: "branch-select"
+            .col-md-4
+              %label
+                Date of Payment
+              = text_field_tag :paid_at, Date.today.strftime("%Y-%m-%d"), class: "form-control", type: "date", id: "date-of-payment"
+            .col-md-4
+              %label
+                File
+              = file_field_tag :file, class: "form-control"
+          %br
+          .row
+            .col-md-6
+              - if !flash[:error].nil?
+                - flash[:error].each do |err|
+                  %h4{:style => "color:red;"}
+                    #{err["message"]}
+          %hr  
+            .row
+              .col-md-12
+                = submit_tag "Upload Fund Transfer", :class => "btn btn-primary"    

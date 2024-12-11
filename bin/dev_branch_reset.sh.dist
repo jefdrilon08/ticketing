@@ -1,0 +1,15 @@
+ROOT=/home/ralampay/workspace/koins/db_backup/
+BRANCH=batasan
+RAILS_ENV=development
+
+bundle exec rails load:members_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="members-$BRANCH-v2.json"
+bundle exec rails load:accounting_entries_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="accounting-entries-$BRANCH-v2.json"
+bundle exec rails load:journal_entries_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="journal-entries-$BRANCH-v2.json"
+bundle exec rails load:loans_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="loans-$BRANCH-v2.json"
+bundle exec rails load:amortization_schedule_entries_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="amortization-schedule-entries-$BRANCH-v2.json"
+bundle exec rails load:member_accounts_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="member-accounts-$BRANCH-v2.json"
+bundle exec rails load:member_account_transactions_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="member-account-transactions-$BRANCH-v2.json"
+bundle exec rails load:loan_payments_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="loan-payments-$BRANCH-v2.json"
+bundle exec rails load:legal_dependents_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="legal-dependents-$BRANCH-v2.json"
+bundle exec rails load:beneficiaries_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="beneficiaries-$BRANCH-v2.json"
+bundle exec rails load:member_shares_from_file ROOT=$ROOT RAILS_ENV=$RAILS_ENV FILENAME="member-shares-$BRANCH-v2.json"

@@ -1,0 +1,39 @@
+.row
+  .col
+    .card
+      .card-body
+        .row
+          .col
+            %h5 Non-printed Certificates (#{@member_shares.total_count})
+            - if @member_shares.empty?
+              %p No certificates found
+            - else
+              %table.table.table-bordered.table-sm.table-hover
+                %thead
+                  %tr
+                    %th Certificate Number
+                    %th Member
+                    %th Branch
+                %tbody
+                  - @member_shares.each do |ms|
+                    %tr
+                      %td= link_to ms.certificate_number, member_member_share_path(ms.member, ms.id)
+                      %td= link_to ms.member.full_name, ms.member
+                      %td= ms.member.branch
+              = paginate @member_shares, window: 10
+          .col
+            %h5 Members Without Certificates (#{@members.total_count})
+            - if @members.empty?
+              %p No members found
+            - else
+              %table.table.table-sm.table-bordered
+                %thead
+                  %tr
+                    %th Member
+                    %th Branch
+                %tbody
+                  - @members.each do |m|
+                    %tr
+                      %td= link_to m.full_name, m, target: "_blank"
+                      %td= m.branch.to_s
+              = paginate @members, window: 10

@@ -1,0 +1,57 @@
+#modal-nav-system-tools.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          System Tools
+      .modal-body
+        .row  
+          .col-4
+            = link_to billing_per_center_path, class: "btn-nav-square-md" do
+              Billing Per Center
+          .col-4
+            = link_to upload_fund_transfer_path, class: "btn-nav-square-md" do
+              Upload Fund Transfer
+          .col-4
+            = link_to export_tools_path, class: "btn-nav-square-md" do
+              Export tools        
+        - if is_mis_user?
+          .mt-4
+          .row 
+            .col-4
+              = link_to upload_clip_path, class: "btn-nav-square-md" do
+                Upload CLIP
+            .col-4
+              = link_to import_members_path, class: "btn-nav-square-md" do
+                Imports Members
+            .col-4
+              = link_to import_beneficiaries_path, class: "btn-nav-square-md" do
+                Imports Beneficiaries
+          .mt-4
+          .row
+            .col-4
+              = link_to import_legal_dependents_path, class: "btn-nav-square-md" do
+                Imports Dependents
+            .col-4
+              = link_to import_insurance_accounts_path, class: "btn-nav-square-md" do
+                Import Insurance Accounts
+            .col-4
+              = link_to import_insurance_account_transactions_path, class: "btn-nav-square-md" do
+                Import Insurance Transactions
+          .mt-4
+          .row
+            .col-4
+              = link_to upload_deposit_path, class: "btn-nav-square-md" do
+                Upload Deposit
+            .col-4
+              = link_to "/data_stores/monthly_new_and_resigned", class: "btn-nav-square-md" do
+                Monthly New and Res.
+            .col-4
+              = link_to upload_insurance_withdrawal_path, class: "btn-nav-square-md" do
+                Upload Insurance Withdrawals
+          .mt-4
+          .row
+            .col-4
+              = link_to upload_loan_bundle_enrollments_path, class: "btn-nav-square-md" do
+                Upload Insurance Loan Bundle 
+

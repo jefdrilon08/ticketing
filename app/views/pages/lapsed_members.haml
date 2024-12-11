@@ -1,0 +1,27 @@
+= title
+= render partial: "shared/subheader", locals: { items: @subheader_items, side_actions: @subheader_side_actions }
+
+%main.c-main
+  .container-fluid
+    .row
+      .col
+        .card
+          .card-body
+            .errors_template
+              #filter
+                = form_tag lapsed_members_path, html: { novalidate: true }, method: "GET", defaults: { wrapper_html: { class: 'form-group' }, input_html: { class: 'form-control simple_form' } } do
+                  .row
+                    .col-md-6
+                      .form-group
+                        %label Branch 
+                        = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, @branch.try(:id)), class: "form-control select-select2", id: "branch-select", prompt: "-- SELECT --"
+                    .col-md-6
+                      .form-group
+                        %label Actions
+                        %br
+                        .ui.large.buttons
+                          = button_tag :submit, class: 'btn btn-primary' do
+                            .bi.bi-search
+                            Search
+              = render partial: "lapsed_members_list"
+              = paginate @members

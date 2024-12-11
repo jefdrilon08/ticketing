@@ -1,0 +1,24 @@
+.row
+  .col
+    .card
+      .card-body
+        %h2
+          %span.badge.bg-danger#error= flash[:error]  
+        = form_tag upload_deposit_collections_path, multipart: true do
+          .row
+            .col-md-4
+              %label
+                Branch
+              = select_tag :branch_id, options_for_select(@branches.collect{ |o| [o.name, o.id] }), class: "form-control select-select2", id: "branch-select"
+            .col-md-4
+              %label
+                Date of Payment
+              = text_field_tag :paid_at, Date.today.strftime("%Y-%m-%d"), class: "form-control", type: "date", id: "date-of-payment"
+            .col-md-4
+              %label
+                File
+              = file_field_tag :file, class: "form-control"
+          %hr  
+            .row
+              .col-md-12
+                = submit_tag "Upload Insurance Deposit", :class => "btn btn-primary"    

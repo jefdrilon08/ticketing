@@ -1,0 +1,70 @@
+.SidebarContents {
+  background: rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-gap: 1px;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 1px;
+  > nav {
+    background: #2f353a;
+    padding: 1rem;
+    width: 100%;
+    > nav {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1rem;
+      border-radius: 0.25rem;
+      margin-top: 1rem;
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+      a {
+      }
+    }
+    .Header {
+      color: #86929b;
+      font-size: 1;
+      font-weight: bold;
+      line-height: 1;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      &:not(:first-child) {
+        margin-top: 1rem;
+      }
+    }
+    a {
+      color: white;
+      display: block;
+      padding: 0.35rem 0.25rem 0.35rem 0;
+      i {
+        color: #73818f;
+        display: inline-block;
+        font-size: 0.875rem;
+        margin: 0 0.5rem 0 0;
+        text-align: center;
+        width: 1.1rem;
+      }
+      &.active {
+        color: white;
+        font-weight: bold;
+        i {
+          color: white;
+        }
+      }
+      &:hover {
+        color: var(--primary);
+        text-decoration: none;
+        i {
+          color: var(--primary);
+        }
+      }
+    }
+  }
+}
+
+.sidebar {
+  flex: 0 0 300px !important;
+  margin-left: -300px !important;
+  overflow-y: scroll;
+  transition: none;
+  width: auto !important;
+}
+.sidebar-show .sidebar { margin-left: 0 !important; }

@@ -1,0 +1,17 @@
+#modal-update-profile-picture.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title
+          Update Profile Picture
+      .modal-body
+        = file_field_tag :profile_picture, id: "file-profile-picture", class: "form-control"
+        .message
+      .modal-footer
+        .controls
+          %button#btn-confirm-update.btn.btn-primary
+            .fa.fa-check
+            Confirm
+          %button.btn{"data-bs-dismiss" => "modal", :type => "button"}
+            .fa.fa-times
+            Cancel

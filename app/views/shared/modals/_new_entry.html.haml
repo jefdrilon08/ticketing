@@ -1,0 +1,22 @@
+#modal-nav-new-entry.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title
+          New Entry
+      .modal-body
+        .row
+          .col
+            = link_to accounting_accounting_entry_form_path(book: "CRB"), class: "btn-nav-square-md" do
+              Cash Receipts
+        .mt-4
+        .row
+          .col
+            = link_to accounting_accounting_entry_form_path(book: "CDB"), class: "btn-nav-square-md" do
+              Cash Disbursements
+        .mt-4
+        - if sbk_bk_mis_user 
+          .row
+            .col
+              = link_to accounting_accounting_entry_form_path(book: "JVB"), class: "btn-nav-square-md" do
+                General Journal

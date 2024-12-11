@@ -1,0 +1,12 @@
+#modal-nav-writeoffs.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Writeoffs
+      .modal-body
+        = link_to "/data_stores/for_writeoff", class: "btn-nav-square-md" do
+          List of Members for Writeoff
+        .mt-4
+        = link_to billing_for_writeoff_path, class: "btn-nav-square-md" do
+          Writeoff Tagging

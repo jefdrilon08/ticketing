@@ -1,0 +1,24 @@
+= simple_form_for([:administration, @project_type_category]) do |f|
+  .row
+    .col
+      = f.input :name, input_html: { class: "form-control" }
+    .col
+      = f.input :code, input_html: { class: "form-control" }
+    .col-md-2
+      .form-group
+        %label
+          Is Active?
+        = f.input :is_active, label: false
+
+  %hr
+  %button{ type: "submit", class: "btn btn-primary" }
+    .fa.fa-check
+    Save
+  - if @project_type_category.new_record?
+    = link_to administration_project_type_categories_path, class: 'btn btn-danger' do
+      .fa.fa-times
+      Cancel
+  - else
+    = link_to administration_project_type_category_path(@project_type_category), class: 'btn btn-danger' do
+      .fa.fa-times
+      Cancel

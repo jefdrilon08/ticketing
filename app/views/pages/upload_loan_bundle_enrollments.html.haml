@@ -1,0 +1,40 @@
+.row
+  .col
+    .card
+      .card-body
+        = form_tag upload_insurance_loan_bundle_enrollments_path, multipart: true do
+          .h4
+            Upload Loan Bundle Collections (KOK)
+          %br
+          .row
+            / .col-md-3
+            /   .form-group
+            /     %label
+            /       Branch
+            /     = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, @branch.try(:id)), class: "form-control select-select2", id: "select-branch", prompt: "-- SELECT --"
+            / .col-md-3
+            /   .form-group
+            /     %label
+            /       Center
+            /     = select_tag :center_id, options_for_select([]), class: "form-control select-select2", id: "select-center", prompt: "-- SELECT --"
+            .col-md-3
+              .form-group
+                %label
+                  Collection Date
+                = text_field_tag :collection_date, Date.today, type: 'date', id: 'input-collection-date', class: 'form-control'
+            .col-md-3
+              .form-group
+                %label
+                  File
+                = file_field_tag :file, class: "form-control"
+          %br
+          .row
+            .col-md-6
+              - if flash[:error].is_a?(Array)
+                - flash[:error].each do |error|
+                  %p= error
+              - else
+                %p= flash[:error]
+            .row
+              .col-md-12
+                = submit_tag "Upload Loan Bundle Enrollment", :class => "btn btn-primary"

@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info: 
+  title: KOINS API
+  description: Documentation for KOINS API
+  version: "Beta 0.1"
+
+servers:
+  -
+    url: http://localhost:3000/api
+    description: Local development server
+
+paths:
+  /users/login:
+    post:
+      summary: Authenticates a user
+      requestBody:
+        description: User object for authentication
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        200:
+          description: Authenticated user with token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: The authentication token of the user
+                  user:
+                    type: object
+                    description: Data of the user
+                    properties:
+                      username:
+                        type: string
+                        description: Username of the user
+                      first_name:
+                        type: string
+                        description: First name of the  user
+                      last_name:
+                        type: string
+                        description: Last name of the  user
+        422:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                    description: Error object
+                    properties:
+                      username:
+                        type: string
+                        description: Invalid username or user not found
+                      password:
+                        type: string
+                        description: Invalid password

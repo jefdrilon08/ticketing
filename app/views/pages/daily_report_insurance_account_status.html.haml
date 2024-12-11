@@ -1,0 +1,36 @@
+= title
+
+.row
+  .col
+    .card
+      .card-body
+        %h5
+          Insurance Account Status
+        #filter  
+        = form_tag daily_report_insurance_account_status_path, html: { novalidate: true }, method: "GET" do
+          .row
+            .col-md-4
+              .form-group
+                %label Branch
+                = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, @branch.try(:id)), prompt: "-- SELECT --",class: "form-control select-select2", id: "branch-select"
+            .col-md-4
+              .form-group
+                %label Insurance Status
+                = select_tag :insurance_status, options_for_select(Member::INSURANCE_STATUS, @insurance_status), class: "form-control select-select2", id: 'insurance-status-select', prompt: "-- SELECT --"
+            .col-md-2
+              .form-group
+                %br
+                = link_to "#", id: 'download-btn', class: "btn btn-primary btn-block" do
+                  .fa.fa-download
+                  Download
+            .col-md-2
+              .form-group  
+                %br
+                = link_to "#", id: 'generate-btn', class: "btn btn-success btn-block" do
+                  .fa.fa-download
+                  Generate
+          .row
+            .col-md-12
+              .sixteen.wide.column
+                #insurance-account-status-report-section   
+                = render partial: "pages/insurance_account_status_report"

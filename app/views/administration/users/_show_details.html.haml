@@ -1,0 +1,18 @@
+.card
+  .card-body
+    %h5
+      Demerits
+    %hr
+    - if @user_demerits.any?
+      = render partial: "user_demerits"
+    - else
+      %p
+        No demerits for this user
+    .row
+      .col
+        .text-end
+          = link_to new_administration_user_user_demerit_path(@user) do
+            .bi.bi-plus
+            New Demerit
+    - if User::FOR_MANAGING_BRANCH_ROLES.include?(current_user.roles.last)
+      = render partial: "branch_manager"

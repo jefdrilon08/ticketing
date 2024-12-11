@@ -1,0 +1,64 @@
+.row
+  .col
+    .card
+      .card-body
+        .row
+          .col
+            %h2
+              #{@survey.name}
+          .col.text-end
+            .btn-group
+              = link_to edit_administration_survey_path(@survey), class: 'btn' do
+                .fa.fa-pencil-alt
+                Edit
+              = link_to administration_survey_survey_question_form_path(@survey), class: 'btn' do
+                .bi.bi-plus
+                Add Question
+       
+        %hr
+
+        - @survey.survey_questions.order("priority ASC").each do |o|
+          .row
+            .col
+              %h5
+                #{o}
+                %small.text-muted
+                  (#{o.question_type})
+                  &nbsp;
+                  Priority: #{o.priority}
+            .col
+              .text-end
+                .btn-group
+                  = link_to administration_survey_survey_question_form_path(@survey, survey_question_id: o), class: "btn" do
+                    .fa.fa-pencil-alt
+                    Edit
+                  = link_to "#", class: "btn btn-delete-question", data: { id: o.id, content: o.content } do
+                    .fa.fa-times
+                    Delete
+          - if o.question_type == "options"
+            %table.table.table-bordered.table-sm
+              %thead
+                %tr
+                  %th{ width: "80%" }
+                    Content
+                  %th{ width: "20%" }
+                    %center
+                      Score
+              %tbody
+                - o[:data].with_indifferent_access[:options].each do |option|
+                  %tr
+                    %td
+                      #{option[:content]}
+                    %td
+                      %center
+                        #{option[:score]}
+
+
+        - if debug?
+          %pre
+            %code
+              #{JSON.pretty_generate(JSON.parse(@survey.to_json))}
+
+= render partial: "administration/surveys/modals/delete"
+= render partial: "administration/surveys/modals/delete_question"
+= render partial: "templates/error_list"

@@ -1,0 +1,49 @@
+.row
+  .col
+    %label
+      Branch:
+    .text-muted
+      #{@user_demerit.branch}
+  .col
+    %label
+      Role:
+    .text-muted
+      #{@user_demerit.role}
+  .col
+    %label
+      Date of Action:
+    .text-muted
+      #{@user_demerit.date_of_action.strftime("%B %d, %Y")}
+  .col
+    %label
+      Demerit Type:
+    .text-muted
+      #{@user_demerit.demerit_type}
+  .col
+    %label
+      Status:
+    .text-muted
+      - if @user_demerit.pending?
+        .badge.bg-danger
+          Pending
+      - elsif @user_demerit.approved?
+        .badge.bg-success
+          Approved
+%br
+.row
+  .col
+    %label
+      Reason
+    %p
+      #{@user_demerit.reason}
+%br
+.row
+  .col
+    %label
+      Explanation
+    %p
+      #{@user_demerit.explanation}
+%hr
+= link_to @user_demerit.file_url, target: '_blank' do
+  .fa.fa-download
+  Download

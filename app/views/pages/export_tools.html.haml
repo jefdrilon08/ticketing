@@ -1,0 +1,83 @@
+.row
+  .col
+    .card
+      .card-body
+        %h5
+          Exports Page
+        #filter  
+        = form_tag export_tools_path, html: { novalidate: true }, method: "GET" do
+          .row
+            .col-md-4
+              .form-group
+                %label Branch
+                = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, @branch_id), class: "form-control select-select2", id: "select-branch"              
+            .col-md-4
+              .form-group
+                %label Start Date
+                = date_field_tag :start_date, @start_date, class: "form-control", placeholder: "yyyy-mm-dd", id: "filter-start-date"
+            .col-md-4
+              .form-group
+                %label End Date
+                = date_field_tag :end_date, @end_date, class: "form-control", placeholder: "yyyy-mm-dd", id: "filter-end-date"
+        %h5
+          CSV Export Personal Informations
+        %hr
+        .box
+          .box-body
+            #export-member-segment-csv
+              .row
+                .col-md-12
+                  .form-group      
+                    = link_to "#", class: 'btn-download-members-csv' do
+                      Export Members Information  
+              .row
+                .col-md-12
+                  .form-group
+                    %hr
+                    = link_to "#", class: 'btn-download-beneficiaries-csv' do
+                      Export Beneficiaries Information
+              .row
+                .col-md-12
+                  .form-group
+                    %hr      
+                    = link_to "#", class: 'btn-download-dependents-csv' do
+                      Export Legal Dependents Information 
+        %hr
+        %h5
+          CSV Export Account Transactions
+        %hr
+        .box
+          .box-body
+            #export-transaction-segment-csv
+              .row
+                .col-md-12
+                  .form-group
+                    = link_to "#", class: 'btn-download-member-accounts-csv' do
+                      Export Insurance Accounts Information
+              .row
+                .col-md-12
+                  .form-group
+                    %hr
+                    = link_to "#", class: 'btn-download-account-transactions-csv' do
+                      Export Insurance Account Transactions Information
+        %hr
+        %h5
+          Excel Download Tools
+        %hr
+        .box
+          .box-body      
+            #export-member-per-branch-segment
+              .row
+                .col-md-12
+                  .form-group
+                    = link_to "#", class: 'btn-download-member-per-branch' do
+                      Members Excel Download Tools
+        %hr
+        .box
+          .box-body      
+            #export-members-with-beneficiaries-segment
+              .row
+                .col-md-12
+                  .form-group
+                    = link_to "#", class: 'btn-download-members-with-beneficiaries' do
+                      Members With Beneficiaries Excel Download Tools

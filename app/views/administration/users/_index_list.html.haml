@@ -1,0 +1,37 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Username
+      %th
+        Email
+      %th
+        Roles
+      %th
+        Actions
+  %tbody
+    - @users.each do |user|
+      %tr
+        %td
+          #{user.full_name}
+        %td
+          #{user.username}
+        %td
+          #{user.email}
+        %td
+          %ul
+            - user.roles.each do |r|
+              - if r.present?
+                %li
+                  #{r}
+        %td
+          .btn-group
+            = link_to administration_user_path(user), class: 'btn btn-sm btn-primary' do
+              .bi.bi-search
+              Show
+            - if is_mis?
+              = link_to edit_administration_user_path(user), class: 'btn btn-sm btn-info' do
+                .fa.fa-pencil-alt
+                Edit

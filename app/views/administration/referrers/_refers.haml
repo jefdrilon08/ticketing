@@ -1,0 +1,53 @@
+%table.table.table-bordered.table-sm
+  %thead
+    %tr
+      %th
+      %th
+        Printed Date
+      %th
+        Recognition date
+      %th
+        Member Name
+      %th
+        Branch
+      %th
+        Center
+      %th.text-center
+        Status
+  %tbody
+    - if @refers.present?
+      - @refers.each do |o|
+        %tr
+          %td.text-center
+            = link_to member_path(o.id) do
+              .bi.bi-search
+          %td
+            #{o.member_shares_records}
+          %td
+            #{o[:data]["recognition_date"]}
+          %td
+            #{o.full_name}
+          %td
+            #{o.branch}
+          %td
+            #{o.center}
+          %td.text-center
+            #{o.status}
+    - elsif @coor_refers.present?
+      - @coor_refers.each do |o|
+        %tr
+          %td.text-center
+            = link_to member_path(o.id) do
+              .bi.bi-search
+          %td
+            #{o.member_shares_records}
+          %td
+            #{o[:data]["recognition_date"]}
+          %td
+            #{o.full_name}
+          %td
+            #{o.branch}
+          %td
+            #{o.center}
+          %td.text-center
+            #{o.status}

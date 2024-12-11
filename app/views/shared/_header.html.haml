@@ -1,0 +1,31 @@
+%header.c-header.c-header-light.c-header-fixed
+  %button.c-header-toggler.c-class-toggler.d-lg-none.mfe-auto{ type: "button", data: { target: "#sidebar", class: "c-sidebar-show" } }
+    .c-icon.c-icon-lg
+      .fa.fa-bars
+  = link_to root_path, class: "c-header-brand d-lg-none c-header-brand-sm-up-center" do
+    - if microinsurance?
+      = image_tag "kmba_logo.png", width: "89"
+    - else
+      = image_tag "logo.png", width: "89"
+  %button.c-header-toggler.c-class-toggler.mfs-3.d-md-down-none{ data: { target: "#sidebar", class: "c-sidebar-lg-show" } }
+    .c-icon.c-icon-lg
+      .fa.fa-bars
+  %ul.c-header-nav.mfs-auto
+  %ul.c-header-nav
+    %li.c-header-nav.dropdown
+      = link_to "#", class: "c-header-nav-link", data: { toggle: "dropdown" } do
+        %i.fa.fa-caret-down
+        #{current_user.username}
+      .dropdown-menu.dropdown-menu-right.pt-0
+        .dropdown-header.bg-light.py-2
+          %strong
+            Account
+        = link_to "/change_password", class: "dropdown-item" do
+          .c-icon.mfe-2
+            .fa.fa-sync
+          Change Password
+        = link_to destroy_user_session_path, method: :get, class: "dropdown-item" do
+          .c-icon.mfe-2
+            .fa.fa-times
+          Logout
+  = render partial: "shared/c_subheader", locals: { items: @subheader_items || [], side_actions: @subheader_side_actions || [] }

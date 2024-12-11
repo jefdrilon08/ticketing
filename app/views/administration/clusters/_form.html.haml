@@ -1,0 +1,25 @@
+= simple_form_for [:administration, cluster] do |f|
+  .row
+    .col
+      .form-group
+        = f.association :area, as: :select, collection: Area.all, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :name, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :short_name, input_html: { class: 'form-control' }
+    
+  %hr
+  .btn-group
+    %button{ type: "submit", class: "btn btn-primary" }
+      .fa.fa-check
+      Save
+    - if cluster.new_record?
+      = link_to administration_clusters_path, class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel
+    - else
+      = link_to administration_cluster_path(cluster), class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel

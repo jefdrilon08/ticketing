@@ -1,0 +1,29 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Name
+      %th
+        Short Name
+      %th 
+        Branch Count
+      %th
+        Actions
+  %tbody
+    - @clusters.each do |cluster|
+      %tr
+        %td
+          #{cluster.name.upcase}
+        %td
+          #{cluster.short_name.upcase}
+        %td
+          #{cluster.branches.count}
+
+        %td
+          .btn-group
+            = link_to administration_cluster_path(cluster), class: 'btn btn-sm btn-primary' do
+              .bi.bi-search
+              Show
+            = link_to edit_administration_cluster_path(cluster), class: 'btn btn-sm btn-info' do
+              .fa.fa-pencil-alt
+              Edit

@@ -1,0 +1,15 @@
+#modal-nav-involuntary.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Involuntary
+      .modal-body
+        = link_to "/data_stores/involuntary_members", class: "btn-nav-square-md" do
+          List of Members for Involuntary
+        .mt-4
+        = link_to billing_for_involuntary_path, class: "btn-nav-square-md" do
+          Involuntary Resignation Tagging
+        .mt-4
+        = link_to "/data_stores/share_capital_involuntary", class: "btn-nav-square-md" do
+          Share Capital Involuntary

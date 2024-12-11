@@ -1,0 +1,22 @@
+= simple_form_for [:administration, area] do |f|
+  .row
+    .col
+      .form-group
+        = f.input :name, input_html: { class: 'form-control' }
+    .col
+      .form-group
+        = f.input :short_name, input_html: { class: 'form-control' }
+    
+  %hr
+  .btn-group
+    %button{ type: "submit", class: "btn btn-primary" }
+      .fa.fa-check
+      Save
+    - if area.new_record?
+      = link_to administration_areas_path, class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel
+    - else
+      = link_to administration_area_path(area), class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel

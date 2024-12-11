@@ -1,0 +1,30 @@
+<script id="template-center-members" type="x-tmpl-mustache">
+  {{#centers}}
+    <h4>
+      {{name}}
+    </h4>
+    <hr>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>
+              Member
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#members}}
+            <tr>
+              <td>
+                <a href="/members/{{id}}/display">
+                  {{name}}
+                </a>
+              </td>
+            </tr>
+          {{/members}}
+        </tbody>
+      </table>
+    </div>
+  {{/centers}}
+</script>

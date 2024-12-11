@@ -1,0 +1,10 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        - if @announcements.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No announcement found

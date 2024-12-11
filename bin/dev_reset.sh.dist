@@ -1,0 +1,24 @@
+ROOT=/home/ralampay/workspace/koins/db_backup/
+
+bundle exec rails db:reset
+bundle exec rails load:users_from_file ROOT=$ROOT FILENAME=users-v2.json
+bundle exec rails load:accounting_codes_from_file ROOT=$ROOT FILENAME=accounting-codes-v2.json
+bundle exec rails load:areas_from_file ROOT=$ROOT FILENAME=areas-v2.json
+bundle exec rails load:clusters_from_file ROOT=$ROOT FILENAME=clusters-v2.json
+bundle exec rails load:branches_from_file ROOT=$ROOT FILENAME=branches-v2.json
+bundle exec rails load:centers_from_file ROOT=$ROOT FILENAME=centers-v2.json
+bundle exec rails load:members_from_file ROOT=$ROOT FILENAME=members-v2.json
+bundle exec rails load:accounting_entries_from_file ROOT=$ROOT FILENAME=accounting-entries-v2.json
+bundle exec rails load:journal_entries_from_file ROOT=$ROOT FILENAME=journal-entries-v2.json
+bundle exec rails load:project_type_categories_from_file ROOT=$ROOT FILENAME=project-type-categories-v2.json
+bundle exec rails load:project_types_from_file ROOT=$ROOT FILENAME=project-types-v2.json
+bundle exec rails load:loan_products_from_file ROOT=$ROOT FILENAME=loan-products-v2.json
+bundle exec rails load:loans_from_file ROOT=$ROOT FILENAME=loans-v2.json
+bundle exec rails load:amortization_schedule_entries_from_file ROOT=$ROOT FILENAME=amortization-schedule-entries-v2.json
+bundle exec rails load:member_accounts_from_file ROOT=$ROOT FILENAME=member-accounts-v2.json
+bundle exec rails load:member_account_transactions_from_file ROOT=$ROOT FILENAME=member-account-transactions-v2.json
+bundle exec rails load:loan_payments_from_file ROOT=$ROOT FILENAME=loan-payments-v2.json
+
+# Rehash
+bundle exec rails rehash:member_accounts
+bundle exec rails rehash:loans

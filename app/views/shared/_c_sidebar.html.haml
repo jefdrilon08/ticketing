@@ -1,0 +1,575 @@
+- is_not_remote = ["REMOTE-OAS", "REMOTE-BK", "REMOTE-FM"].exclude? current_user.roles.last
+- is_not_ojt = ["OJT"].exclude? current_user.roles.last
+
+#sidebar.c-sidebar.c-sidebar-dark.c-sidebar-fixed
+  .c-sidebar-brand.d-md-down-none
+    - if microinsurance?
+      = image_tag "kmba_logo.png", width: "89", class: "c-sidebar-brand-full"  
+    - else  
+      = image_tag "logo.png", width: "89", class: "c-sidebar-brand-full"
+  %ul.c-sidebar-nav
+    %li.c-sidebar-nav-item
+      = link_to root_path, class: "c-sidebar-nav-link #{params[:controller] == "pages" and params[:action] == "index" ? 'active' : ''}" do
+        .c-sidebar-nav-icon.fa.fa-tachometer-alt
+        Operations
+    %li.c-sidebar-nav-title
+      Transactions
+    - if microloans?
+      %li.c-sidebar-nav-item
+        = link_to billings_path, class: "c-sidebar-nav-link #{params[:controller] == "billings" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Billings
+      %li.c-sidebar-nav-item
+        = link_to billing_for_full_payments_path, class: "c-sidebar-nav-link #{params[:controller] == "billing_for_full_payments_path" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Billings for full payment
+      %li.c-sidebar-nav-item
+        = link_to accrued_payment_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "accrued_payment_collections_path" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Accrued Interest Billing
+      %li.c-sidebar-nav-item
+        = link_to membership_payment_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "membership_payment_collections" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Membership Payments
+      %li.c-sidebar-nav-item
+        = link_to "#", class: "c-sidebar-nav-link #{params[:controller] == "billing_for_writeoff_path" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-clipboard-list
+          Payment For Writeoff
+    %li.c-sidebar-nav-item
+      = link_to deposit_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "deposit_collections" ? 'active' : ''}" do
+        .c-sidebar-nav-icon.fa.fa-money-check
+        Deposits
+    - if microloans?
+      %li.c-sidebar-nav-item
+        = link_to time_deposit_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "time_deposit_collections" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Time Deposits
+    %li.c-sidebar-nav-item
+      = link_to additional_share_path, class: "c-sidebar-nav-link #{params[:controller] == "additional_share" ? 'active' : ''}" do
+        .c-sidebar-nav-icon.fa.fa-money-check
+        Additional Share Capital
+    %li.c-sidebar-nav-item
+      = link_to withdrawal_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "withdrawal_collections" ? 'active' : ''}" do
+        .c-sidebar-nav-icon.fa.fa-money-check
+        Withdrawals
+    -  if microinsurance?
+      %li.c-sidebar-nav-item
+        = link_to insurance_fund_transfer_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "insurance_fund_transfer_collections" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Insurance Fund Transfer
+      %li.c-sidebar-nav-item
+        = link_to insurance_withdrawal_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "insurance_withdrawal_collections" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Insurance Withdrawals
+      %li.c-sidebar-nav-item
+        = link_to equity_withdrawal_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "equity_withdrawal_collections" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Equity Withdrawals
+    %li.c-sidebar-nav-item
+      = link_to accounting_accounting_entry_form_path(book: "CRB"), class: "c-sidebar-nav-link" do
+        .c-sidebar-nav-icon.bi.bi-plus
+        Cash Receipts
+    %li.c-sidebar-nav-item
+      = link_to accounting_accounting_entry_form_path(book: "CDB"), class: "c-sidebar-nav-link" do
+        .c-sidebar-nav-icon.bi.bi-plus
+        Cash Disbursements
+    %li.c-sidebar-nav-item
+      = link_to accounting_accounting_entry_form_path(book: "JVB"), class: "c-sidebar-nav-link" do
+        .c-sidebar-nav-icon.bi.bi-plus
+        General Journal
+      - if microloans?  
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/icpr", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-calculator
+            Interest On Share Capital
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/patronage_refund", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-calculator
+            Patronage Refund
+    %li.c-sidebar-nav-title
+      Monthly Transaction
+      - if microloans?  
+        %li.c-sidebar-nav-item
+          = link_to monthly_closing_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "monthly_closing_collections" ? 'active' : ''}" do
+            .c-sidebar-nav-icon.fa.fa-money-check
+            Monthly Closing Collections
+      %li.c-sidebar-nav-item
+        = link_to insurance_monthly_closing_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "insurance_monthly_closing_collections" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-money-check
+          Insurance Monthly Closing
+      - if microloans?
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/monthly_incentives", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Monthly Incentives
+    %li.c-sidebar-nav-title
+      For Printing
+      %li.c-sidebar-nav-item
+        = link_to administration_member_shares_not_printed_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-stamp
+          Not Printed Certificates
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/member_id_generators", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          ID Form
+    
+    - if microloans?
+      %li.c-sidebar-nav-title
+        Writeoff
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/for_writeoff", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-clipboard-list
+            List Of Members For Writeoff
+        %li.c-sidebar-nav-item
+          = link_to billing_for_writeoff_path, class: "c-sidebar-nav-link #{params[:controller] == "billing_for_writeoff_path" ? 'active' : ''}" do
+            .c-sidebar-nav-icon.fa.fa-clipboard-list
+            Collection For Writeoff
+    %li.c-sidebar-nav-title
+      Adjustments
+      %li.c-sidebar-nav-item
+        = link_to adjustments_subsidiary_adjustments_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-eraser
+          Subsidiary
+      - if microloans?  
+        %li.c-sidebar-nav-item
+          = link_to adjustments_batch_moratorium_adjustments_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-eraser
+            Batch Moratorium
+        %li.c-sidebar-nav-item
+          = link_to adjustments_moratoriums_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-eraser
+            Moratoriums
+        %li.c-sidebar-nav-item
+          = link_to adjustments_accrued_interests_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-eraser
+            Accrued Interest
+        %li.c-sidebar-nav-item
+          = link_to adjustments_recompute_restructures_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-eraser
+            Recompute Restructure
+        %li.c-sidebar-nav-item
+          = link_to adjustments_make_payments_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-eraser
+            Make Payment
+      %li.c-sidebar-nav-item
+        = link_to transfer_member_records_path, class: "c-sidebar-nav-link #{params[:controller] == "accrued_payment_collections_path" ? 'active' : ''}" do
+          .c-sidebar-nav-icon.fa.fa-people-arrows
+          Transfer Member
+      %li.c-sidebar-nav-item
+        = link_to members_search_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-eraser
+          Member Checker
+      %li.c-sidebar-nav-item
+        = link_to address_update_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-eraser
+          Update Member Address
+    %li.c-sidebar-nav-title
+      Branch Reports
+      - if microloans?  
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/repayment_rates", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Repayment Rates
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/manual_aging", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Manual Aging
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/branch_loans_stats", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Loan Stats
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/personal_funds", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Personal Funds
+      - if microinsurance?
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/insurance_personal_funds", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Insurance Personal Funds
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/member_counts", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Member Counts
+      - if microloans? 
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/soa_expenses", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            SOA Expenses
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/soa_loans", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            SOA Loans
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/soa_funds", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          SOA Funds
+      - if microloans? 
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/watchlists", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Watchlists
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/monthly_new_and_resigned", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Monthly New/Resigned
+      - if microloans?  
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/monthly_incentives", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Monthly Incentives
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/x_weeks_to_pay", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            X Weeks to Pay
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/branch_resignations", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Branch Resignations
+        %li.c-sidebar-nav-item
+          = link_to "/daily_branch_metrics", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Daily Branch Metrics
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/members_in_good_standing", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            Members in Good Standing
+        %li.c-sidebar-nav-item
+          = link_to "/data_stores/member_id_generators", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-chart-line
+            ID Form
+      %li.c-sidebar-nav-item
+        = link_to "/reports/government_identification_numbers", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Government Identification Numbers
+      %li.c-sidebar-nav-item
+        = link_to administration_member_shares_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-stamp
+          Member Shares
+      %li.c-sidebar-nav-item
+        = link_to administration_member_shares_printed_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-stamp
+          Printed Certificates
+      %li.c-sidebar-nav-item
+        = link_to administration_member_shares_no_certificates_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-stamp
+          No Certificates
+    %li.c-sidebar-nav-title
+      Accounting Reports
+      %li.c-sidebar-nav-item
+        = link_to accounting_trial_balances_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-balance-scale
+          Trial Balances
+      %li.c-sidebar-nav-item
+        = link_to accounting_general_ledgers_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-balance-scale
+          General Ledgers
+      %li.c-sidebar-nav-item
+        = link_to accounting_books_crb_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-book
+          Cash Receipts
+      %li.c-sidebar-nav-item
+        = link_to accounting_books_cdb_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-book
+          Cash Disbursements
+      %li.c-sidebar-nav-item
+        = link_to accounting_books_jvb_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-book
+          General Journal
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/accounting_entries_summaries", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Voucher Summary
+      %li.c-sidebar-nav-item
+        = link_to monthly_accounting_code_summaries_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-balance-scale
+          Monthly AC Summaries
+      %li.c-sidebar-nav-item
+        = link_to accounting_year_end_closings_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-calculator
+          Year End Closing
+      %li.c-sidebar-nav-item
+        = link_to accounting_balance_sheets_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-calculator
+          Balance Sheets
+      %li.c-sidebar-nav-item
+        = link_to accounting_income_statements_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-calculator
+          Income Statements
+      %li.c-sidebar-nav-item
+        = link_to accounting_books_misc_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-book
+          Misc.
+      - if microinsurance?  
+        %li.c-sidebar-nav-item
+          = link_to "/accounting/general_ledger", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-book
+            General Ledger
+    %li.c-sidebar-nav-title
+      Administrator
+      %li.c-sidebar-nav-item
+        = link_to administration_users_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-users
+          Users
+      %li.c-sidebar-nav-item
+        = link_to accounting_accounting_codes_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-balance-scale
+          Chart of Accounts
+      - if microloans?  
+        %li.c-sidebar-nav-item
+          = link_to administration_loan_product_categories_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-list
+            Loan Product Categories
+        %li.c-sidebar-nav-item
+          = link_to administration_loan_products_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-list
+            Loan Products
+      %li.c-sidebar-nav-item
+        = link_to administration_areas_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-list
+          Areas
+      %li.c-sidebar-nav-item
+        = link_to administration_clusters_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-list
+          Clusters
+      %li.c-sidebar-nav-item
+        = link_to administration_branches_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-list
+          Branches
+      %li.c-sidebar-nav-item
+        = link_to administration_centers_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-list
+          Centers
+      %li.c-sidebar-nav-item
+        = link_to administration_membership_arrangements_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-list
+          Membership Arrangements
+      %li.c-sidebar-nav-item
+        = link_to administration_membership_types_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-list
+          Membership Types
+      - if is_not_remote
+        %li.c-sidebar-nav-item
+          = link_to administration_surveys_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-list
+            Surveys
+        %li.c-sidebar-nav-item
+          = link_to administration_project_type_categories_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-list
+            Project Type Categories
+        %li.c-sidebar-nav-item
+          = link_to administration_announcements_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-bullhorn
+            Announcements
+        - if microinsurance?
+          %li.c-sidebar-nav-item
+            = link_to administration_referrers_path, class: "c-sidebar-nav-link" do
+              .c-sidebar-nav-icon.fa.fa-list
+              Referrers
+    %li.c-sidebar-nav-title
+      MICROINSURANCE
+      %li.c-sidebar-nav-item
+        = link_to member_account_validations_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-check
+          Validations
+      - if microloans?
+        %li.c-sidebar-nav-item
+          = link_to savings_insurance_transfer_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "savings_insurance_transfer_collections" ? 'active' : ''}" do
+            .c-sidebar-nav-icon.fa.fa-money-check
+            Savings Insurance Transfers
+        %li.c-sidebar-nav-item
+          = link_to insurance_fund_transfer_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "insurance_fund_transfer_collections" ? 'active' : ''}" do
+            .c-sidebar-nav-icon.fa.fa-money-check
+            Insurance Fund Transfer
+        %li.c-sidebar-nav-item
+          = link_to insurance_withdrawal_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "insurance_withdrawal_collections" ? 'active' : ''}" do
+            .c-sidebar-nav-icon.fa.fa-money-check
+            Insurance Withdrawals
+        %li.c-sidebar-nav-item
+          = link_to equity_withdrawal_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "equity_withdrawal_collections" ? 'active' : ''}" do
+            .c-sidebar-nav-icon.fa.fa-money-check
+            Equity Withdrawals
+      - if microinsurance?
+        %li.c-sidebar-nav-item
+          = link_to commission_collections_path, class: "c-sidebar-nav-link #{params[:controller] == "commission_collections" ? 'active' : ''}" do
+            .c-sidebar-nav-icon.fa.fa-money-check
+            Commission
+          = link_to claims_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-users
+            Claims Register
+        %li.c-sidebar-nav-item
+          = link_to "/reports/claims", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-file
+            Claims Report
+    %li.c-sidebar-nav-title
+      MICROINSURANCE REPORTS
+      - if microinsurance?  
+        %li.c-sidebar-nav-item
+          = link_to "/accounting/general_ledger", class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-book
+            General Ledger
+      - if is_not_remote
+        %li.c-sidebar-nav-item
+          = link_to seriatim_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-users
+            Seriatim
+      %li.c-sidebar-nav-item
+        = link_to validations_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file
+          Validations Report
+      %li.c-sidebar-nav-item
+        = link_to "/reports/collections_clip", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          CLIP Reports
+      %li.c-sidebar-nav-item
+        = link_to "/reports/collections_blip", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          BLIP Reports
+      %li.c-sidebar-nav-item
+        = link_to "/reports/hiip_report", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          HIIP Report
+      %li.c-sidebar-nav-item
+        = link_to "/reports/member_reports", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Member Reports
+      %li.c-sidebar-nav-item
+        = link_to "/reports/member_counts", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Member Counts
+      %li.c-sidebar-nav-item
+        = link_to "/reports/member_quarterly_reports", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Member Quarterly
+      %li.c-sidebar-nav-item
+        = link_to "/reports/member_dependents", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Member Dependents
+      - if is_not_remote
+        %li.c-sidebar-nav-item
+          = link_to members_for_reinsurance_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-users
+            Members for Reinsurance
+      %li.c-sidebar-nav-item
+        = link_to lapsed_members_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-users
+          Lapsed Members
+      %li.c-sidebar-nav-item
+        = link_to insurance_exit_age_members_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-users
+          Members for Exit age
+      %li.c-sidebar-nav-item
+        = link_to "/reports/personal_documents", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Personal Documents
+      %li.c-sidebar-nav-item
+        = link_to "/reports/insured_loans", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Insured Loans
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/insurance_member_counts", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Insurance Member Counts
+      %li.c-sidebar-nav-item
+        = link_to daily_report_insurance_account_status_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-users
+          Insurance Account Status
+      %li.c-sidebar-nav-item
+        = link_to "/reports/insurance_quarterly_reports", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Insurance Quarterly
+      %li.c-sidebar-nav-item
+        = link_to "/reports/insurance_interest", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Insurance Interest
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/claims_counts", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Claims Counts
+      %li.c-sidebar-nav-item
+        = link_to "/reports/monthly_remittance", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Monthly Remittance
+      / %li.c-sidebar-nav-item
+      /   = link_to "/reports/cic", class: "c-sidebar-nav-link" do
+      /     .c-sidebar-nav-icon.fa.fa-chart-line
+      /     CIC Report
+      %li.c-sidebar-nav-item
+        = link_to "/reports/monthly_collection", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Monthly Collection
+      %li.c-sidebar-nav-item
+        = link_to "/reports/summary_of_certificates_and_policies", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Cert and Policies   
+      %li.c-sidebar-nav-item
+        = link_to "/reports/savings_insurance_transfer_reports", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Savings Insurance Transfer Report 
+      %li.c-sidebar-nav-item
+        = link_to "/reports/insurance_loan_bundle_reports", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          KOK Report 
+      %li.c-sidebar-nav-item
+        = link_to "/reports/claims_processing_time_report", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Claims Processing Time Report 
+      %li.c-sidebar-nav-item
+        = link_to "/reports/claims_processing_time_report_summary", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-chart-line
+          Claims Processing Time Report Summary
+      %li.c-sidebar-nav-title
+        System Tools
+      %li.c-sidebar-nav-item
+        = link_to upload_deposit_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-upload
+          Upload Deposit
+      %li.c-sidebar-nav-item
+        = link_to upload_fund_transfer_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-upload
+          Upload Fund Transfer
+      %li.c-sidebar-nav-item
+        = link_to upload_insurance_loan_bundle_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-upload
+          Upload Fund Transfer
+      - if is_not_remote
+        %li.c-sidebar-nav-item
+          = link_to upload_insurance_withdrawal_path, class: "c-sidebar-nav-link" do
+            .c-sidebar-nav-icon.fa.fa-upload
+            Upload Insurance Withdrawal
+      %li.c-sidebar-nav-item
+        = link_to upload_clip_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-upload
+          Upload CLIP
+      %li.c-sidebar-nav-item
+        = link_to import_members_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Import Members
+      %li.c-sidebar-nav-item
+        = link_to import_beneficiaries_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Import Beneficiaries
+      %li.c-sidebar-nav-item
+        = link_to import_legal_dependents_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Import Dependents
+      %li.c-sidebar-nav-item
+        = link_to import_insurance_accounts_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Import Insurance Accounts
+      %li.c-sidebar-nav-item
+        = link_to import_insurance_account_transactions_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Import Insurance Transactions
+      %li.c-sidebar-nav-item
+        = link_to billing_per_center_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Billing Per Center
+      %li.c-sidebar-nav-item
+        = link_to "/data_stores/monthly_new_and_resigned", class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Monthly New and Res.
+      %li.c-sidebar-nav-item
+        = link_to export_tools_path, class: "c-sidebar-nav-link" do
+          .c-sidebar-nav-icon.fa.fa-file-import
+          Export Tools

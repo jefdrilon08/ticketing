@@ -1,0 +1,69 @@
+<script id="insurance-account-status-report-template" type="x-tmpl-mustache">
+  <table class='ui table small'>
+    <thead>
+      {{#centers}}
+      <tr>
+        <th width='2%'></th>
+        <th width='12%'>{{center}}</th>
+        <th width='7%'></th>
+        <th width='10%'></th>
+        <th width='10%'></th>
+        <th width='3%'></th>
+        <th width='5%'></th>
+        <th width='4%'></th>
+        <th width='5%'></th>
+        <th width='5%'></th>
+        <th width='3%'></th>
+        <th width='5%'></th>
+        <th width='4%'></th>
+        <th width='5%'></th>
+        <th width='5%'></th>
+        <th width='5%'></th>
+        <th width='5%'></th>
+      </tr>
+      <tr>
+        <th width='2%'></th>
+        <th width='12%'>Member</th>
+        <th width='7%'>Recognition Date</th>
+        <th width='7%'>Status</th>
+        <th width='7%'>Insurance Status</th>
+        <th width='10%'>Length of Stay</th>
+        <th width='10%'>Certificate #</th>
+        <th width='3%'>RF</th>
+        <th width='5%'>Coverage Date</th>
+        <th width='4%'># of Weeks</th>
+        <th width='5%'>Past Due</th>
+        <th width='5%'>Status</th>
+        <th width='3%'>LIF</th>
+        <th width='5%'>Coverage Date</th>
+        <th width='4%'># of Weeks</th>
+        <th width='5%'>Past Due</th>
+        <th width='5%'>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+        {{#members}}
+          <tr>
+            <td>{{index}}</td>
+            <td>{{name}}</td>
+            <td>{{recognition_date}}</td>
+            <td>{{status}}</td>
+            <td>{{insurance_status}}</td>
+            <td>{{length_of_stay}}</td>
+            <td>{{identification_number}}</td>
+            <td>{{rf_account}}</td>
+            <td>{{rf_coverage}}</td>
+            <td>{{rf_num_weeks_past_due}}</td>
+            <td>{{rf_amt_past_due}}</td>
+            <td>{{rf_status}}</td>
+            <td>{{lif_account}}</td>
+            <td>{{lif_coverage}}</td>
+            <td>{{lif_num_weeks_past_due}}</td>
+            <td>{{lif_amt_past_due}}</td>
+            <td>{{lif_status}}</td>
+          </tr>
+        {{/members}}
+      {{/centers}}
+    </tbody>
+  </table> 
+</script>

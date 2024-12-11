@@ -1,0 +1,126 @@
+.row
+  .col
+    .card
+      .card-body
+        %h2
+          #{@loan_product}
+        %hr
+        %table.table.table-bordered.table-hover.table-sm 
+          %tr
+            %th{ width: "20%" }
+              Name
+            %td
+              #{@loan_product}
+          %tr
+            %th
+              Category
+            %td
+              #{@loan_product.loan_product_category}
+          %tr
+            %th
+              Monthly I.R.
+            %td
+              #{@loan_product.monthly_interest_rate}
+          %tr
+            %th
+              Loan Range
+            %td
+              #{number_to_currency(@loan_product.min_loan_amount, unit: "")} - #{number_to_currency(@loan_product.max_loan_amount, unit: "")} (Denomination: #{number_to_currency(@loan_product.denomination, unit: "")})
+          %tr
+            %th
+              Insured
+            %td
+              - if @loan_product.insured
+                .badge.bg-success
+                  .fa.fa-check
+                  Yes
+              - else
+                .badge.bg-danger
+                  .fa.fa-times
+                  No
+          %tr
+            %th
+              is entry point
+            %td
+              - if @loan_product.is_entry_point
+                .badge.bg-success
+                  .fa.fa-check
+                  yes
+              - else
+                .badge.bg-danger
+                  .fa.fa-times
+                  no
+          %tr
+            %th
+              is active
+            %td
+              - if @loan_product.is_active
+                .badge.bg-success
+                  .fa.fa-check
+                  yes
+              - else
+                .badge.bg-danger
+                  .fa.fa-times
+                  no
+          %tr
+            %th
+              Priority
+            %td
+              #{@loan_product.priority}
+
+          %tr
+            %th
+              Prerequisite
+            %td
+              - if @loan_product.prerequisite.present?
+                #{@loan_product.prerequisite}
+              - else
+                No prerequisite yet.
+              %span
+                %small
+                  = link_to "#", id: 'btn-prerequisite' do
+                    .fa.fa-pencil-alt
+                    Modify
+          %tr
+            %th
+              Maintaining Balance
+            %td
+              #{number_to_currency(@loan_product.maintaining_balance, unit: '')}
+              %span
+                %small
+                  = link_to "#", id: 'btn-maintaining-balance' do
+                    .fa.fa-pencil-alt
+                    Modify
+
+
+        %h3
+          Loan Product Taggings
+        %hr
+        = link_to new_administration_loan_product_loan_product_tagging_path(@loan_product.id) do
+          .bi.bi-plus
+          Add Loan Product Tagging
+
+        %table.table.table-bordered.table-sm
+          %thead
+            %tr
+              %th
+                Name
+              %th
+                Actions
+          %tbody
+            - @loan_product.loan_product_taggings.each do |o|
+              %tr
+                %td
+                  #{o.name}
+                %td
+                  = link_to edit_administration_loan_product_loan_product_tagging_path(@loan_product, o) do
+                    .fa.fa-pencil-alt
+                    Edit
+                  = link_to administration_loan_product_loan_product_tagging_path(@loan_product, o), method: :delete, data: { confirm: "Are you sure?" } do
+                    .fa.fa-times
+                    Delete
+
+= render partial: "administration/loan_products/modals/delete"
+= render partial: "administration/loan_products/modals/prerequisite"
+= render partial: "administration/loan_products/modals/maintaining_balance"
+= render partial: "templates/error_list"

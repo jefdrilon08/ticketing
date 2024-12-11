@@ -1,0 +1,17 @@
+.row
+  .col
+    .card
+      .card-body
+        %h2
+          %span.badge.bg-danger#error= flash[:error]
+        = form_tag import_beneficiaries_members_path, multipart: true do
+          .row
+            .col-md-6
+              %label
+                File
+              = file_field_tag :file, class: "form-control"
+            .col-md-6
+              %label
+                Actions
+              %br  
+              = submit_tag "Import Beneficiaries Information", :class => "btn btn-primary"

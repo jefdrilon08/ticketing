@@ -1,0 +1,35 @@
+%table.table.table-bordered.table-sm
+  %thead
+    %tr
+      %th
+      %th
+        Date of Action
+      %th
+        Type
+      %th
+        Branch
+      %th
+        Reason
+      %th.text-center
+        Status
+  %tbody
+    - @user_demerits.each do |o|
+      %tr
+        %td.text-center
+          = link_to administration_user_user_demerit_path(@user, o) do
+            .bi.bi-search
+        %td
+          #{o.date_of_action.strftime("%b %d, %Y")}
+        %td
+          #{o.demerit_type}
+        %td
+          #{o.branch}
+        %td
+          #{o.reason}
+        %td.text-center
+          - if o.pending?
+            .badge.bg-danger
+              Pending
+          - elsif o.approved?
+            .badge.bg-success
+              Approved

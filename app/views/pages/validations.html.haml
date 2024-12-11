@@ -1,0 +1,32 @@
+.row
+  .col
+    .card
+      .card-body
+        %h5
+          Validations Exports Page
+        #filter  
+        .row
+          .col-md-3
+            .form-group
+              %label Branch
+              = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, @branch_id), class: "form-control select-select2", id: "branch-select", prompt: "-- SELECT --"
+          .col-md-3
+            .form-group
+              %label Status
+              = select_tag :status, options_for_select(MemberAccountValidation::STATUSES, @status), class: "form-control select-select2", id: "status", prompt: "-- SELECT --"
+          .col-md-2
+            .form-group
+              %label Start Date
+              = date_field_tag :start_date, @start_date, class: "form-control", value: Date.today.beginning_of_month, id: "start-date"
+          .col-md-2
+            .form-group
+              %label End Date
+              = date_field_tag :end_date, @end_date, class: "form-control", value: Date.today.end_of_month, id: "end-date"
+          .col-md-2
+            .form-group
+              %label
+                Actions
+              %br
+              %button#download-btn.btn.btn-primary
+                .fa.fa-download
+                Download Excel

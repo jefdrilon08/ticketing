@@ -1,0 +1,18 @@
+= simple_form_for [:administration, membership_arrangement] do |f|
+  .row
+    .col
+      .form-group
+        = f.input :name, input_html: { class: 'form-control' }
+  %hr
+  .btn-group
+    %button{ type: "submit", class: "btn btn-primary" }
+      .fa.fa-check
+      Save
+    - if membership_arrangement.new_record?
+      = link_to administration_membership_arrangements_path, class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel
+    - else
+      = link_to administration_membership_arrangement_path(membership_arrangement), class: 'btn btn-danger' do
+        .fa.fa-times
+        Cancel

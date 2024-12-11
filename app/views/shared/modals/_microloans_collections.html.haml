@@ -1,0 +1,36 @@
+#modal-nav-microloans-collections.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title
+          Collection Modules
+      .modal-body
+        .row
+          .col
+            = link_to billings_path(status: "pending"), class: "btn-nav-square-md" do
+              Billings
+          .col
+            = link_to billing_for_full_payments_path, class: "btn-nav-square-md" do
+              Full Payment
+          .col
+            = link_to accrued_payment_collections_path, class: "btn-nav-square-md" do
+              Accrued Interest
+        .mt-4
+        .row
+          .col
+            = link_to membership_payment_collections_path, class: "btn-nav-square-md" do
+              Membership Payments
+          .col
+            = link_to time_deposit_collections_path, class: "btn-nav-square-md" do
+              Time Deposits
+          .col
+            = link_to additional_share_path, class: "btn-nav-square-md" do
+              Additional Share Capital
+        .mt-4
+        .row
+          .col
+            = link_to billing_for_writeoff_collections_path, class: "btn-nav-square-md" do
+              Writeoff Collections
+          .col
+            = link_to mbs_transfer_path, class: "btn-nav-square-md" do
+              MBS Transfer

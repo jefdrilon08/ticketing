@@ -1,0 +1,15 @@
+ %h3
+    Member Excel Download Tools
+  .box
+    .box-body      
+      #export-member-per-branch-segment
+        .ui.segment
+          .row
+            .col-md-12
+              %h4
+                Download Member
+              = select_tag :branch_id, options_from_collection_for_select(Branch.all, :id, :name, nil), id: 'branch-select', class: "form-control select-select2", prompt: "-- SELECT BRANCH --"
+              %hr
+              = link_to "#", class: 'btn btn-block btn-primary btn-download-member-per-branch' do
+                .fa.fa-download
+                Download Excel

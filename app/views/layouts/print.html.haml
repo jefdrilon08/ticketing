@@ -1,0 +1,14 @@
+!!!
+%html
+%head
+  %title= App.name
+  = stylesheet_link_tag 'main', media: 'all'
+  = javascript_tag 'javascript/packs/application'
+  - if microinsurance?
+    = favicon_link_tag "kmba.ico"
+  - else
+    = favicon_link_tag "logo_thumb.png"
+  = csrf_meta_tags
+  %meta{name: "viewport", content:"width=device-width, initial-scale=1"}
+%body{ onload: "window.print();" }
+  = yield

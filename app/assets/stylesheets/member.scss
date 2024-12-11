@@ -1,0 +1,59 @@
+#member-form {
+  .card {
+    margin-bottom: 12px;
+  }
+}
+
+#semi_member_details {
+  img {
+    width: 100px;
+  }
+
+  img#signature-display {
+    width: 100%;
+  }
+
+  h2 {
+    padding-top: 10px;
+  }
+
+  .value {
+    text-align: right !important;
+    margin-top: -23px;
+  }
+}
+
+#member-show-page {
+  .tile-count .tile-stats-count .count {
+    font-size: 40px;
+    color: #73879C;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-weight: bold;
+  }
+
+  .tile-count .tile-stats-count span {
+    font-size: 13px;
+    color: #73879C;
+  }
+
+  .tile-count .tile-stats-count:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    height: 65px;
+    margin-top: 10px;
+  }
+
+  .tile-count {
+    background-color: white;
+    padding: 10px;
+    margin-right: 4px;
+    margin-left: 4px;
+  }
+
+  .border-right {
+    border-right: 2px solid #ADB2B5;
+    height: 100%;
+  }
+}

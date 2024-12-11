@@ -1,0 +1,30 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th
+        Title
+      %th 
+        Made By
+      %th 
+        Date and Time
+      %th
+        Actions
+  %tbody
+    - @announcements.each do |a|
+      %tr
+        %td
+          #{a.title.upcase}
+        %td
+          #{a.user.full_name}
+        %td
+          #{a.created_at.localtime.strftime('%D, %r') if !a.created_at.nil?}
+
+
+        %td
+          .btn-group
+            = link_to administration_announcement_path(a), class: 'btn btn-sm btn-primary' do
+              .bi.bi-search
+              Show
+            = link_to edit_administration_announcement_path(a), class: 'btn btn-sm btn-info' do
+              .fa.fa-pencil-alt
+              Edit

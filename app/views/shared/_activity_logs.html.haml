@@ -1,0 +1,23 @@
+%h5
+  Activity Logs
+%table.table.table-sm.table-hover
+  %thead
+    %tr
+      %th
+        Date
+      %th.text-center
+        Type
+      %th
+        Action
+  %tbody
+    - activity_logs.each do |o|
+      %tr
+        %td
+          %strong
+            #{o.created_at.localtime.strftime("%b %d, %Y %H:%M")}
+        %td.text-center
+          %small
+            #{o.activity_type}
+        %td
+          %small
+            #{o.content}

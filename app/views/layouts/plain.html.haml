@@ -1,0 +1,19 @@
+!!!
+%html
+  %head
+    %title
+      = "[#{App.pipeline.upcase}] " "JEF" 
+    = csrf_meta_tags
+    = csp_meta_tag
+    %meta{ name: "parameters", content: "#{{ route: "#{params[:controller]}/#{params[:action]}", payload: (@payload || {}) }.to_json}" }
+
+    = stylesheet_link_tag "assets/stylesheets/application"
+    = javascript_include_tag "javascript/packs/application"
+    - if microinsurance?
+      = favicon_link_tag "kmba.ico"
+    - else
+      = favicon_link_tag "logo_thumb.png"
+      
+  %body
+    = yield
+    = render partial: "templates/error_list"

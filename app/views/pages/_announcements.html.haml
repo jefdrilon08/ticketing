@@ -1,0 +1,10 @@
+- @announcements.each do |a|
+  .card
+    .card-body
+      %h3
+        #{a.title}
+      %span.text-muted
+        #{a.user.full_name}, #{a.created_at.localtime.strftime('%D, %r') if !a.created_at.nil?}
+
+      %p{:style => "margin-top: 20px;"}
+        #{a.content}

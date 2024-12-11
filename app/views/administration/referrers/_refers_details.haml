@@ -1,0 +1,10 @@
+.card
+  .card-body
+    %h5
+      Refers
+    %hr
+    - if @refers.any? || @coor_refers.any?
+      = render partial: "refers"
+    - else
+      %p
+        No refers found

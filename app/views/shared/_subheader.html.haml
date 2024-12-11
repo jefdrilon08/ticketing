@@ -1,0 +1,7 @@
+- if side_actions.any?
+  %ul.navbar-nav.me-auto.mb-2.mb-lg-0
+    - side_actions.each do |a|
+      %li.nav-item.navbar-expand-lg-extend
+        = link_to a[:link], class: "nav-link", id: "#{a[:id]}", data: a[:data] do
+          %div{ class: "c-icon #{a[:class]}" }
+          #{a[:text]}

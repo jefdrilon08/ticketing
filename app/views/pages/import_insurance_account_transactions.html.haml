@@ -1,0 +1,62 @@
+.row
+  .col
+    .card
+      .card-body
+        %h2
+          %span.badge.bg-danger#error= flash[:error]
+        = form_tag import_insurance_account_transactions_insurance_accounts_path, multipart: true do
+          .row
+            .col-md-6
+              %label
+                File
+              = file_field_tag :file, class: "form-control"
+            .col-md-6
+              %label
+                Actions
+              %br  
+              = submit_tag "Import Insurance Account Transactions Information", :class => "btn btn-primary"
+        %hr
+        - if @records.any?
+          %table.table.table-bordered.table-sm
+            %thead
+              %tr
+                %th
+                  ID
+                %th
+                  User
+                %th
+                  From
+                %th
+                  To  
+                %th
+                  Time Start
+                %th
+                  Time Stop
+                %th
+                  Status
+            %tbody
+              - @records.each do |o|
+                %tr
+                  %td
+                    #{o.id}
+                  %td
+                    - if o.meta["user"]["username"].present?
+                      #{o.meta["user"]["username"]}
+                  %td
+                    - if o.data["start_date"].present?
+                      #{o.data["start_date"]}
+                  %td
+                    - if o.data["end_date"].present?
+                      #{o.data["end_date"]}
+                  %td
+                    - if o.meta["time_start"].present?
+                      #{o.meta["time_start"]}
+                  %td
+                    - if o.data["time_end"].present?
+                      #{o.data["time_end"]}
+                  %td
+                    #{o.status}
+          = paginate @records
+        - else
+          %p
+            No records found

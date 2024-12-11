@@ -1,0 +1,31 @@
+#modal-nav-insurance-transactions.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Insurance Transactions
+      .modal-body
+        .row
+          .col
+            = link_to member_account_validations_path, class: "btn-nav-square-md" do
+              Validations
+            - if Settings.activate_microinsurance
+              .mt-4
+              = link_to savings_insurance_transfer_collections_path, class: "btn-nav-square-md" do
+                K-BENTE/KALINGA Enrollment
+            - else
+              .mt-4
+              = link_to savings_insurance_transfer_collections_path, class: "btn-nav-square-md" do
+                Savings Insurance Transfers   
+            .mt-4
+            = link_to insurance_loan_bundle_enrollments_path, class: "btn-nav-square-md" do
+              KDAKILA Enrollment   
+            .mt-4
+            = link_to commission_collections_path, class: "btn-nav-square-md #{params[:controller] == "commission_collections" ? 'active' : ''}" do
+              Commission
+            .mt-4
+            = link_to claims_path, class: "btn-nav-square-md" do
+              Claims Register
+            .mt-4 
+            = link_to "/reports/claims", class: "btn-nav-square-md" do
+              Claims Report      

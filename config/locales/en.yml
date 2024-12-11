@@ -1,0 +1,155 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  titles:
+    accounting:
+      accounting_codes:
+        index: "Accounting Codes"
+        show: "%{title} - Accounting Codes"
+        new: "New Accounting Code"
+        edit: "Edit - %{title} - Accounting Codes"
+        print: "Print Accounting Codes"
+      year_end_closings:
+        index: "Year End Closings"
+        show: "%{title} - Year End Closings"
+      cdb: "Cash Disbursements - Books"
+      crb: "Cash Receipts - Books"
+      general_ledger: "General Ledger - Accounting"
+      jvb: "General Vouchers - Books"
+      misc: "Misc - Books"
+      trial_balance: "Trial Balance - Accounting"
+    activity_logs:
+      index: "Activity Logs"
+    billings:
+      index: "Billings"
+      show: "Billing #%{title}"
+    data_stores:
+      accounting_entries_summaries:
+        index: "Voucher Summaries"
+        show: "%{title} - Voucher Summaries"
+      branch_loans_stats:
+        index: "Branch Loan Stats"
+        show: "%{title} - Branch Loan Stats"
+      branch_resignations:
+        index: "Branch Resignations"
+        show: "%{title} - Branch Resignations"
+      icpr:
+        index: "ICPR"
+        show: "%{title} - ICPR"
+      manual_aging:
+        index: "Manual Aging"
+        show: "%{title} - Manual Aging"
+      member_counts:
+        index: "Member Counts"
+        show: "%{title} - Member Counts"
+      monthly_new_and_resigned:
+        index: "Monthly New and Redesigned"
+        show: "%{title} - Monthly New and Redesigned"
+      monthly_incentives:
+        index: "Monthly Incentives"
+        show: "%{title} - Monthly Incentives"
+      patronage_refund:
+        index: "Patronage Refund"
+        show: "%{title} - Patronage Refund"
+      personal_funds:
+        index: "Personal Funds"
+        show: "%{title} - Personal Funds"
+      repayment_rates:
+        index: "Repayment Rates"
+        show: "%{title} - Repayment Rates"
+      soa_expenses:
+        index: "SOA Expenses"
+        show: "%{title} - SOA Expenses"
+      soa_funds:
+        index: "SOA Funds"
+        show: "%{title} - SOA Funds"
+      soa_loans:
+        index: "SOA Loans"
+        show: "%{title} - SOA Loans"
+      watchlists:
+        index: "Watchlists"
+        show: "%{title} - Watchlists"
+      x_weeks_to_pay:
+        index: "X Weeks to Pay"
+        show: "%{title} - X Weeks to Pay"
+    deposit_collections:
+      index: "Deposits"
+      show: "%{title} - Deposits"
+    equity_accounts:
+      index: "Equity"
+      show: "Equity #%{title}"
+    insurance_accounts:
+      index: "Insurance"
+      show: "Insurance #%{title}"
+    insurance_fund_transfer_collections:
+      index: "Insurance Fund Transfers"
+      show: "%{title} - Insurance Fund Transfers"
+    insurance_withdrawal_collections:
+      index: "Insurance Withdrawals"
+      show: "%{title} - Insurance Withdrawals"
+    loans:
+      index: "Loans"
+      show: "Loan #%{title}"
+    members:
+      index: "Members"
+      show: "%{title} - Members"
+      form: "Member Form"
+    member_account_validations:
+      index: "Member Account Validations"
+      show: "%{title} - Member Account Validations"
+    membership_payment_collections:
+      index: "Membership Payments"
+      show: "%{title} - Membership Payments"
+    monthly_closing_collections:
+      index: "Monthly Closings"
+      show: "%{title} - Monthly Closings"
+    pages:
+      daily_report_insurance_account_status: "Insurance Account Status"
+      index: "Dashboard"
+      insights: "Insights"
+      insurance_exit_age_members: "Insurance Exit Age Members"
+      lapsed_members: "Lapsed Members"
+      login: "Login"
+      members_for_reinsurance: "Members for Reinsurance"
+      validations: "Validations"
+    savings_accounts:
+      index: "Savings"
+      show: "Savings #%{title}"
+    savings_insurance_transfer_collections:
+      index: "Savings Insurance Transfers"
+      show: "#%{title} - Savings Insurance Transfers"
+    time_deposit_collections:
+      index: "Time Deposits"
+      show: "%{title} - Time Deposits"
+    withdrawal_collections:
+      index: "Withdrawals"
+      show: "%{title} - Withdrawals"

@@ -1,0 +1,4 @@
+ruby 3.2.2
+redis 5.0.7
+postgres 12.2
+nodejs 18.17.0

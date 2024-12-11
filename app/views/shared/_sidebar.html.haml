@@ -1,0 +1,50 @@
+.sidebar
+  = link_to root_path do
+    .logo-details
+      %i.bi.bi-house-door
+      %span.logo-name
+        JEF
+  %ul.nav-links
+    %li{ class: "#{params[:controller] == 'pages' and params[:action] == 'index' ? 'active' : ''}" }
+      = link_to root_path, class: "" do
+        %i.bi.bi-speedometer
+        %span.link-name
+          Operations
+
+    = render partial: "shared/sidebar_members"
+
+    - if microloans?
+      = render partial: "shared/sidebar_loans"
+
+    = render partial: "shared/sidebar_transactions"
+    = render partial: "shared/sidebar_reports"
+
+    = render partial: "shared/sidebar_config"
+
+    %li
+      .profile-details
+        = link_to profile_path do
+          .profile-content
+            %img{ src: "#{current_user.profile_picture_url}", alt: "profileImg" }
+          .name-job
+            .profile-name
+              #{current_user.username}
+            .job
+              #{current_user.full_name}
+          = link_to destroy_user_session_path do
+            %i.bi.bi-box-arrow-left
+
+= render partial: "shared/modals/new_entry"
+= render partial: "shared/modals/interest"
+= render partial: "shared/modals/microloans_collections"
+= render partial: "shared/modals/monthly_transactions"
+= render partial: "shared/modals/writeoffs"
+= render partial: "shared/modals/involuntary"
+= render partial: "shared/modals/adjustments"
+= render partial: "shared/modals/branch_reports"
+= render partial: "shared/modals/accounting_reports"
+= render partial: "shared/modals/insurance_reports"
+= render partial: "shared/modals/insurance_transactions"
+= render partial: "shared/modals/admin"
+= render partial: "shared/modals/system_tools"
+= render partial: "shared/modals/visualize"

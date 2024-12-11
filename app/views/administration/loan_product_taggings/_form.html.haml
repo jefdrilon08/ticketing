@@ -1,0 +1,13 @@
+= simple_form_for([:administration, @loan_product, @loan_product_type]) do |f|
+  .row
+    .col
+      .form-group
+        = f.input :name, input_html: { class: 'form-control' }
+  %hr
+  .btn-group
+    %button.btn.btn-primary{ type: "submit" }
+      .fa.fa-check
+      Save
+    = link_to administration_loan_product_path(@loan_product), class: 'btn btn-danger' do
+      .fa.fa-times
+      Cancel
