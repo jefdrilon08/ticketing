@@ -1,4 +1,4 @@
-# KOINS
+# TICKETING
 
 Microfinance and Microinsurance management system.
 
@@ -16,7 +16,7 @@ Microfinance and Microinsurance management system.
 git clone git@github.com:cloudband-solutions/koins.git
 ```
 
-2. KOINS uses `dotenv-rails` gem to manage environment variables. Copy the `.env.dist` file to `.env` and make sure to change the values according to your environment
+2. TICKETING uses `dotenv-rails` gem to manage environment variables. Copy the `.env.dist` file to `.env` and make sure to change the values according to your environment
 
 3. Setup the database and migrate the latest schema
 ```
