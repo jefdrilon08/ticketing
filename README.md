@@ -13,7 +13,7 @@ Microfinance and Microinsurance management system.
 1. Acquire the source code from `https://github.com`.
 
 ```
-git clone git@github.com:cloudband-solutions/koins.git
+git clone git@github.com:jefdrilon08/ticketing.git
 ```
 
 2. TICKETING uses `dotenv-rails` gem to manage environment variables. Copy the `.env.dist` file to `.env` and make sure to change the values according to your environment
