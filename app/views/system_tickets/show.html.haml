@@ -1,0 +1,146 @@
+= link_to "/system_tickets",style:"margin-left:1%" do
+    < Back
+%p
+.card.some{:style=>"padding:1%"}
+    %div.row{:style=>"width:100%"}
+        %div
+            %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:-15px"}
+                %tr
+                    %th
+                        %h
+                            Ticket no. placeholder
+        %center
+            %hr{:style=>"height:5px"}
+        %div.col-6
+            %table.table{:style=>"border-color:white;font-size:115%;"}
+                %tr
+                    %th
+                        %h3
+                            placeholder
+                %tr
+                    %td
+                        %p
+                            placeholderplaceholderplaceholderplaceholderplaceholder
+                            placeholderplaceholderplaceholderplaceholder
+            %table.table{:style=>"border-color:white;font-size:115%"}
+                %tr
+                    %th{:style=>"width:20%"}
+                        %p 
+                            Expected goal:
+                    %td
+                        %p
+                            placeholderplaceholderplaceholderplaceholder
+            %table.table{:style=>"border-color:white;font-size:115%"}    
+                %tr
+                    %th{:style=>"width:20%"}
+                        Status:
+                    %td{:style=>"width:10%"}
+                        %p
+                            placeholder 
+                    %td
+                        %a{:href=>"#"}
+                            Update
+            %table.table{:style=>"border-color:white;font-size:115%"}
+                %tr
+                    %th{:style=>"width:20%"}
+                        %p
+                            Attached file:
+                    %th
+                        %a{:href=>"#"}
+                            View
+                %tr
+                    %th
+                        %p 
+                            System name:
+                    %td
+                        %p
+                            placeholder
+                %tr
+                    %th
+                        %p
+                            System type:
+                    %td
+                        %p
+                            placeholder 
+                %tr
+                    %th
+                        %p
+                            Date received:
+                    %td
+                        %p
+                            placeholder
+                %tr
+                    %th
+                        %p
+                            Date started:
+                    %td
+                        %p
+                            placeholder
+            %hr{:style=>"width:80%"}
+            %table.table{:style=>"border-color:white;font-size:115%"}
+                %tr
+                    %th{:style=>"width:20%"}
+                        %p
+                            Main Dev:
+                    %td
+                        %p
+                            placeholder
+                    %td{:style=>"width:60%"}
+                        = link_to "#",data: { "bs-toggle": "modal", "bs-target": "#modal-main-dev" } do
+                            Edit Main Dev
+                %tr
+                    %th
+                        %p
+                            Members:
+                    %td
+                        %p
+                            placeholder
+                    %td
+                        = link_to "#",data: { "bs-toggle": "modal", "bs-target": "#modal-members" } do
+                            Edit Members
+                %tr
+                    %td
+                    %td
+                        %p
+                            placeholder
+
+        %div.col-6
+            .card{:style=>"padding:3%"}
+                %table.table{:style=>"border-color:white;font-size:115%"}
+                    %td
+                        %h3
+                            Milestones
+                    %td{:style=>"width:20%"}
+                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-milestones" } do
+                            Update status
+                %table.table{:style=>"border-color:white;font-size:115%"}
+                    %tr
+                        %th{:style=>"width:15%"}
+                            %p
+                                ID
+                        %th{:style=>"width:45%"}
+                            %p
+                                Details
+                        %th{:style=>"width:15%"}
+                            %p
+                                Status
+                        %th{:style=>"width:15%"}
+                            %p
+                                Target Date
+                    %tr
+                        %td
+                            %p
+                                placeholder
+                        %td
+                            %p
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla egestas ante 
+                                nec faucibus gravida. Nunc erat ante, iaculis ut tristique hendrerit, euismod at dui. 
+                                Mauris posuere cursus dolor et interdum. Donec luctus et ex sed cursus.
+                        %td
+                            %p
+                                placeholder
+                        %td
+                            %p
+                                placeholder
+                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" } do
+                    Add milestone

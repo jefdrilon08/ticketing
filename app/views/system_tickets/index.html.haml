@@ -1,0 +1,84 @@
+.card.some{:style=>"padding:1%"}
+    %h2 System Tickets
+    = form_tag "", method: 'GET' do
+        %table.table{:style=>"border-color:white;font-size:110%"}
+            %tr
+                %td{:style=>"width:20%"}
+                    %label
+                        System
+                    .form-group    
+                        =select_tag :computer_system_id,params[:computer_system_id],class:'form-control',prompt: "-- SELECT --"
+                %td{:style=>"width:20%"}
+                    %label
+                        Date Received
+                    .form-group
+                        =text_field_tag :date_received,params[:date_received],class:'form-control',type: :date
+                %td{:style=>"width:20%"}
+                    %label
+                        Status
+                    .form-group
+                        =select_tag :status,params[:status],class:'form-control select-select2',prompt:"-- SELECT --"
+                %td
+                    %label
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-info btn-block' do
+                            .bi.bi-search
+    %table.table.table-bordered.table-sm
+        %th.some{:style=>"width:10%"}
+            %h
+                Ticket no.
+        %th.some{:style=>"width:30%"}
+            %h
+                Concern
+        %th.some{:style=>"width:20%"}
+            %h
+                System
+        %th.some{:style=>"width:5%"}
+            %h
+                Status
+        %th.some{:style=>"width:5%"}
+            %h
+                Date Received
+        %th.some{:style=>"width:5%"}
+            %h
+            - @system_tix_desc.each do |x|
+                %tr
+                    %td
+                        %p
+                        %p
+                            #{x[0]}
+                    %td
+                        %p
+                        %p
+                            #{x[4]}
+                    %td
+                        %p
+                        %p
+                            #{x[3]}                   
+                    %td
+                        %center
+                            %p
+                            %p
+                                - case #{x[1]}
+                                - when 'pending'
+                                    .badge.bg-warning
+                                        #{x[1]}
+                                - when 'done'
+                                    .badge.bg-dark
+                                        #{x[1]}
+                                - when 'active'
+                                    .badge.bg-success
+                                        #{x[1]}
+                                - when 'processing'
+                                    .badge.bg-danger
+                                        #{x[1]}
+
+                    %td
+                        %p
+                        %p
+                            #{x[2]}
+                    %td
+                        %center
+                            %a.button{class:"btn btn-primary",:style=>"margin-top:10%",:href => "system_tickets/#{x[5]}"}
+                                %i.bi.bi-eye
+

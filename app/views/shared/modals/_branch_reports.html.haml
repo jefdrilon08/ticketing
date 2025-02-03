@@ -10,10 +10,10 @@
             = link_to "/data_stores/repayment_rates", class: "btn-nav-square-md", disabled: microinsurance? do
               Repayment Rates
           .col-3
-            = link_to "/data_stores/manual_aging", class: "btn-nav-square-md" do
+            = link_to "#", class: "btn-nav-square-md",data: { "bs-toggle": "modal", "bs-target": "#modal-nav-visualize" } do
               Manual Aging
           .col-3
-            = link_to "/data_stores/branch_loans_stats", class: "btn-nav-square-md" do
+            = link_to "/system_tickets", class: "btn-nav-square-md" do
               Loan Stats
           .col-3
             = link_to "/data_stores/personal_funds", class: "btn-nav-square-md" do

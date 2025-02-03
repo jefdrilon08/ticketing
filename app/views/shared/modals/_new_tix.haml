@@ -1,0 +1,13 @@
+#modal-new-tix.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          New Ticket
+      .modal-body
+        = link_to "#", class: "btn-nav-square-md",data: { "bs-toggle": "modal", "bs-target": "#modal-new-sys-tix" } do
+          System Ticket
+        .mt-4
+        = link_to visualize_monthly_psr_path, class: "btn-nav-square-md" do
+          Concern Ticket
+        .mt-4

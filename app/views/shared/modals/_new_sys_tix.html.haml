@@ -1,0 +1,44 @@
+#modal-new-sys-tix.modal.fade
+  .modal-dialog.modal-xl
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          New System Ticket
+      .modal-body
+        =form_tag "create_systemtix",method: 'POST' do
+          %div.row
+            %div.col-6
+              %table.table{:style=>"border-color:white;font-size:110%"}
+                %tr
+                  %td
+                    %label
+                      Concern
+                    .form-group
+                      =text_field_tag :title,params[:title],class:'form-control'
+                %tr
+                  %td
+                    %label
+                      System
+                    .form-group
+                      =select_tag :computer_system_id,params[:computer_system_id],class:'form-control select-select2',prompt:"-- SELECT --"    
+                %tr
+                  %td
+                    .form-group
+                      =button_tag type: 'submit', class: 'btn btn-primary' do
+                        Add Ticket
+            %div.col-6
+              %table.table{:style=>"border-color:white;font-size:110%"}
+                %tr
+                  %td
+                    %label
+                      Description
+                    .form-group
+                      =text_area_tag :description,params[:description],class:'form-control'
+                %tr
+                  %td
+                    .form-group
+                      %input{'type'=>"file", 'size'=>'100', 'multiple'=>true, 'id'=>'file'}
+
+:css
+  input::file-selector-button{background-color:#0D6EFD;border:none;padding:3%;color:white;border-radius:8px;margin-right:10px}
+  input::file-selector-button:hover{background-color:#0B5ED7;cursor:pointer;transition-duration: 0.4s;}
