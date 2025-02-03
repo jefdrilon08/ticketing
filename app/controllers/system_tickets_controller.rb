@@ -12,7 +12,7 @@ class SystemTicketsController < ApplicationController
             puts x[:id]
             puts temp
             puts SystemTicketDesc.where(system_ticket_id:"b4e4c3d2-5e7c-4cf8-9153-a6ed6b0bc2d2")[0]
-            puts "lll"
+            puts "lll" 
             puts temp
 
             tixno   =temp[:ticket_number]
