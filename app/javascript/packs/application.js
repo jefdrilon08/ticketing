@@ -29,6 +29,7 @@ import AdministrationClustersIndex from "../models/AdministrationClustersIndex.j
 import AdministrationBranchesIndex from "../models/AdministrationBranchesIndex.js";
 import AdministrationBranchesShow from "../components/administration/branches/Show.js";
 import AdministrationCentersShow from "../components/administration/centers/Show.js";
+import AdministrationComputerSystemIndex from '../models/AdministrationComputerSystemIndex.js';
 
 //const renderComponent = (Component, payload) => {
 //  ReactDOM.render(
@@ -51,6 +52,7 @@ const hooks = {
   "administration/branches/index":                    [AdministrationBranchesIndex],
   "administration/branches/show":                     [AdministrationBranchesShow],
   "administration/centers/show":                      [AdministrationCentersShow],
+  "administration/computer_system/index":             [AdministrationComputerSystemIndex],
 }
 
 const renderComponent = (Component, payload) => {

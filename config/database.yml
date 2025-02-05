@@ -11,7 +11,7 @@ development:
   database: <%= ENV['KOINS_DATABASE_NAME'] %>
 test:
   <<: *default
-  database: jef_2_test
+  database: ticketing_2_test
 production:
   <<: *default
   database: <%= ENV['KOINS_DATABASE_NAME'] %>

@@ -1,0 +1,13 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        - if @computer_system_list.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No computer_system found
+            
+= render partial: "administration/computer_system/modals/new"
+

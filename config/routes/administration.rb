@@ -37,6 +37,10 @@ namespace :administration do
     get "/survey_question_form", to: "surveys#survey_question_form"
   end
 
+  resources :computer_system, only: [:index] do 
+    get "/computer_system", to: "computer_system#index"
+  end
+
   # Static pages
   get "/loan_products/download/json", to: "loan_products#download", as: :download_loan_products
 end
