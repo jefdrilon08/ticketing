@@ -1,0 +1,35 @@
+%table.table.table-sm.table-hover.table-bordered
+  %thead
+    %tr
+      %th.text-center Concern Name
+      -# %th.text-center Description
+      %th.text-center Computer System
+      %th.text-center Assigned Person
+      %th.text-center Created Date
+      %th.text-center Status
+      %th.text-center Actions
+  %tbody
+    - if @records.present?
+      - @records.each do |ticket|
+        %tr
+          %td.text-center= ticket.name
+          -# %td.text-center= ticket.description
+          %td.text-center= ticket.computer_system_id || "N/A"
+          %td.text-center= ticket.user_id || "Unassigned"
+          %td.text-center= ticket.created_at.strftime("%b %d, %Y")
+          %td.text-center 
+            - case ticket.status
+            - when "open"
+              .badge.bg-danger Pending
+            - when "pending"
+              .badge.bg-success Approved
+            - when "processing"
+              .badge.bg-warning Processing
+            - else
+              .badge.bg-secondary Unknown
+          %td.text-center
+            = link_to concern_ticket_path(ticket), class: "btn btn-primary btn-sm" do
+              %i.bi.bi-eye  View
+    - else
+      %tr
+        %td{ colspan: 6, class: "text-center" } No records found
