@@ -5,7 +5,7 @@
                 %h3.modal-title 
                     Add Milestone
             .modal-body
-                =form_tag "",method: 'POST' do
+                =form_tag "create_milestone",method: 'POST' do
                     %table.table{:style=>"border-color:white;font-size:110%"}  
                         %tr
                             %label
@@ -17,9 +17,12 @@
                                 Target Date
                             .form-group
                                 =text_field_tag :date,params[:date],class:'form-control',type: :date
-                        %tr
+                        %tr   
                             %td
+                                .form-group
+                                    =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'
                                 .form-group
                                     =button_tag type: 'submit', class: 'btn btn-primary' do
                                         Add Milestone 
+
                             

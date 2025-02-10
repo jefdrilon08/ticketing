@@ -36,7 +36,7 @@
         %th.some{:style=>"width:5%"}
             %h
                 Status
-        %th.some{:style=>"width:5%"}
+        %th.some{:style=>"width:10%"}
             %h
                 Date Received
         %th.some{:style=>"width:5%"}
@@ -59,7 +59,7 @@
                         %center
                             %p
                             %p
-                                - case #{x[1]}
+                                - case x[1]
                                 - when 'pending'
                                     .badge.bg-warning
                                         #{x[1]}
@@ -79,6 +79,6 @@
                             #{x[2]}
                     %td
                         %center
-                            %a.button{class:"btn btn-primary",:style=>"margin-top:10%",:href => "system_tickets/#{x[5]}"}
+                            %a.button{class:"btn btn-primary",:style=>"margin-top:10%",:href => "/system_tickets/#{x[5]}"}
                                 %i.bi.bi-eye
 

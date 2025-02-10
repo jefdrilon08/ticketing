@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_30_060759) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_03_025123) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -102,10 +102,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_060759) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
-  create_table "milestone_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "milestones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "system_ticket_desc_id"
     t.text "milestone_details"
     t.string "status"
+    t.date "target_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -121,13 +122,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_060759) do
     t.string "title"
     t.text "description"
     t.text "expected_goal"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "system_ticket_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "user_id"
-    t.json "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

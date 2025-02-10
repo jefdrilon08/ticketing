@@ -657,7 +657,15 @@ Rails.application.routes.draw do
   get "/bank_transfer/new", to: "bank_transfer#new"
 
   resources:system_tickets,only: [:index,:show]
-  post "/create_systemtix", to: "system_tickets#create_systemtix"
-  post "/create_milestone", to: "system_tickets#create_milestone"
+  post "/create_systemtix",                 to: "system_tickets#create_systemtix"
+  post "system_tickets/create_systemtix",   to: "system_tickets#create_systemtix"
+  post "system_tickets/create_milestone",   to: "system_tickets#create_milestone"
+  post "system_tickets/edit_ticket_status", to: "system_tickets#edit_ticket_status"
+  post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"
+  post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
+  post "system_tickets/set_expected_goal",  to: "system_tickets#set_expected_goal"
+  post "system_tickets/add_member",         to: "system_tickets#add_member"  
+  post "system_tickets/delete_member",      to: "system_tickets#delete_member" 
+  post "system_tickets/set_maindev",        to: "system_tickets#set_maindev"
 
 end

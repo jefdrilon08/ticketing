@@ -8,7 +8,7 @@
                 =form_tag "",method: 'POST' do 
                     %table.table{:style=>"border-color:white;font-size:110%"} 
                         %tr
-                            %th
+                            %th{:style=>"width:30%"}
                                 %p
                                     Current Main Dev
                             %td
@@ -20,7 +20,7 @@
                                     New Main Dev
                             %td
                                 .form-group
-                                    =text_field_tag :date,params[:date],class:'form-control'
+                                    =select_tag :status,params[:status],class:'form-control select-select2',prompt:"-- SELECT --"
                         %tr
                             %td
                                 .form-group

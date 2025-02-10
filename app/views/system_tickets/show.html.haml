@@ -8,7 +8,7 @@
                 %tr
                     %th
                         %h
-                            Ticket no. placeholder
+                            Ticket no. #{@ticket.ticket_number}
         %center
             %hr{:style=>"height:5px"}
         %div.col-6
@@ -16,38 +16,90 @@
                 %tr
                     %th
                         %h3
-                            placeholder
+                            #{@ticket.title}&nbsp
+                            - case @ticket.status
+                            - when 'pending'
+                                .badge.bg-warning
+                                    %i.bi.bi-check
+                            - when 'done'
+                                .badge.bg-dark
+                                    %i.bi.bi-check
+                            - when 'active'
+                                .badge.bg-success
+                                    %i.bi.bi-check
+                            - when 'processing'
+                                .badge.bg-danger
+                                    %i.bi.bi-check
                 %tr
                     %td
                         %p
-                            placeholderplaceholderplaceholderplaceholderplaceholder
-                            placeholderplaceholderplaceholderplaceholder
+                            #{@ticket.description}
             %table.table{:style=>"border-color:white;font-size:115%"}
                 %tr
                     %th{:style=>"width:20%"}
                         %p 
                             Expected goal:
                     %td
-                        %p
-                            placeholderplaceholderplaceholderplaceholder
+                        - case @ticket.expected_goal
+                        - when nil
+                            =form_tag "set_expected_goal",method: 'POST' do
+                                .form-group
+                                    =text_area_tag :goal,params[:goal],class:'form-control'
+                                .form-group
+                                    =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'
+                                .form-group
+                                    = button_tag type: 'submit',class:'btt-linkto' do
+                                        Set expected goal
+                        - else
+                            %p
+                                #{@ticket.expected_goal}
             %table.table{:style=>"border-color:white;font-size:115%"}    
                 %tr
                     %th{:style=>"width:20%"}
                         Status:
                     %td{:style=>"width:10%"}
                         %p
-                            placeholder 
+                            #{@ticket.status} 
                     %td
-                        %a{:href=>"#"}
-                            Update
+                        - case @ticket.status
+                        - when "processing"
+                            = form_tag "edit_ticket_status", method: 'POST' do
+                                .form-group
+                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                %td
+                                    .form-group
+                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                            Update
+                        - when "active"
+                            = form_tag "edit_ticket_status", method: 'POST' do
+                                .form-group
+                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                %td
+                                    .form-group
+                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                            Update
+                        - when "pending"
+                            = form_tag "edit_ticket_status", method: 'POST' do
+                                .form-group
+                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                %td
+                                    .form-group
+                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                            Update
             %table.table{:style=>"border-color:white;font-size:115%"}
                 %tr
                     %th{:style=>"width:20%"}
                         %p
                             Attached file:
-                    %th
-                        %a{:href=>"#"}
-                            View
+                    %td
+                        -case @ticket.data["attached_file"]
+                        -when nil
+                            %p
+                                No attachment
+                        -else
+                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-view-file" },id:"btn-milestone" do
+                                View (di pa gumagana)
+                            = render partial: "system_tickets/modals/view_file"
                 %tr
                     %th
                         %p 
@@ -68,14 +120,27 @@
                             Date received:
                     %td
                         %p
-                            placeholder
+                            #{@ticket.date_received}
                 %tr
                     %th
                         %p
                             Date started:
                     %td
-                        %p
-                            placeholder
+                        - case @ticket.start_date
+                        - when nil
+                            %p{:style=>"margin-top:-20px"}
+                                = form_tag "set_start_date", method: 'POST' do
+                                    .form-group
+                                        =text_field_tag :date,params[:date],class:'form-control',style:"width:30%",type: :date
+                                    .form-group
+                                        =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'
+                                    %p
+                                        .form-group
+                                            = button_tag type: 'submit',class:'btt-linkto' do
+                                                Set start date 
+                        - else
+                            %p
+                                #{@ticket.start_date}
             %hr{:style=>"width:80%"}
             %table.table{:style=>"border-color:white;font-size:115%"}
                 %tr
@@ -86,7 +151,7 @@
                         %p
                             placeholder
                     %td{:style=>"width:60%"}
-                        = link_to "#",data: { "bs-toggle": "modal", "bs-target": "#modal-main-dev" } do
+                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-main-dev" },id:"btn-milestone" do
                             Edit Main Dev
                 %tr
                     %th
@@ -96,7 +161,7 @@
                         %p
                             placeholder
                     %td
-                        = link_to "#",data: { "bs-toggle": "modal", "bs-target": "#modal-members" } do
+                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                             Edit Members
                 %tr
                     %td
@@ -110,37 +175,66 @@
                     %td
                         %h3
                             Milestones
-                    %td{:style=>"width:20%"}
-                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-milestones" } do
-                            Update status
-                %table.table{:style=>"border-color:white;font-size:115%"}
-                    %tr
-                        %th{:style=>"width:15%"}
-                            %p
-                                ID
-                        %th{:style=>"width:45%"}
-                            %p
-                                Details
-                        %th{:style=>"width:15%"}
-                            %p
-                                Status
-                        %th{:style=>"width:15%"}
-                            %p
-                                Target Date
-                    %tr
-                        %td
-                            %p
-                                placeholder
-                        %td
-                            %p
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla egestas ante 
-                                nec faucibus gravida. Nunc erat ante, iaculis ut tristique hendrerit, euismod at dui. 
-                                Mauris posuere cursus dolor et interdum. Donec luctus et ex sed cursus.
-                        %td
-                            %p
-                                placeholder
-                        %td
-                            %p
-                                placeholder
-                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" } do
+                    - case @empty
+                    - when false
+                        %td{:style=>"width:20%"}
+                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-milestones" },id:"btn-milestone" do
+                                Update status
+                        %table.table{:style=>"border-color:white;font-size:115%"}
+                            %tr
+                            %th{:style=>"width:20%"}
+                                %p
+                                    ID
+                            %th{:style=>"width:45%"}
+                                %p
+                                    Details
+                            %th{:style=>"width:10%"}
+                                %p
+                                    Status
+                            %th{:style=>"width:15%"}
+                                %p
+                                    Target Date
+                            - @milestones.each do |x|    
+                                %tr 
+                                    %td
+                                        %p{:style => "font-size:13px"}
+                                            #{x.id}
+                                    %td
+                                        %p
+                                            #{x.milestone_details}
+                                    %td
+                                        %p{:style=>"margin-top:-16px"}
+                                            - case x.status
+                                            - when 'pending'
+                                                .badge.bg-warning
+                                                    #{x.status}
+                                            - when 'done'
+                                                .badge.bg-dark
+                                                    #{x.status}
+                                            - when 'active'
+                                                .badge.bg-success
+                                                    #{x.status}
+                                            - when 'processing'
+                                                .badge.bg-danger
+                                                    #{x.status}
+                                    %td
+                                        %p
+                                            #{x.target_date}
+                    - when true
+                        %table.table{:style=>"border-color:white;font-size:115%"}
+                            %tr
+                                %center
+                                    %p
+                                        No milestones found
+
+                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
                     Add milestone
+
+:css
+    .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
+    .btt-linkto:hover{color:#0A58CA;}
+
+= render partial: "system_tickets/modals/milestones"
+= render partial: "system_tickets/modals/new_milestone"
+= render partial: "system_tickets/modals/main_dev"
+= render partial: "system_tickets/modals/members"
