@@ -31,6 +31,9 @@ import AdministrationBranchesShow from "../components/administration/branches/Sh
 import AdministrationCentersShow from "../components/administration/centers/Show.js";
 import AdministrationComputerSystemIndex from '../models/AdministrationComputerSystemIndex.js';
 
+import ConcernTicketIndex from '../models/ConcernTicketIndex.js';
+// import ConcernTicketShow from '../models/ConcernTicketShow.js';
+
 //const renderComponent = (Component, payload) => {
 //  ReactDOM.render(
 //    <Component {...payload} />,
@@ -52,7 +55,13 @@ const hooks = {
   "administration/branches/index":                    [AdministrationBranchesIndex],
   "administration/branches/show":                     [AdministrationBranchesShow],
   "administration/centers/show":                      [AdministrationCentersShow],
+
+
+  "concern_tickets/index":                        [ConcernTicketIndex],
+  // "concern_ticket/show":                         [ConcernTicketShow],
+
   "administration/computer_system/index":             [AdministrationComputerSystemIndex],
+
 }
 
 const renderComponent = (Component, payload) => {

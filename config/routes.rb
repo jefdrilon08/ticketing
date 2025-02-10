@@ -19,6 +19,20 @@ Rails.application.routes.draw do
 
   get "/profile", to: "pages#profile", as: :profile
 
+  # Concern Ticket Routes
+  get "/concern_tickets", to: "concern_tickets#index"
+  get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
+
+  
+  
+  
+  # get "/dormant", to: "dormant#index"
+  # get "/dormant/:id", to: "dormant#show"
+  # delete "/dormant/:id", to: "dormant#destroy"
+  # get "/dormant/:id/print", to: "dormant#print"
+  # get "/dormant/:id/excel", to: "dormant#excel"
+  # get "/dormant/:id/dormant_excel", to: "dormant#dormant_excel", as: :dormant_download_excel
+
   # online applications
   resources :online_applications, only: [:index, :show]
   
@@ -114,9 +128,9 @@ Rails.application.routes.draw do
   get "/pages/daily_report_insurance_account_status_excel", to: "pages#daily_report_insurance_account_status_excel", as: :daily_report_insurance_account_status_excel
   
   # Monitoring
-#  get "/monitoring/accounting_entry_subsidiary_balancing", to: "monitoring#accounting_entry_subsidiary_balancing", as: :monitoring_accounting_entry_subsidiary_balancing
-#  get "/monitoring/accounting_entry_precision", to: "monitoring#accounting_entry_precision", as: :monitoring_accounting_entry_precision
-#  get "/monitoring/no_membership_payments", to: "monitoring#no_membership_payments"
+  #  get "/monitoring/accounting_entry_subsidiary_balancing", to: "monitoring#accounting_entry_subsidiary_balancing", as: :monitoring_accounting_entry_subsidiary_balancing
+  #  get "/monitoring/accounting_entry_precision", to: "monitoring#accounting_entry_precision", as: :monitoring_accounting_entry_precision
+  #  get "/monitoring/no_membership_payments", to: "monitoring#no_membership_payments"
 
   # Members
   get "/members", to: "members#index"

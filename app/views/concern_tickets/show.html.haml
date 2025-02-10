@@ -1,0 +1,47 @@
+%table.table.table-sm.table-hover.table-bordered
+  = render partial: "show_filter"
+  %thead
+    %tr
+      %th.text-center Ticket Number
+      %th.text-center Name
+      %th.text-center Concern Type
+      %th.text-center Assigned Branch
+      %th.text-center Created Date
+      %th.text-center Status
+      %th.text-center Actions
+  %tbody
+    - if @concern_ticket_details.present?
+      - @concern_ticket_details.each do |ticket|
+        %tr
+          %td.text-center= ticket.ticket_number || "N/A"
+          %td.text-center= ticket.name || "N/A"
+          %td.text-center= ticket.concern_type_id || "N/A"
+          %td.text-center= ticket.branch_id || "Unassigned"
+          %td.text-center= ticket.created_at.strftime("%b %d, %Y")
+          %td.text-center
+            - case ticket.status
+            - when "open"
+              .badge.bg-danger Pending
+            - when "pending"
+              .badge.bg-success Approved
+            - when "processing"
+              .badge.bg-warning Processing
+            - else
+              .badge.bg-secondary Unknown
+          %td.text-center
+            = link_to concern_ticket_path(ticket), class: "btn btn-primary btn-sm", title: "View" do
+              %i.bi.bi-eye
+            = link_to concern_ticket_path(ticket), class: "btn btn-warning btn-sm", title: "Process" do
+              %i.bi.bi-pencil
+            = link_to concern_ticket_path(ticket), class: "btn btn-danger btn-sm", title: "" do
+              %i.bi.bi-trash    
+        -#   %td.text-center
+        -#     = link_to concern_ticket_path(ticket), class: "btn btn-primary btn-sm", title: "View" do
+        -#       %i.bi.bi-eye
+        -#     = link_to edit_concern_ticket_path(ticket), class: "btn btn-warning btn-sm", title: "Edit" do
+        -#       %i.bi.bi-pencil
+        -#     = link_to concern_ticket_path(ticket), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger btn-sm", title: "Delete" do
+        -#       %i.bi.bi-trash
+    - else
+      %tr
+        %td{ colspan: 7, class: "text-center" } No records found

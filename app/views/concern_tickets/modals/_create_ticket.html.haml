@@ -1,0 +1,20 @@
+#modal-create.modal.fade{ tabindex: "-1" }
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h5.modal-title Create Ticket
+      .modal-body
+        %form
+          .form-group
+            %label{ for: "concern" } Concern
+            %input#concern-textbox.form-control{ type: "text", placeholder: "Enter Concern" }
+            %input#concern-id.form-control{ hidden: true }
+          .form-group
+            %label
+              Ticket Date
+            = text_field_tag :as_of, Date.today, type: :date, id: "input-as-of", class: 'form-control'
+          .message
+      .modal-footer
+        %button#btn-confirm.btn.btn-primary Confirm
+        %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Cancel
+        
