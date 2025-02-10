@@ -29,6 +29,7 @@ import AdministrationClustersIndex from "../models/AdministrationClustersIndex.j
 import AdministrationBranchesIndex from "../models/AdministrationBranchesIndex.js";
 import AdministrationBranchesShow from "../components/administration/branches/Show.js";
 import AdministrationCentersShow from "../components/administration/centers/Show.js";
+import AdministrationComputerSystemIndex from '../models/AdministrationComputerSystemIndex.js';
 
 import ConcernTicketIndex from '../models/ConcernTicketIndex.js';
 // import ConcernTicketShow from '../models/ConcernTicketShow.js';
@@ -55,8 +56,12 @@ const hooks = {
   "administration/branches/show":                     [AdministrationBranchesShow],
   "administration/centers/show":                      [AdministrationCentersShow],
 
+
   "concern_tickets/index":                        [ConcernTicketIndex],
   // "concern_ticket/show":                         [ConcernTicketShow],
+
+  "administration/computer_system/index":             [AdministrationComputerSystemIndex],
+
 }
 
 const renderComponent = (Component, payload) => {
