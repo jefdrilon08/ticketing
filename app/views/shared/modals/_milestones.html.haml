@@ -1,0 +1,42 @@
+#modal-milestones.modal.fade
+    .modal-dialog.modal-xl
+        .modal-content{:style=>"padding:1%"}
+            .modal-header  
+                %h3.modal-title
+                    Edit Milestones
+            .modal-body       
+                %table.table{:style=>"border-color:white;font-size:115%"}
+                    %tr
+                        %th{:style=>"width:10%"}
+                            %p
+                                ID
+                        %th{:style=>"width:50%"}
+                            %p
+                                Details
+                        %th{:style=>"width:15%"}
+                            %p
+                                Status
+                        %th{:style=>"width:15%"}
+                            %p
+                                Target Date
+                        %th
+                            %p
+                    %tr
+                        %td
+                            %p
+                                placeholder
+                        %td
+                            %p{:style=>"margin-right:4px"}
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla egestas ante 
+                                nec faucibus gravida. Nunc erat ante, iaculis ut tristique hendrerit, euismod at dui. 
+                                Mauris posuere cursus dolor et interdum. Donec luctus et ex sed cursus.
+                        %td
+                            %p
+                            status
+                        %td
+                            %p
+                            placeholder
+                        %td
+                            %p{:style=>"margin-top:15px"}
+                                =link_to "#" do
+                                    Update

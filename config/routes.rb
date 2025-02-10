@@ -656,4 +656,8 @@ Rails.application.routes.draw do
   get "/bank_transfer", to: "bank_transfer#index"
   get "/bank_transfer/new", to: "bank_transfer#new"
 
+  resources:system_tickets,only: [:index,:show]
+  post "/create_systemtix", to: "system_tickets#create_systemtix"
+  post "/create_milestone", to: "system_tickets#create_milestone"
+
 end

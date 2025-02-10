@@ -1,0 +1,25 @@
+#modal-new-milestone.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Add Milestone
+            .modal-body
+                =form_tag "",method: 'POST' do
+                    %table.table{:style=>"border-color:white;font-size:110%"}  
+                        %tr
+                            %label
+                                Details
+                            .form-group
+                                =text_area_tag :details,params[:details],class:'form-control'
+                        %tr            
+                            %label
+                                Target Date
+                            .form-group
+                                =text_field_tag :date,params[:date],class:'form-control',type: :date
+                        %tr
+                            %td
+                                .form-group
+                                    =button_tag type: 'submit', class: 'btn btn-primary' do
+                                        Add Milestone 
+                            

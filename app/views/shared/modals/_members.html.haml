@@ -1,0 +1,37 @@
+#modal-members.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Edit Members
+            .modal-body
+                =form_tag "",method: 'POST' do 
+                    %table.table{:style=>"border-color:white;font-size:110%"} 
+                        %tr
+                            %th
+                                %p
+                                    Current Members
+                            %td
+                                %p
+                                    placeholder
+                            %td
+                                = link_to "#",{:style=>"color:red"} do
+                                    Remove
+                        %tr
+                            %th
+                                %p
+                            %td
+                                %p
+                                    placeholder                                    
+                        %tr          
+                            %th
+                                %p
+                                    New Member
+                            %td
+                                .form-group
+                                    =text_field_tag :date,params[:date],class:'form-control'
+                        %tr
+                            %td
+                                .form-group
+                                    =button_tag type: 'submit', class: 'btn btn-primary' do
+                                        Add
