@@ -14,10 +14,10 @@
               %option{ value: "" } -- Select System --
               -# - @computer_systems.each do |system|
               -#   %option{ value: system.id }= system.name
-          .form-group
-            %label{ for: "assigned_person" } Assigned Person
-            %select#assigned_person.form-control{ name: "concern[user_id]" }
-              %option{ value: "" } -- Select Person --
+          -# .form-group
+          -#   %label{ for: "assigned_person" } Assigned Person
+          -#   %select#assigned_person.form-control{ name: "concern[user_id]" }
+          -#     %option{ value: "" } -- Select Person --
               -# - @users.each do |user|
               -#   %option{ value: user.id }= user.name
       .modal-footer
