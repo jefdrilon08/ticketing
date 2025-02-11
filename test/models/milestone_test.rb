@@ -1,6 +1,6 @@
 require "test_helper"
 
-class SystemTicketUserTest < ActiveSupport::TestCase
+class MilestoneTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

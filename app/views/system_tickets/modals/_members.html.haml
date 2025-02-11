@@ -1,0 +1,40 @@
+#modal-members.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Edit Members
+            .modal-body
+                =form_tag "",method: 'POST' do 
+                    %table.table{:style=>"border-color:white;font-size:110%"} 
+                        %tr
+                            %th{:style=>"width:30%"}
+                                %p
+                                    Current Members
+                            %td
+                                %p
+                                    placeholder
+                            %td
+                                = link_to "#",{:style=>"color:red"} do
+                                    Remove
+                    %hr                
+                    %table.table{:style=>"border-color:white;font-size:110%"}                                                   
+                        %tr          
+                            %th{:style=>"width:30%"}
+                                %p
+                                    New Member
+                            %td
+                                .form-group
+                                    =select_tag :status,params[:status],class:'form-control select-select2',prompt:"-- SELECT --"
+                        %tr          
+                            %th
+                                %p
+                                    Task
+                            %td
+                                .form-group
+                                    =select_tag :status,params[:status],class:'form-control select-select2',prompt:"-- SELECT --"
+                        %tr
+                            %td
+                                .form-group
+                                    =button_tag type: 'submit', class: 'btn btn-primary' do
+                                        Add

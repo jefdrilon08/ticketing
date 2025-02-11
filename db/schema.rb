@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_30_060759) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_03_025123) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -89,6 +89,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_060759) do
     t.index ["area_id"], name: "index_clusters_on_area_id"
   end
 
+  create_table "computer_systems", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.string "status"
+    t.json "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "topic"
     t.text "content"
@@ -106,6 +115,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_060759) do
     t.string "system_ticket_desc_id"
     t.text "milestone_details"
     t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "milestones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "system_ticket_desc_id"
+    t.text "milestone_details"
+    t.string "status"
+    t.date "target_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

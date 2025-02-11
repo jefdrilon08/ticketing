@@ -1,0 +1,65 @@
+#modal-milestones.modal.fade
+    .modal-dialog.modal-xl
+        .modal-content{:style=>"padding:1%"}
+            .modal-header  
+                %h3.modal-title
+                    Edit Milestones
+            .modal-body       
+                %table.table{:style=>"border-color:white;font-size:115%"}
+                    %tr
+                        %th{:style=>"width:20%"}
+                            %p
+                                ID
+                        %th{:style=>"width:50%"}
+                            %p
+                                Details
+                        %th{:style=>"width:15%"}
+                            %p
+                                Status
+                        %th{:style=>"width:15%"}
+                            %p
+                                Target Date
+                        %th
+                            %p
+                    - @milestones.each do |x|        
+                        %tr
+                            %td{:style => "font-size:13px"}
+                                %p
+                                    #{x.id}
+                            %td
+                                %p{:style=>"margin-right:4px"}
+                                    #{x.milestone_details}
+                            %td
+                                %p{:style=>"margin-top:-16px"}
+                                    - case x.status
+                                    - when 'pending'
+                                        .badge.bg-warning
+                                            #{x.status}
+                                    - when 'done'
+                                        .badge.bg-dark
+                                            #{x.status}
+                                    - when 'active'
+                                        .badge.bg-success
+                                            #{x.status}
+                                    - when 'processing'
+                                        .badge.bg-danger
+                                            #{x.status}
+                            %td
+                                %p
+                                    #{x.target_date}
+                            %td
+                                %p{:style=>"margin-top:15px"}
+                                    -case x.status
+                                    -when "pending"
+                                        = form_tag "edit_milestone", method: 'POST' do
+                                            %td
+                                                %p{:style=>"margin-top:-17px"}
+                                                    .form-group
+                                                        =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
+                                                    .form-group
+                                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                                            Update
+                                    
+:css
+    .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
+    .btt-linkto:hover{color:#0A58CA;}

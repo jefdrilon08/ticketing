@@ -5,7 +5,7 @@
         %h3.modal-title 
           New System Ticket
       .modal-body
-        =form_tag "create_systemtix",method: 'POST' do
+        =form_tag "create_systemtix", multipart: true, method: 'POST' do
           %div.row
             %div.col-6
               %table.table{:style=>"border-color:white;font-size:110%"}
@@ -37,7 +37,7 @@
                 %tr
                   %td
                     .form-group
-                      %input{'type'=>"file", 'size'=>'100', 'multiple'=>true, 'id'=>'file'}
+                      = file_field_tag :file, id: "file"
 
 :css
   input::file-selector-button{background-color:#0D6EFD;border:none;padding:3%;color:white;border-radius:8px;margin-right:10px}
