@@ -3,7 +3,7 @@
     = link_to members_path, class: "" do
       %i.bi.bi-person-square
       %span.link-name
-        Employee
+        Ticketing
     %i.bi.bi-caret-down.arrow
   %ul.sub-menu
     %li
@@ -18,10 +18,10 @@
         %i.bi.bi-exclamation-circle
         Pending Employee
     %li
-      = link_to online_applications_path do
+      = link_to concern_tickets_path do
         %i.bi.bi-globe
-        Online Member Applications
+        Concern Ticket
     %li
       = link_to "/system_tickets" do
         %i.bi.bi-pencil-square
-        Member Checker
+        System Ticket

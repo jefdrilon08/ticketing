@@ -1,25 +1,29 @@
-#modal-new.modal.fade{ tabindex: "-1" }
-  .modal-dialog
+#modal-new.modal.fade{:tabindex => "-1"}
+  .modal-dialog.modal-lg
     .modal-content
       .modal-header
-        %h5.modal-title New Concern
+        %h3.modal-title
+          New Concern Ticket
       .modal-body
-        %form{ action: concern_tickets_path, method: "post" }
-          .form-group
-            %label{ for: "concern_name" } Concern Name
-            %input#concern_name.form-control{ type: "text", name: "concern[name]", placeholder: "Enter Concern" }
-          .form-group
-            %label{ for: "computer_system" } Computer System
-            %select#computer_system.form-control{ name: "concern[computer_system_id]" }
-              %option{ value: "" } -- Select System --
-              -# - @computer_systems.each do |system|
-              -#   %option{ value: system.id }= system.name
-          -# .form-group
-          -#   %label{ for: "assigned_person" } Assigned Person
-          -#   %select#assigned_person.form-control{ name: "concern[user_id]" }
-          -#     %option{ value: "" } -- Select Person --
-              -# - @users.each do |user|
-              -#   %option{ value: user.id }= user.name
+        .modal-body-content
+          .row
+            .col-md-6.col-xs-12
+              .form-group
+                %label{ for: "concern" } Concern Name
+                %input#concern-textbox.form-control{ type: "text", placeholder: "Enter Concern" }
+                %input#concern-id.form-control{ hidden: true }            
+            .col-md-6.col-xs-12
+              .form-group
+                %label
+                  Computer System
+                = select_tag :computer_system_id, options_from_collection_for_select(@computer_systems, :id, :name), class: "form-control", id: "computer-system", prompt: "-- SELECT --"
+
+          .message
       .modal-footer
-        %button#btn-confirm.btn.btn-primary Confirm
-        %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Cancel
+        .controls
+          %button#btn-confirm.btn.btn-primary
+            .fa.fa-check
+            Confirm
+          %button.btn{"data-bs-dismiss" => "modal", :type => "button"}
+            .fa.fa-times
+            Cancel

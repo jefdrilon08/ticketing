@@ -11,7 +11,9 @@ class ConcernTicketsController < ApplicationController
           text: "New"
         }
       ]
-    @records = ConcernTicket.all
+
+    @records = ConcernTicket.page(params[:page]).per(10)
+    @computer_systems = ComputerSystem.select(:id, :name) 
   end
 
   def show
@@ -32,8 +34,5 @@ class ConcernTicketsController < ApplicationController
     
     
   end
-  
-  
-  
-  
+
 end
