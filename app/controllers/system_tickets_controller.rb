@@ -1,31 +1,67 @@
 class SystemTicketsController < ApplicationController
     before_action :authenticate_user!
-    @module="sys"
+
     def index
         system_tix =SystemTicket.all.order("created_at DESC")
 
         @system_tix_desc=[]
         @milestones=[]
 
+        # Filter
+      @f_cs          = params[:f_cs]
+      @f_date        = params[:f_date].to_s
+      @f_status      = params[:f_status]
+
+      if @f_cs.present?
+        system_tix = system_tix.where(computer_system_id:@f_cs)
+      end
+
+      if @f_status.present?
+        system_tix = system_tix.where(status:@f_status)
+      end
+
+      if @f_date.present?
+        temp=system_tix
+        system_tix=[]
+        temp.each do |x|
+            if SystemTicketDesc.find(SystemTicketDesc.select(:id).where(system_ticket_id:x[:id]))[:date_received].to_s==@f_date
+                system_tix.push(x)
+            end
+        end
+      end
+
+      if system_tix!=nil then
         system_tix.each do |x|
             temp    =SystemTicketDesc.find(SystemTicketDesc.select(:id).where(system_ticket_id:x[:id]))
 
             tixno   =temp[:ticket_number]
             stat    =temp[:status]
+            stat_n  =0
             date    =temp[:date_received]
             title   =temp[:title]
             id      =temp[:id]
-            # cs_name =ComputerSystem.find(x[:computer_system_id])[:name]
-            cs_name =nil
+            cs_name =ComputerSystem.find(x[:computer_system_id])[:name]
 
-            @system_tix_desc.push([tixno,stat,date,cs_name,title,id])
+            case stat
+            when "pending"
+                stat_n=1
+            when "active"
+                stat_n=2
+            when "processing"
+                stat_n=3
+            when "done"
+                stat_n=4
+            end
 
+            @system_tix_desc.push([stat_n,[tixno,stat,date,cs_name,title,id]])
         end
+      end
+        @system_tix_desc.sort!    
     end
-
+    
     def create_systemtix
         @record     =SystemTicket.new(
-                                        computer_system_id:nil,
+                                        computer_system_id:params[:computer_system_id],
                                         status:'pending',
                                         user_id:nil
                                      )
@@ -73,7 +109,7 @@ class SystemTicketsController < ApplicationController
         @milestones=[]
         @ticket   = SystemTicketDesc.find(params[:id])
         @empty    = Milestone.where(system_ticket_desc_id:@ticket[:id]).count==0
-        if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("target_date ASC") end
+        if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("status DESC,target_date ASC") end
             # if @ticket[:data]["attached_file"]!=nil then @file=@ticket[:data]["attached_file"]["tempfile"] end
             #     if @file.is_a?(StringIO)
             #         @file2 = Tempfile.new

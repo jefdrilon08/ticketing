@@ -28,7 +28,17 @@ export default function MainUI(props) {
   } else {
     return (
       <>
-        hello world
+        {/* <div class="row">
+          <div class="col-4">
+            <h2>System Tickets</h2>
+          </div>
+          <div class="col-4">
+            <h2>Concern Tickets</h2>
+          </div>
+          <div class="col-4">
+              fgfdhcvbdf          
+          </div>
+        </div> */}
       </>
     )
   }

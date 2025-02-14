@@ -673,6 +673,7 @@ Rails.application.routes.draw do
   resources:system_tickets,only: [:index,:show]
   post "/create_systemtix",                 to: "system_tickets#create_systemtix"
   post "system_tickets/create_systemtix",   to: "system_tickets#create_systemtix"
+  post "administration/create_systemtix",   to: "system_tickets#create_systemtix"
   post "system_tickets/create_milestone",   to: "system_tickets#create_milestone"
   post "system_tickets/edit_ticket_status", to: "system_tickets#edit_ticket_status"
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"

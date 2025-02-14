@@ -9,16 +9,9 @@
       = link_to root_path, class: "" do
         %i.bi.bi-speedometer
         %span.link-name
-          Operations
+          Dashboard
 
     = render partial: "shared/sidebar_members"
-
-    - if microloans?
-      = render partial: "shared/sidebar_loans"
-
-    = render partial: "shared/sidebar_transactions"
-    = render partial: "shared/sidebar_reports"
-
     = render partial: "shared/sidebar_config"
 
     %li

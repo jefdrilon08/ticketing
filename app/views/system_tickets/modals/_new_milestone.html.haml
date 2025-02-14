@@ -11,12 +11,12 @@
                             %label
                                 Details
                             .form-group
-                                =text_area_tag :details,params[:details],class:'form-control'
+                                =text_area_tag :details,params[:details],class:'form-control',required:true
                         %tr            
                             %label
                                 Target Date
                             .form-group
-                                =text_field_tag :date,params[:date],class:'form-control',type: :date
+                                =text_field_tag :date,params[:date],class:'form-control',type: :date,required:true
                         %tr   
                             %td
                                 .form-group
