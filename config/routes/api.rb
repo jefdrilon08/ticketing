@@ -769,8 +769,7 @@ namespace :api do
 
       post "/computer_system/create", to: "computer_system#create"
       put "/computer_system/update", to: "computer_system#update"
-      post "/computer_system/delete", to: "computer_system#delete"
-
+      post "/computer_system/delete", to: "computerqq_system#delete"
 
       post "/user_demerits/approve", to: "user_demerits#approve"
 
@@ -795,6 +794,12 @@ namespace :api do
       # Membership Arrangement
       post "/membership_arrangements/update_data", to: "membership_arrangements#update_data"
     end
+
+    namespace :ticket_concern do
+      post "/concern_tickets/create", to: "concern_tickets#create"
+      # put "/concern_tickets/update", to: "concern_tickets#update"
+    end
+    
     
     get 'reports/member_reports', to: 'reports#member_reports'
     get 'reports/collections_clip_reports', to: 'reports#collections_clip_reports'
