@@ -1,45 +1,48 @@
 module Api
-    module V1
-      module TicketConcern
-        class ConcernTicketsController < ApiController
-            before_action :authenticate_user!
-        #   before_action :set_holiday, only: [:show, :update, :destroy]
-  
-        #   def index
-        #     holidays = Holiday.all
-        #     render json: holidays
-        #   end
-          
-        #   def show
-        #     render json: @holiday
-        #   end
-  
-          def new
-            concern = ConcernTicket.new(concern_params)
-          
-            if concern.save
-              render json: { message: 'Concern successfully created', status: 200, data: { concern: concern } }, status: :created
-            else
-              render json: { errors: concern.errors.full_messages }, status: :unprocessable_entity
-            end
-          end
-  
-          private
-  
-          def set_concern
-            @concern_ticket = ConcernTicket.find_by(id: params[:id])
-            unless @concern_ticket
-              render json: { error: 'ConcernTicket not found' }, status: :not_found
-            end
-          end
-  
-          private
+  module V1
+    module TicketConcern
+      class ConcernTicketsController < ApiController
+        before_action :authenticate_user!
 
-          def concern_params
-            params.require(:concern_ticket).permit(:concern_name, :computer_system_id, :status)
-          end
+        def create
+          config = {
+            name: params[:name],
+            description: params[:description],
+            status: params[:status]
+          }
 
+          errors = ::ConcernTicket::ValidateCreate.new(config: config).execute!
+
+          if errors[:messages].any?
+            render json: errors, status: 400
+          else
+            result = ::Administration::ComputerSystem::AddSystem.new(config: config).execute!
+            render json: { success: true, message: 'Concern Ticket Created', status: 200 }
+          end
+        end
+
+        def update
+          config = {
+            id: params[:id],
+            name: params[:name],
+            description: params[:description],
+            status: params[:status]
+          }
+
+          concern_ticket = ConcernTicket.find_by(id: params[:id])
+          if concern_ticket.update(config)
+            render json: { success: true, message: 'Concern Ticket Updated', status: 200 }
+          else
+            render json: { errors: concern_ticket.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+
+        private
+
+        def concern_params
+          params.require(:concern_ticket).permit(:name, :description, :computer_system_id, :status)
         end
       end
     end
   end
+end

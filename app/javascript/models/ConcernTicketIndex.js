@@ -8,116 +8,93 @@ var _authenticityToken;
 var $modalNew;
 var $btnNew; 
 var $btnConfirm;
-var $concernTextbox;
-var $concernid;
+var $inputName;
+var $inputDesc;
+var $id;
 var $message;
-var $computerSystemTextbox
+var $inputComputerSystem;
+var templateErrorList;
 
 
 var _cacheDom = function() {
     $btnNew                 = $("#btn-new");
     $btnConfirm             = $("#btn-confirm");
-    $concernTextbox         = $("#concern-textbox")
-    $concernid              = $("#concern-id")
-    $message                = $(".message");
-    $computerSystemTextbox  = $("#computer-system");
-
+    $inputName              = $("#input-name");
+    $inputDesc              = $("#input-description");
+    $inputComputerSystem    = $("#input-computer-system");
+    $id                     = $("#id");
+    
     $modalNew 	= new bootstrap.Modal(
         document.getElementById("modal-new"));
+
+    $message                = $(".message");
+    templateErrorList       = $("#template-error-list").html();
 }
 
 var _bindEvents = function() {
     $btnNew.on("click", function() {
-      $message.html("");
-      $concernTextbox.val("");
-      $computerSystemTextbox.val("");
-    //   $concernid.val("");
-      $modalNew.show();
-    });
+        $inputName.val("");
+        $inputDesc.val("");
+        $inputComputerSystem.val("");
+        $id.val("");
+          $modalNew.show();
+          $message.html("");
+      });
 
 
-    $btnConfirm.on("click", function(){
-        console.log("ETO GUMAGANA NAMAN SIYA")
-        var concernTextbox              = $concernTextbox.val().trim();
-        var computerSystemTextbox      = $computerSystemTextbox.val();
-        // var concernId                   = $concernid.val();
-
-        // // Clear previous message
-        $message.html("");
-        $message.removeClass("text-danger"); // Remove any previous error class
-
-        // // Validation checks
-        var messages = {
-            both: "Please provide fields.",
-            concern: "Please provide the concern name.",
-            computer_system: "Please select a system."
-        };
-
-        var missingField = !concernTextbox && !computerSystemTextbox ? "both" : !concernTextbox ? "concern" : !computerSystemTextbox ? "computer_system" : null;
-
-        if (missingField) {
-            $message.html(messages[missingField]);
-            $message.addClass("text-danger");
-            return;
-        }
-
+    $btnConfirm.on("click", function() {
+        console.log("NAPIPINDOT NAMAN SIYA")
+        var id          = $id.val();
+        var name        = $inputName.val();
+        var description = $inputDesc.val();
+        var description = $inputComputerSystem.val();
+    
         var data = {
-            concern_name: concernTextbox,
-            computer_system_id: computerSystemTextbox,
-            status: "active",
-            authenticity_token: _authenticityToken
+          name:        name,
+          description: description,
+          status:      "active",
+          id:          id,
+          authenticity_token: _authenticityToken
         };
-
+    
+        var url = "/api/v1/ticket_concern/concern_tickets/create"; 
+        var method = 'POST';  
+    
+        if (id) {
+          url = "/api/v1/ticket_concern/concern_tickets/update"; 
+          method = 'PUT';
+        }
+    
         $.ajax({
-            url: "/api/v1/ticket_concern/concern_tickets/create",
-            method: 'POST',
-            data: data,
-            success: function(response) {
-                alert("Successfully created!");
-                window.location.reload();
-            },
-            error: function(response) {
-                var errors = [];
-                try {
-                    errors = JSON.parse(response.responseText).messages;
-                } catch(err) {
-                    errors.push("Something went wrong");
-                    console.log(response);
-                }
-                $message.html(
-                    Mustache.render(templateErrorList, { errors: errors })
-                );
+          url: url,
+          method: method,
+          data: data,
+          success: function(response) {
+            if (id) {
+              alert("Successfuly Updated!")
+            } else {
+              alert("Successfully Saved!");
             }
+            window.location.reload();
+          },
+          error: function(response) {
+            console.log(response);
+            var templateErrorList = `<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>`;
+            var errors  = [];
+            try {
+                var errorData = JSON.parse(response.responseText);
+                errors = Array.isArray(errorData.messages) ? 
+                      errorData.messages.map(err => err.message) : 
+                      [errorData.messages || "An unexpected error occurred."];
+            } catch {
+                errors.push("Something went wrong. Please try again.");
+                console.log(response);
+            } 
+            $btnConfirm.prop("disabled", false);
+            $message.html(Mustache.render(templateErrorList, { errors })).addClass("text-danger");
+          }
         });
-
-        // if (holidayId) {
-        //     data.id = holidayId; 
-        //     $.ajax({
-        //         url: "/api/v1/data_stores/holiday_records/update",
-        //         method: 'PUT',
-        //         data: data,
-        //         success: function(response) {
-        //             alert("Successfully updated!");
-        //             window.location.reload();
-        //         },
-        //         error: function(response) {
-        //             var errors = [];
-        //             try {
-        //                 errors = JSON.parse(response.responseText).messages;
-        //             } catch(err) {
-        //                 errors.push("Something went wrong");
-        //                 console.log(response);
-        //             }
-        //             $message.html(
-        //                 Mustache.render(templateErrorList, { errors: errors })
-        //             );
-        //         }
-        //     });
-        // } else {
-        //     // If no holidayId, create a new holiday record (POST)
-            
-        // }
-    });
+      });
 }
 
 var init = function(options) {
@@ -127,6 +104,5 @@ var init = function(options) {
     _cacheDom();
     _bindEvents();
 };
-
 
 export default { init: init };

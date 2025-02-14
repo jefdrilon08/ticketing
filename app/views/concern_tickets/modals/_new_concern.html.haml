@@ -1,23 +1,28 @@
-#modal-new.modal.fade{:tabindex => "-1"}
-  .modal-dialog.modal-lg
+#modal-new.modal.fade{ tabindex: "-1" }
+  .modal-dialog
     .modal-content
       .modal-header
         %h3.modal-title
           New Concern Ticket
       .modal-body
         .modal-body-content
+          .bs-callout.bs-callout-info
           .row
-            .col-md-6.col-xs-12
+            .col
               .form-group
-                %label{ for: "concern" } Concern Name
-                %input#concern-textbox.form-control{ type: "text", placeholder: "Enter Concern" }
-                %input#concern-id.form-control{ hidden: true }            
-            .col-md-6.col-xs-12
+                %label
+                  Name
+                = text_field_tag :name, "", id: "input-name", class: "form-control"
+                %input#id.form-control{ hidden: true }
+              .form-group.mt-3
+                %label
+                  Description
+                = text_area_tag :description, "", id: "input-description", class: "form-control", rows: 3
               .form-group
                 %label
                   Computer System
-                = select_tag :computer_system_id, options_from_collection_for_select(@computer_systems, :id, :name), class: "form-control", id: "computer-system", prompt: "-- SELECT --"
-
+                = select_tag :computer_system_id, options_from_collection_for_select(@computer_systems, :id, :name), class: "form-control", id: "input-computer-system", prompt: "-- SELECT --"
+  
           .message
       .modal-footer
         .controls
