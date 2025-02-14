@@ -3,7 +3,7 @@
     = link_to "#", class: "" do
       %i.bi.bi-person-square
       %span.link-name
-        Employee
+        Tickets
     %i.bi.bi-caret-down.arrow
   %ul.sub-menu
     %li
@@ -12,16 +12,12 @@
     %li
       = link_to "#", class: "", data: { "bs-toggle": "modal", "bs-target": "#modal-new-tix" } do
         %i.bi.bi-plus-circle
-        New Employee
-    %li
-      = link_to members_path(status: "pending"), class: "" do
-        %i.bi.bi-exclamation-circle
-        Pending Employee
-    %li
-      = link_to online_applications_path do
-        %i.bi.bi-globe
-        Online Member Applications
+        New Ticket
     %li
       = link_to "/system_tickets" do
-        %i.bi.bi-pencil-square
-        Member Checker
+        %i.bi.bi-ticket
+        System Tickets
+    %li
+      = link_to concern_tickets_path, class: "" do
+        %i.bi.bi-receipt
+        Concern Tickets
