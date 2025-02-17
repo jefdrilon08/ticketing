@@ -205,6 +205,13 @@ namespace :api do
   end
 
   namespace :v1 do
+
+    namespace :ticket_concern do
+      get "/concern_tickets", to: "concern_tickets#index"
+      post "/concern_tickets/create", to: "concern_tickets#create"
+      # put "/concern_tickets/update", to: "concern_tickets#update"
+    end
+    
    #mbs_transfer
     post "mbs_transfer/create", to: "mbs_transfer#create"
     post "mbs_transfer/add_member", to: "mbs_transfer#add_member"
@@ -253,8 +260,6 @@ namespace :api do
     post "/members_project_types_controller/delete", to: "members_project_types#delete"
     post "/members_project_types_controller/approve", to: "members_project_types#approve"
 
-
-
     # Process Online Application
     post "/online_applications/process", to: "online_applications#process_application"
     post "/online_applications/reject", to: "online_applications#reject"
@@ -273,7 +278,6 @@ namespace :api do
     post "/online_loan_applications/reject_approve", to: "online_loan_applications#reject_approve"
     post "/online_loan_applications/decline", to: "online_loan_applications#decline"
     post "/online_loan_applications/check", to: "online_loan_applications#check"
-
     post "online_loan_applications/mb_save", to: "online_loan_applications#mb_save"
     
     # Savings Insurance Transfer Collections
@@ -299,8 +303,6 @@ namespace :api do
     #Onlinedisbursement
     post "bank_transfer/create",  to: "bank_transfer#create"
     post "bank_transfer/create_channel", to:"bank_transfer#create_channel"
-
-   
 
     # Adjustments
     namespace :adjustments do
@@ -794,12 +796,6 @@ namespace :api do
       # Membership Arrangement
       post "/membership_arrangements/update_data", to: "membership_arrangements#update_data"
     end
-
-    namespace :ticket_concern do
-      post "/concern_tickets/create", to: "concern_tickets#create"
-      # put "/concern_tickets/update", to: "concern_tickets#update"
-    end
-    
     
     get 'reports/member_reports', to: 'reports#member_reports'
     get 'reports/collections_clip_reports', to: 'reports#collections_clip_reports'

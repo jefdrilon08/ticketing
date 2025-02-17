@@ -47,19 +47,20 @@ var _bindEvents = function() {
         var id          = $id.val();
         var name        = $inputName.val();
         var description = $inputDesc.val();
-        var description = $inputComputerSystem.val();
+        var computer_system = $inputComputerSystem.val();
     
         var data = {
           name:        name,
           description: description,
+          computer_system: computer_system,
           status:      "active",
           id:          id,
           authenticity_token: _authenticityToken
         };
     
-        var url = "/api/v1/ticket_concern/concern_tickets/create"; 
-        var method = 'POST';  
-    
+        var url = "/api/v1/ticket_concern/concern_tickets"; 
+        var method = 'POST';
+        console.log(id)
         if (id) {
           url = "/api/v1/ticket_concern/concern_tickets/update"; 
           method = 'PUT';
@@ -70,6 +71,7 @@ var _bindEvents = function() {
           method: method,
           data: data,
           success: function(response) {
+          
             if (id) {
               alert("Successfuly Updated!")
             } else {

@@ -4,6 +4,11 @@ module Api
       class ConcernTicketsController < ApiController
         before_action :authenticate_user!
 
+        def index
+          concern_tickets = ConcernTicket.all
+          render json: { concern_tickets: concern_tickets }, status: :ok
+        end
+        
         def create
           config = {
             name: params[:name],
