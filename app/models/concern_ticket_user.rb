@@ -1,0 +1,2 @@
+class ConcernTicketUser < ApplicationRecord
+end

@@ -23,9 +23,6 @@ Rails.application.routes.draw do
   get "/concern_tickets", to: "concern_tickets#index"
   get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
 
-  
-  
-  
   # get "/dormant", to: "dormant#index"
   # get "/dormant/:id", to: "dormant#show"
   # delete "/dormant/:id", to: "dormant#destroy"
