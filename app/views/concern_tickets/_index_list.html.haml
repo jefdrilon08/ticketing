@@ -12,7 +12,7 @@
       - @records.each do |a|
         %tr
           %td.text-center= a.name
-          %td.text-center= a.computer_system_id || "N/A"
+          %td.text-center= a.computer_system&.name || "N/A"
           %td.text-center= a.user_id || "Unassigned"
           %td.text-center= a.created_at.strftime("%b %d, %Y")
           %td.text-center 
@@ -27,20 +27,20 @@
               .badge.bg-secondary Unknown
           %td.text-center
             = link_to concern_ticket_path(a), class: "btn btn-primary btn-sm" do
-              %i.bi.bi-eye  View
-            %button.btn.btn-info.btn-sm.update-button{
-              data: {
-                id: a.id,
-                name: a.name,
-                description: a.description,
-                status: a.status
-              }
-            }
-              %i.bi.bi-pencil  Update
-            %button.btn.btn-danger.btn-sm.delete-button{
-              data: { id: a.id }
-            }
-              %i.bi.bi-trash  Delete
+              %i.bi.bi-eye
+            -# %button.btn.btn-info.btn-sm.update-button{
+            -#   data: {
+            -#     id: a.id,
+            -#     name: a.name,
+            -#     description: a.description,
+            -#     status: a.status
+            -#   }
+            -# }
+            -#   %i.bi.bi-pencil  Update
+            -# %button.btn.btn-danger.btn-sm.delete-button{
+            -#   data: { id: a.id }
+            -# }
+            -#   %i.bi.bi-trash  Delete
     - else
       %tr
         %td{ colspan: 6, class: "text-center" } No records found

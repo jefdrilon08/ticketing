@@ -206,10 +206,10 @@ namespace :api do
 
   namespace :v1 do
 
-    namespace :ticket_concern do
+    namespace :tickets do
       get "/concern_tickets", to: "concern_tickets#index"
-      post "/concern_tickets/create", to: "concern_tickets#create"
-      # put "/concern_tickets/update", to: "concern_tickets#update"
+      post "/concern_tickets", to: "concern_tickets#create"
+      put "/concern_tickets/:id", to: "concern_tickets#update"
     end
     
    #mbs_transfer

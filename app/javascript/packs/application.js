@@ -7,18 +7,15 @@ import { createRoot } from "react-dom/client";
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import * as bootstrap from "bootstrap";
-
 import consumer from "../channels/consumer";
 
 // React Components
 import DashboardMainUI from "../components/dashboard/MainUI";
 
-
 import Login from "../components/users/Login.js";
 import AdministrationUsersForm from "../components/administration/users/Form.js";
 import AdministrationUsersIndex from "../components/administration/users/Index.js";
 import AdministrationUsersShow from "../components/administration/users/Show.js";
-
 
 // "init" Objects
 import Dashboard from "../models/Dashboard.js";
@@ -32,15 +29,7 @@ import AdministrationCentersShow from "../components/administration/centers/Show
 import AdministrationComputerSystemIndex from '../models/AdministrationComputerSystemIndex.js';
 
 import ConcernTicketIndex from '../models/ConcernTicketIndex.js';
-// import ConcernTicketShow from '../models/ConcernTicketShow.js';
-
-//const renderComponent = (Component, payload) => {
-//  ReactDOM.render(
-//    <Component {...payload} />,
-//    document.getElementById("react-root"),
-//  )
-//}
-//>>>>>>> Instapay_Pesonet
+import ConcernTicketShow from '../models/ConcernTicketShow.js';
 
 const hooks = {
   "pages/index":                                      [DashboardMainUI, Dashboard],
@@ -56,9 +45,8 @@ const hooks = {
   "administration/branches/show":                     [AdministrationBranchesShow],
   "administration/centers/show":                      [AdministrationCentersShow],
 
-
-  "concern_tickets/index":                        [ConcernTicketIndex],
-  // "concern_ticket/show":                         [ConcernTicketShow],
+  "concern_tickets/index":                            [ConcernTicketIndex],
+  "concern_tickets/show":                             [ConcernTicketShow],
 
   "administration/computer_system/index":             [AdministrationComputerSystemIndex],
 

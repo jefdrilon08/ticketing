@@ -1,20 +1,50 @@
-#modal-create.modal.fade{ tabindex: "-1" }
+#modal-create-ticket.modal.fade{ tabindex: "-1" }
   .modal-dialog
     .modal-content
       .modal-header
-        %h5.modal-title Create Ticket
+        %h3.modal-title
+          Create Ticket
       .modal-body
-        %form
-          .form-group
-            %label{ for: "concern" } Concern
-            %input#concern-textbox.form-control{ type: "text", placeholder: "Enter Concern" }
-            %input#concern-id.form-control{ hidden: true }
-          .form-group
-            %label
-              Ticket Date
-            = text_field_tag :as_of, Date.today, type: :date, id: "input-as-of", class: 'form-control'
+        .modal-body-content
+          .bs-callout.bs-callout-info
+          .row
+            .col
+              .form-group
+                %label
+                  Ticket Number
+                = text_field_tag :ticket_number, "", id: "input-ticket-number", class: "form-control"
+                
+              .form-group.mt-3
+                %label
+                  Assigned Person
+                = text_field_tag :name, "", id: "input-name", class: "form-control"
+
+              .form-group.mt-3
+                %label
+                  Description
+                = text_area_tag :description, "", id: "input-description", class: "form-control", rows: 3
+
+              .form-group.mt-3
+                %label
+                  Concern Type
+                = select_tag :concern_type_id, options_from_collection_for_select(@concern_types, :id, :name), class: "form-control", id: "input-concern-type", prompt: "-- SELECT --"
+
+              .form-group.mt-3
+                %label
+                  Assigned Branch
+                = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name), class: "form-control", id: "input-branch", prompt: "-- SELECT --"
+
+              .form-group.mt-3
+                %label
+                  Status
+                = select_tag :status, options_for_select([["Pending", "open"], ["Approved", "pending"], ["Processing", "processing"]]), class: "form-control", id: "input-status"
+
           .message
       .modal-footer
-        %button#btn-confirm.btn.btn-primary Confirm
-        %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Cancel
-        
+        .controls
+          %button#btn-confirm.btn.btn-primary
+            .fa.fa-check
+            Confirm
+          %button.btn{"data-bs-dismiss" => "modal", :type => "button"}
+            .fa.fa-times
+            Cancel

@@ -4,44 +4,41 @@ import * as bootstrap from "bootstrap";
 
 var _authenticityToken;
 
-var $modalNew;
-var $btnNew;
+var $modalCreateTicket;
+var $btnCreateTicket;
 var $btnConfirm;
 var $inputName;
 var $inputDesc;
-var $id;
-var $message;
 var $inputComputerSystem;
 var $displayComputerSystemName;
+var $message;
 var templateErrorList;
 
 var _cacheDom = function() {
-    $btnNew                     = $("#btn-new");
+    $btnCreateTicket            = $("#btn-create-ticket");
     $btnConfirm                 = $("#btn-confirm");
     $inputName                  = $("#input-name");
     $inputDesc                  = $("#input-description");
     $inputComputerSystem        = $("#input-computer-system");
-    $displayComputerSystemName = $("#display-computer-system-name");
-    $id                         = $("#id");
+    $displayComputerSystemName  = $("#display-computer-system-name");
     
-    $modalNew  = new bootstrap.Modal(document.getElementById("modal-new"));
+    $modalCreateTicket = new bootstrap.Modal(document.getElementById("modal-create-ticket"));
     $message   = $(".message");
     templateErrorList = $("#template-error-list").html();
-}
+};
 
 var _bindEvents = function() {
-    $btnNew.on("click", function() {
+    $btnCreateTicket.on("click", function() {
+        
         $inputName.val("");
         $inputDesc.val("");
         $inputComputerSystem.val("");
         $displayComputerSystemName.text("");
-        $id.val("");
-        $modalNew.show();
+        $modalCreateTicket.show();
         $message.html("");
     });
 
     $btnConfirm.on("click", function() {
-        var id = $id.val();
         var name = $inputName.val();
         var description = $inputDesc.val();
         var computer_system_id = $inputComputerSystem.val();
@@ -51,32 +48,26 @@ var _bindEvents = function() {
             description: description,
             computer_system_id: computer_system_id,
             status: "active",
-            id: id,
             authenticity_token: _authenticityToken
         };
         
-        var url = "/api/v1/tickets/concern_tickets"; 
-        var method = 'POST';
-        if (id) {
-            url = "/api/v1/tickets/concern_tickets/update"; 
-            method = 'PUT';
-        }
+        var url = "/api/v1/tickets/concern_tickets";
     
         $.ajax({
             url: url,
-            method: method,
+            method: "POST",
             data: data,
             success: function(response) {
                 if (response.data) {
                     var ticket = response.data;
-                    alert("Successfully " + (id ? "Updated" : "Saved") + "!");
+                    alert("Successfully Created!");
                     $displayComputerSystemName.text(ticket.computer_system_name || "");
                 }
                 window.location.reload();
             },
             error: function(response) {
                 var templateErrorList = `<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>`;
-                var errors  = [];
+                var errors = [];
                 try {
                     var errorData = JSON.parse(response.responseText);
                     errors = Array.isArray(errorData.messages) ? 
@@ -90,9 +81,10 @@ var _bindEvents = function() {
             }
         });
     });
-}
+};
 
 var init = function(options) {
+    console.log("Opening Create Ticket Modal");
     _authenticityToken = options.authenticityToken;
     _cacheDom();
     _bindEvents();
