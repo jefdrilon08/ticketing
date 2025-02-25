@@ -1,2 +1,0 @@
-class ConcernType < ApplicationRecord
-end
