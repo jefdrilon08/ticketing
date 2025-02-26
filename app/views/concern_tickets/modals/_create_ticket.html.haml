@@ -17,7 +17,7 @@
               .form-group.mt-3
                 %label
                   Assigned Person
-                = text_field_tag :name, "", id: "input-name", class: "form-control"
+                = select_tag :user_id, options_from_collection_for_select(@concern_ticket_users, :id, :name), class: "form-control", id: "input-assigned-person", prompt: "-- SELECT --"
 
               .form-group.mt-3
                 %label
