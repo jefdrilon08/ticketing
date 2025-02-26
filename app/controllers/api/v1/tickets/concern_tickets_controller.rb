@@ -14,7 +14,7 @@ module Api
               description: ticket.description,
               status: ticket.status,
               computer_system_id: ticket.computer_system_id,
-              computer_system_name: ticket.computer_system&.name # Get the name
+              computer_system_name: ticket.computer_system&.name
             }
           end
         
@@ -28,6 +28,7 @@ module Api
             description: params[:description],
             status: params[:status],
             computer_system_id: params[:computer_system_id]
+            user_id: params[:user_id]
           }
           
           errors = ::Tickets::ValidateCreate.new(config: config).execute!

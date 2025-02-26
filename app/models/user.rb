@@ -47,7 +47,8 @@ class User < ApplicationRecord
   #has_many :announcements
   #has_many :user_demerits
   #has_many :user_branches
-  #has_many :branches, through: :user_branches
+  # has_many :branches, through: :user_branches
+  has_many :concern_ticket_user
 
   serialize :roles, type: Array
 
