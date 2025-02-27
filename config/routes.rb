@@ -673,11 +673,12 @@ Rails.application.routes.draw do
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"
   post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
   post "system_tickets/set_expected_goal",  to: "system_tickets#set_expected_goal"
+  post "system_tickets/edit_member",        to: "system_tickets#edit_member"
   post "system_tickets/add_member",         to: "system_tickets#add_member"  
   post "system_tickets/delete_member",      to: "system_tickets#delete_member" 
   post "system_tickets/set_maindev",        to: "system_tickets#set_maindev"
 
   get "new_system_ticket",                  to: "new_system_ticket#view"
-  post "/create_systemtix",to: "new_system_ticket#create_systemtix"
+  post "/create_systemtix",                 to: "new_system_ticket#create_systemtix"
 
 end

@@ -64,6 +64,7 @@
 
 :javascript
   var arr=[]
+  
   function addMember() {
     var x=document.getElementById("member-sel").value
     var y=document.getElementById("selected"+x).label
@@ -99,7 +100,7 @@
         slct.id="in-sel-mem"
         slct.multiple="multiple"
         slct.style.display="none"
-        slct.name="members"
+        slct.name="members[]"
 
     console.log(slct.value+" val")
 
@@ -126,10 +127,11 @@
       var option=document.createElement('option')
           option.text=arr[x][0]
           option.value=arr[x][0]
-          option.selected=true
+          option.setAttribute('selected', 'selected')
 
       slct.add(option)
     }
+    slct.options.selected=true
   }
 
   function removeMember() {

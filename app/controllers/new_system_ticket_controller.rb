@@ -2,8 +2,11 @@ class NewSystemTicketController < ApplicationController
     before_action :authenticate_user!
 
     def create_systemtix
+        members_arr=[]
+        params[:members].each do|x|
+            members_arr.push([x,"Member"])
+        end
         puts params
-        fdsfsf
         @record     =SystemTicket.new(
                                         computer_system_id:params[:computer_system_id],
                                         status:'pending',
@@ -14,11 +17,11 @@ class NewSystemTicketController < ApplicationController
                 ticket_number:nil,
                 system_ticket_id:@record[:id],
                 system_type:nil,
-                title:params[:title],
+                title:nil,
                 description:params[:description],
                 status:"pending",
                 data:   {
-                            team_members:params[:arr],
+                            team_members:members_arr,
                             attached_file:params[:file],
                             save_details:nil,
                         },

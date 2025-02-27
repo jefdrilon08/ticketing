@@ -15,23 +15,6 @@
             .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%;"}
                     %tr
-                        %th
-                            %h3
-                                #{@ticket.title}&nbsp
-                                - case @ticket.status
-                                - when 'pending'
-                                    .badge.bg-warning
-                                        %i.bi.bi-check
-                                - when 'done'
-                                    .badge.bg-dark
-                                        %i.bi.bi-check
-                                - when 'active'
-                                    .badge.bg-success
-                                        %i.bi.bi-check
-                                - when 'processing'
-                                    .badge.bg-primary
-                                        %i.bi.bi-check
-                    %tr
                         %td
                             %p
                                 #{@ticket.description}
@@ -58,35 +41,52 @@
                     %tr
                         %th{:style=>"width:20%"}
                             Status:
-                        %td{:style=>"width:10%"}
-                            %p
-                                #{@ticket.status} 
-                        %td
                             - case @ticket.status
                             - when "processing"
-                                = form_tag "edit_ticket_status", method: 'POST' do
-                                    .form-group
-                                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                    %td
+                                %td{:style=>"width:10px"}
+                                    %p{:style=>"margin-top:-20%;width:100px"}
+                                        .badge.bg-primary
+                                            #{@ticket.status} 
+                                %td
+                                    = form_tag "edit_ticket_status", method: 'POST' do
                                         .form-group
-                                            = button_tag type: 'submit',class:'btt-linkto' do
-                                                Update
+                                            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                        %td
+                                            .form-group
+                                                = button_tag type: 'submit',class:'btt-linkto' do
+                                                    Update
                             - when "active"
-                                = form_tag "edit_ticket_status", method: 'POST' do
-                                    .form-group
-                                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                    %td
+                                %td{:style=>"width:10px"}
+                                    %p{:style=>"margin-top:-20%;width:100px"}
+                                        .badge.bg-success
+                                            #{@ticket.status} 
+                                %td
+                                    = form_tag "edit_ticket_status", method: 'POST' do
                                         .form-group
-                                            = button_tag type: 'submit',class:'btt-linkto' do
-                                                Update
+                                            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                        %td
+                                            .form-group
+                                                = button_tag type: 'submit',class:'btt-linkto' do
+                                                    Update
                             - when "pending"
-                                = form_tag "edit_ticket_status", method: 'POST' do
-                                    .form-group
-                                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                    %td
+                                %td{:style=>"width:10%"}
+                                    %p{:style=>"margin-top:-20%;width:100px"}
+                                        .badge.bg-warning
+                                            #{@ticket.status} 
+                                %td
+                                    = form_tag "edit_ticket_status", method: 'POST' do
                                         .form-group
-                                            = button_tag type: 'submit',class:'btt-linkto' do
-                                                Update
+                                            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                        %td
+                                            .form-group
+                                                = button_tag type: 'submit',class:'btt-linkto' do
+                                                    Update
+                            -else
+                                %td{:style=>"width:10%"}
+                                    %p{:style=>"margin-top:-20%;width:100px"}
+                                        .badge.bg-dark
+                                            #{@ticket.status}
+                                %td
                 %table.table{:style=>"border-color:white;font-size:115%"}
                     %tr
                         %th{:style=>"width:20%"}
@@ -149,25 +149,32 @@
                                 Main Dev:
                         %td
                             %p
-                                placeholder
-                        %td{:style=>"width:60%"}
+                                -case @maindev
+                                    -when ""
+                                        Not assigned
+                                    -else
+                                        #{@maindev}
+                        %td{:style=>"width:40%"}
                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-main-dev" },id:"btn-milestone" do
                                 Edit Main Dev
-                    %tr
-                        %th
-                            %p
-                                Members:
-                        %td
-                            %p
-                                placeholder
-                        %td
-                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
-                                Edit Members
-                    %tr
-                        %td
-                        %td
-                            %p
-                                placeholder
+                    -i_show=0
+                    -@mem_list.each do |x|
+                        %tr
+                            %th
+                                -if i_show==0
+                                    %p
+                                        Members:
+                                -else
+                                    %p
+                            %td
+                                %p
+                                    #{x[0]} - #{x[1]}
+                            %td
+                                -if i_show==0
+                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                        Edit Members
+                                -else
+                        -i_show+=1
         %div.col-6
             .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%"}

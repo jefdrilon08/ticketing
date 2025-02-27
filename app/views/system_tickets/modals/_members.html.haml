@@ -5,57 +5,154 @@
                 %h3.modal-title 
                     Edit Members
             .modal-body
-                =form_tag "",method: 'POST' do 
-                    %table.table{:style=>"border-color:white;font-size:110%"} 
-                        %tr
-                            %th{:style=>"width:20%"}
-                                %p
-                                    Current Members
-                            %td
-                                %p
-                                    placeholder
-                            %td
+                %h4
+                    Current Members
+                %div.row
+                    %div.col-9
+                        =form_tag "edit_member",method: 'POST' do 
+                            %table.table{:style=>"border-color:white;font-size:110%"} 
+                                %tr
+                                    %th{:style=>"width:10%"}
+                                    %th
+                                        %p
+                                            Member
+                                    %th
+                                        .form-group
+                                            Task
+                                    %td
                                 .form-group
-                                    =select_tag :status,params[:status],class:'form-control select-select2',style:"width:50%;margin-top:-6px",prompt:"-- SELECT --"
-                            %td
-                                = link_to "#",{:style=>"color:red"} do
-                                    Remove
-                        %tr
+                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                -@mem_list.each do |x|
+                                    %tr    
+                                        %td
+                                        %td
+                                            %p
+                                                #{x[0]}
+                                            .form-group
+                                                =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:x[2],id:"sel/#{x[2]}"
+                                        %td
+                                            .form-group
+                                                =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',style:"width:50%;margin-top:-6px",id:"#{x[1]}/#{x[2]}"
+                                %tr
+                                    %td    
+                                    %td
+                                        .form-group
+                                            =button_tag type: 'submit', class: 'btn btn-primary' do
+                                                Save 
+                    %div.col-3
+                        =form_tag "delete_member",method: 'POST' do
+                            %table.table{:style=>"border-color:white;font-size:110%"} 
+                                %tr
+                                    %th
+                                        %p
+                                            .form-group
+                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'   
+                                %tr
+                                    %th
+                                        %p{:style=>"margin-top:-6px"} 
+                                -temp_i=0                           
+                                -@mem_list.each do |x|
+                                    %tr
+                                        %td
+                                            %p{:style=>"margin-top:-9px"}
+                                                .form-group
+                                                    =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:temp_i,id:"d-#{temp_i}"
+                                                .form-group
+                                                    = button_tag type: 'submit',class:'btt-linkto2', value:temp_i do
+                                                        Remove
+                                    -temp_i+=1    
+                %hr 
+                    %h4
+                        Add New Member             
+                    %table.table{:style=>"border-color:white;font-size:110%"}
+                        %tr                                                   
                             %th
                                 %p
-                            %td
-                                %p
-                                    placeholder
-                            %td
-                                .form-group
-                                    =select_tag :status,params[:status],class:'form-control select-select2',style:"width:50%;margin-top:-6px",prompt:"-- SELECT --"
-                            %td
-                                = link_to "#",{:style=>"color:red"} do
-                                    Remove
-                        %tr
-                            %td
-                                .form-group
-                                    =button_tag type: 'submit', class: 'btn btn-primary' do
-                                        Save            
-                    %hr                
-                    %table.table{:style=>"border-color:white;font-size:110%"}
-                        =form_tag "",method: 'POST' do                                                   
-                            %tr          
+                        =form_tag "add_member",method: 'POST' do
+                            %tr                                                   
+                                %th{:style=>"width:8%"}
+                                    .form-group
+                                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'            
                                 %th{:style=>"width:20%"}
                                     %p
                                         New Member
                                 %td
                                     .form-group
-                                        =select_tag :status,params[:status],class:'form-control select-select2',prompt:"-- SELECT --"
-                            %tr          
+                                        =select_tag :new_mem,options_for_select(@not_a_mem, params[:new_mem]),class:'form-control select-select2',prompt:"-- SELECT --", required:true
+                                %th{:style=>"width:10%"}
+                            %tr 
+                                %th         
                                 %th
                                     %p
                                         Task
                                 %td
                                     .form-group
-                                        =select_tag :status,params[:status],class:'form-control select-select2',prompt:"-- SELECT --"
+                                        =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',prompt:"-- SELECT --", required:true
                             %tr
+                                %td
                                 %td
                                     .form-group
                                         =button_tag type: 'submit', class: 'btn btn-primary' do
                                             Add
+                                
+
+:css
+    .btt-linkto2{background:none!important;border:none;padding:0!important;color:red;text-decoration:underline;cursor:pointer;}
+    .btt-linkto2:hover{color:#8B0000;}
+
+:javascript
+    
+    onload=taskSelect()
+
+    function taskSelect()
+    {
+        var arr_id=[]
+        var sel=document.getElementsByName("task");
+        console.log("lld")
+
+        for(i=0;i<=sel.length-1;i++)
+        {
+            var id=sel[i].id
+            var temp=id.split("/")
+            arr_id.push([temp[1],id])
+            
+            for(j=0;j<=2;j++)
+            {
+                var opt=document.createElement("option");
+                switch(j)
+                {
+                    case 0:
+                    {
+                        opt.text="Viewer"
+                        opt.value="Viewer"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    } break;
+                    case 1:
+                    {
+                        opt.text="Member"
+                        opt.value="Member"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    } break;
+                    case 2:
+                    {
+                        opt.text="Developer"
+                        opt.value="Developer"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    }
+                }
+                document.getElementById(id).add(opt)
+            }
+        }
+        console.log("anthos")
+        for(i=0;i<=arr_id.length-1;i++)
+        {
+            document.getElementById("sel/"+arr_id[i][0]).name="o-"+i
+            document.getElementById("d-"+i).name="d-"+i
+            document.getElementById(arr_id[i][1]).name="t-"+i
+        }
+    }
+
+    
+
+    
+    

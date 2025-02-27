@@ -48,35 +48,35 @@
                     %td
                         %p
                         %p
-                            #{x[1][0]}
+                            #{x[0]}
                     %td
                         %p
                         %p
-                            #{x[1][4]}                 
+                            #{x[3]}                 
                     %td
                         %center
                             %p
                             %p
-                                - case x[1][1]
+                                - case x[1]
                                 - when 'pending'
                                     .badge.bg-warning
-                                        #{x[1][1]}
+                                        #{x[1]}
                                 - when 'done'
                                     .badge.bg-dark
-                                        #{x[1][1]}
+                                        #{x[1]}
                                 - when 'active'
                                     .badge.bg-success
-                                        #{x[1][1]}
+                                        #{x[1]}
                                 - when 'processing'
                                     .badge.bg-primary
-                                        #{x[1][1]}
+                                        #{x[1]}
 
                     %td
                         %p
                         %p
-                            #{x[1][2]}
+                            #{x[2]}
                     %td
                         %center
-                            %a.button{class:"btn btn-primary",:style=>"margin-top:10%",:href => "/system_tickets/#{x[1][5]}"}
+                            %a.button{class:"btn btn-primary",:style=>"margin-top:5%",:href => "/system_tickets/#{x[5]}"}
                                 %i.bi.bi-eye
 

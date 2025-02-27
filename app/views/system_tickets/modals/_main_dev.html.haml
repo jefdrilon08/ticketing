@@ -5,22 +5,28 @@
                 %h3.modal-title 
                     Edit Main Dev
             .modal-body
-                =form_tag "",method: 'POST' do 
+                =form_tag "set_maindev",method: 'POST' do 
                     %table.table{:style=>"border-color:white;font-size:110%"} 
                         %tr
-                            %th{:style=>"width:30%"}
+                            %th{:style=>"width:40%"}
                                 %p
                                     Current Main Dev
                             %td
                                 %p
-                                    placeholder
+                                    -case @maindev
+                                    -when ""
+                                        None
+                                    -else
+                                        #{@maindev}
                         %tr          
-                            %th
+                            %th{:style=>"width:40%"}
                                 %p
                                     New Main Dev
+                                .form-group
+                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
                             %td
                                 .form-group
-                                    =select_tag :status,params[:status],class:'form-control select-select2',prompt:"-- SELECT --"
+                                    =select_tag :maindev,options_for_select(@mem_list, params[:maindev]),class:'form-control select-select2',prompt:"-- SELECT --",required:true
                         %tr
                             %td
                                 .form-group
