@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema[7.1].define(version: 2025_02_24_060633) do
+=======
+ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
+>>>>>>> b6d2699fde68de06f5f2414ce15fb879695aa044
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -91,9 +95,49 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_24_060633) do
 
   create_table "computer_systems", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
-    t.string "description"
+    t.text "description"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "concern_ticket_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "concern_ticket_id"
+    t.text "description"
+    t.json "data"
+    t.string "status"
+    t.string "name"
+    t.uuid "concern_type_id"
+    t.uuid "branch_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "ticket_number"
+  end
+
+  create_table "concern_ticket_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id"
+    t.string "status"
+    t.string "task"
+    t.uuid "concern_ticket_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "concern_tickets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.text "description"
     t.string "status"
     t.json "data"
+    t.uuid "computer_system_id"
+    t.uuid "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "concern_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -131,15 +175,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_24_060633) do
     t.string "system_ticket_desc_id"
     t.text "milestone_details"
     t.string "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "milestones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "system_ticket_desc_id"
-    t.text "milestone_details"
-    t.string "status"
-    t.date "target_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
