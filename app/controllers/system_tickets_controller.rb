@@ -1,5 +1,6 @@
 class SystemTicketsController < ApplicationController
-    before_action :authenticate_user!
+    # before_action :authenticate_user!
+    skip_forgery_protection
 
     def index
         system_tix =SystemTicket.all.order("created_at DESC")
@@ -202,11 +203,11 @@ class SystemTicketsController < ApplicationController
 
         puts mem_add_data
 
-        # if mem_add.update(data:mem_add_data)
-        #     redirect_to "/system_tickets/#{params[:id]}"
-        # else
-        #     render :edit, status: :unprocessable_entity
-        # end
+        if mem_add.update(data:mem_add_data)
+            redirect_to "/system_tickets/#{params[:id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
 
     end
 
