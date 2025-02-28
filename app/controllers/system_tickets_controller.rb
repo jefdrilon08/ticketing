@@ -3,7 +3,12 @@ class SystemTicketsController < ApplicationController
     skip_forgery_protection
 
     def index
-        system_tix =SystemTicket.all.order("created_at DESC")
+        
+    end
+
+    def selected_index
+        system_tix =SystemTicket.where(computer_system_id:params[:id]).order("created_at DESC")
+        @system_name=ComputerSystem.find(params[:id]).name
         @system_tix_desc=[]
         @milestones=[]
 
@@ -12,16 +17,10 @@ class SystemTicketsController < ApplicationController
         processing=[]
         done=[]
 
-        puts system_tix
-
         # Filter
-        @f_cs          = params[:f_cs]
         @f_date        = params[:f_date].to_s
         @f_status      = params[:f_status]
             
-        if @f_cs.present?
-            system_tix = system_tix.where(computer_system_id:@f_cs)
-        end
         if @f_status.present?
             system_tix= system_tix.where(status:@f_status)
         end
@@ -44,7 +43,7 @@ class SystemTicketsController < ApplicationController
                 date    =temp[:date_received]
                 title   =temp[:title]
                 id      =temp[:id]
-                cs_name =ComputerSystem.find(x[:computer_system_id])[:name]
+                cs_name =x[:computer_system_id]
     
                 case stat
                 when "pending"
@@ -98,6 +97,7 @@ class SystemTicketsController < ApplicationController
         @not_a_mem=[]
         @milestones=[]
         @ticket   = SystemTicketDesc.find(params[:id])
+        @cs_id    = SystemTicket.find(@ticket[:system_ticket_id])[:computer_system_id]
         @empty    = Milestone.where(system_ticket_desc_id:@ticket[:id]).count==0
         if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("status DESC,target_date ASC") end
             # if @ticket[:data]["attached_file"]!=nil then @file=@ticket[:data]["attached_file"]["tempfile"] end
@@ -288,5 +288,4 @@ class SystemTicketsController < ApplicationController
             render :edit, status: :unprocessable_entity
         end
     end
-
 end

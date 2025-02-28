@@ -1,4 +1,4 @@
-= link_to "/system_tickets",style:"margin-left:1%" do
+= link_to "/system_tickets_#{@cs_id}",style:"margin-left:1%" do
     < Back
 %p
 .card.some{:style=>"padding:1%"}
@@ -18,25 +18,6 @@
                         %td
                             %p
                                 #{@ticket.description}
-                %table.table{:style=>"border-color:white;font-size:115%"}
-                    %tr
-                        %th{:style=>"width:20%"}
-                            %p 
-                                Expected goal:
-                        %td
-                            - case @ticket.expected_goal
-                            - when nil
-                                =form_tag "set_expected_goal",method: 'POST' do
-                                    .form-group
-                                        =text_area_tag :goal,params[:goal],class:'form-control',required:true
-                                    .form-group
-                                        =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'
-                                    .form-group
-                                        = button_tag type: 'submit',class:'btt-linkto' do
-                                            Set expected goal
-                            - else
-                                %p
-                                    #{@ticket.expected_goal}
                 %table.table{:style=>"border-color:white;font-size:115%"}    
                     %tr
                         %th{:style=>"width:20%"}
