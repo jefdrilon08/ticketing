@@ -7,6 +7,6 @@
         .row
             -@cs.each do |x|
                 .col-3{:style=>"padding:20px"}
-                    = link_to "/system_tickets_#{x.id}", class: "btn-nav-square-md", disabled: microinsurance? do
-                        %h4
+                    = link_to "/system_tickets_#{x.id}", class: "btn-nav-square-md" do
+                        %h5
                             #{x.name}

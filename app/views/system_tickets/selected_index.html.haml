@@ -62,9 +62,12 @@
                                 - when 'processing'
                                     .badge.bg-primary
                                         #{x[1]}
-
                     %td
                         %center
                             %a.button{class:"btn btn-primary",:style=>"margin-top:5%",:href => "/system_tickets/#{x[5]}"}
                                 %i.bi.bi-eye
+    -if @system_tix_desc.empty?
+        %center
+            %h4{:style=>"margin:50px"}
+                No records found.
 

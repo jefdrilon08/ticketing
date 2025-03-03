@@ -1,5 +1,5 @@
 class SystemTicketsController < ApplicationController
-    # before_action :authenticate_user!
+    before_action :authenticate_user!
     skip_forgery_protection
 
     def index
@@ -215,12 +215,15 @@ class SystemTicketsController < ApplicationController
         edit_data_mem= SystemTicketDesc.find(params[:id])
         edit_data_mem_data=edit_data_mem[:data]
 
-        lo0p=edit_data_mem_data["team_members"].count-1
+        lo0p=edit_data_mem_data["team_members"].count
         i=0
 
         while i <= lo0p
             edit_data_mem_data["team_members"].each do |x|
-                if x[0].to_s==params["o-#{i}"].to_s then x[1]=params["t-#{i}"]
+                if x[0].to_s==params["o-#{i}"].to_s && x[1]!="Main Dev"
+                    if params["t-#{i}"]==nil then x[1]=params[:task] 
+                    else x[1]=params["t-#{i}"]
+                    end 
                 end
             end
             i+=1

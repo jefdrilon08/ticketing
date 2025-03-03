@@ -149,13 +149,25 @@
                                     %p
                             %td
                                 %p
-                                    #{x[0]} - #{x[1]}
+                                    #{x[0]} 
+                                    %span{:style=>"color:gray"} - #{x[1]}
                             %td
                                 -if i_show==0
                                     = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                                         Edit Members
                                 -else
                         -i_show+=1
+                    -if @mem_list.empty?
+                        %tr
+                            %th
+                                %p
+                                    Members:
+                            %td
+                                %p
+                                    No members
+                            %td
+                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                    Edit Members
         %div.col-6
             .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%"}
