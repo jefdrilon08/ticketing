@@ -3,12 +3,26 @@ class SystemTicketsController < ApplicationController
     skip_forgery_protection
 
     def index
-        
+        @tickets = SystemTicket.all
+        @computer_systems = []
+        @tickets.each do |x|
+            temp=ComputerSystem.find(x.computer_system_id)
+            @computer_systems.push([temp.name,x.id])
+        end
+        @subheader_side_actions = [
+            {
+              id: "btn-new",
+              link: "/new_system_ticket/",
+              class: "fa fa-plus",
+              text: "New"
+            }
+          ]
     end
 
     def selected_index
-        system_tix =SystemTicket.where(computer_system_id:params[:id]).order("created_at DESC")
-        @system_name=ComputerSystem.find(params[:id]).name
+
+        system_tix =SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")
+        @system_name=ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name
         @system_tix_desc=[]
         @milestones=[]
 
@@ -35,25 +49,22 @@ class SystemTicketsController < ApplicationController
         end
 
         if system_tix!=nil then
-            system_tix.each do |x|
-                temp    =SystemTicketDesc.find(SystemTicketDesc.select(:id).where(system_ticket_id:x[:id]))
-    
-                tixno   =temp[:ticket_number]
-                stat    =temp[:status]
-                date    =temp[:date_received]
-                title   =temp[:title]
-                id      =temp[:id]
-                cs_name =x[:computer_system_id]
+            system_tix.each do |x|  
+                tixno   =x[:ticket_number]
+                stat    =x[:status]
+                date    =x[:date_received]
+                title   =x[:title]
+                id      =x[:id]
     
                 case stat
                 when "pending"
-                    pending.push([tixno,stat,date,cs_name,title,id])
+                    pending.push([tixno,stat,date,title,id])
                 when "active"
-                    active.push([tixno,stat,date,cs_name,title,id])
+                    active.push([tixno,stat,date,title,id])
                 when "processing"
-                    processing.push([tixno,stat,date,cs_name,title,id])
+                    processing.push([tixno,stat,date,title,id])
                 when "done"
-                    done.push([tixno,stat,date,cs_name,title,id])
+                    done.push([tixno,stat,date,title,id])
                 end
             end
         end
@@ -75,6 +86,17 @@ class SystemTicketsController < ApplicationController
         end
         
         puts @system_tix_desc
+
+        @subheader_side_actions = [
+            {
+              id: "btn-new",
+              link: "/new_system_ticket/#{params[:id]}",
+              class: "fa fa-plus",
+              text: "New",
+              data: {id:"asdasd"}
+            }
+          ]
+
     end
     
     def create_milestone

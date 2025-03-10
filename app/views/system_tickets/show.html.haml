@@ -1,4 +1,4 @@
-= link_to "/system_tickets_#{@cs_id}",style:"margin-left:1%" do
+= link_to "/system_tickets_#{SystemTicketDesc.find(params[:id]).system_ticket_id}",style:"margin-left:1%" do
     < Back
 %p
 .card.some{:style=>"padding:1%"}

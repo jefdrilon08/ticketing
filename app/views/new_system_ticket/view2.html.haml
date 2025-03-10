@@ -1,0 +1,22 @@
+- @cs = ComputerSystem.all
+- @computer_systems = []
+- @cs.each do |x|
+  -if SystemTicket.where(computer_system_id:x.id).empty?
+    - @computer_systems.push([x.name,x.id])
+
+.card.some{:style=>"padding:1%"}
+  %h2
+    New System Ticket
+  =form_tag "create_systemtix2", multipart: true, method: 'POST' do
+    %table.table{:style=>"border-color:white;font-size:110%"}
+      %tr
+        %td
+          %label
+            System
+          .form-group
+            =select_tag :computer_system_id,options_for_select(@computer_systems, params[:computer_system_id]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
+      %tr
+        %td      
+          .form-group
+            =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
+              Add Ticket              

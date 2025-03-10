@@ -1,25 +1,17 @@
-- @cs = ComputerSystem.all
-- @computer_systems = []
-- @cs.each do |x|
-  - @computer_systems.push([x.name,x.id])
 
 .card.some{:style=>"padding:1%"}
   %h2
-    New System Ticket
+    New System Ticket for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
   =form_tag "create_systemtix", multipart: true, method: 'POST' do
     %table.table{:style=>"border-color:white;font-size:110%"}
-      %tr
-        %td
-          %label
-            System
-          .form-group
-            =select_tag :computer_system_id,options_for_select(@computer_systems, params[:computer_system_id]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
       %tr
         %td
           %label
             Description
           .form-group
             =text_area_tag :description,params[:description],class:'form-control',required:true
+          .form-group
+            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'            
       %tr
         %td
           %label

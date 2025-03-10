@@ -1,12 +1,15 @@
-- @cs = ComputerSystem.all
-
 .card.some{:style=>"padding:1%"}
     %h2
         System Tickets
     %hr{:style=>"height:20px"}
         .row
-            -@cs.each do |x|
-                .col-3{:style=>"padding:20px"}
-                    = link_to "/system_tickets_#{x.id}", class: "btn-nav-square-md" do
-                        %h5
-                            #{x.name}
+            -if @tickets.empty?
+                %center
+                    %h2
+                        No system tickets found.
+            -else
+                -@computer_systems.each do |x|
+                    .col-3{:style=>"padding:20px"}
+                        = link_to "/system_tickets_#{x[1]}", class: "btn-nav-square-md" do
+                            %h5
+                                #{x[0]}
