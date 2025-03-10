@@ -674,6 +674,7 @@ Rails.application.routes.draw do
   post "system_tickets/create_milestone",   to: "system_tickets#create_milestone"
   post "system_tickets/edit_ticket_status", to: "system_tickets#edit_ticket_status"
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"
+  post "system_tickets/set_date_milestone", to: "system_tickets#set_date_milestone"
   post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
   post "system_tickets/set_expected_goal",  to: "system_tickets#set_expected_goal"
   post "system_tickets/edit_member",        to: "system_tickets#edit_member"

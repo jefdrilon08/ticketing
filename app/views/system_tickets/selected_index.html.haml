@@ -2,7 +2,7 @@
     < Back
 %p
 .card.some{:style=>"padding:1%"}
-    %h2 System Tickets for #{@system_name}
+    %h2 System Tickets - #{@system_name}
     = form_tag "", method: 'GET' do
         %table.table{:style=>"border-color:white;font-size:110%"}
             %tr
@@ -22,7 +22,7 @@
                         =button_tag type: 'submit', class: 'btn btn-info btn-block' do
                             .bi.bi-search
     %table.table.table-bordered.table-sm
-        %th.some{:style=>"width:10%"}
+        %th.some{:style=>"width:5%"}
             %h
                 Date Received
                 
@@ -30,7 +30,13 @@
             %h
                 Ticket no.
                 
-        %th.some{:style=>"width:10%"}
+        %th.some{:style=>"width:5%"}
+            %h
+                Start Date
+        %th.some{:style=>"width:5%"}
+            %h
+                End Date
+        %th.some{:style=>"width:5%"}
             %h
                 Status
         %th.some{:style=>"width:5%"}
@@ -41,11 +47,18 @@
                         %p
                         %p
                             #{x[2]}  
-                                           
                     %td
                         %p
                         %p
-                            #{x[0]}                 
+                            #{x[0]}  
+                    %td
+                        %p
+                        %p
+                            #{x[5]}        
+                    %td
+                        %p
+                        %p
+                            #{x[6]}                 
                     %td
                         %center
                             %p
@@ -64,7 +77,7 @@
                                         #{x[1]}
                     %td
                         %center
-                            %a.button{class:"btn btn-primary",:style=>"margin-top:5%",:href => "/system_tickets/#{x[4]}"}
+                            %a.button{class:"btn btn-primary",:style=>"margin-top:5%;padding:0.5% 5% 0.5% 5%",:href => "/system_tickets/#{x[4]}"}
                                 %i.bi.bi-eye
     -if @system_tix_desc.empty?
         %center

@@ -11,7 +11,7 @@
                             Ticket no. #{@ticket.ticket_number}
         %center
             %hr{:style=>"height:5px"}
-        %div.col-6
+        %div.col-5
             .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%;"}
                     %tr
@@ -168,57 +168,126 @@
                             %td
                                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                                     Edit Members
-        %div.col-6
+        %div.col-7
             .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%"}
                     %td
                         %h3
                             Milestones
                     - case @empty
-                    - when false
-                        %td{:style=>"width:20%"}
-                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-milestones" },id:"btn-milestone" do
-                                Update status
-                        %table.table{:style=>"border-color:white;font-size:115%"}
-                            %tr
-                            %th{:style=>"width:20%"}
-                                %p
-                                    ID
-                            %th{:style=>"width:45%"}
-                                %p
-                                    Details
-                            %th{:style=>"width:10%"}
-                                %p
-                                    Status
-                            %th{:style=>"width:15%"}
-                                %p
-                                    Target Date
-                            - @milestones.each do |x|    
-                                %tr 
-                                    %td
-                                        %p{:style => "font-size:13px"}
-                                            #{x.id}
-                                    %td
-                                        %p
-                                            #{x.milestone_details}
-                                    %td
-                                        %p{:style=>"margin-top:-16px"}
-                                            - case x.status
-                                            - when 'pending'
-                                                .badge.bg-warning
-                                                    #{x.status}
-                                            - when 'done'
-                                                .badge.bg-dark
-                                                    #{x.status}
-                                    %td
-                                        %p
-                                            #{x.target_date}
                     - when true
                         %table.table{:style=>"border-color:white;font-size:115%"}
                             %tr
                                 %center
                                     %p
                                         No milestones found
+                    - when false
+                        %table.table.table-bordered.table-sm
+                            %tr
+                                %th{:style=>"width:30%"}
+                                    %p
+                                        %center
+                                            Details
+                                %th{:style=>"width:5%"}
+                                    %p
+                                        %center
+                                            Status
+                                %th{:style=>"width:10%"}
+                                    %p
+                                        %center
+                                            Target Date
+                                %th{:style=>"width:10%"}
+                                    %p
+                                        %center
+                                            Start Date
+                                %th{:style=>"width:10%"}
+                                    %p
+                                        %center
+                                            End Date
+                                %th{:style=>"width:5%"}
+                                    %p
+                                        %center
+                                            Action
+                            - @milestones.each do |x|
+                                -if x.start_date==nil
+                                    %tr
+                                        = form_tag "set_date_milestone", method: 'POST' do
+                                            %td
+                                                %p
+                                                    %center
+                                                        .form-group
+                                                            =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
+                                                        #{x.milestone_details}
+                                            %td
+                                                %p
+                                                    %center
+                                                        - case x.status
+                                                        - when 'pending'
+                                                            .badge.bg-warning
+                                                                #{x.status}
+                                                        - when 'done'
+                                                            .badge.bg-dark
+                                                                #{x.status}
+                                            %td
+                                                %p
+                                                    %center
+                                                        #{x.target_date}
+                                            %td
+                                                %p
+                                                    %center
+                                                        .form-group
+                                                            =text_field_tag :date,params[:date],class:'form-control',style:"width:80%",required:true,type: :date
+                                            %td
+                                                %p
+                                                    %center
+                                                        #{"--"}
+                                            %td
+                                                %p
+                                                    %center
+                                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                                            Set Date
+                                -else
+                                    %tr
+                                        = form_tag "edit_milestone", method: 'POST' do
+                                            %td
+                                                %p
+                                                    %center
+                                                        .form-group
+                                                            =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
+                                                        #{x.milestone_details}
+                                            %td
+                                                %p
+                                                    %center
+                                                        - case x.status
+                                                        - when 'pending'
+                                                            .badge.bg-warning
+                                                                #{x.status}
+                                                        - when 'done'
+                                                            .badge.bg-dark
+                                                                #{x.status}
+                                            %td
+                                                %p
+                                                    %center
+                                                        #{x.target_date}
+                                            %td
+                                                %p
+                                                    %center
+                                                        #{x.start_date}
+                                            %td
+                                                %p
+                                                    %center
+                                                        -if x.end_date==nil
+                                                            #{"--"}
+                                                        -else
+                                                            #{x.end_date}
+                                            %td
+                                                %p
+                                                    %center
+                                                        - case x.status
+                                                            - when 'pending'
+                                                                = button_tag type: 'submit',class:'btt-linkto' do
+                                                                    Update
+
 
                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
                     Add milestone
@@ -227,7 +296,6 @@
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
     .btt-linkto:hover{color:#0A58CA;}
 
-= render partial: "system_tickets/modals/milestones"
 = render partial: "system_tickets/modals/new_milestone"
 = render partial: "system_tickets/modals/main_dev"
 = render partial: "system_tickets/modals/members"

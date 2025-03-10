@@ -1,7 +1,7 @@
 
 .card.some{:style=>"padding:1%"}
   %h2
-    New System Ticket for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
+    New Ticket for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
   =form_tag "create_systemtix", multipart: true, method: 'POST' do
     %table.table{:style=>"border-color:white;font-size:110%"}
       %tr
@@ -41,7 +41,7 @@
       %tr
         %td
           .form-group
-            = file_field_tag :file, id: "file"
+            = file_field_tag :file, id: "file", accept:"image/*"
       %tr
         %td
           .form-group

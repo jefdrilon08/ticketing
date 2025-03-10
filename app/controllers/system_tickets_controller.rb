@@ -53,18 +53,30 @@ class SystemTicketsController < ApplicationController
                 tixno   =x[:ticket_number]
                 stat    =x[:status]
                 date    =x[:date_received]
+                sdate   =x[:start_date]
+                edate   ="--"
                 title   =x[:title]
                 id      =x[:id]
+
+                if x[:data]["save_details"]!=nil
+                    if x[:data]["save_details"].length==3
+                        then edate=x[:data]["save_details"][2]["date"].to_s[0,10]
+                    end
+                end
+
+                if sdate==nil 
+                    then sdate="Not yet set." 
+                end
     
                 case stat
                 when "pending"
-                    pending.push([tixno,stat,date,title,id])
+                    pending.push([tixno,stat,date,title,id,sdate,edate])
                 when "active"
-                    active.push([tixno,stat,date,title,id])
+                    active.push([tixno,stat,date,title,id,sdate,edate])
                 when "processing"
-                    processing.push([tixno,stat,date,title,id])
+                    processing.push([tixno,stat,date,title,id,sdate,edate])
                 when "done"
-                    done.push([tixno,stat,date,title,id])
+                    done.push([tixno,stat,date,title,id,sdate,edate])
                 end
             end
         end
@@ -187,7 +199,17 @@ class SystemTicketsController < ApplicationController
     def edit_milestone
         edit_milestone=Milestone.find(params[:id])
 
-        if edit_milestone.update(status:"done")
+        if edit_milestone.update(status:"done",end_date:DateTime.now())
+            redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def set_date_milestone
+        edit_milestone=Milestone.find(params[:id])
+
+        if edit_milestone.update(start_date:params[:date])
             redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
         else
             render :edit, status: :unprocessable_entity
@@ -204,15 +226,15 @@ class SystemTicketsController < ApplicationController
         end
     end
 
-    def set_expected_goal
-        add_goal=SystemTicketDesc.find(params[:id])
+    # def set_expected_goal
+    #     add_goal=SystemTicketDesc.find(params[:id])
 
-        if add_goal.update(expected_goal:params[:goal])
-            redirect_to "/system_tickets/#{params[:id]}"
-        else
-            render :edit, status: :unprocessable_entity
-        end
-    end
+    #     if add_goal.update(expected_goal:params[:goal])
+    #         redirect_to "/system_tickets/#{params[:id]}"
+    #     else
+    #         render :edit, status: :unprocessable_entity
+    #     end
+    # end
 
     def add_member
         puts params
