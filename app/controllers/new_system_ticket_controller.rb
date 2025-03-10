@@ -23,8 +23,20 @@ class NewSystemTicketController < ApplicationController
         end
         puts params
 
+        tn1=SystemTicket.all
+        index=1
+        indexfin=0
+        tn1.each do |x|
+            if params[:id]==x.id
+                then indexfin=index
+            else index=index+1
+            end
+        end
+
+        tn_fin="ST#{indexfin}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
+
         @record=SystemTicketDesc.new(
-                ticket_number:nil,
+                ticket_number:tn_fin,
                 system_ticket_id:params[:id],
                 system_type:nil,
                 title:nil,
