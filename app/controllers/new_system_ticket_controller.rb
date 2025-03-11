@@ -3,11 +3,18 @@ class NewSystemTicketController < ApplicationController
         # cs_name = ComputerSystem.find(params[:id]).name
 
     def create_systemtix2
-        puts "pumasok"
+        members_arr=[]
+        params[:members].each do|x|
+            members_arr.push([x])
+        end
         @record     =SystemTicket.new(
                                         computer_system_id:params[:computer_system_id],
                                         status:'pending',
-                                        user_id:nil
+                                        user_id:nil,
+                                        data:   {
+                                                    team_members:members_arr
+                                                },
+                                        system_number:SystemTicket.all.count+1
                                     )
         if @record.save
             redirect_to "/system_tickets/"
@@ -23,17 +30,7 @@ class NewSystemTicketController < ApplicationController
         end
         puts params
 
-        tn1=SystemTicket.all
-        index=1
-        indexfin=0
-        tn1.each do |x|
-            if params[:id]==x.id
-                then indexfin=index
-            else index=index+1
-            end
-        end
-
-        tn_fin="ST#{indexfin}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
+        tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
 
         @record=SystemTicketDesc.new(
                 ticket_number:tn_fin,
@@ -49,7 +46,9 @@ class NewSystemTicketController < ApplicationController
                         },
                 date_received:DateTime.now(),
                 start_date:nil,
-                expected_goal:nil
+                expected_goal:nil,
+                request_type:params[:request_type],
+                requested_by:current_user.id
             )
             if @record.save
                 redirect_to "/system_tickets/#{@record[:id]}"

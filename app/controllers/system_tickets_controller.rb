@@ -1,7 +1,7 @@
 class SystemTicketsController < ApplicationController
     before_action :authenticate_user!
     skip_forgery_protection
-
+    
     def index
         @tickets = SystemTicket.all
         @computer_systems = []
@@ -50,17 +50,26 @@ class SystemTicketsController < ApplicationController
 
         if system_tix!=nil then
             system_tix.each do |x|  
+                id      =x[:id]
                 tixno   =x[:ticket_number]
-                stat    =x[:status]
                 date    =x[:date_received]
                 sdate   =x[:start_date]
                 edate   ="--"
-                title   =x[:title]
-                id      =x[:id]
+                reqt    =x[:request_type]
+                reqn    ="#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"
+                md      ="Not yet set."
+                stat    =x[:status]
+                
 
                 if x[:data]["save_details"]!=nil
                     if x[:data]["save_details"].length==3
                         then edate=x[:data]["save_details"][2]["date"].to_s[0,10]
+                    end
+                end
+
+                x[:data]["team_members"].each do |x|
+                    if x[1]=="Main Dev"
+                        then md="#{User.find(x[0]).last_name}, #{User.find(x[0]).first_name}"
                     end
                 end
 
@@ -70,13 +79,13 @@ class SystemTicketsController < ApplicationController
     
                 case stat
                 when "pending"
-                    pending.push([tixno,stat,date,title,id,sdate,edate])
+                    pending.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
                 when "active"
-                    active.push([tixno,stat,date,title,id,sdate,edate])
+                    active.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
                 when "processing"
-                    processing.push([tixno,stat,date,title,id,sdate,edate])
+                    processing.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
                 when "done"
-                    done.push([tixno,stat,date,title,id,sdate,edate])
+                    done.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
                 end
             end
         end

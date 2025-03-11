@@ -1,4 +1,7 @@
-
+-@STmembers=SystemTicket.find(params[:id]).data["team_members"]
+-@STmem_arr=[]
+-@STmembers.each do |x|
+  -@STmem_arr.push(x)
 .card.some{:style=>"padding:1%"}
   %h2
     New Ticket for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
@@ -15,12 +18,18 @@
       %tr
         %td
           %label
+            Request Type
+          .form-group
+            =select_tag :request_type,options_for_select(["Report Request","Module Enhancement","New Module"], params[:request_type]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
+      %tr
+        %td
+          %label
             Select Members
           %div{:style=>"display:flex"}
             %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
-              -User.all.each do |x|
-                %option{:value => x.id,:id=>"selected#{x.id}"}
-                  #{x.last_name}, #{x.first_name}
+              -@STmem_arr.each do |x|
+                %option{:value => x[0],:id=>"selected#{x[0]}"}
+                  #{User.find(x)[0]}
             %div
               &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
