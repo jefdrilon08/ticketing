@@ -22,13 +22,7 @@ Rails.application.routes.draw do
   # Concern Ticket Routes
   get "/concern_tickets", to: "concern_tickets#index"
   get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
-
-  # get "/dormant", to: "dormant#index"
-  # get "/dormant/:id", to: "dormant#show"
-  # delete "/dormant/:id", to: "dormant#destroy"
-  # get "/dormant/:id/print", to: "dormant#print"
-  # get "/dormant/:id/excel", to: "dormant#excel"
-  # get "/dormant/:id/dormant_excel", to: "dormant#dormant_excel", as: :dormant_download_excel
+  get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
 
   # online applications
   resources :online_applications, only: [:index, :show]

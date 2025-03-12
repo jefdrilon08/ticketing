@@ -6,6 +6,11 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :trackable, :timeoutable
 
+  has_many :concern_tickets
+
+        
+# end
+
   REMOTE_ROLES = [
     "REMOTE-OAS",
     "REMOTE-BK",
@@ -48,7 +53,7 @@ class User < ApplicationRecord
   #has_many :user_demerits
   #has_many :user_branches
   # has_many :branches, through: :user_branches
-  has_many :concern_ticket_user
+  
 
   serialize :roles, type: Array
 

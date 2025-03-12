@@ -6,6 +6,7 @@ class Branch < ApplicationRecord
   has_many :centers
   has_many :members
   has_many :user_branches
+  has_many :concern_ticket_details
 
   def to_s
     name

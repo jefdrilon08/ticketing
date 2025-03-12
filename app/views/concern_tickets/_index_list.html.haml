@@ -13,34 +13,24 @@
         %tr
           %td.text-center= a.name
           %td.text-center= a.computer_system&.name || "N/A"
-          %td.text-center= a.user_id || "Unassigned"
+          %td.text-center= a.user ? "#{a.user.first_name.titleize} #{a.user.last_name.titleize}" : "Unassigned"
           %td.text-center= a.created_at.strftime("%b %d, %Y")
           %td.text-center 
             - case a.status
-            - when "open"
-              .badge.bg-danger Pending
+            - when "active"
+              .badge.bg-success Active
             - when "pending"
-              .badge.bg-success Approved
-            - when "processing"
-              .badge.bg-warning Processing
+              .badge.bg-primary Processing
+            - when "error"
+              .badge.bg-danger Error
             - else
-              .badge.bg-secondary Unknown
+              .badge.bg-secondary Pending
           %td.text-center
-            = link_to concern_ticket_path(a), class: "btn btn-primary btn-sm" do
+            = link_to concern_ticket_path(a), class: "btn btn-primary btn-md", title: "View Tickets", data: { bs_toggle: "tooltip" } do
               %i.bi.bi-eye
-            -# %button.btn.btn-info.btn-sm.update-button{
-            -#   data: {
-            -#     id: a.id,
-            -#     name: a.name,
-            -#     description: a.description,
-            -#     status: a.status
-            -#   }
-            -# }
-            -#   %i.bi.bi-pencil  Update
-            -# %button.btn.btn-danger.btn-sm.delete-button{
-            -#   data: { id: a.id }
-            -# }
-            -#   %i.bi.bi-trash  Delete
     - else
       %tr
         %td{ colspan: 6, class: "text-center" } No records found
+
+.pagination-container.mt-3.d-flex.justify-content-center
+  = paginate @records

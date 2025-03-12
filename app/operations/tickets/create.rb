@@ -20,8 +20,9 @@ module Tickets
             concern_ticket = ::ConcernTicket.new(
               name: @name,
               description: @description,
-              status: @status,
-              computer_system_id: @config[:computer_system_id]
+              status: @status.presence || "open",
+              computer_system_id: @config[:computer_system_id],
+              user_id: @config[:user_id]
             )
             concern_ticket.save!
             Rails.logger.debug "SUCCESS!! Saved with Computer System ID: #{concern_ticket.computer_system_id}"
