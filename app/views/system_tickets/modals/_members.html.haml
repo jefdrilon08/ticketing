@@ -118,7 +118,7 @@
             var temp=id.split("/")
             arr_id.push([temp[1],id])
             
-            for(j=0;j<=2;j++)
+            for(j=0;j<=3;j++)
             {
                 var opt=document.createElement("option");
                 switch(j)
@@ -139,6 +139,12 @@
                     {
                         opt.text="Developer"
                         opt.value="Developer"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    } break;
+                    case 3:
+                    {
+                        opt.text="Approver"
+                        opt.value="Approver"
                         if(opt.value==temp[0]) opt.setAttribute('selected','selected');
                     }
                 }

@@ -670,7 +670,8 @@ Rails.application.routes.draw do
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
   get "system_tickets/:id",                 to: "system_tickets#show"
-
+  
+  post "system_tickets/hold_ticket/:id",    to: "system_tickets#hold_ticket"
   post "system_tickets/create_milestone",   to: "system_tickets#create_milestone"
   post "system_tickets/edit_ticket_status", to: "system_tickets#edit_ticket_status"
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"

@@ -27,8 +27,9 @@ class SystemTicketsController < ApplicationController
         @milestones=[]
 
         pending=[]
-        active=[]
+        approved=[]
         processing=[]
+        for_verification=[]
         done=[]
 
         # Filter
@@ -59,11 +60,12 @@ class SystemTicketsController < ApplicationController
                 reqn    ="#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"
                 md      ="Not yet set."
                 stat    =x[:status]
+                hold    =x[:data]["on_hold"]
                 
 
                 if x[:data]["save_details"]!=nil
-                    if x[:data]["save_details"].length==3
-                        then edate=x[:data]["save_details"][2]["date"].to_s[0,10]
+                    if x[:data]["save_details"].length==4
+                        then edate=x[:data]["save_details"][3]["date"].to_s[0,10]
                     end
                 end
 
@@ -79,13 +81,15 @@ class SystemTicketsController < ApplicationController
     
                 case stat
                 when "pending"
-                    pending.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
-                when "active"
-                    active.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
+                    pending.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
+                when "approved"
+                    approved.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
                 when "processing"
-                    processing.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
+                    processing.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
+                when "for verification"
+                    for_verification.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
                 when "done"
-                    done.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat])
+                    done.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
                 end
             end
         end
@@ -94,11 +98,15 @@ class SystemTicketsController < ApplicationController
             @system_tix_desc.push(x)
         end
 
-        active.each do |x|
+        approved.each do |x|
             @system_tix_desc.push(x)
         end
 
         processing.each do |x|
+            @system_tix_desc.push(x)
+        end
+
+        for_verification.each do |x|
             @system_tix_desc.push(x)
         end
 
@@ -118,6 +126,27 @@ class SystemTicketsController < ApplicationController
             }
           ]
 
+    end
+
+    def hold_ticket
+        puts params
+        holdtix=SystemTicketDesc.find(params[:id])
+
+        if holdtix[:data]["on_hold"]==true then holdtix[:data]["on_hold"]=false
+        else holdtix[:data]["on_hold"]=true
+        end
+
+        if holdtix[:data]["hold_details"]==nil then holdtix[:data]["hold_details"]=[[holdtix[:data]["on_hold"],DateTime.now()]]
+        else holdtix[:data]["hold_details"].push([holdtix[:data]["on_hold"],DateTime.now()])
+        end
+
+        puts "new params"
+        puts holdtix
+        if holdtix.update(data:holdtix[:data])
+            redirect_to "/system_tickets_#{holdtix[:system_ticket_id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
     end
     
     def create_milestone
@@ -182,10 +211,12 @@ class SystemTicketsController < ApplicationController
 
         case edit_tixdesc[:status]
             when "pending"
-                new_status= "active"
-            when "active"
+                new_status= "approved"
+            when "approved"
                 new_status= "processing"
             when "processing"
+                new_status= "for verification"
+            when "for verification"
                 new_status= "done"
         end
 

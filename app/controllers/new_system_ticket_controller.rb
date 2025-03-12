@@ -37,12 +37,15 @@ class NewSystemTicketController < ApplicationController
                 system_ticket_id:params[:id],
                 system_type:nil,
                 title:nil,
+                file:params[:file],
                 description:params[:description],
                 status:"pending",
                 data:   {
                             team_members:members_arr,
-                            attached_file:params[:file],
                             save_details:nil,
+                            on_hold:false,
+                            hold_details:nil,
+                            file:params[:file]
                         },
                 date_received:DateTime.now(),
                 start_date:nil,
