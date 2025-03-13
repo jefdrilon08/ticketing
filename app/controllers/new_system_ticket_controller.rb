@@ -30,6 +30,13 @@ class NewSystemTicketController < ApplicationController
         end
         puts params
 
+        if params[:file]!=nil
+            file_arr=[]
+            params[:file].each do |x|
+                file_arr.push(x)
+            end
+        end
+
         tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
 
         @record=SystemTicketDesc.new(
@@ -37,7 +44,7 @@ class NewSystemTicketController < ApplicationController
                 system_ticket_id:params[:id],
                 system_type:nil,
                 title:nil,
-                file:params[:file],
+                file:file_arr,
                 description:params[:description],
                 status:"pending",
                 data:   {
@@ -45,7 +52,7 @@ class NewSystemTicketController < ApplicationController
                             save_details:nil,
                             on_hold:false,
                             hold_details:nil,
-                            file:params[:file]
+                            file:file_arr
                         },
                 date_received:DateTime.now(),
                 start_date:nil,
