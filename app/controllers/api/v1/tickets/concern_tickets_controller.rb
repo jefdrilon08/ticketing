@@ -3,36 +3,19 @@ module Api
     module Tickets
       class ConcernTicketsController < ApiController
         before_action :authenticate_user! 
-        
-        def index
-          concern_tickets = ConcernTicket.includes(:computer_system).all
-        
-          concern_tickets_json = concern_tickets.map do |ticket|
-            {
-              id: ticket.id,
-              name: ticket.name,
-              description: ticket.description,
-              status: ticket.status,
-              computer_system_id: ticket.computer_system_id,
-              computer_system_name: ticket.computer_system&.name
-            }
-          end
-        
-          render json: { concern_tickets: concern_tickets_json }, status: :ok
-        end
-        
-        
-        def create
+
+        def create_concern
+          Rails.logger.debug "Status received: #{params[:status]}"
           config = {
             name: params[:name],
             description: params[:description],
             status: params[:status],
-            computer_system_id: params[:computer_system_id]
-            user_id: params[:user_id]
+            computer_system_id: params[:computer_system_id],
+            # user_id: params[:user_id]
           }
           
           errors = ::Tickets::ValidateCreate.new(config: config).execute!
-        
+          Rails.logger.debug "SPIDEY"
           if errors[:messages].any?
             render json: errors, status: 400
           else
@@ -52,29 +35,35 @@ module Api
             }
           end
         end
-        
-        def update
+
+        def create_ticket
+          Rails.logger.debug "TESTING: #{params[:status]}"
           config = {
-            id: params[:id],
             name: params[:name],
             description: params[:description],
-            status: params[:status]
+            status: params[:status],
+            computer_system_id: params[:computer_system_id],
           }
-        
-          concern_ticket = ::ConcernTicket.find_by(id: params[:id])
-          if concern_ticket && concern_ticket.update(config)
-            render json: { success: true, message: 'Concern Ticket Updated', status: 200 }
-          else
-            render json: { errors: concern_ticket&.errors&.full_messages || ['Concern ticket not found'] }, 
-                   status: :unprocessable_entity
-          end
         end
-        
-        private
 
-        def concern_params
-          params.require(:concern_ticket).permit(:name, :description, :computer_system_id, :status)
+        def add_concern_type
+          Rails.logger.debug "Received concern_ticket_id: #{params[:concern_ticket_id]}"
+          concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
+        
+          concern_type = concern_ticket.concern_types.build(name: params[:name], status: "active")
+        
+          if concern_type.save
+            flash[:success] = "Concern Type added successfully!"
+          else
+            flash[:error] = "Failed to add Concern Type: #{concern_type.errors.full_messages.join(', ')}"
+          end
+        
+          redirect_back(fallback_location: request.referer || root_path)
         end
+        
+        
+        
+
       end
     end
   end

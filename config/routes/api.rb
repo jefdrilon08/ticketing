@@ -208,57 +208,9 @@ namespace :api do
 
     namespace :tickets do
       get "/concern_tickets", to: "concern_tickets#index"
-      post "/concern_tickets", to: "concern_tickets#create"
-      put "/concern_tickets/:id", to: "concern_tickets#update"
+      post "/concern_tickets", to: "concern_tickets#create_concern"
+      post "/concern_tickets/add_concern_type", to: "concern_tickets#add_concern_type"
     end
-    
-   #mbs_transfer
-    post "mbs_transfer/create", to: "mbs_transfer#create"
-    post "mbs_transfer/add_member", to: "mbs_transfer#add_member"
-    post "mbs_transfer/update_amount", to: "mbs_transfer#update_amount"
-    post "mbs_transfer/add_particular", to: "mbs_transfer#add_particular"
-    post "mbs_transfer/approve", to: "mbs_transfer#approve"
-    post "mbs_transfer/delete_member", to: "mbs_transfer#delete_member" 
-
-    #additional_share
-    post "additional_share/create", to: "additional_share#create"
-    post "additional_share/add_member", to: "additional_share#add_member"
-    post "additional_share/update_amount", to: "additional_share#update_amount"
-    post "additional_share/approve", to: "additional_share#approve"
-    post "additional_share/add_particular", to: "additional_share#add_particular"
-    post "additional_share/delete_member", to: "additional_share#delete_member"
-
-    #billing_for_writeoff_collection
-    post "/billing_for_writeoff_collection/create", to: "billing_for_writeoff_collection#create"
-    post "/billing_for_writeoff_collection/add_member", to: "billing_for_writeoff_collection#add_member"
-    post "/billing_for_writeoff_collection/update_amount", to: "billing_for_writeoff_collection#update_amount"
-    post "/billing_for_writeoff_collection/update_total", to: "billing_for_writeoff_collection#update_total"
-    post "/billing_for_writeoff_collection/build_accounting_entry", to: "billing_for_writeoff_collection#build_accounting_entry"
-    post "/billing_for_writeoff_collection/approve", to: "billing_for_writeoff_collection#approve"
-    post "/billing_for_writeoff_collection/add_particular", to: "billing_for_writeoff_collection#add_particular"
-    post "/billing_for_writeoff_collection/add_book_type", to: "billing_for_writeoff_collection#add_book_type"
-
-    #billing_for_involuntary
-    post "/billing_for_involuntary/create", to: "billing_for_involuntary#create"
-    post "/billing_for_involuntary/add_member", to: "billing_for_involuntary#add_member"
-    post "/billing_for_involuntary/add_particular_to_transfer_savings",to: "billing_for_involuntary#add_particular_to_transfer_savings"
-    post "/billing_for_involuntary/add_particular_to_loan_payments", to: "billing_for_involuntary#add_particular_to_loan_payments"
-    post "/billing_for_involuntary/approve", to: "billing_for_involuntary#approve"
-    post "/billing_for_involuntary/delete", to: "billing_for_involuntary#delete"
-    
-    #billing_for_writeoff
-    post "/billing_for_writeoff/create", to: "billing_for_writeoff#create"
-    post "/billing_for_writeoff/add_member", to: "billing_for_writeoff#add_member"
-    post "/billing_for_writeoff/approve",     to: "billing_for_writeoff#approve"
-    post "/billing_for_writeoff/delete_member", to: "billing_for_writeoff#delete_member"
-
-    #update project type
-
-    post "/members_project_types_controller/create", to: "members_project_types#create"
-    get "/members_project_types_controller/fetch_project_type_category", to: "members_project_types#fetch_project_type_category"
-    post "/members_project_types_controller/save", to: "members_project_types#save"
-    post "/members_project_types_controller/delete", to: "members_project_types#delete"
-    post "/members_project_types_controller/approve", to: "members_project_types#approve"
 
     # Process Online Application
     post "/online_applications/process", to: "online_applications#process_application"

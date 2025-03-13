@@ -1,0 +1,50 @@
+-# %h3= @concern_ticket_details.ticket_number
+%div.col-md-8
+    -# %div.card.shadow-lg
+    %div.card-header{ style: "background-color:rgb(125, 134, 126); color: white;" }
+        %div.col-md-6.mb-3
+            %h4.mb-0 &nbsp&nbsp Ticket Number: #{@concern_ticket_details.ticket_number}
+            %h6.mb-0 &nbsp&nbsp&nbsp&nbsp Concern Type: #{@concern_ticket_details.ticket_number}
+    %div.card-body
+        %div.row
+        %div.col-md-6.mb-3
+            %strong Concern Ticket:
+            %p= @concern_ticket&.name
+
+        %div.col-md-6.mb-3
+            %strong Concern Type:
+            %p= @concern_type&.name
+
+        %div.col-md-6.mb-3
+            %strong Requested By:
+            %p Unassigned  # Update when user info is available
+
+        %div.col-md-6.mb-3
+            %strong Branch:
+            %p= @concern_ticket_details.branch&.name || "Unassigned"
+
+        %div.col-md-6.mb-3
+            %strong Assigned Person:
+            %p Unassigned  # Update when assigned user info is available
+
+        %div.col-md-6.mb-3
+            %strong Posted Date:
+            %p= @concern_ticket_details.created_at.strftime("%b %d, %Y")
+
+        %div.col-md-6.mb-3
+            %strong Status:
+            %p
+            - case @concern_ticket_details.status
+            - when "open"
+                .badge.bg-success Open
+            - when "processing"
+                .badge.bg-primary Processing
+            - when "verification"
+                .badge.bg-warning For Verification
+            - when "closed"
+                .badge.bg-danger Closed
+            - else
+                .badge.bg-secondary Unknown
+
+    %div.card-footer.text-center
+        = link_to "Back to Tickets", concern_ticket_path(@concern_ticket), class: "btn btn-secondary"

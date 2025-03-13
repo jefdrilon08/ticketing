@@ -1,6 +1,6 @@
 module Tickets
     class ValidateCreate
-      Rails.logger.debug "TEST"
+      
       def initialize(config:)
         @errors = { messages: [] }
         @config = config

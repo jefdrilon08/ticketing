@@ -1,3 +1,5 @@
 class ConcernTicketUser < ApplicationRecord
     belongs_to :user
-end
+    belongs_to :concern_ticket
+  end
+  
