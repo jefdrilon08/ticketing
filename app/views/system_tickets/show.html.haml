@@ -185,15 +185,23 @@
                     %td
                         %h3
                             Attached file
-                    %tr
-                        %td
-                            -if @ticket.data["file"]==nil
+                    
+                    -if !@ticket.file.attached?
+                        %tr
+                            %td
                                 %center
                                     %p
                                         No attachment found.
-                            -else
-                                %a{:href=>url_for(@ticket.file),:download=>"download"}
-                                    #{@ticket.data["file"]["original_filename"]}
+                    -else 
+                        -file_count=0
+                        -@ticket.file.each do |x|
+                            %tr
+                                %td
+                                    %a{:href=>url_for(x),:download=>"download"}
+                                        #{@ticket.data["file"][file_count]["original_filename"]}
+                                    -file_count=file_count+1
+
+                                
             %hr{style:"height:5px;color:white"}
             .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%"}
