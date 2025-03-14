@@ -6,7 +6,7 @@ class SystemTicketsController < ApplicationController
         @tickets = SystemTicket.all
         @computer_systems = []
         @tickets.each do |x|
-            temp=ComputerSystem.find(x.computer_system_id)
+            temp= ComputerSystem.find(x.computer_system_id)
             @computer_systems.push([temp.name,x.id])
         end
         @subheader_side_actions = [
@@ -118,14 +118,17 @@ class SystemTicketsController < ApplicationController
 
         @subheader_side_actions = [
             {
-              id: "btn-new",
-              link: "/new_system_ticket/#{params[:id]}",
-              class: "fa fa-plus",
-              text: "New",
-              data: {id:"asdasd"}
+                id: "btn-new",
+                link: "/new_system_ticket/#{params[:id]}",
+                class: "fa fa-plus",
+                text: "New",
+                data: {id:"asdasd"}
             }
-          ]
+        ]
 
+    end
+
+    def edit_member_st
     end
 
     def hold_ticket

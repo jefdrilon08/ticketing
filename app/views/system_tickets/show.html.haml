@@ -184,14 +184,14 @@
                 %table.table{:style=>"border-color:white;font-size:115%"}
                     %td
                         %h3
-                            Attached file
+                            Attached file(s)
                     
                     -if !@ticket.file.attached?
                         %tr
                             %td
                                 %center
                                     %p
-                                        No attachment found.
+                                        No attachment found
                     -else 
                         -file_count=0
                         -@ticket.file.each do |x|
@@ -214,7 +214,7 @@
                             %tr
                                 %center
                                     %p
-                                        No milestones found
+                                        No milestone found
                     - when false
                         %table.table.table-bordered.table-sm
                             %tr

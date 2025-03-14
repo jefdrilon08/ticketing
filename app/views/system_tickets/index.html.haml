@@ -10,6 +10,13 @@
             -else
                 -@computer_systems.each do |x|
                     .col-3{:style=>"padding:20px"}
-                        = link_to "/system_tickets_#{x[1]}", class: "btn-nav-square-md" do
-                            %h5
-                                #{x[0]}
+                        %div
+                            = link_to "/system_tickets_#{x[1]}", class: "btn-nav-square-md" do
+                                %h5
+                                    #{x[0]}
+                        %div{:style=>"margin:20px"}
+                            %center
+                                =link_to "#" do
+                                    %p
+                                        Edit Members
+                                    
