@@ -663,6 +663,7 @@ Rails.application.routes.draw do
 
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
+  get "system_tickets_:id/edit",            to: "system_tickets#show_st"
   get "system_tickets/:id",                 to: "system_tickets#show"
   
   post "system_tickets/hold_ticket/:id",    to: "system_tickets#hold_ticket"
@@ -676,6 +677,10 @@ Rails.application.routes.draw do
   post "system_tickets/add_member",         to: "system_tickets#add_member"  
   post "system_tickets/delete_member",      to: "system_tickets#delete_member" 
   post "system_tickets/set_maindev",        to: "system_tickets#set_maindev"
+  post "system_tickets/add_attachment",     to: "system_tickets#add_attachment"
+  post "system_tickets/edit_member_status", to: "system_tickets#edit_member_status"
+  post "system_tickets/add_member_st",      to: "system_tickets#add_member_st"
+  post "system_tickets/join_st",            to: "system_tickets#join_st"
 
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"

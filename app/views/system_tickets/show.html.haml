@@ -9,93 +9,104 @@
                             Ticket no. #{@ticket.ticket_number}
         %center
             %hr{:style=>"height:5px"}
-        %div.col-5
+        %div.col-6
             .card{:style=>"padding:3%"}
-                %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"}  
+                %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"} 
+                    %tr
+                        %th{:style=>"width:25%"}
+                            Subject:
+                        %td 
+                            %p
+                                #{@ticket.title}
                     %tr
                         %th{:style=>"width:25%"}
                             Description:
                         %td
                             %p
                                 #{@ticket.description}
-                %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"}    
+                %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px;margin-top:-2%"}    
                     %tr
-                        %th{:style=>"width:25%"}
-                            Status:
-                            -if !@ticket.data["on_hold"]
-                                - case @ticket.status
-                                - when "processing"
-                                    %td{:style=>"width:12px"}
-                                        %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
-                                                .badge.bg-primary
-                                                    #{@ticket.status}
-                                    %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                        %th{:style=>"width:25%;"}
+                            %p{:style=>"margin-top:10%"}
+                                Status:
+                                -if !@ticket.data["on_hold"]
+                                    - case @ticket.status
+                                    - when "processing"
+                                        %td{:style=>"width:12px"}
+                                            %center
+                                                %p{:style=>"width:104px"}
+                                                    .badge.bg-primary
+                                                        #{@ticket.status}
+                                        %td
+                                            = form_tag "edit_ticket_status", method: 'POST' do
                                                 .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
-                                - when "approved"
-                                    %td{:style=>"width:10px"}
-                                        %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
-                                                .badge.bg-success
-                                                    #{@ticket.status} 
-                                    %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                                    .form-group
+                                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                                            %p{:style=>"margin-top:30%"}
+                                                                Update
+                                    - when "approved"
+                                        %td{:style=>"width:25%"}
+                                            %center
+                                                %p{:style=>";width:104px"}
+                                                    .badge.bg-success
+                                                        #{@ticket.status} 
+                                        %td
+                                            = form_tag "edit_ticket_status", method: 'POST' do
                                                 .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
-                                - when "pending"
-                                    %td{:style=>"width:10%"}
-                                        %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
-                                                .badge.bg-warning
-                                                    #{@ticket.status} 
-                                    %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                                    .form-group
+                                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                                            %p{:style=>"margin-top:30%"}
+                                                                Update
+                                    - when "pending"
+                                        %td{:style=>"width:25%"}
+                                            %center
+                                                %p{:style=>"width:104px"}
+                                                    .badge.bg-warning
+                                                        #{@ticket.status} 
+                                        %td
+                                            = form_tag "edit_ticket_status", method: 'POST' do
                                                 .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
-                                - when "for verification"
-                                    %td{:style=>"width:10%"}
-                                        %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
-                                                .badge.bg-secondary
-                                                    #{@ticket.status} 
-                                    %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                                    .form-group
+                                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                                            %p{:style=>"margin-top:30%"}
+                                                                Update
+                                    - when "for verification"
+                                        %td{:style=>"width:25%"}
+                                            %center
+                                                %p{:style=>"width:104px"}
+                                                    .badge.bg-secondary
+                                                        #{@ticket.status} 
+                                        %td
+                                            = form_tag "edit_ticket_status", method: 'POST' do
                                                 .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
+                                                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                                                    .form-group
+                                                        = button_tag type: 'submit',class:'btt-linkto' do
+                                                            %p{:style=>"margin-top:30%"}
+                                                                Update
+                                    -else
+                                        %td{:style=>"width:25%"}
+                                            %center
+                                                %p{:style=>"width:104px"}
+                                                    .badge.bg-dark
+                                                        #{@ticket.status}
+                                        %td
                                 -else
-                                    %td{:style=>"width:10%"}
+                                    %td{:style=>"width:25%"}
                                         %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
-                                                .badge.bg-dark
-                                                    #{@ticket.status}
+                                            %p{:style=>"width:104px"}
+                                                .badge.bg-danger
+                                                    on hold
                                     %td
-                            -else
-                                %td{:style=>"width:10%"}
-                                    %center
-                                        %p{:style=>"margin-top:-15%;width:104px"}
-                                            .badge.bg-danger
-                                                on hold
-                                %td
                 %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"}
                     %tr
                         %th
                             %p 
                                 System name:
-                        %td
+                        %td{:style=>"width:25%"}
                             %p
                                 #{ComputerSystem.find(SystemTicket.find(@ticket.system_ticket_id).computer_system_id).name} 
                         %th
@@ -123,7 +134,6 @@
                             - else
                                 %p
                                     #{@ticket.start_date}
-                %table.table.table-bordered.table-sm
                     %tr
                         %th{:style=>"width:25%"}
                             %p 
@@ -131,6 +141,12 @@
                         %td
                             %p
                                 #{User.find(@ticket.requested_by).last_name}, #{User.find(@ticket.requested_by).first_name}
+                        %th{:style=>"width:25%"}
+                            %p 
+                                Target date:
+                        %td
+                            %p
+                                #{@ticket.target_date}
                 %hr{:style=>"width:100%"}
                 %table.table.table-bordered.table-sm
                     %tr
@@ -179,7 +195,7 @@
                             %td
                                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                                     Edit Members
-        %div.col-7
+        %div.col-6
             .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%"}
                     %td
@@ -200,7 +216,9 @@
                                     %a{:href=>url_for(x),:download=>"download"}
                                         #{@ticket.data["file"][file_count]["original_filename"]}
                                     -file_count=file_count+1
-
+                    %td
+                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
+                            Add attachment
                                 
             %hr{style:"height:5px;color:white"}
             .card{:style=>"padding:3%"}
@@ -361,3 +379,4 @@
 = render partial: "system_tickets/modals/main_dev"
 = render partial: "system_tickets/modals/members"
 = render partial: "system_tickets/modals/set_start_date"
+= render partial: "system_tickets/modals/add_attachment"

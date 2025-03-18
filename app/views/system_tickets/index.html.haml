@@ -16,7 +16,42 @@
                                     #{x[0]}
                         %div{:style=>"margin:20px"}
                             %center
-                                =link_to "#" do
-                                    %p
-                                        Edit Members
+                                -if current_user.id==x[2]
+                                    =link_to "/system_tickets_#{x[1]}/edit" do
+                                        %p
+                                            Edit Members
+                                -else
+                                    -join_stat=0
+                                    -SystemTicket.find(x[1]).data["team_members"].each do |y|
+                                        -if current_user.id==y[0]
+                                            -if !SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1]).empty?
+                                                -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status=="pending"
+                                                    -join_stat=1
+                                                -else
+                                                    -join_stat=2
+                                    -if join_stat==0
+                                        = form_tag "/system_tickets/join_st", method: 'POST' do
+                                            .form-group
+                                                =text_field_tag :mem_id,params[:mem_id]=current_user.id,class:'form-control',style:'display:none'
+                                            .form-group
+                                                =text_field_tag :id,params[:id]=x[1],class:'form-control',style:'display:none'
+                                            .form-group
+                                                = button_tag type: 'submit',class:'btt-linkto' do
+                                                    %p
+                                                        Join
+                                    -elsif join_stat==2
+                                        -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status=='active'
+                                            %p{:style=>"color:green"}
+                                                Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status})
+                                        -elsif SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status=='inactive'
+                                            %p{:style=>"color:red"}
+                                                Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status})
+                                    -elsif join_stat==1
+                                        %p{:style=>"color:OrangeRed"}
+                                            Pending request
+:css
+    form {display: inline;}
+    .form-group {display: inline;}
+    .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
+    .btt-linkto:hover{color:#0A58CA;}
                                     

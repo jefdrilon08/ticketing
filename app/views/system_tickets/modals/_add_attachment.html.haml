@@ -1,0 +1,22 @@
+#modal-add-attachment.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Add Attachment
+            .modal-body
+                %hr{style:"height:25px;color:white"}
+                =form_tag "add_attachment", multipart: true, method: 'POST' do
+                    %center
+                        .form-group
+                            = file_field_tag :append_files,name:"file[]", id: "file", multiple:"true"
+                        .form-group
+                            =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'  
+                        %hr{style:"height:30px;color:white"}
+                        .form-group
+                            =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
+                                Add Attachment
+
+:css
+    input::file-selector-button{background-color:#0D6EFD;border:none;padding:3%;color:white;border-radius:8px;margin-right:10px}
+    input::file-selector-button:hover{background-color:#0B5ED7;cursor:pointer;transition-duration: 0.4s;}

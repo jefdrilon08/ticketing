@@ -1,48 +1,58 @@
--@STmembers=SystemTicketsUser.where(system_ticket_id:params[:id])
--@STmem_arr=[]
--@STmembers.each do |x|
-  -if x.status=="active"
-    -@STmem_arr.push(x)
 .card.some{:style=>"padding:1%"}
   %h2
-    New Ticket for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
-  =form_tag "create_systemtix", multipart: true, method: 'POST' do
-    %table.table{:style=>"border-color:white;font-size:110%"}
+    Edit Members of #{@system_name}
+  %table.table{:style=>"border-color:white;font-size:110%"}
+    %tr
+      %td{:style=>"width:35%"}
+        %label
+          Present Members
+      %td
+        %label
+          Status
+      %td{:style=>"width:60%"}
+    -@system_members.each do |x|
+      %tr
+        %td
+          #{User.find(x.user_id)}
+        %td
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+            .badge.bg-success
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+            .badge.bg-danger
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+            .badge.bg-warning
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+        %td
+          =form_tag "/system_tickets/edit_member_status", multipart: true, method: 'POST' do
+            .form-group
+              =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
+            .form-group
+              =text_field_tag :status,params[:status]=x.status,class:'form-control',style:'display:none'
+            .form-group
+              = button_tag type: 'submit',class:'btt-linkto' do
+                %p
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+                    Deactivate
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+                    Activate
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+                    Approve
+                  
+  =form_tag "/system_tickets/add_member_st", multipart: true, method: 'POST' do
+    .form-group
+      =text_field_tag :id,params[:id]=@system_id,class:'form-control',style:'display:none'
+    %table.table{:style=>"border-color:white;font-size:110%"} 
       %tr
         %td
           %label
-            Subject
-          .form-group
-            =text_field_tag :title,params[:title],class:'form-control',required:true
-          .form-group
-            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-      %tr
-        %td
-          %label
-            Description
-          .form-group
-            =text_area_tag :description,params[:description],class:'form-control',required:true            
-      %tr
-        %td
-          %label
-            Request Type
-          .form-group
-            =select_tag :request_type,options_for_select(["Report Request","Module Enhancement","New Module"], params[:request_type]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
-      %tr
-        %td
-          %label
-            Target Date
-          .form-group
-            =text_field_tag :date,params[:date],class:'form-control',style:"width:10%",required:true,type: :date
-      %tr
-        %td
-          %label
-            Select Members
+            Select New Members
           %div{:style=>"display:flex"}
             %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
-              -@STmem_arr.each do |x|
-                %option{:value => x.id,:id=>"selected#{x.id}"}
-                  #{User.find(x.user_id)}
+              -@non_system_members.each do |x|
+                %option{:value => x,:id=>"selected#{x}"}
+                  #{User.find(x)}
             %div
               &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
@@ -63,18 +73,16 @@
       %tr
         %td
           .form-group
-            = file_field_tag :file,name:"file[]", id: "file", multiple:"true"
-      %tr
-        %td
-          .form-group
             %div{id:"sel-mem"}
           .form-group
             =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
-              Add Ticket              
+              Save
 
 :css
-  input::file-selector-button{background-color:#0D6EFD;border:none;padding:3%;color:white;border-radius:8px;margin-right:10px}
-  input::file-selector-button:hover{background-color:#0B5ED7;cursor:pointer;transition-duration: 0.4s;}
+    .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
+    .btt-linkto:hover{color:#0A58CA;}
+    form {display: inline;}
+    .form-group {display: inline;}
 
 :javascript
   var arr=[]
@@ -174,5 +182,3 @@
       return arr;
     }
   }
-  
-
