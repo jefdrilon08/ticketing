@@ -21,6 +21,17 @@
           .row
             .col-md-6
               .form-group.mt-3
+                %label.font-weight-bold Concern For
+                .d-flex.align-items-center
+                  = select_tag :name_for_id, 
+                    options_from_collection_for_select(@concern_fors, :id, :name), 
+                    class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+                    id: "input-concern-for", prompt: "-- SELECT --"
+                  %button.btn.btn-success.btn-sm.ms-2#btn-add-concern-type{ title: "Add New Name", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-add-concern-for" }
+                    %i.bi.bi-plus-lg
+
+            .col-md-6
+              .form-group.mt-3
                 %label.font-weight-bold Concern Type
                 .d-flex.align-items-center
                   = select_tag :concern_type_id, 
@@ -30,12 +41,6 @@
                   %button.btn.btn-success.btn-sm.ms-2#btn-add-concern-type{ title: "Add New Concern Type", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-add-concern-type" }
                     %i.bi.bi-plus-lg
 
-            .col-md-6
-              .form-group.mt-3
-                %label.font-weight-bold Attach Files
-                = file_field_tag :attachments, multiple: true, id: "input-attachments", 
-                  class: "form-control bg-light text-dark border-0 shadow-sm"
-
           .row
             .col-md-6
               .form-group.mt-3
@@ -43,7 +48,12 @@
                 = select_tag :branch_id, 
                   options_from_collection_for_select(@branches || [], :id, :name), 
                   class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", id: "input-branch", prompt: "-- SELECT --"
-
+            
+            .col-md-6
+              .form-group.mt-3
+                %label.font-weight-bold Attach Files
+                = file_field_tag :attachments, multiple: true, id: "input-attachments", 
+                  class: "form-control bg-light text-dark border-0 shadow-sm"
           .message
 
       .modal-footer.d-flex.justify-content-center
@@ -55,21 +65,5 @@
             .fa.fa-times
             Cancel
 
-#modal-add-concern-type.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-backdrop" => "static", "data-bs-keyboard" => "false" }
-  .modal-dialog.modal-sm
-    .modal-content.bg-white.p-3
-      .modal-header
-        %h5.modal-title.text-primary Add Concern Type
-        %button.btn-close#btn-close-add-concern{"aria-label" => "Close", "data-bs-dismiss" => "modal"}
-      
-      .modal-body
-        =form_tag api_v1_tickets_concern_tickets_add_concern_type_path, method: 'POST' do
-          = hidden_field_tag :concern_ticket_id, @concern_ticket.id
-
-          .form-group
-            %label.font-weight-bold Concern Type Name
-            = text_field_tag :name, nil, class: "form-control", placeholder: "Enter concern type"
-
-          .mt-3.d-flex.justify-content-end
-            %button.btn.btn-primary.btn-sm{ type: "submit" } Save
-            %button.btn.btn-secondary.btn-sm.ms-2#btn-cancel-add-concern{ type: "button", "data-bs-dismiss" => "modal" } Cancel
+= render "concern_tickets/modals/add_concern_type"  
+= render "concern_tickets/modals/add_concern_for" 

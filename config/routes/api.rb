@@ -210,6 +210,7 @@ namespace :api do
       get "/concern_tickets", to: "concern_tickets#index"
       post "/concern_tickets", to: "concern_tickets#create_concern"
       post "/concern_tickets/add_concern_type", to: "concern_tickets#add_concern_type"
+      post "/concern_tickets/add_concern_for", to: "concern_tickets#add_concern_for"
     end
 
     # Process Online Application
