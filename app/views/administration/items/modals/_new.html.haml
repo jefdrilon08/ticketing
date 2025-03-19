@@ -1,0 +1,36 @@
+#modal-new.modal.fade{ tabindex: "-1" }
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title New Item
+      .modal-body
+        .modal-body-content
+          .bs-callout.bs-callout-info
+            .row
+              .col
+                .form-group
+                  %label Name
+                  = text_field_tag(:name, "", id: "input-name", class: "form-control")
+                .form-group.mt-3
+                  %label Unit
+                  = text_field_tag(:unit, "", id: "input-unit", class: "form-control")
+                .form-group.mt-3
+                  %label Description
+                  = text_area_tag(:description, "", id: "input-description", class: "form-control", rows: 3)
+                .form-group.mt-3
+                  %label Category
+                  = select_tag("items_category_id", options_for_select([["--SELECT--", ""]] + ::ItemsCategory.all.pluck(:name, :id)), id: "input-items-category", class: "form-control")
+                -# The status dropdown is wrapped in its own form-group with a class to allow toggling
+                .form-group.mt-3.status-group
+                  %label Status
+                  = select_tag("status", options_for_select([["--SELECT--", ""], ["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]]), id: "input-status", class: "form-control")
+                = hidden_field_tag(:id, "", id: "item-id")
+          .message
+      .modal-footer
+        .controls
+          %button#btn-confirm-new.btn.btn-primary
+            .fa.fa-check
+            Confirm
+          %button.btn{"data-bs-dismiss" => "modal", type: "button"}
+            .fa.fa-times
+            Cancel

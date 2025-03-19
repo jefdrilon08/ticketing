@@ -1,0 +1,27 @@
+#modal-new.modal.fade{ tabindex: "-1" }
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title New Category
+      .modal-body
+        .modal-body-content
+          .bs-callout.bs-callout-info
+            .row
+              .col
+                .form-group
+                  %label Name
+                  = text_field_tag :name, "", id: "input-name", class: "form-control"
+                .form-group
+                  %label Code
+                  = text_field_tag :code, "", id: "input-code", class: "form-control"
+                .form-group.mt-3.status-group
+                  %label Status
+                  = select_tag("status", options_for_select([["--SELECT--", ""], ["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]]), id: "input-status", class: "form-control")
+                = hidden_field_tag(:id, "", id: "item-id")
+          .message
+      .modal-footer
+        .controls
+          %button#btn-confirm-new.btn.btn-primary
+            .fa.fa-check Confirm
+          %button.btn{"data-bs-dismiss" => "modal", type: "button"}
+            .fa.fa-times Cancel

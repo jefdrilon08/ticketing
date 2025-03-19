@@ -1,0 +1,44 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th Name
+      %th Description
+      %th Unit
+      %th.text-center Status
+      %th.text-center{ style: 'width:10%' } Actions
+  %tbody
+    - @items_list.each do |a|
+      %tr
+        %td{ style: "text-transform: uppercase;" }
+          = a.name
+        %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
+          = a.description
+        %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
+          = a.unit
+        %td.text-center
+          - case a.status.to_s.downcase
+          - when "active"
+            %span.badge.bg-success Active
+          - when "pending"
+            %span.badge.bg-warning Pending
+          - when "processing"
+            %span.badge.bg-info Processing
+          - else
+            %span.badge.bg-secondary= a.status.presence || "N/A"
+        %td.text-center
+          %button.btn.btn-info.btn-sm.update-button{
+            data: {
+              id: a.id,
+              name: a.name,
+              unit: a.unit,
+              description: a.description,
+              status: a.status,
+              items_category: a.items_category_id
+            }
+          }
+            Update
+          %button.btn.btn-sm.btn-danger.delete-button{
+            data: { id: a.id }
+          }
+            %i.fa.fa-times
+            Delete

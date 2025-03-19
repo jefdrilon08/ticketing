@@ -1,0 +1,13 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        - if @suppliers_list.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No suppliers found
+            
+= render partial: "administration/suppliers/modals/new"
+
