@@ -46,38 +46,40 @@ module Api
           }
         end
 
-        def add_concern_type
-          Rails.logger.debug "Received concern_ticket_id: #{params[:concern_ticket_id]}"
-          concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
+        def create_concern_for
+          @concern_for_record = ConcernFor.new(
+            concern_id: params[:concern_id],
+            name: params[:name],
+            description: params[:description],
+            status: "active"
+          )
+          # Rails.logger.debug "batman #{@concern_for_record.inspect}"
         
-          concern_for = concern_ticket.concern_for.build(name: params[:name], status: "active")
-        
-          if concern_for.save
-            flash[:success] = "Concern Name added successfully!"
+          if @concern_for_record.save
+            redirect_to "/concern_tickets/#{@concern_for_record[:concern_id]}"
           else
-            flash[:error] = "Failed to add Concern Name: #{concern_for.errors.full_messages.join(', ')}"
+            flash[:danger] = "Failed to add Concern For: #{@concern_for_record.errors.full_messages.join(', ')}"
+            redirect_back(fallback_location: request.referer || root_path)
           end
-        
-          redirect_back(fallback_location: request.referer || root_path)
         end
-        
-        def add_concern_for
-          Rails.logger.debug "Received concern_ticket_id: #{params[:concern_ticket_id]}"
-          concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
-        
-          concern_type = concern_ticket.concern_types.build(name: params[:name], status: "active")
-        
-          if concern_type.save
-            flash[:success] = "Concern Type added successfully!"
-          else
-            flash[:error] = "Failed to add Concern Type: #{concern_type.errors.full_messages.join(', ')}"
-          end
-        
-          redirect_back(fallback_location: request.referer || root_path)
-        end
-        
-        
 
+        def create_concern_type
+          @concern_type_record = ConcernType.new(
+            concern_id: params[:concern_id],
+            name: params[:name],
+            description: params[:description],
+            status: "active"
+          )
+          Rails.logger.debug "batman #{@concern_type_record.inspect}"
+        
+          if @concern_type_record.save
+            redirect_to "/concern_tickets/#{@concern_type_record[:concern_id]}"
+          else
+            flash[:danger] = "Failed to add Concern For: #{@concern_type_record.errors.full_messages.join(', ')}"
+            redirect_back(fallback_location: request.referer || root_path)
+          end
+        end
+        
       end
     end
   end

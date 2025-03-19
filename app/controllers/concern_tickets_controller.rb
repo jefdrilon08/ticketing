@@ -37,6 +37,9 @@ class ConcernTicketsController < ApplicationController
 
     #pagkuha ng lahat ng concern type na nakabase sa kung anong concern ticket id
     @concern_types = ConcernType.where(concern_id: @concern_ticket.id)
+
+    #pagkuha ng lahat ng concern for names na nakabase sa kung anong concern ticket id
+    @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
   end
   
   def view_tix
