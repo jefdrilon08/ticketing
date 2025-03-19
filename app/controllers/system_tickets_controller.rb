@@ -78,12 +78,12 @@ class SystemTicketsController < ApplicationController
                 date    =x[:date_received]
                 tdate   =x[:target_date]
                 sdate   =x[:start_date]
-                edate   ="--"
-                reqt    =x[:request_type]
-                reqn    ="#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"
-                md      ="Not yet set."
-                stat    =x[:status]
-                hold    =x[:data]["on_hold"]
+                edate   = "--"
+                reqt    = x[:request_type]
+                reqn    = "#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"
+                md      = "Not yet set."
+                stat    = x[:status]
+                hold    = x[:data]["on_hold"]
                 
 
                 if x[:data]["save_details"]!=nil
@@ -285,25 +285,11 @@ class SystemTicketsController < ApplicationController
             temp=0
             temp2= ""
             @ticket.data["team_members"].each do |y|
-<<<<<<< HEAD
-                puts "user"
-                puts x[0]
                 if x[0]==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
-=======
-              system_ticket_user = SystemTicketsUser.find_by(id: y[0])
-              if system_ticket_user && system_ticket_user.user_id.to_s == x[0]
-                temp += 1
-              end
-              temp2 = SystemTicketsUser.where(user_id: x[0]).first&.id
-              if temp == 0
-                user = User.find_by(id: x[0])
-                if user
-                  @not_a_mem.push(["#{user.last_name}, #{user.first_name}", temp2])
-                else
-                  @not_a_mem.push(["Unknown User", temp2])
->>>>>>> 854435865e4f30fb231449b87bf5557b4a5b875d
                 end
-              end
+                temp2=SystemTicketsUser.where(user_id:x[0])[0].id
+            end
+            if temp==0 then @not_a_mem.push(["#{User.find(x[0]).last_name}, #{User.find(x[0]).first_name}",temp2])
             end
         end
 
