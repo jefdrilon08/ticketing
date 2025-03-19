@@ -88,9 +88,17 @@ class SystemTicketsController < ApplicationController
                 end
 
                 x[:data]["team_members"].each do |x|
-                    if x[1]=="Main Dev"
-                        then md="#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"
+                  system_ticket_user = SystemTicketsUser.find_by(id: x[0])
+                  if system_ticket_user
+                    user = User.find_by(id: system_ticket_user.user_id)
+                    if user
+                      md = "#{user.last_name}, #{user.first_name}"
+                    else
+                      md = "Unknown User"
                     end
+                  else
+                    md = "Unknown SystemTicketsUser"
+                  end
                 end
 
                 if sdate==nil 
@@ -248,22 +256,43 @@ class SystemTicketsController < ApplicationController
         @mem_list= []
         @maindev= ""
         set_md.each do |x|
-            if x[1]!="Main Dev"
-                @mem_list.push(["#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}",x[1],x[0]])
+          system_ticket_user = SystemTicketsUser.find_by(id: x[0])
+          if system_ticket_user
+            user = User.find_by(id: system_ticket_user.user_id)
+
+            if user
+              name = "#{user.last_name}, #{user.first_name}"
             else
-                @maindev = "#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"
+              name = "Unknown User"
             end
+          else
+            name = "Unknown SystemTicketsUser"
+          end
+
+          if x[1] != "Main Dev"
+            @mem_list.push([name, x[1], x[0]])
+          else
+            @maindev = name
+          end
         end
 
         all_u.each do |x|
             temp=0
             temp2= ""
             @ticket.data["team_members"].each do |y|
-                if x[0]==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
+              system_ticket_user = SystemTicketsUser.find_by(id: y[0])
+              if system_ticket_user && system_ticket_user.user_id.to_s == x[0]
+                temp += 1
+              end
+              temp2 = SystemTicketsUser.where(user_id: x[0]).first&.id
+              if temp == 0
+                user = User.find_by(id: x[0])
+                if user
+                  @not_a_mem.push(["#{user.last_name}, #{user.first_name}", temp2])
+                else
+                  @not_a_mem.push(["Unknown User", temp2])
                 end
-                temp2=SystemTicketsUser.where(user_id:x[0])[0].id
-            end
-            if temp==0 then @not_a_mem.push(["#{User.find(x[0]).last_name}, #{User.find(x[0]).first_name}",temp2])
+              end
             end
         end
 
