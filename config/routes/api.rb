@@ -726,6 +726,19 @@ namespace :api do
       put "/computer_system/update", to: "computer_system#update"
       post "/computer_system/delete", to: "computer_system#delete"
 
+      post "items/create", to: "items#create"
+      put "/items/update", to: "items#update"
+      post "/items/delete", to: "items#delete"
+
+      post "items_category/create", to: "items_category#create"
+      put "items_category/update",  to: "items_category#update"
+      post "items_category/delete", to: "items_category#delete"
+      
+      post "suppliers/create", to: "suppliers#create"
+      put "/suppliers/update", to: "suppliers#update"
+      post "/suppliers/delete", to: "suppliers#delete"
+     
+    
       post "/user_demerits/approve", to: "user_demerits#approve"
 
       get "/user_branches", to: "user_branches#index"

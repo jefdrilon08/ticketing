@@ -11,6 +11,20 @@ namespace :administration do
   resources :branches
   resources :centers
   resources :announcements
+
+  resources :items, only: [:index] do 
+  get "items", to: "items#index"
+  end
+
+  resources :items_category, only: [:index] do 
+  get "items_category", to: "items_category#index"
+  end
+
+  resources :suppliers, only: [:index] do 
+  get "suppliers", to: "suppliers#index"
+  end
+
+
   resources :loan_products, except: [:destroy] do
     resources :loan_product_types
     resources :loan_product_taggings
@@ -23,6 +37,9 @@ namespace :administration do
 
   resources :referrers
   
+  
+
+
   resources :member_shares, only: [:index]
   get "/member_shares/not_printed", to: "member_shares#not_printed"
   get "/member_shares/printed", to: "member_shares#printed"

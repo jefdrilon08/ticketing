@@ -1,0 +1,11 @@
+.row
+  .col
+    .card
+      .card-body
+        - if @items_list.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No items found
+
+= render partial: "administration/items/modals/new"
