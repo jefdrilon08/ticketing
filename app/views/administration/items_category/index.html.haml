@@ -1,0 +1,13 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        - if @items_category_list.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No items found
+            
+= render partial: "administration/items_category/modals/new"
+
