@@ -10,15 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema[7.1].define(version: 2025_02_24_060633) do
-=======
-ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
->>>>>>> b6d2699fde68de06f5f2414ce15fb879695aa044
+ActiveRecord::Schema[7.1].define(version: 2025_03_18_040053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.uuid "record_id", null: false
+    t.uuid "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "activity_logs", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
     t.string "content"
@@ -95,6 +119,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
 
   create_table "computer_systems", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
+    t.string "description"
+    t.string "status"
+    t.json "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "concern_fors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "concern_id"
+    t.string "name"
     t.text "description"
     t.string "status"
     t.datetime "created_at", null: false
@@ -102,23 +136,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
   end
 
   create_table "concern_ticket_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "ticket_number"
     t.uuid "concern_ticket_id"
     t.text "description"
     t.json "data"
     t.string "status"
-    t.string "name"
-    t.uuid "concern_type_id"
+    t.string "name_for_id"
+    t.string "concern_type"
     t.uuid "branch_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "ticket_number"
-  end
-
-  create_table "concern_ticket_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id"
-    t.string "status"
-    t.string "task"
-    t.uuid "concern_ticket_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -140,19 +166,24 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "concern_id"
   end
 
-  create_table "concern_ticket_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id"
+  create_table "items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "description"
     t.string "status"
-    t.string "task"
+    t.string "unit"
+    t.uuid "items_category_id", null: false
+    t.json "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["items_category_id"], name: "index_items_on_items_category_id"
   end
 
-  create_table "concern_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "items_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code"
     t.string "name"
-    t.text "description"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -171,10 +202,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
-  create_table "milestone_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "milestones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "system_ticket_desc_id"
     t.text "milestone_details"
     t.string "status"
+    t.date "target_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "start_date"
+    t.date "end_date"
+  end
+
+  create_table "suppliers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "status"
+    t.json "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -192,6 +235,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
     t.text "expected_goal"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "requested_by"
+    t.string "request_type"
+    t.date "target_date"
   end
 
   create_table "system_ticket_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -207,6 +253,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
     t.string "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "data"
+    t.integer "system_number"
+  end
+
+  create_table "system_tickets_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "user_id"
+    t.string "status"
+    t.json "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "system_ticket_id"
   end
 
   create_table "user_branches", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
@@ -271,9 +328,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_19_083802) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "branches", "clusters"
   add_foreign_key "centers", "branches"
   add_foreign_key "clusters", "areas"
+  add_foreign_key "items", "items_categories"
   add_foreign_key "messages", "users"
   add_foreign_key "user_demerits", "branches"
   add_foreign_key "user_demerits", "users"
