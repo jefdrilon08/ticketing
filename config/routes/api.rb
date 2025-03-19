@@ -724,7 +724,7 @@ namespace :api do
 
       post "/computer_system/create", to: "computer_system#create"
       put "/computer_system/update", to: "computer_system#update"
-      post "/computer_system/delete", to: "computerqq_system#delete"
+      post "/computer_system/delete", to: "computer_system#delete"
 
       post "/user_demerits/approve", to: "user_demerits#approve"
 

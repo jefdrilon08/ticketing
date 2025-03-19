@@ -4,8 +4,13 @@ class SystemTicketsController < ApplicationController
     
     def index
         
-        @tickets = ComputerSystem.all
-        temp=""
+        @tickets = []
+
+        ComputerSystem.all.each do |x|
+            @tickets.push(x)
+        end
+
+        temp= ""
         @q = params[:q]
 
         if @q.present?
@@ -28,7 +33,7 @@ class SystemTicketsController < ApplicationController
         
         @subheader_side_actions = [
             {
-              id: "btn-new",
+              id: "btn-new-2",
               link: "/new_system_ticket/",
               class: "fa fa-plus",
               text: "New"
@@ -136,7 +141,7 @@ class SystemTicketsController < ApplicationController
 
         @subheader_side_actions = [
             {
-                id: "btn-new",
+                id: "btn-new-3",
                 link: "/new_system_ticket/#{params[:id]}",
                 class: "fa fa-plus",
                 text: "New"
@@ -259,6 +264,8 @@ class SystemTicketsController < ApplicationController
             temp=0
             temp2= ""
             @ticket.data["team_members"].each do |y|
+                puts "user"
+                puts x[0]
                 if x[0]==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
                 end
                 temp2=SystemTicketsUser.where(user_id:x[0])[0].id
@@ -500,6 +507,7 @@ class SystemTicketsController < ApplicationController
     end
 
     def join_st
+        puts "pumasok sa jst"
         ticket=SystemTicket.find(params[:id])
         ticket_data=ticket[:data]
 
@@ -507,7 +515,7 @@ class SystemTicketsController < ApplicationController
                                     user_id:params[:mem_id],
                                     status:"pending",
                                     system_ticket_id:params[:id]
-                                ).save
+                                ).save!
 
         ticket_data["team_members"].push([params[:mem_id]])
         if ticket.update(data:ticket_data)

@@ -63,40 +63,40 @@
                                                             = button_tag type: 'submit',class:'btt-linkto2', value:temp_i do
                                                                 Remove
                                             -temp_i+=1    
-                    -if !@not_a_mem.empty?
-                        %hr 
-                        %h4
-                            Add New Member             
-                        %table.table{:style=>"border-color:white;font-size:110%"}
+                -if !@not_a_mem.empty?
+                    %hr 
+                    %h4
+                        Add New Member             
+                    %table.table{:style=>"border-color:white;font-size:110%"}
+                        %tr                                                   
+                            %th
+                                %p
+                        =form_tag "add_member",method: 'POST' do
                             %tr                                                   
+                                %th{:style=>"width:8%"}
+                                    .form-group
+                                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'            
+                                %th{:style=>"width:20%"}
+                                    %p
+                                        New Member
+                                %td
+                                    .form-group
+                                        =select_tag :new_mem,options_for_select(@not_a_mem, params[:new_mem]),class:'form-control select-select2',prompt:"-- SELECT --", required:true
+                                %th{:style=>"width:10%"}
+                            %tr 
+                                %th         
                                 %th
                                     %p
-                            =form_tag "add_member",method: 'POST' do
-                                %tr                                                   
-                                    %th{:style=>"width:8%"}
-                                        .form-group
-                                            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'            
-                                    %th{:style=>"width:20%"}
-                                        %p
-                                            New Member
-                                    %td
-                                        .form-group
-                                            =select_tag :new_mem,options_for_select(@not_a_mem, params[:new_mem]),class:'form-control select-select2',prompt:"-- SELECT --", required:true
-                                    %th{:style=>"width:10%"}
-                                %tr 
-                                    %th         
-                                    %th
-                                        %p
-                                            Task
-                                    %td
-                                        .form-group
-                                            =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',prompt:"-- SELECT --", required:true
-                                %tr
-                                    %td
-                                    %td
-                                        .form-group
-                                            =button_tag type: 'submit', class: 'btn btn-primary' do
-                                                Add
+                                        Task
+                                %td
+                                    .form-group
+                                        =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',prompt:"-- SELECT --", required:true
+                            %tr
+                                %td
+                                %td
+                                    .form-group
+                                        =button_tag type: 'submit', class: 'btn btn-primary' do
+                                            Add
                                 
 
 :css
