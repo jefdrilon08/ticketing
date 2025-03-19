@@ -35,17 +35,16 @@ class NewSystemTicketController < ApplicationController
         end
         puts params
 
+        tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
+
         file_arr=[]
 
         if params[:file]!=nil
             params[:file].each do |x|
                 file_arr.push(x)
             end
-        end
 
-        tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
-
-        @record=SystemTicketDesc.new(
+            @record=SystemTicketDesc.new(
                 ticket_number:tn_fin,
                 system_ticket_id:params[:id],
                 system_type:nil,
@@ -67,6 +66,31 @@ class NewSystemTicketController < ApplicationController
                 request_type:params[:request_type],
                 requested_by:current_user.id
             )
+        else
+            @record=SystemTicketDesc.new(
+                ticket_number:tn_fin,
+                system_ticket_id:params[:id],
+                system_type:nil,
+                title:params[:title],
+                description:params[:description],
+                status:"pending",
+                data:   {
+                            team_members:members_arr,
+                            save_details:nil,
+                            on_hold:false,
+                            hold_details:nil,
+                            file:file_arr
+                        },
+                date_received:DateTime.now(),
+                start_date:nil,
+                target_date:params[:date],
+                expected_goal:nil,
+                request_type:params[:request_type],
+                requested_by:current_user.id
+            )
+
+        end
+
             if @record.save
                 redirect_to "/system_tickets/#{@record[:id]}"
             else

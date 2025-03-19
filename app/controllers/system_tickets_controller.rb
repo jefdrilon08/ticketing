@@ -3,60 +3,29 @@ class SystemTicketsController < ApplicationController
     skip_forgery_protection
     
     def index
-        @tickets = SystemTicket.all
+        
+        @tickets = ComputerSystem.all
+        temp=""
+        @q = params[:q]
+
+        if @q.present?
+            @tickets = @tickets.where(
+              "upper(name) LIKE :q",
+              q: "%#{@q.upcase}%"
+            )
+          end
+
+          puts @tickets
+
         @computer_systems = []
-        mem_a=[]
-        mem_ia=[]
-        mem_pen=[]
-        nonmem=[]
-        own=[]
         @tickets.each do |x|
-            member=0
-            temp= ComputerSystem.find(x.computer_system_id)
-            puts x.user_id
-            if current_user.id==x.user_id
-                own.push([temp.name,x.id,x.user_id.to_s])
-                member=member+1
-            elsif !SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id).empty?
-                member=member+1
-                if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=="active" then mem_a.push([temp.name,x.id,x.user_id.to_s])
-                elsif SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=="inactive" then mem_ia.push([temp.name,x.id,x.user_id.to_s])
-                elsif SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=="pending" then mem_pen.push([temp.name,x.id,x.user_id.to_s])
-                end
-            end
-            if member==0 then nonmem.push([temp.name,x.id,x.user_id.to_s]) 
+            if SystemTicket.where(computer_system_id:x.id).empty? then @tickets.delete(x)
+            else
+                temp=x.name
+                @computer_systems.push(SystemTicket.where(computer_system_id:x.id)[0])
             end
         end
-
-        puts "own"
-        puts own
-        puts "mem"
-        puts mem_a
-        puts mem_ia
-        puts mem_pen
-        puts "nonmem"
-        puts nonmem
-
-        own.each do |x|
-            @computer_systems.push(x)
-        end
-
-        mem_a.each do |x|
-            @computer_systems.push(x)
-        end
-
-        mem_ia.each do |x|
-            @computer_systems.push(x)
-        end
-
-        nonmem.each do |x|
-            @computer_systems.push(x)
-        end
-
-        mem_pen.each do |x|
-            @computer_systems.push(x)
-        end
-
+        
         @subheader_side_actions = [
             {
               id: "btn-new",
@@ -474,33 +443,20 @@ class SystemTicketsController < ApplicationController
 
     def add_attachment
         add_att=SystemTicketDesc.find(params[:id])
-        add_att_new=add_att
-        # temp=[]
-
-        # puts add_att.file.each do |x|
-        #     temp.push(x)
-        # end
-
-        # puts temp
-
-        # puts params[:file]
-
-        # temp.push(params[:file])
-
-        # puts "all start"
-        # puts temp
+        add_att_data=add_att[:data]
+        file_arr=[]
 
         params[:file].each do |x|
-            add_att_new.data["file"].push(x)
+            file_arr.push(x)
         end
+
+        add_att_data["file"]=file_arr
         
-        puts "new: #{params[:file]}"
-        puts "old: #{add_att.file}"
-        # if add_att.update(data:add_att_new)
-        #     redirect_to "/system_tickets_#{add_att[:system_ticket_id]}"
-        # else
-        #     render :edit, status: :unprocessable_entity
-        # end
+        if add_att.update(data:add_att_data,file:file_arr)
+            redirect_to "/system_tickets_#{add_att[:system_ticket_id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
     end
 
     def edit_member_status

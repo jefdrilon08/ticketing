@@ -208,6 +208,10 @@
                                 %center
                                     %p
                                         No attachment found
+                        %tr
+                            %td
+                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
+                                    Add attachment
                     -else 
                         -file_count=0
                         -@ticket.file.each do |x|
@@ -216,9 +220,7 @@
                                     %a{:href=>url_for(x),:download=>"download"}
                                         #{@ticket.data["file"][file_count]["original_filename"]}
                                     -file_count=file_count+1
-                    %td
-                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
-                            Add attachment
+                    
                                 
             %hr{style:"height:5px;color:white"}
             .card{:style=>"padding:3%"}

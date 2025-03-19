@@ -1,7 +1,16 @@
 .card.some{:style=>"padding:1%"}
     %h2
         System Tickets
-    %hr{:style=>"height:20px"}
+    = form_tag "", method: 'GET' do
+        %table.table{:style=>"border-color:white;font-size:110%"}
+            %tr
+                %td{:style=>"width:30%"}
+                    .form-group
+                        = text_field_tag :q, params[:q], class: "form-control", placeholder: "Search ticket"
+                %td
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-info btn-block' do
+                            .bi.bi-search
         .row
             -if @tickets.empty?
                 %center
@@ -11,21 +20,21 @@
                 -@computer_systems.each do |x|
                     .col-3{:style=>"padding:20px"}
                         %div
-                            = link_to "/system_tickets_#{x[1]}", class: "btn-nav-square-md" do
+                            = link_to "/system_tickets_#{x.id}", class: "btn-nav-square-md" do
                                 %h5
-                                    #{x[0]}
+                                    #{ComputerSystem.where(id:x.computer_system_id)[0].name}
                         %div{:style=>"margin:20px"}
                             %center
-                                -if current_user.id==x[2]
-                                    =link_to "/system_tickets_#{x[1]}/edit" do
+                                -if current_user.id==x.user_id.to_s
+                                    =link_to "/system_tickets_#{x.id}/edit" do
                                         %p
                                             Edit Members
                                 -else
                                     -join_stat=0
-                                    -SystemTicket.find(x[1]).data["team_members"].each do |y|
+                                    -SystemTicket.find(x.id).data["team_members"].each do |y|
                                         -if current_user.id==y[0]
-                                            -if !SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1]).empty?
-                                                -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status=="pending"
+                                            -if !SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id).empty?
+                                                -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=="pending"
                                                     -join_stat=1
                                                 -else
                                                     -join_stat=2
@@ -34,18 +43,18 @@
                                             .form-group
                                                 =text_field_tag :mem_id,params[:mem_id]=current_user.id,class:'form-control',style:'display:none'
                                             .form-group
-                                                =text_field_tag :id,params[:id]=x[1],class:'form-control',style:'display:none'
+                                                =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
                                             .form-group
                                                 = button_tag type: 'submit',class:'btt-linkto' do
                                                     %p
                                                         Join
                                     -elsif join_stat==2
-                                        -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status=='active'
+                                        -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=='active'
                                             %p{:style=>"color:green"}
-                                                Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status})
-                                        -elsif SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status=='inactive'
+                                                Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status})
+                                        -elsif SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=='inactive'
                                             %p{:style=>"color:red"}
-                                                Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[1])[0].status})
+                                                Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status})
                                     -elsif join_stat==1
                                         %p{:style=>"color:OrangeRed"}
                                             Pending request
