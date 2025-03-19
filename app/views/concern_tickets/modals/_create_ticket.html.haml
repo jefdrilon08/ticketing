@@ -24,9 +24,9 @@
                 %label.font-weight-bold Concern For
                 .d-flex.align-items-center
                   = select_tag :name_for_id, 
-                    options_from_collection_for_select(@concern_fors, :id, :name), 
+                    options_from_collection_for_select(@concern_fors || [], :id, :name), 
                     class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-                    id: "input-concern-for", prompt: "-- SELECT --"
+                    id: "input-concern-for", prompt: "-- SELECT --"  
                   %button.btn.btn-success.btn-sm.ms-2#btn-add-concern-type{ title: "Add New Name", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-add-concern-for" }
                     %i.bi.bi-plus-lg
 
@@ -35,7 +35,7 @@
                 %label.font-weight-bold Concern Type
                 .d-flex.align-items-center
                   = select_tag :concern_type_id, 
-                    options_from_collection_for_select(@concern_types, :id, :name), 
+                    options_from_collection_for_select(@concern_types || [], :id, :name), 
                     class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
                     id: "input-concern-type", prompt: "-- SELECT --"
                   %button.btn.btn-success.btn-sm.ms-2#btn-add-concern-type{ title: "Add New Concern Type", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-add-concern-type" }
