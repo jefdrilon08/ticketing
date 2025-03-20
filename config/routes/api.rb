@@ -209,6 +209,7 @@ namespace :api do
     namespace :tickets do
       get "/concern_tickets", to: "concern_tickets#index"
       post "/concern_tickets", to: "concern_tickets#create_concern"
+      post "/concern_tickets/create_ticket", to: "concern_tickets#create_ticket"
       post "/concern_tickets/create_concern_type", to: "concern_tickets#create_concern_type"
       post "/concern_tickets/create_concern_for", to: "concern_tickets#create_concern_for"
 

@@ -14,8 +14,8 @@
               .col-12
                 %label Description
                 = text_area_tag :description, params[:description], class: 'form-control'
-            = hidden_field_tag :concern_id, params[:id]
+            
             .row
               .col-12.text-end
-                = button_tag type: 'submit', class: 'btn btn-primary' do
-                  Add Concern
+                = button_tag 'Add Concern', type: 'submit', class: 'btn btn-primary'
+                = button_tag 'Cancel', type: 'button', class: 'btn btn-secondary', "data-bs-dismiss" => "modal"

@@ -35,15 +35,38 @@ module Api
             }
           end
         end
-
+        #set up attached file
+          # file_record=[]
+          # params[:file].each do|x|
+          #   file_record.push([x,"File",nil])
+          # end
+        
         def create_ticket
-          Rails.logger.debug "TESTING: #{params[:status]}"
-          config = {
-            name: params[:name],
+          puts params
+          # @qwe = Concern.find("")
+          @concern_id = params[:concern_ticket_id] #id ng concern ticket
+          Rails.logger.debug "qwerty #{@concern_id.inspect}"
+
+          ticket_name = #{ConcernTicket.find(@concern_id).ticket_name} - #{ConcernTicketDetails.where(ConcernTicket.find(@concern_id).length+1}"
+          #######tn_fin="ST
+          #{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
+          
+          @concern_ticket_record = ConcernTicketDetail.new(
+            ticket_number:ticket_name,
+            concern_ticket_id: params[:concern_ticket_id],
             description: params[:description],
-            status: params[:status],
-            computer_system_id: params[:computer_system_id],
-          }
+            data:{
+              # file:file_record
+            },
+            status:"open",
+            name_for_id: params[:name_for_id],
+            concern_type_id: params[:concern_type_id]
+          )
+          if @concern_ticket_record.save
+            redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
+          else
+              render :new, status: :unprocessable_entity
+          end
         end
 
         def create_concern_for
@@ -53,8 +76,6 @@ module Api
             description: params[:description],
             status: "active"
           )
-          # Rails.logger.debug "batman #{@concern_for_record.inspect}"
-        
           if @concern_for_record.save
             redirect_to "/concern_tickets/#{@concern_for_record[:concern_id]}"
           else
@@ -70,7 +91,6 @@ module Api
             description: params[:description],
             status: "active"
           )
-          Rails.logger.debug "batman #{@concern_type_record.inspect}"
         
           if @concern_type_record.save
             redirect_to "/concern_tickets/#{@concern_type_record[:concern_id]}"
