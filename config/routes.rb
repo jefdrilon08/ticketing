@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 
   # Concern Ticket Routes
   get "/concern_tickets", to: "concern_tickets#index"
+  get "/concern_tickets/new_concern", to: "concern_tickets#new_concern", as: :new_concern_ticket
   get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
   get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
 

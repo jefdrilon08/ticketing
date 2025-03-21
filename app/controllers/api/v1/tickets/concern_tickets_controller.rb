@@ -3,13 +3,15 @@ module Api
     module Tickets
       class ConcernTicketsController < ApiController
         before_action :authenticate_user! 
+      
 
         def create_concern
           Rails.logger.debug "Status received: #{params[:status]}"
+          Rails.logger.debug "SPIDEY"
           config = {
             name: params[:name],
-            description: params[:description],
-            status: params[:status],
+            description: nil,
+            status: "active",
             computer_system_id: params[:computer_system_id],
             # user_id: params[:user_id]
           }

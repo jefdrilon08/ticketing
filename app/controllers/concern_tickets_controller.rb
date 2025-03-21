@@ -2,19 +2,18 @@ class ConcernTicketsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-
+    
     @subheader_side_actions = [
         {
           id: "btn-new",
-          link: "#",
+          link: new_concern_ticket_path,
           class: "fa fa-plus",
           text: "New"
         }
       ]
+
     #pag fetch ng lahat ng records
     @records = ConcernTicket.includes(:user, :computer_system).order(:name).page(params[:page]).per(15)
-
-    @computer_systems = ComputerSystem.select(:id, :name)
   end
 
   def show
@@ -41,7 +40,11 @@ class ConcernTicketsController < ApplicationController
     #pagkuha ng lahat ng concern for names na nakabase sa kung anong concern ticket id
     @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
   end
-  
+
+  def new_concern
+    @computer_systems = ComputerSystem.select(:id, :name)
+  end
+
   def view_tix
     @concern_ticket_details = ConcernTicketDetail.find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
