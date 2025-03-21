@@ -11,9 +11,8 @@ class ConcernTicketsController < ApplicationController
           text: "New"
         }
       ]
-    
+    #pag fetch ng lahat ng records
     @records = ConcernTicket.includes(:user, :computer_system).order(:name).page(params[:page]).per(15)
-    Rails.logger.debug "@records details #{@records.inspect}" 
 
     @computer_systems = ComputerSystem.select(:id, :name)
   end
@@ -29,14 +28,18 @@ class ConcernTicketsController < ApplicationController
     ]
     
     @concern_ticket = ConcernTicket.includes(concern_ticket_details: :branch).find(params[:id])
-    Rails.logger.debug "batman #{@concern_ticket.inspect}" 
+    Rails.logger.debug "batman #{@concern_ticket.inspect}"  #nilabas yung details ng isang concern ticket
     @branches = Branch.select(:id, :name)
 
     #fetching concern ticket details
     @details_records  = @concern_ticket.concern_ticket_details
+    Rails.logger.debug "spider #{@details_records.inspect}"  #nilabas yung details ng isang concern ticket details
 
     #pagkuha ng lahat ng concern type na nakabase sa kung anong concern ticket id
     @concern_types = ConcernType.where(concern_id: @concern_ticket.id)
+
+    #pagkuha ng lahat ng concern for names na nakabase sa kung anong concern ticket id
+    @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
   end
   
   def view_tix

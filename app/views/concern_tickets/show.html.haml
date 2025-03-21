@@ -17,7 +17,7 @@
       - @details_records.each do |ticket|
         %tr
           %td.text-center= ticket.ticket_number || "N/A"
-          %td.text-center= ticket.name || "N/A"
+          %td.text-center= ticket.concern_for&.name || "N/A"
           %td.text-center= ticket.concern_type&.name || "N/A"
           %td.text-center= "Unassigned"
           %td.text-center= ticket.branch&.name || "Unassigned"
@@ -34,7 +34,7 @@
             - when "closed"
               .badge.bg-danger Closed
             - else
-              .badge.bg-secondary Unknown
+              .badge.bg-secondary Pending
           %td.text-center
             = link_to view_tix_concern_ticket_path(ticket), class: "btn btn-primary btn-md", title: "View Tickets", data: { bs_toggle: "tooltip" } do
               %i.bi.bi-eye
@@ -43,6 +43,6 @@
 
     - else
       %tr
-        %td{ colspan: 6, class: "text-center" } No ticket details found
+        %td{ colspan: 9, class: "text-center" } No ticket details found
 
 = render "concern_tickets/modals/create_ticket"  

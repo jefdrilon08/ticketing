@@ -8,6 +8,7 @@ var $modalNew;
 var $btnNew;
 var $btnConfirm;
 var $inputName;
+var $inputTicketName;
 var $inputDesc;
 var $id;
 var $message;
@@ -19,6 +20,7 @@ var _cacheDom = function() {
     $btnNew                     = $("#btn-new");
     $btnConfirm                 = $("#btn-confirm");
     $inputName                  = $("#input-name");
+    $inputTicketName            = $("#input-ticket_name");
     $inputDesc                  = $("#input-description");
     $inputComputerSystem        = $("#input-computer-system");
     $displayComputerSystemName = $("#display-computer-system-name");
