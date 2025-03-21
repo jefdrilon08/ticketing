@@ -5,8 +5,9 @@ class NewSystemTicketController < ApplicationController
     def create_systemtix2
         members_arr=[]
 
+        members_arr.push(current_user.id)
         params[:members].each do|x|
-            members_arr.push([x])
+            members_arr.push(x)
         end
         @record     =SystemTicket.new(
                                         computer_system_id:params[:computer_system_id],
@@ -18,22 +19,28 @@ class NewSystemTicketController < ApplicationController
                                         system_number:SystemTicket.all.count+1
                                     ).save
 
-        params[:members].each do|x|
-            SystemTicketsUser.new(
-                                    user_id:x,
-                                    status:"active",
-                                    system_ticket_id:SystemTicket.where(computer_system_id:params[:computer_system_id])[0].id
-                                ).save
+        members_arr.each do|x|
+            if x==current_user.id
+                SystemTicketsUser.new(
+                                        user_id:x,
+                                        status:"admin",
+                                        system_ticket_id:SystemTicket.where(computer_system_id:params[:computer_system_id])[0].id
+                                    ).save
+            else
+                SystemTicketsUser.new(
+                                        user_id:x,
+                                        status:"active",
+                                        system_ticket_id:SystemTicket.where(computer_system_id:params[:computer_system_id])[0].id
+                                    ).save
+            end
         end
             redirect_to "/system_tickets/"
     end
 
     def create_systemtix
-        members_arr=[]
-        params[:members].each do|x|
-            members_arr.push([x,"Member",nil])
-        end
         puts params
+
+        main_dev=SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:params[:id])[0]
 
         tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
 
@@ -53,7 +60,7 @@ class NewSystemTicketController < ApplicationController
                 description:params[:description],
                 status:"pending",
                 data:   {
-                            team_members:members_arr,
+                            team_members:[[main_dev.id,"Main Dev"]],
                             save_details:nil,
                             on_hold:false,
                             hold_details:nil,
@@ -75,7 +82,7 @@ class NewSystemTicketController < ApplicationController
                 description:params[:description],
                 status:"pending",
                 data:   {
-                            team_members:members_arr,
+                            team_members:[[main_dev.id,"Main Dev"]],
                             save_details:nil,
                             on_hold:false,
                             hold_details:nil,

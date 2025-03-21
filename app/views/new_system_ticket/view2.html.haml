@@ -22,8 +22,9 @@
           %div{:style=>"display:flex"}
             %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
               -User.all.each do |x|
-                %option{:value => x.id,:id=>"selected#{x.id}"}
-                  #{x.last_name.upcase} , #{x.first_name.upcase }
+                -if x.id!=current_user.id
+                  %option{:value => x.id,:id=>"selected#{x.id}"}
+                    #{x.last_name} , #{x.first_name}
             %div
               &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
