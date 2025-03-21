@@ -1,8 +1,3 @@
--@STmembers=SystemTicketsUser.where(system_ticket_id:params[:id])
--@STmem_arr=[]
--@STmembers.each do |x|
-  -if x.status=="active"
-    -@STmem_arr.push(x)
 .card.some{:style=>"padding:1%"}
   %h2
     New Ticket for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
@@ -36,32 +31,6 @@
             =text_field_tag :date,params[:date],class:'form-control',style:"width:10%",required:true,type: :date
       %tr
         %td
-          %label
-            Select Members
-          %div{:style=>"display:flex"}
-            %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
-              -@STmem_arr.each do |x|
-                %option{:value => x.id,:id=>"selected#{x.id}"}
-                  #{User.find(x.user_id)}
-            %div
-              &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-            %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
-              Add
-            %div{:id=>"dup",:style=>"display:none;color:red;margin-bottom:-20px;padding-top:10px"}
-              %p
-                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*Duplicate member
-            %div{:id=>"empty",:style=>"display:none;color:red;margin-bottom:-20px;padding-top:10px"}
-              %p
-                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*Members cannot be empty
-      %tr
-        %td
-          %label
-            Members
-          .card{:style=>"min-height:100px;padding:1%"}
-            .form-group
-              %table.table{:style=>"border-color:white;font-size:110%",:id=>"mem-container"}
-      %tr
-        %td
           .form-group
             = file_field_tag :file,name:"file[]", id: "file", multiple:"true"
       %tr
@@ -69,110 +38,12 @@
           .form-group
             %div{id:"sel-mem"}
           .form-group
-            =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
+            =button_tag type: 'SUBMIT', class: 'btn btn-primary',onclick:"submitArray()" do
               Add Ticket              
 
 :css
   input::file-selector-button{background-color:#0D6EFD;border:none;padding:3%;color:white;border-radius:8px;margin-right:10px}
   input::file-selector-button:hover{background-color:#0B5ED7;cursor:pointer;transition-duration: 0.4s;}
 
-:javascript
-  var arr=[]
-  
-  function addMember() {
-    var x=document.getElementById("member-sel").value
-    var y=document.getElementById("selected"+x).label
-    var w=0
-    for(i=0;i<arr.length;i++)
-    {
-      if(arr[i][0]==x)
-      {
-        w+=1;
-      }
-    }
-    if(w==0)
-    {
-      document.getElementById("empty").style.display="none";
-      document.getElementById("sub-btn").type="submit"
-      arr.push([x,y])
-      document.getElementById("dup").style.display="none"
-    }
-    else
-    {
-      document.getElementById("dup").style.display="block"
-      document.getElementById("empty").style.display="none";
-    }
-
-    displayMembers()
-  }
-
-  function displayMembers() {
-    document.getElementById("mem-container").innerHTML=""
-    document.getElementById("sel-mem").innerHTML=""
-
-    var slct=document.createElement('select');
-        slct.id="in-sel-mem"
-        slct.multiple="multiple"
-        slct.style.display="none"
-        slct.name="members[]"
-
-    console.log(slct.value+" val")
-
-    document.getElementById("sel-mem").append(slct)
-
-    if(arr.length==0) document.getElementById("sub-btn").type="button";
-
-    for(x=0;x<arr.length;x++)
-    {
-      var btt = document.createElement('button');
-          btt.className = "btn btn-sm btn-danger";
-          btt.type = "button";
-          btt.innerText= "Remove";
-      var temprow=document.getElementById("mem-container").insertRow(x)
-      var cell1=temprow.insertCell(0)
-          cell1.style="width:50%"
-          cell1.innerHTML=arr[x][1]
-      var cell2=temprow.insertCell(1)
-          cell2.id="btt"+arr[x][0]
-          btt.id="btt"+arr[x][0]
-          btt.addEventListener("click", removeMember, false);
-      document.getElementById(cell2.id).appendChild(btt)
-
-      var option=document.createElement('option')
-          option.text=arr[x][0]
-          option.value=arr[x][0]
-          option.setAttribute('selected', 'selected')
-
-      slct.add(option)
-    }
-    slct.options.selected=true
-  }
-
-  function removeMember() {
-    console.log(this.id.substring(3))
-    for(x=0;x<arr.length;x++)
-    {
-      if(this.id.substring(3)==arr[x][0])
-        arr.splice(x,1)
-    }
-
-    displayMembers()
-  }
-
-  function submitArray()
-  {
-    if(arr.length==0)
-    {
-      document.getElementById("empty").style.display="block";
-      document.getElementById("dup").style.display="none"
-    }
-    else
-    {
-      console.log("not empty")
-      console.log(arr)
-      document.getElementById("empty").style.display="none";
-      return arr;
-    }
-  }
   
 

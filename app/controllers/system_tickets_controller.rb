@@ -183,13 +183,17 @@ class SystemTicketsController < ApplicationController
         active=[]
         inactive=[]
         pending=[]
+        admin=[]
 
         members.each do |x|
             if x.status=="active" then active.push(x)
             elsif x.status=="inactive" then inactive.push(x)
             elsif x.status=="pending" then pending.push(x)
+            elsif x.status=="admin" then admin.push(x)
             end
         end
+
+        @system_members.push(admin[0])
 
         active.each do |x|
             @system_members.push(x)
@@ -280,20 +284,25 @@ class SystemTicketsController < ApplicationController
             @maindev = name
           end
         end
-
+        puts "allu"
         all_u.each do |x|
+            puts x
             temp=0
             temp2= ""
             @ticket.data["team_members"].each do |y|
-                if x[0]==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
+                if x==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
                 end
-                temp2=SystemTicketsUser.where(user_id:x[0])[0].id
+                temp2=SystemTicketsUser.where(user_id:x)[0].id
             end
-            if temp==0 then @not_a_mem.push(["#{User.find(x[0]).last_name}, #{User.find(x[0]).first_name}",temp2])
+            if temp==0 then @not_a_mem.push(SystemTicketsUser.where(user_id:x)[0].id)
             end
         end
 
+        puts "nonmem"
         puts @not_a_mem
+
+        puts "mem"
+        puts @mem_list
 
     end
 
@@ -371,10 +380,13 @@ class SystemTicketsController < ApplicationController
 
     def add_member
         puts params
+
         mem_add= SystemTicketDesc.find(params[:id])
         mem_add_data= mem_add[:data]
 
-        mem_add_data["team_members"].push([params[:new_mem],params[:task]])
+        params[:members].each do|x|
+            mem_add_data["team_members"].push([x,"Member",nil])
+        end
 
         puts mem_add_data
 
@@ -506,14 +518,13 @@ class SystemTicketsController < ApplicationController
         mem_add= SystemTicket.find(params[:id])
         mem_add_data= mem_add[:data]
 
-        members_arr=[]
         params[:members].each do|x|
-            mem_add_data["team_members"].push([x])
+            mem_add_data["team_members"].push(x)
             SystemTicketsUser.new(
-                                    user_id:x,
-                                    status:"active",
-                                    system_ticket_id:params[:id]
-                                ).save
+                                        user_id:x,
+                                        status:"active",
+                                        system_ticket_id:params[:id]
+                                    ).save
         end
 
         puts mem_add_data

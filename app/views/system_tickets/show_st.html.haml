@@ -24,6 +24,9 @@
           -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
             .badge.bg-warning
               #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="admin"
+            .badge.bg-primary
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
         %td
           =form_tag "/system_tickets/edit_member_status", multipart: true, method: 'POST' do
             .form-group
@@ -52,7 +55,7 @@
             %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
               -@non_system_members.each do |x|
                 %option{:value => x,:id=>"selected#{x}"}
-                  #{User.find(x)}
+                  #{User.find(x).last_name}, #{User.find(x).first_name}
             %div
               &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
