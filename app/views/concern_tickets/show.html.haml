@@ -19,10 +19,10 @@
           %td.text-center= ticket.ticket_number || "N/A"
           %td.text-center= ticket.concern_for&.name || "N/A"
           %td.text-center= ticket.concern_type&.name || "N/A"
-          %td.text-center= "Unassigned"
+          %td.text-center= ticket.user ? "#{ticket.user.first_name.capitalize} #{ticket.user.last_name.capitalize}" : "User Error"
           %td.text-center= ticket.branch&.name || "Unassigned"
           %td.text-center= "Unassigned"
-          %td.text-center= ticket.created_at.strftime("%b %d, %Y")
+          %td.text-center.small-text= ticket.created_at.strftime("%b %d, %Y %I:%M %p")
           %td.text-center
             - case ticket.status
             - when "open"

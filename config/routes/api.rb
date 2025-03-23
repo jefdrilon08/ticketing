@@ -207,10 +207,11 @@ namespace :api do
   namespace :v1 do
 
     namespace :tickets do
-      post "/concern_tickets/create_concern", to: "concern_tickets#create_concern"
+      
       post "/concern_tickets/create_ticket", to: "concern_tickets#create_ticket"
       post "/concern_tickets/create_concern_type", to: "concern_tickets#create_concern_type"
       post "/concern_tickets/create_concern_for", to: "concern_tickets#create_concern_for"
+      post "/concern_tickets/create_concern", to: "concern_tickets#create_concern"
 
     end
 

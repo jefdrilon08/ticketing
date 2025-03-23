@@ -43,33 +43,31 @@ module Api
           #   file_record.push([x,"File",nil])
           # end
         
-        def create_ticket
-          puts params
-          # @qwe = Concern.find("")
-          @concern_id = params[:concern_ticket_id] #id ng concern ticket
-          Rails.logger.debug "qwerty #{@concern_id.inspect}"
-
-          ticket_name = #{ConcernTicket.find(@concern_id).ticket_name} - #{ConcernTicketDetails.where(ConcernTicket.find(@concern_id).length+1}"
-          #######tn_fin="ST
-          #{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
+          def create_ticket
+            concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
+            ticket_count = ConcernTicketDetail.where(concern_ticket_id: concern_ticket.id).count
+            ticket_number = "#{concern_ticket.ticket_name} - #{(ticket_count + 1).to_s.rjust(4, '0')}"
           
-          @concern_ticket_record = ConcernTicketDetail.new(
-            ticket_number:ticket_name,
-            concern_ticket_id: params[:concern_ticket_id],
-            description: params[:description],
-            data:{
-              # file:file_record
-            },
-            status:"open",
-            name_for_id: params[:name_for_id],
-            concern_type_id: params[:concern_type_id]
-          )
-          if @concern_ticket_record.save
-            redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
-          else
+            @concern_ticket_record = ConcernTicketDetail.new(
+              ticket_number: ticket_number,
+              concern_ticket_id: params[:concern_ticket_id],
+              description: params[:description],
+              status: "open",
+              name_for_id: params[:name_for_id],
+              concern_type_id: params[:concern_type_id],
+              branch_id: params[:branch_id],
+              user_id: current_user.id
+            )
+          
+            Rails.logger.debug "FORTESTING #{@concern_ticket_record.inspect}"
+            if @concern_ticket_record.save
+              redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
+            else
+              Rails.logger.debug "ERRORS: #{@concern_ticket_record.errors.full_messages}"
               render :new, status: :unprocessable_entity
+            end
           end
-        end
+          
 
         def create_concern_for
           @concern_for_record = ConcernFor.new(

@@ -2,7 +2,8 @@
   .modal-dialog.modal-lg
     .modal-content.bg-white.p-3
       .modal-header
-        %h3.modal-title.w-100.text-primary CREATE TICKET
+        %h3.modal-title.w-200.text-primary CREATE TICKET 
+        
         %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
       %hr.mt-0.mb-3
 
@@ -28,7 +29,7 @@
                       options_from_collection_for_select(@concern_fors&.sort_by(&:name) || [], :id, :name), 
                       class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
                       id: "input-concern-for", prompt: "-- SELECT --"
-                    %button.btn.btn-success.btn-sm.ms-2{ "data-bs-toggle" => "modal", "data-bs-target" => "#modal-create-concern-for", title: "Add New Concern For" }
+                    %button.btn.btn-success.btn-sm.ms-2{ type: "button", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-create-concern-for", title: "Add New Concern For" }
                       %i.bi.bi-plus-lg
 
               .col-md-6
@@ -39,7 +40,7 @@
                       options_from_collection_for_select(@concern_types&.sort_by(&:name) || [], :id, :name), 
                       class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
                       id: "input-concern-type", prompt: "-- SELECT --"
-                    %button.btn.btn-success.btn-sm.ms-2{ "data-bs-toggle" => "modal", "data-bs-target" => "#modal-create-concern-type", title: "Add New Concern Type" }
+                    %button.btn.btn-success.btn-sm.ms-2{ type: "button", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-create-concern-type", title: "Add New Concern Type" }
                       %i.bi.bi-plus-lg
 
             .row
@@ -53,15 +54,21 @@
               .col-md-6
                 .form-group.mt-3
                   %label.font-weight-bold Attach Files
+                  %i.bi.bi-upload.ms-2.text-primary
                   = file_field_tag :attachments, multiple: true, id: "input-attachments", 
                     class: "form-control bg-light text-dark border-0 shadow-sm"
-            
+                  
             .message
             = hidden_field_tag :concern_ticket_id, params[:id]
           .modal-footer.d-flex.justify-content-center
             .controls
-              = button_tag 'Add Concern', type: 'submit', class: 'btn btn-primary'
-              = button_tag 'Cancel', type: 'button', class: 'btn btn-secondary', "data-bs-dismiss" => "modal"
+              = button_tag type: 'submit', class: 'btn btn-primary' do
+                %bi.bi-save.me-2 
+                Add Concern
+              &nbsp;
+              = button_tag type: 'button', class: 'btn btn-secondary', "data-bs-dismiss" => "modal" do
+                %bi.bi-x-lg
+                Close
 
 = render "concern_tickets/modals/create_concern_type"
 = render "concern_tickets/modals/create_concern_for"

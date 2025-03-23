@@ -7,6 +7,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :trackable, :timeoutable
 
   has_many :concern_tickets
+  has_many :concern_ticket_details
+
+  
 
         
 # end
