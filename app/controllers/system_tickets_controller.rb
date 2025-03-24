@@ -4,23 +4,23 @@ class SystemTicketsController < ApplicationController
     
     def index
         
-        @tickets = []
-
-        ComputerSystem.all.each do |x|
-            @tickets.push(x)
-        end
+        @tickets_all=ComputerSystem.all
 
         temp= ""
         @q = params[:q]
 
         if @q.present?
-            @tickets = @tickets.where(
+            @tickets_all = @tickets_all.where(
               "upper(name) LIKE :q",
               q: "%#{@q.upcase}%"
             )
           end
 
-          puts @tickets
+          @tickets = []
+
+          @tickets_all.each do |x|
+              @tickets.push(x)
+          end
 
         @computer_systems = []
         @tickets.each do |x|
@@ -65,7 +65,7 @@ class SystemTicketsController < ApplicationController
             temp= system_tix
             system_tix=[]
             temp.each do |x|
-                if SystemTicketDesc.find(SystemTicketDesc.select(:id).where(system_ticket_id:x[:id]))[:date_received].to_s==@f_date
+                if x[:date_received].to_s==@f_date
                     system_tix.push(x)
                 end
             end
@@ -93,16 +93,7 @@ class SystemTicketsController < ApplicationController
                 end
 
                 x[:data]["team_members"].each do |x|
-                  system_ticket_user = SystemTicketsUser.find_by(id: x[0])
-                  if system_ticket_user
-                    user = User.find_by(id: system_ticket_user.user_id)
-                    if user
-                      md = "#{user.last_name}, #{user.first_name}"
-                    else
-                      md = "Unknown User"
-                    end
-                  else
-                    md = "Unknown SystemTicketsUser"
+                  if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md="#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"
                   end
                 end
 
@@ -278,11 +269,14 @@ class SystemTicketsController < ApplicationController
             name = "Unknown SystemTicketsUser"
           end
 
-          if x[1] != "Main Dev"
-            @mem_list.push([name, x[1], x[0]])
-          else
-            @maindev = name
+          if system_ticket_user.status=="active"||system_ticket_user.status=="admin"
+            if x[1] != "Main Dev"
+                @mem_list.push([name, x[1], x[0]])
+              else
+                @maindev = name
+              end
           end
+          
         end
         puts "allu"
         all_u.each do |x|
@@ -294,7 +288,8 @@ class SystemTicketsController < ApplicationController
                 end
                 temp2=SystemTicketsUser.where(user_id:x)[0].id
             end
-            if temp==0 then @not_a_mem.push(SystemTicketsUser.where(user_id:x)[0].id)
+            if temp==0&&SystemTicketsUser.find(temp2).status=="active" then
+                 @not_a_mem.push(temp2)
             end
         end
 
@@ -547,7 +542,7 @@ class SystemTicketsController < ApplicationController
                                     system_ticket_id:params[:id]
                                 ).save!
 
-        ticket_data["team_members"].push([params[:mem_id]])
+        ticket_data["team_members"].push(params[:mem_id])
         if ticket.update(data:ticket_data)
             redirect_to "/system_tickets"
         else

@@ -83,7 +83,7 @@
                                         %th{:style=>"width:10%"}
                                         %td
                                             %label
-                                                Select New Members
+                                                Select Member(s)
                                             %div{:style=>"display:flex"}
                                                 %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
                                                     -@not_a_mem.each do |x|
@@ -103,7 +103,7 @@
                                         %th
                                         %td
                                             %label
-                                                Members
+                                                Selected Members
                                             .card{:style=>"min-height:100px;padding:1%"}
                                                 .form-group
                                                 %table.table{:style=>"border-color:white;font-size:110%",:id=>"mem-container"}
@@ -113,7 +113,7 @@
                                             .form-group
                                                 %div{id:"sel-mem"}
                                             .form-group
-                                                =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
+                                                =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn2" do
                                                     Save
 :css
     .btt-linkto2{background:none!important;border:none;padding:0!important;color:red;text-decoration:underline;cursor:pointer;}
@@ -138,7 +138,7 @@
         if(w==0)
         {
             document.getElementById("empty").style.display="none";
-            document.getElementById("sub-btn").type="submit"
+            document.getElementById("sub-btn2").type="submit"
             arr.push([x,y])
             document.getElementById("dup").style.display="none"
         }
@@ -165,7 +165,8 @@
 
         document.getElementById("sel-mem").append(slct)
 
-        if(arr.length==0) document.getElementById("sub-btn").type="button";
+        if(arr.length==0) document.getElementById("sub-btn2").type="button";
+        else document.getElementById("sub-btn2").type="submit"
 
         for(x=0;x<arr.length;x++)
         {

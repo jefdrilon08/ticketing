@@ -14,8 +14,10 @@
     .row
         -if @tickets.empty?
             %center
+                %hr{:style=>"height:30px;color:white"}
                 %h2
                     No system tickets found.
+                %hr{:style=>"height:30px;color:white"}
         -else
             -@computer_systems.each do |x|
                 -join_stat=0
@@ -32,7 +34,7 @@
                                         Edit Members
                             -else
                                 -SystemTicket.find(x.id).data["team_members"].each do |y|
-                                    -if current_user.id==y[0]
+                                    -if current_user.id==y
                                         -if !SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id).empty?
                                             -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=="pending"
                                                 -join_stat=1
