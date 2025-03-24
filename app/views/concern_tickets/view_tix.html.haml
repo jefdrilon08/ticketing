@@ -1,63 +1,73 @@
 .card
     .card-header.d-flex.justify-content-between.align-items-center{ style: "background-color:rgb(46, 46, 46); color: white;" }
-        %h4.mb-0.text-white
+        %h4.mb-0.text-white.h5
             Ticket Number: #{@concern_ticket_details.ticket_number}
-        %h6.mb-0.text-white
+        %h6.mb-0.text-white.h6
             #{@concern_ticket&.name}
+
     .card-body.p-4
         .row
             .col-12.mb-3
-                %strong
-                    Description:
-                .p-3.border.rounded.bg-light.min-vh-50
+                %strong.h5 Description:
+                .p-3.border.rounded.bg-light.min-vh-50.fs-7
                     = @concern_ticket_details.description.presence
 
-            .col-md-6.mb-3
-                %strong
-                    Concern Type:
-                %p.text-muted= @concern_type&.name
+        .row
+            .col-md-6
+                .mb-3
+                    %strong.h6 Files Attached:
+                    %ul.fs-7
+                        %li= link_to "Screenshot1.png", "#", target: "_blank"
+                        -# %li= link_to "Error_Log.txt", "#", target: "_blank"
+                        -# %li= link_to "System_Report.pdf", "#", target: "_blank" 
 
+        .row
             .col-md-6.mb-3
-                %strong
-                    Requested By:
-                %p.text-muted= @concern_ticket_details.user ? "#{@concern_ticket_details.user.first_name.capitalize} #{@concern_ticket_details.user.last_name.capitalize}" : "Unassigned"
+                %strong.h6 Branch:
+                = @concern_ticket_details.branch&.name
 
+        .row
+            .col-md-6
+                .mb-3
+                    %strong.h6 Requested By:
+                    = @concern_ticket_details.requested_user ? "#{@concern_ticket_details.requested_user.first_name.capitalize} #{@concern_ticket_details.requested_user.last_name.capitalize}" : "User not found :<"
+                
+                .mb-3
+                    %strong.h6 Assigned Person:
+                    = @concern_ticket_details.assigned_user ? "#{@concern_ticket_details.assigned_user.first_name.capitalize} #{@concern_ticket_details.assigned_user.last_name.capitalize}" : "Unassigned"
+                
+                .mb-3
+                    %strong.h6 Status:
+                    - case @concern_ticket_details.status
+                        - when "open"
+                            .badge.bg-success.fs-7 Open
+                        - when "processing"
+                            .badge.bg-primary.fs-7 Processing
+                        - when "verification"
+                            .badge.bg-warning.text-dark.fs-7 For Verification
+                        - when "closed"
+                            .badge.bg-danger.fs-7 Closed
+                        - else
+                            .badge.bg-secondary.fs-7 Unknown
 
-            .col-md-6.mb-3
-                %strong
-                    Branch:
-                %p.text-muted= @concern_ticket_details.branch&.name
-
-            .col-md-6.mb-3
-                %strong
-                    Assigned Person:
-                %p.text-muted Unassigned  # Update when assigned user info is available
-
-            .col-md-6.mb-3
-                %strong
-                    Posted Date:
-                %p.text-muted= @concern_ticket_details.created_at.strftime("%b %d, %Y")
-
-            .col-md-6.mb-3
-                %strong
-                    Status:
-                - case @concern_ticket_details.status
-                    - when "open"
-                        .badge.bg-success
-                            Open
-                    - when "processing"
-                        .badge.bg-primary
-                            Processing
-                    - when "verification"
-                        .badge.bg-warning.text-dark
-                            For Verification
-                    - when "closed"
-                        .badge.bg-danger
-                            Closed
-                    - else
-                        .badge.bg-secondary
-                            Unknown
+                .mb-3
+                    %strong.h6 Posted Date:
+                    = @concern_ticket_details.created_at.strftime("%b %d, %Y")
 
     .card-footer.d-flex.justify-content-end.bg-light
-        = link_to "Back to Tickets", concern_ticket_path(@concern_ticket), class: "btn btn-secondary"
+        - if @concern_ticket_details.status == "open"
+            = button_tag "Process Ticket", 
+                { class: "btn btn-success fs-6 me-2 update-status", 
+                  data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing" } }
 
+        - elsif @concern_ticket_details.status == "processing"
+            = button_tag "Move for Verification", 
+                { class: "btn btn-warning fs-6 me-2 update-status", 
+                  data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }
+
+        - elsif @concern_ticket_details.status == "verification"
+            = button_tag "Close Ticket", 
+                { class: "btn btn-danger fs-6 me-2 update-status", 
+                  data: { ticket_number: @concern_ticket_details.ticket_number, status: "closed" } }
+
+        = link_to "Back to Tickets", concern_ticket_path(@concern_ticket), class: "btn btn-secondary fs-6"

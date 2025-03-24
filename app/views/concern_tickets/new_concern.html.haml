@@ -1,0 +1,28 @@
+.card.some{style: "padding:1%"}
+  %h2 New Concern Ticket
+  = form_tag "/api/v1/tickets/concern_tickets/create_concern", multipart: true, method: 'POST' do
+    .container
+      .row
+        .col
+          .form-group
+            %label Name
+            = text_field_tag :name, "", id: "input-name", class: "form-control", required: true, placeholder: "Enter Name"
+        .col-auto
+          .form-group
+            %label Ticket Name
+            = text_field_tag :ticket_name, "", id: "input-ticket-name", class: "form-control", required: true, placeholder: "ex.:ABC", size: 6, maxlength: 6
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        .col
+          .form-group
+            %label Computer System
+            = select_tag :computer_system_id, options_from_collection_for_select(@computer_systems&.sort_by(&:name) || [], :id, :name),
+              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+              required: true, 
+              prompt: "-- SELECT --"
+      .row
+        .col.text-end
+          = button_tag type: 'submit', class: 'btn btn-primary', id: "sub-btn" do
+            .fa.fa-check
+            Confirm
+          &nbsp;  
+          = link_to 'Cancel', concern_tickets_path, class: 'btn btn-secondary'

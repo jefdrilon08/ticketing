@@ -26,7 +26,7 @@ class ConcernTicketsController < ApplicationController
       }
     ]
   
-    @concern_ticket = ConcernTicket.includes(concern_ticket_details: [:branch, :user]).find(params[:id])
+    @concern_ticket = ConcernTicket.includes(concern_ticket_details: [:branch, :requested_user, :assigned_user]).find(params[:id])
     Rails.logger.debug "batman #{@concern_ticket.inspect}"  #nilabas yung details ng isang concern ticket
   
     @branches = Branch.select(:id, :name)
@@ -48,7 +48,7 @@ class ConcernTicketsController < ApplicationController
   end
 
   def view_tix
-    @concern_ticket_details = ConcernTicketDetail.includes(:user).find(params[:id])
+    @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
 
