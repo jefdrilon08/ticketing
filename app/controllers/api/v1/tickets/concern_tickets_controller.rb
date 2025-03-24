@@ -78,17 +78,24 @@ module Api
           end
         end
 
-        # def update_status
-        #   @ctd_status = ConcernTicketDetail.find_by(ticket_number: params[:ticket_number])
+        def update_status
+          Rails.logger.debug "Received update request: #{params.inspect}"
+          @ctd_status = ConcernTicketDetail.find_by(ticket_number: params[:ticket_number])
         
-        #   if @ctd_status
-        #     update_params = { status: params[:status] }
-        #     update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
-    
-        #   else
-        #     render json: { success: false, error: "Ticket not found" }, status: :not_found
-        #   end
-        # end
+          if @ctd_status
+            update_params = { status: params[:status] }
+            update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
+        
+            if @ctd_status.update(update_params)
+              render json: { success: true, status: @ctd_status.status, ticket_number: @ctd_status.ticket_number }
+            else
+              render json: { success: false, errors: @ctd_status.errors.full_messages }, status: :unprocessable_entity
+            end
+          else
+            render json: { success: false, error: "Ticket not found" }, status: :not_found
+          end
+        end
+        
         
         
       end

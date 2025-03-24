@@ -120,6 +120,9 @@ namespace :api do
       post "/concern_tickets/create_concern_for", to: "concern_tickets#create_concern_for"
       post "/concern_tickets/create_concern", to: "concern_tickets#create_concern"
       post "/concern_tickets/processing", to: "concern_tickets#update_status", as: "update_ticket_status"
+      
+      # for javascript
+      post "concern_tickets/update_status", to: "concern_tickets#update_status"
 
     end
 
