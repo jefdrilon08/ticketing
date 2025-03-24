@@ -40,7 +40,7 @@ class NewSystemTicketController < ApplicationController
     def create_systemtix
         puts params
 
-        main_dev=SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:params[:id])[0]
+        main_dev=SystemTicketsUser.where(status:"admin",system_ticket_id:params[:id])[0].id
 
         tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
 
@@ -60,7 +60,7 @@ class NewSystemTicketController < ApplicationController
                 description:params[:description],
                 status:"pending",
                 data:   {
-                            team_members:[[main_dev.id,"Main Dev"]],
+                            team_members:[[main_dev,"Main Dev"]],
                             save_details:nil,
                             on_hold:false,
                             hold_details:nil,
@@ -82,7 +82,7 @@ class NewSystemTicketController < ApplicationController
                 description:params[:description],
                 status:"pending",
                 data:   {
-                            team_members:[[main_dev.id,"Main Dev"]],
+                            team_members:[[main_dev,"Main Dev"]],
                             save_details:nil,
                             on_hold:false,
                             hold_details:nil,

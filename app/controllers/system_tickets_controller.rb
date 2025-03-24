@@ -80,7 +80,7 @@ class SystemTicketsController < ApplicationController
                 sdate   =x[:start_date]
                 edate   = "--"
                 reqt    = x[:request_type]
-                reqn    = "#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"
+                reqn    = [x[:requested_by],"#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"]
                 md      = "Not yet set."
                 stat    = x[:status]
                 hold    = x[:data]["on_hold"]
@@ -93,7 +93,7 @@ class SystemTicketsController < ApplicationController
                 end
 
                 x[:data]["team_members"].each do |x|
-                  if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md="#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"
+                  if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md=[x[0],"#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"]
                   end
                 end
 
@@ -236,6 +236,7 @@ class SystemTicketsController < ApplicationController
     end
 
     def show
+        @role=0
         @not_a_mem=[]
         @milestones=[]
         @ticket   = SystemTicketDesc.find(params[:id])
@@ -273,7 +274,7 @@ class SystemTicketsController < ApplicationController
             if x[1] != "Main Dev"
                 @mem_list.push([name, x[1], x[0]])
               else
-                @maindev = name
+                @maindev = [name,x[0]]
               end
           end
           
@@ -293,11 +294,65 @@ class SystemTicketsController < ApplicationController
             end
         end
 
+        @mem_list.each do |x|
+            if current_user.id==SystemTicketsUser.find(x[2]).user_id
+                case x[1]
+                when "Member" || "Viewer"
+                    @role=0
+                when "Approver"
+                    @role=1
+                when "Developer"
+                    @role=2
+                end
+            end
+        end
+
+        if current_user.id==SystemTicketsUser.find(@maindev[1]).user_id then @role=3 end
+
         puts "nonmem"
         puts @not_a_mem
 
         puts "mem"
         puts @mem_list
+
+        @subheader_side_actions ||= []
+
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "Approve"
+            } end
+
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "Process"
+            } end
+
+        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "For verification"
+            } end
+
+        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "Verify"
+            } end
+  
 
     end
 
