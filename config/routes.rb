@@ -666,10 +666,11 @@ Rails.application.routes.draw do
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
   get "system_tickets_:id/edit",            to: "system_tickets#show_st"
   get "system_tickets/:id",                 to: "system_tickets#show"
+
+  get "system_tickets/edit_ticket_status/:id",to: "system_tickets#edit_ticket_status"
   
   post "system_tickets/hold_ticket/:id",    to: "system_tickets#hold_ticket"
   post "system_tickets/create_milestone",   to: "system_tickets#create_milestone"
-  post "system_tickets/edit_ticket_status", to: "system_tickets#edit_ticket_status"
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"
   post "system_tickets/set_date_milestone", to: "system_tickets#set_date_milestone"
   post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
