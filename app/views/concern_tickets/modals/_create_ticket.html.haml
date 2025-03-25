@@ -8,7 +8,7 @@
       %hr.mt-0.mb-3
 
       .modal-body
-        = form_tag "/api/v1/tickets/concern_tickets/create_ticket", method: 'POST' do
+        = form_tag "/api/v1/tickets/concern_tickets/create_ticket", method: 'POST', multipart: true do
           .modal-body-content
             .bs-callout.bs-callout-info
               %h4.text-primary= @concern_ticket.name
@@ -56,8 +56,8 @@
                   %label.font-weight-bold Attach Files
                   %i.bi.bi-upload.ms-2.text-primary
                   = file_field_tag :attachments, multiple: true, id: "input-attachments", 
-                    class: "form-control bg-light text-dark border-0 shadow-sm"
-                  
+                    class: "form-control bg-light text-dark border-0 shadow-sm", name: "attachments[]"
+
             .message
             = hidden_field_tag :concern_ticket_id, params[:id]
           .modal-footer.d-flex.justify-content-center

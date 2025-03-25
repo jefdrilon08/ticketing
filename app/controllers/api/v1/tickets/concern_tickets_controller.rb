@@ -26,7 +26,7 @@ module Api
           concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
           ticket_count = ConcernTicketDetail.where(concern_ticket_id: concern_ticket.id).count
           ticket_number = "#{concern_ticket.ticket_name} - #{(ticket_count + 1).to_s.rjust(4, '0')}"
-
+        
           @concern_ticket_record = ConcernTicketDetail.new(
             ticket_number: ticket_number,
             concern_ticket_id: params[:concern_ticket_id],
@@ -37,7 +37,18 @@ module Api
             branch_id: params[:branch_id],
             requested_user_id: current_user.id
           )
-
+          Rails.logger.debug "Attachments received: #{params[:attachments].inspect}"
+        
+          # Ensure attachments are treated as an array
+          if params[:attachments].present?
+            attachments = Array(params[:attachments]) # Ensure it's always an array
+            Rails.logger.debug "Processed attachments array: #{attachments.map(&:original_filename)}"
+        
+            attachments.each do |attachment|
+              @concern_ticket_record.attachments.attach(attachment)
+            end
+          end
+        
           if @concern_ticket_record.save
             redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
           else
@@ -45,7 +56,7 @@ module Api
             redirect_back(fallback_location: request.referer || root_path)
           end
         end
-
+        
         def create_concern_for
           @concern_for_record = ConcernFor.new(
             concern_id: params[:concern_id],
@@ -95,8 +106,6 @@ module Api
             render json: { success: false, error: "Ticket not found" }, status: :not_found
           end
         end
-        
-        
         
       end
     end

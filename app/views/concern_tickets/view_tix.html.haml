@@ -15,12 +15,16 @@
         .row
             .col-md-6
                 .mb-3
-                    %strong.h6 Files Attached:
+                %strong.h6 Files Attached:
+                - if @concern_ticket_details.attachments.attached?
                     %ul.fs-7
-                        %li= link_to "Screenshot1.png", "#", target: "_blank"
-                        -# %li= link_to "Error_Log.txt", "#", target: "_blank"
-                        -# %li= link_to "System_Report.pdf", "#", target: "_blank" 
+                    - @concern_ticket_details.attachments.each do |file|
+                        %li
+                            = link_to file.filename.to_s, url_for(file), target: "_blank"
+                - else
+                    %p.text-muted No files attached.
 
+        &nbsp;
         .row
             .col-md-6.mb-3
                 %strong.h6 Branch:
