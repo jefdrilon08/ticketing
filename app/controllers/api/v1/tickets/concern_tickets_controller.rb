@@ -37,11 +37,10 @@ module Api
             branch_id: params[:branch_id],
             requested_user_id: current_user.id
           )
-          Rails.logger.debug "Attachments received: #{params[:attachments].inspect}"
-        
-          # Ensure attachments are treated as an array
+          Rails.logger.debug "status for updatezzz: #{params[:attachments].inspect}"
+
           if params[:attachments].present?
-            attachments = Array(params[:attachments]) # Ensure it's always an array
+            attachments = Array(params[:attachments]) # para maging array
             Rails.logger.debug "Processed attachments array: #{attachments.map(&:original_filename)}"
         
             attachments.each do |attachment|
