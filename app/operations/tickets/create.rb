@@ -3,6 +3,7 @@ module Tickets
         def initialize(config:)
             @config             = config
             @name               = @config[:name]
+            @ticket_name        = @config[:ticket_name]
             @description        = @config[:description]
             @status             = @config[:status]
             @computer_system    = @config[:computer_system_id]
@@ -20,6 +21,7 @@ module Tickets
         def create_concern
             concern_ticket = ::ConcernTicket.new(
               name: @name,
+              ticket_name: @ticket_name,
               description: @description,
               status: @status.presence || "open",
               computer_system_id: @computer_system,

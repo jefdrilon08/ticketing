@@ -114,12 +114,14 @@ namespace :api do
   namespace :v1 do
 
     namespace :tickets do
-      
+      post "/concern_tickets/create_concern", to: "concern_tickets#create_concern"
       post "/concern_tickets/create_ticket", to: "concern_tickets#create_ticket"
+      post "/concern_tickets/add_member_concern_ticket", to: "concern_tickets#add_member_ct"
       post "/concern_tickets/create_concern_type", to: "concern_tickets#create_concern_type"
       post "/concern_tickets/create_concern_for", to: "concern_tickets#create_concern_for"
-      post "/concern_tickets/create_concern", to: "concern_tickets#create_concern"
-      post "/concern_tickets/processing", to: "concern_tickets#update_status", as: "update_ticket_status"
+      
+      # Explicit route for updating member status
+      patch "/concern_ticket_users/:id/update_status", to: "concern_tickets#update_member_status"
       
       # for javascript
       post "concern_tickets/update_status", to: "concern_tickets#update_status"

@@ -7,6 +7,7 @@ module Api
         def create_concern
           config = {
             name: params[:name],
+            ticket_name: params[:ticket_name],
             description: nil,
             status: "active",
             computer_system_id: params[:computer_system_id],
@@ -30,9 +31,9 @@ module Api
                 
                 member_ids.each do |user_id|
                   ConcernTicketUser.create!(
-                    concern_id: concern_ticket.id,
                     user_id: user_id,
-                    status: "active"
+                    status: "active",
+                    concern_ticket_id: concern_ticket.id
                   )
                 end
               end
@@ -45,13 +46,15 @@ module Api
             end
           end
         end
-        
 
         def create_ticket
           concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
           ticket_count = ConcernTicketDetail.where(concern_ticket_id: concern_ticket.id).count
           ticket_number = "#{concern_ticket.ticket_name} - #{(ticket_count + 1).to_s.rjust(4, '0')}"
-        
+
+          Rails.logger.debug "concern_ticket: #{concern_ticket.inspect}"
+          Rails.logger.debug "ticket_count: #{ticket_count.inspect}"
+          Rails.logger.debug "ticket_number: #{ticket_number.inspect}"
           @concern_ticket_record = ConcernTicketDetail.new(
             ticket_number: ticket_number,
             concern_ticket_id: params[:concern_ticket_id],
@@ -113,7 +116,7 @@ module Api
           end
         end
 
-        def update_status
+        def update_status #para sa Ticket Status or Concern Ticket Detail
           Rails.logger.debug "Received update request: #{params.inspect}"
           @ctd_status = ConcernTicketDetail.find_by(ticket_number: params[:ticket_number])
         
@@ -130,7 +133,38 @@ module Api
             render json: { success: false, error: "Ticket not found" }, status: :not_found
           end
         end
+
+        def update_member_status
+          ct_user = ConcernTicketUser.find(params[:id])
+          new_status = ct_user.status.downcase == "active" ? "inactive" : "active"
         
+          if ct_user.update(status: new_status)
+            render json: { success: true, status: new_status }
+          else
+            render json: { success: false, error: ct_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+          end
+        end
+        
+
+        def add_member_ct
+          @concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
+          user_id = params[:ct_user_id]
+        
+          @ctd_member = ConcernTicketUser.new(
+            user_id: user_id,
+            status: "active",
+            concern_ticket_id: @concern_ticket.id
+          )
+        
+          if @ctd_member.save
+            redirect_to "/concern_tickets/#{@concern_ticket.id}/edit"
+          else
+            flash[:danger] = "Failed to add Member: #{@ctd_member.errors.full_messages.join(', ')}"
+            redirect_back(fallback_location: request.referer || root_path)
+          end
+        end
+        
+
       end
     end
   end

@@ -1,0 +1,94 @@
+.card.some{ style: "padding:1%" }
+  %h2 Edit Concern Ticket
+  = form_for @concern_ticket, url: concern_ticket_path(@concern_ticket), method: :patch do |f|
+    .row
+      .col-md-4.col-12
+        .form-group
+          %label Name
+          = text_field_tag :name, @concern_ticket.name, id: "input-name", class: "form-control", required: true, placeholder: "Enter Name"
+      .col-md-4.col-12
+        .form-group
+          %label Ticket Name
+          = text_field_tag :ticket_name, @concern_ticket.ticket_name, id: "input-ticket-name", class: "form-control", required: true, placeholder: "ex.:ABC", size: 6, maxlength: 6
+      .col-md-4.col-12
+        .form-group
+          %label Computer System
+          = select_tag :computer_system_id, 
+            options_from_collection_for_select(@computer_systems&.sort_by(&:name) || [], :id, :name, @concern_ticket.computer_system_id),
+            class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+            required: true, 
+            prompt: "-- SELECT --"
+
+    &nbsp;      
+    .row
+      .col-12.text-end
+        = f.submit "Save Changes", class: "btn btn-success"
+        &nbsp;  
+        = link_to 'Cancel', concern_tickets_path, class: 'btn btn-secondary'
+  
+  = form_tag "/api/v1/tickets/concern_tickets/add_member_concern_ticket", method: :post do
+    = hidden_field_tag :concern_ticket_id, @concern_ticket.id
+    .row
+      .col-md-6.col-12
+        .form-group.mt-5
+          %label Add Team Members:
+          .d-flex
+            = select_tag :ct_user_id, 
+              options_from_collection_for_select(@ct_users, :id, ->(u) { "#{u.last_name.titleize}, #{u.first_name.titleize}" }),
+              class: "form-control form-select-sm bg-secondary-subtle text-dark border-0 shadow-sm flex-grow-1", 
+              required: true, 
+              prompt: "-- SELECT --"
+            = button_tag "Add", type: "submit", class: "btn btn-sm btn-primary ms-2"
+
+  .row  
+    .col-md-12
+      .form-group    
+        %label Members:
+        %table.table.table-bordered.mt-2
+          %thead
+            %tr
+              %th.text-center Member Name
+              %th.text-center Status
+              %th.text-center Action
+          %tbody
+            - @concern_ticket.concern_ticket_users.sort_by { |ct_user| ct_user.status.downcase }.each do |ct_user|
+              %tr
+                %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
+                %td.text-center
+                  - case ct_user.status.downcase
+                  - when "active"
+                    .badge.bg-success Active
+                  - when "inactive"
+                    .badge.bg-danger Inactive
+                  - else
+                    .badge.bg-secondary Pending
+                %td.text-center
+                  - button_class = ct_user.status.downcase == "active" ? "btn-danger" : "btn-success"
+                  - button_text = ct_user.status.downcase == "active" ? "Deactivate" : "Activate"
+                  = button_tag button_text, class: "btn btn-sm #{button_class}", data: { id: ct_user.id }, onclick: "toggleMemberStatus(this)"
+
+:javascript
+  document.addEventListener("DOMContentLoaded", function () {
+    function toggleMemberStatus(button) {
+      let memberId = button.getAttribute("data-id");
+
+      fetch(`/api/v1/tickets/concern_ticket_users/${memberId}/update_status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload(); // Refresh the page to reflect the status update
+        } else {
+          alert("Failed to update status: " + data.error);
+        }
+      })
+      .catch(error => console.error("Error updating status:", error));
+    }
+
+    window.toggleMemberStatus = toggleMemberStatus;
+  });

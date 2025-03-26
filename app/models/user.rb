@@ -8,7 +8,6 @@ class User < ApplicationRecord
 
   has_many :concern_tickets
   has_many :concern_ticket_details
-
   
 
         
