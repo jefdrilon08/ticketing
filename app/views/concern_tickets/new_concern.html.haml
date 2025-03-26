@@ -11,7 +11,6 @@
           .form-group
             %label Ticket Name
             = text_field_tag :ticket_name, "", id: "input-ticket-name", class: "form-control", required: true, placeholder: "ex.:ABC", size: 6, maxlength: 6
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         .col
           .form-group
             %label Computer System
@@ -19,6 +18,27 @@
               class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
               required: true, 
               prompt: "-- SELECT --"
+
+      .row
+        .col
+          .form-group
+            %label Add Team Members:
+            = select_tag :ct_user_id, 
+              options_from_collection_for_select(@ct_users, :id, ->(u) { "#{u.last_name.titleize}, #{u.first_name.titleize}" }),
+              class: "form-control form-select-sm bg-secondary-subtle text-dark border-0 shadow-sm w-50", 
+              required: false, 
+              prompt: "-- SELECT --",
+              id: "team-member-select"
+
+      .row  
+        .col
+          .form-group    
+            %label Members:
+            %ul#members-list.list-group.mt-2.w-50.p-0
+
+      = hidden_field_tag :selected_members, "", id: "selected-members-input"
+
+      &nbsp;      
       .row
         .col.text-end
           = button_tag type: 'submit', class: 'btn btn-primary', id: "sub-btn" do

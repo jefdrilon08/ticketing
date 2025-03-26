@@ -48,7 +48,7 @@ const hooks = {
   "administration/branches/show":                     [AdministrationBranchesShow],
   "administration/centers/show":                      [AdministrationCentersShow],
 
-  "concern_tickets/index":                            [ConcernTicketIndex],
+  "concern_tickets/new_concern":                      [ConcernTicketIndex],
   "concern_tickets/show":                             [ConcernTicketShow],
 
   "administration/computer_system/index":             [AdministrationComputerSystemIndex],

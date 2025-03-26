@@ -5,22 +5,47 @@ module Api
         before_action :authenticate_user!
 
         def create_concern
-          Rails.logger.debug "Status received: #{params[:status]}"
           config = {
             name: params[:name],
             description: nil,
             status: "active",
-            computer_system_id: params[:computer_system_id]
+            computer_system_id: params[:computer_system_id],
+            user_id: current_user.id
           }
-
+        
           errors = ::Tickets::ValidateCreate.new(config: config).execute!
+          
           if errors[:messages].any?
             render json: errors, status: 400
           else
-            ::Tickets::Create.new(config: config).execute!
-            redirect_to "/concern_tickets"
+            concern_ticket = ::Tickets::Create.new(config: config).execute!
+        
+            if concern_ticket.save!
+              concern_ticket.reload
+              Rails.logger.debug "New Concern Ticket ID: #{concern_ticket.id}"
+        
+              if params[:selected_members].present?
+                member_ids = params[:selected_members].split(",")
+                Rails.logger.debug "Member IDs: #{member_ids.inspect}"
+                
+                member_ids.each do |user_id|
+                  ConcernTicketUser.create!(
+                    concern_id: concern_ticket.id,
+                    user_id: user_id,
+                    status: "active"
+                  )
+                end
+              end
+              
+              redirect_to "/concern_tickets"
+            else
+              Rails.logger.error "Failed to create Concern Ticket: #{concern_ticket.errors.full_messages.join(', ')}"
+              flash[:error] = "Failed to create concern ticket."
+              redirect_back(fallback_location: request.referer || root_path)
+            end
           end
         end
+        
 
         def create_ticket
           concern_ticket = ConcernTicket.find(params[:concern_ticket_id])

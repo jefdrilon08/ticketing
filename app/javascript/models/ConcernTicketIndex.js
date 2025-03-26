@@ -3,101 +3,70 @@ import $ from "jquery";
 import * as bootstrap from "bootstrap";
 
 var _authenticityToken;
+var _selectedMembers = new Set();
 
-var $modalNew;
-var $btnNew;
-var $btnConfirm;
-var $inputName;
-var $inputTicketName;
-var $inputDesc;
-var $id;
-var $message;
-var $inputComputerSystem;
-var $displayComputerSystemName;
-var templateErrorList;
+console.log("CONCERN TICKET INDEX");
 
 var _cacheDom = function() {
-    // $btnNew                     = $("#btn-new");
-    // $btnConfirm                 = $("#btn-confirm");
-    // $inputName                  = $("#input-name");
-    // $inputTicketName            = $("#input-ticket_name");
-    // $inputDesc                  = $("#input-description");
-    // $inputComputerSystem        = $("#input-computer-system");
-    // $displayComputerSystemName = $("#display-computer-system-name");
-    // $id                         = $("#id");
-    
-    // $modalNew  = new bootstrap.Modal(document.getElementById("modal-new"));
-    // $message   = $(".message");
-    // templateErrorList = $("#template-error-list").html();
-}
+    return {
+        select: document.getElementById("team-member-select"),
+        membersList: document.getElementById("members-list"),
+        membersInput: document.getElementById("selected-members-input"),
+    };
+};
 
-var _bindEvents = function() {
-    // $btnNew.on("click", function() {
-    //     $inputName.val("");
-    //     $inputDesc.val("");
-    //     $inputComputerSystem.val("");
-    //     $displayComputerSystemName.text("");
-    //     $id.val("");
-    //     $modalNew.show();
-    //     $message.html("");
-    // });
+var _bindEvents = function(dom) {
+    if (!dom.select || !dom.membersList) return;
 
-    // $btnConfirm.on("click", function() {
-    //     var id = $id.val();
-    //     var name = $inputName.val();
-    //     var description = $inputDesc.val();
-    //     var computer_system_id = $inputComputerSystem.val();
-    
-    //     var data = {
-    //         name: name,
-    //         description: description,
-    //         computer_system_id: computer_system_id,
-    //         status: "active",
-    //         id: id,
-    //         authenticity_token: _authenticityToken
-    //     };
-        
-    //     var url = "/api/v1/tickets/concern_tickets"; 
-    //     var method = 'POST';
-    //     if (id) {
-    //         url = "/api/v1/tickets/concern_tickets/update"; 
-    //         method = 'PUT';
-    //     }
-    
-    //     $.ajax({
-    //         url: url,
-    //         method: method,
-    //         data: data,
-    //         success: function(response) {
-    //             if (response.data) {
-    //                 var ticket = response.data;
-    //                 alert("Successfully " + (id ? "Updated" : "Saved") + "!");
-    //                 $displayComputerSystemName.text(ticket.computer_system_name || "");
-    //             }
-    //             window.location.reload();
-    //         },
-    //         error: function(response) {
-    //             var templateErrorList = `<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>`;
-    //             var errors  = [];
-    //             try {
-    //                 var errorData = JSON.parse(response.responseText);
-    //                 errors = Array.isArray(errorData.messages) ? 
-    //                     errorData.messages.map(err => err.message) : 
-    //                     [errorData.messages || "An unexpected error occurred."];
-    //             } catch {
-    //                 errors.push("Something went wrong. Please try again.");
-    //             }
-    //             $btnConfirm.prop("disabled", false);
-    //             $message.html(Mustache.render(templateErrorList, { errors })).addClass("text-danger");
-    //         }
-    //     });
-    // });
-}
+    $(dom.select).on("change", function() {
+        _addMember(dom, this.value, this.options[this.selectedIndex].text);
+    });
+};
+
+var _addMember = function(dom, memberId, memberName) {
+    if (!memberId || _selectedMembers.has(memberId)) return;
+
+    _selectedMembers.add(memberId);
+    _updateHiddenInput(dom);
+
+    let listItem = $(`
+        <li class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 shadow-sm p-1 text-sm member-item">
+            ${memberName}
+            <button type="button" class="btn btn-danger btn-sm remove-member">
+                <i class="bi bi-dash"></i>
+            </button>
+        </li>
+    `);
+
+    listItem.on("mouseover", function() {
+        $(this).addClass("bg-danger-subtle");
+    });
+
+    listItem.on("mouseout", function() {
+        $(this).removeClass("bg-danger-subtle");
+    });
+
+    listItem.find(".remove-member").on("click", function() {
+        _removeMember(dom, memberId, listItem);
+    });
+
+    $(dom.membersList).append(listItem);
+};
+
+var _removeMember = function(dom, memberId, listItem) {
+    _selectedMembers.delete(memberId);
+    _updateHiddenInput(dom);
+    listItem.remove();
+};
+
+var _updateHiddenInput = function(dom) {
+    dom.membersInput.value = Array.from(_selectedMembers).join(",");
+};
 
 var init = function(options) {
     _authenticityToken = options.authenticityToken;
-    _cacheDom();
-    _bindEvents();
+    var dom = _cacheDom();
+    _bindEvents(dom);
 };
 
 export default { init: init };

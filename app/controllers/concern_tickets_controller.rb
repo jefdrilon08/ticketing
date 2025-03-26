@@ -42,11 +42,11 @@ class ConcernTicketsController < ApplicationController
     @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
   end
   
-
   def new_concern
     @computer_systems = ComputerSystem.select(:id, :name)
+    @ct_users = User.select(:id, :first_name, :last_name).order(:last_name, :first_name)
   end
-
+  
   def view_tix
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
