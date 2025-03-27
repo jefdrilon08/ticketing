@@ -1,0 +1,38 @@
+.card.mb-3(style="width:100%;")
+  .card-header
+    %h3.mb-0 Item Request Details
+  .card-body
+    .row.mb-2.align-items-center
+      .col-auto.bg-light.border.p-2(style="width:150px;")
+        %strong Requestor:
+      .col.border.p-2= item_request.user.try(:full_name) || 'N/A'
+    .row.mb-2.align-items-center
+      .col-auto.bg-light.border.p-2(style="width:150px;")
+        %strong Requested Item:
+      .col.border.p-2= detail.item.try(:name) || 'N/A'
+    .row.mb-2.align-items-center
+      .col-auto.bg-light.border.p-2(style="width:150px;")
+        %strong Quantity:
+      .col.border.p-2= "#{detail.qty} #{detail.item.try(:unit) || ''}"
+    .row.mb-2.align-items-center
+      .col-auto.bg-light.border.p-2(style="width:150px;")
+        %strong Date Request:
+      .col.border.p-2= item_request.date_request.strftime("%Y-%m-%d")
+    .row.mb-2.align-items-center
+      .col-auto.bg-light.border.p-2(style="width:150px;")
+        %strong Status:
+      .col-auto.border.p-2(style="padding-right: 10px;")
+        - if detail.status.downcase == "pending"
+          - current_status_class = "badge bg-warning text-dark"
+        - elsif detail.status.downcase == "hold"
+          - current_status_class = "badge bg-danger"
+        - elsif detail.status.downcase == "check"
+          - current_status_class = "badge bg-info text-white"
+        - elsif detail.status.downcase == "approve"
+          - current_status_class = "badge bg-success"
+        - else
+          - current_status_class = "badge bg-secondary"
+        %span{ class: current_status_class }= detail.status.capitalize
+      .col-auto.border.p-2(style="padding-left: 10px;")
+        = link_to 'Update', "#", class: "update-status-button text-primary", data: { id: detail.id, status: detail.status }
+= render 'item_request/modals/update_status'

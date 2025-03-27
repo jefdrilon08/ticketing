@@ -1,0 +1,30 @@
+.card.some(style="padding:1%")
+  %h2= "Item Request for #{@item_request.user.try(:full_name) || 'N/A'}"
+  %hr(style="height:20px;")
+  %table.table.table-bordered(style="font-size:110%; width:100%;")
+    %thead
+      %tr
+        %th Item Requested
+        %th Request Date
+        %th.text-center Status
+        %th.text-center Action
+    %tbody
+      - if @item_request.item_request_details.any?
+        - @item_request.item_request_details.each do |detail|
+          - detail_status_class = case detail.status.downcase
+            - when "pending" then "badge bg-warning text-dark"
+            - when "hold" then "badge bg-danger"
+            - when "check" then "badge bg-info text-white"
+            - when "approve" then "badge bg-success"
+            - else "badge bg-secondary"
+          %tr
+            %td= detail.item.try(:name) || "N/A"
+            %td= @item_request.date_request.strftime("%Y-%m-%d")
+            %td.text-center
+              %span{ class: detail_status_class }= detail.status.capitalize
+            %td.text-center
+              = link_to 'Details', details_item_request_details_path(detail.id), class: "btn btn-link"
+      - else
+        %tr
+          %td{ colspan: 4 } No records found.
+= render 'item_request/modals/update_status'

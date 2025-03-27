@@ -1,0 +1,25 @@
+= form_tag(create_itemrequest_detail_path(@item_request.id), method: :post) do
+  = hidden_field_tag :item_request_id, @item_request.id
+  .card
+    .card-body
+      %h2= "New Item Request for #{@requester_name}"
+      %hr{ style: "height:20px;" }
+      %table.table.table-borderless{ style: "font-size:110%; width:100%;" }
+        %tbody
+          %tr
+            %th.text-left{ style: "width:25%; vertical-align: middle;" } Requester Name:
+            %td= @requester_name
+          %tr
+            %th.text-left{ style: "vertical-align: middle;" } Date Request:
+            %td= @date_request.present? ? @date_request.strftime("%Y-%m-%d") : "N/A"
+          %tr
+            %th.text-left{ style: "vertical-align: middle;" } Requested Item:
+            %td
+              = select_tag("item_id", 
+                options_for_select([["-- SELECT --", ""]] + (@items || []).map { |item| [item.name, item.id] }, @item_request.try(:item_id)), 
+                class: "form-control")
+          %tr
+            %th.text-left{ style: "vertical-align: middle;" } Quantity:
+            %td
+              = text_field_tag("qty", @item_request.try(:qty), class: "form-control")
+      = submit_tag "Save Details", class: "btn btn-primary", style: "display: block; text-align: left; margin-top: 10px;"
