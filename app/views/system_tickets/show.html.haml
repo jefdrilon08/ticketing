@@ -151,9 +151,10 @@
                                 %span{:style=>"color:gray"} - #{x[1]}
                         %td
                             -if i_show==0
-                                -if @ticket.status!="done" && @role==3
-                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
-                                        Edit
+                                -if @ticket.status!="done"
+                                    -if @role==3
+                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                            Edit
                             -else
                     -i_show+=1
                 -if @mem_list.empty?
@@ -165,8 +166,10 @@
                             %p
                                 No members
                         %td
-                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
-                                Edit
+                            -if @ticket.status!="done"
+                                -if @role==3
+                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                        Edit
 
             %hr{:style=>"width:100%"}
             %table.table.table-bordered.table-sm
