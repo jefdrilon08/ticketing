@@ -82,7 +82,7 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          location.reload(); // Refresh the page to reflect the status update
+          location.reload();
         } else {
           alert("Failed to update status: " + data.error);
         }

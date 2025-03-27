@@ -120,7 +120,7 @@ namespace :api do
       post "/concern_tickets/create_concern_type", to: "concern_tickets#create_concern_type"
       post "/concern_tickets/create_concern_for", to: "concern_tickets#create_concern_for"
       
-      # Explicit route for updating member status
+      # for member status
       patch "/concern_ticket_users/:id/update_status", to: "concern_tickets#update_member_status"
       
       # for javascript

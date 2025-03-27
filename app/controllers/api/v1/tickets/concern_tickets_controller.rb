@@ -5,6 +5,7 @@ module Api
         before_action :authenticate_user!
 
         def create_concern
+          Rails.logger.debug "PUMASOK DITO"
           config = {
             name: params[:name],
             ticket_name: params[:ticket_name],
@@ -34,6 +35,32 @@ module Api
                     user_id: user_id,
                     status: "active",
                     concern_ticket_id: concern_ticket.id
+                  )
+                end
+              end
+
+              if params[:selected_concern_fors].present?
+                concern_for_names = params[:selected_concern_fors].split(",")
+              
+                concern_for_names.each do |name|
+                  ConcernFor.create!(
+                    concern_id: concern_ticket.id,
+                    name: name.strip,
+                    description: nil,
+                    status: "active"
+                  )
+                end
+              end
+              
+              if params[:selected_concern_types].present?
+                concern_type_names = params[:selected_concern_types].split(",")
+              
+                concern_type_names.each do |name|
+                  ConcernType.create!(
+                    concern_id: concern_ticket.id,
+                    name: name.strip,
+                    description: nil,
+                    status: "active"
                   )
                 end
               end
@@ -84,37 +111,37 @@ module Api
           end
         end
         
-        def create_concern_for
-          @concern_for_record = ConcernFor.new(
-            concern_id: params[:concern_id],
-            name: params[:name],
-            description: params[:description],
-            status: "active"
-          )
+        # def create_concern_for
+        #   @concern_for_record = ConcernFor.new(
+        #     concern_id: params[:concern_id],
+        #     name: params[:name],
+        #     description: params[:description],
+        #     status: "active"
+        #   )
 
-          if @concern_for_record.save
-            redirect_to "/concern_tickets/#{@concern_for_record[:concern_id]}"
-          else
-            flash[:danger] = "Failed to add Concern For: #{@concern_for_record.errors.full_messages.join(', ')}"
-            redirect_back(fallback_location: request.referer || root_path)
-          end
-        end
+        #   if @concern_for_record.save
+        #     redirect_to "/concern_tickets/#{@concern_for_record[:concern_id]}"
+        #   else
+        #     flash[:danger] = "Failed to add Concern For: #{@concern_for_record.errors.full_messages.join(', ')}"
+        #     redirect_back(fallback_location: request.referer || root_path)
+        #   end
+        # end
 
-        def create_concern_type
-          @concern_type_record = ConcernType.new(
-            concern_id: params[:concern_id],
-            name: params[:name],
-            description: params[:description],
-            status: "active"
-          )
+        # def create_concern_type
+        #   @concern_type_record = ConcernType.new(
+        #     concern_id: params[:concern_id],
+        #     name: params[:name],
+        #     description: params[:description],
+        #     status: "active"
+        #   )
 
-          if @concern_type_record.save
-            redirect_to "/concern_tickets/#{@concern_type_record[:concern_id]}"
-          else
-            flash[:danger] = "Failed to add Concern Type: #{@concern_type_record.errors.full_messages.join(', ')}"
-            redirect_back(fallback_location: request.referer || root_path)
-          end
-        end
+        #   if @concern_type_record.save
+        #     redirect_to "/concern_tickets/#{@concern_type_record[:concern_id]}"
+        #   else
+        #     flash[:danger] = "Failed to add Concern Type: #{@concern_type_record.errors.full_messages.join(', ')}"
+        #     redirect_back(fallback_location: request.referer || root_path)
+        #   end
+        # end
 
         def update_status #para sa Ticket Status or Concern Ticket Detail
           Rails.logger.debug "Received update request: #{params.inspect}"
