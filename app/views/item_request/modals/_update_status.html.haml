@@ -1,0 +1,14 @@
+.modal.fade#status-modal(tabindex="-1" role="dialog" aria-labelledby="modalUpdateStatusLabel" aria-hidden="true")
+  .modal-dialog(role="document")
+    .modal-content
+      = form_tag "#", method: :patch, local: false, id: "update-status-form" do
+        .modal-header
+          %h5.modal-title#modalUpdateStatusLabel Update Status for Item Request Detail
+        .modal-body
+          = hidden_field_tag :id, nil, id: "detail-id"
+          .form-group
+            = label_tag :status, "New Status"
+            = select_tag :status, options_for_select(["Pending", "Check", "Hold", "Approve"]), class: "form-control", id: "input-status"
+        .modal-footer
+          %button.btn.btn-primary{ type: "button", id: "btn-confirm-status-update" } Save
+          %button.btn.btn-secondary{ type: "button", data: { bs_dismiss: "modal" } } Close
