@@ -237,6 +237,7 @@ class SystemTicketsController < ApplicationController
 
     def show
         @role=0
+        @all_done=0
         @not_a_mem=[]
         @milestones=[]
         @ticket   = SystemTicketDesc.find(params[:id])
@@ -244,6 +245,9 @@ class SystemTicketsController < ApplicationController
         @cs_id    = SystemTicket.find(@ticket[:system_ticket_id])[:computer_system_id]
         @empty    = Milestone.where(system_ticket_desc_id:@ticket[:id]).count==0
         if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("status DESC,target_date ASC") end
+        @milestones.each do |x|
+            if x.status=="pending" then @all_done=@all_done+1 end
+        end
             # if @ticket[:data]["attached_file"]!=nil then @file=@ticket[:data]["attached_file"]["tempfile"] end
             #     if @file.is_a?(StringIO)
             #         @file2 = Tempfile.new
@@ -344,7 +348,7 @@ class SystemTicketsController < ApplicationController
               text: "For verification"
             } end
 
-        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1
+        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1 && @ticket[:start_date]!=nil && @all_done==0
             @subheader_side_actions << {
               id: "btn-status",
               link: "edit_ticket_status/#{params[:id]}",
@@ -541,7 +545,7 @@ class SystemTicketsController < ApplicationController
         add_att_data["file"]=file_arr
         
         if add_att.update(data:add_att_data,file:file_arr)
-            redirect_to "/system_tickets_#{add_att[:system_ticket_id]}"
+            redirect_to "/system_tickets/#{params[:id]}"
         else
             render :edit, status: :unprocessable_entity
         end
