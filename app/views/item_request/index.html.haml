@@ -1,0 +1,41 @@
+:css
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+
+%h2 Item Request
+%hr(style="height:20px")
+%table.table.table-bordered.table-hover
+  %thead
+    %tr
+      %th
+      %th Requestor
+      %th(style="text-align: center;") Date Request
+      %th(style="text-align: center;") Status
+  %tbody
+    - @item_requests.each do |request|
+      -# Compute the status summary for this request:
+      - if request.item_request_details.blank?
+        - status_spans = content_tag(:span, "No records", class: "badge bg-secondary", style: "font-size:12px; padding:4px;")
+      - else
+        - grouped = request.item_request_details.group_by { |detail| detail.status.downcase }
+        - spans = []
+        - grouped.each do |status, details|
+          - badge_class = ""
+          - if status == "pending"
+            - badge_class = "badge bg-warning text-dark"
+          - elsif status == "hold"
+            - badge_class = "badge bg-danger"
+          - elsif status == "check"
+            - badge_class = "badge bg-info text-white"
+          - elsif status == "approve"
+            - badge_class = "badge bg-success"
+          - else
+            - badge_class = "badge bg-secondary"
+          - spans << content_tag(:span, "#{status.capitalize} (#{details.size})", class: badge_class, style: "font-size:12px; padding:4px; margin-right:5px;")
+        - status_spans = safe_join(spans, "")
+      %tr
+        %td(style="text-align: center;")
+          = link_to item_request_details_path(request.id) do
+            %i.fa-solid.fa-magnifying-glass
+        %td= request.user.try(:full_name) || "N/A"
+        %td(style="text-align: center;")= request.date_request.strftime("%Y-%m-%d")
+        %td(style="text-align: center;")= status_spans

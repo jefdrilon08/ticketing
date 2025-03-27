@@ -25,7 +25,7 @@
                     %th{:style=>"width:50%"}
                         %p 
                             System name:
-                    %td
+                    %td{:style=>"width:50%"}
                         %p
                             #{ComputerSystem.find(SystemTicket.find(@ticket.system_ticket_id).computer_system_id).name}
                 %tr
@@ -44,7 +44,7 @@
                                 - when "processing"
                                     %td
                                         %center
-                                            %p{:style=>"width:104px"}
+                                            %p{:style=>";width:104px"}
                                                 .badge.bg-primary
                                                     #{@ticket.status}
                                     %td
@@ -54,7 +54,6 @@
                                             %p{:style=>";width:104px"}
                                                 .badge.bg-success
                                                     #{@ticket.status} 
-                                    %td
                                 - when "pending"
                                     %td
                                         %center
@@ -152,9 +151,10 @@
                                 %span{:style=>"color:gray"} - #{x[1]}
                         %td
                             -if i_show==0
-                                -if @ticket.status!="done" && @role==3
-                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
-                                        Edit
+                                -if @ticket.status!="done"
+                                    -if @role==3
+                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                            Edit
                             -else
                     -i_show+=1
                 -if @mem_list.empty?
@@ -166,8 +166,36 @@
                             %p
                                 No members
                         %td
-                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
-                                Edit
+                            -if @ticket.status!="done"
+                                -if @role==3
+                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                        Edit
+
+            %hr{:style=>"width:100%"}
+            %table.table.table-bordered.table-sm
+                %tr
+                    %th{:style=>"width:25%"}
+                        %p
+                            Attached File(s):
+                -if !@ticket.file.attached?
+                    
+                        
+                    -if current_user.id==@ticket.requested_by
+                        %td
+                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
+                                Add attachment       
+                    -else 
+                        %td
+                            No attachment found.     
+                -else 
+                    -file_count=0
+                    -@ticket.file.each do |x|
+                        %tr
+                            %td
+                                %a{:href=>url_for(x),:download=>"download"}
+                                    #{@ticket.data["file"][file_count]["original_filename"]}
+                                -file_count=file_count+1
+
         %div.col-9
             %table.table.table-bordered.table-sm{:style=>"margin-top:15px;margin-bottom:0px"}  
                 %tr
@@ -175,7 +203,7 @@
                         %p 
                             Description:
                     %td
-                        %p
+                        %p{:style=>"min-height:40px"}
                             #{@ticket.description}
             %hr
             .card.some{:style=>"padding:1%;"}
@@ -312,8 +340,9 @@
                                                             - when 'pending'
                                                                 -if !@ticket.data["on_hold"]
                                                                     -if @ticket.status!="done"
-                                                                        = button_tag type: 'submit',class:'btt-linkto' do
-                                                                            Update
+                                                                        -if @role==3
+                                                                            = button_tag type: 'submit',class:'btt-linkto' do
+                                                                                Update
                                     -@milestone1=@milestone1+1   
                     -if @empty
                         %center
@@ -321,34 +350,6 @@
                             %h4
                                 No milestone found
                             %hr{:style=>"height:30px;color:white"}   
-            %hr{style:"height:5px;"}
-            .card.some{:style=>"padding:1%;"}
-                %table.table{:style=>"border-color:white;font-size:115%"}
-                    %tr
-                        %td{:style=>"width:20%"}
-                            %h3
-                                Attached file(s)    
-                        -if !@ticket.file.attached?
-                            %td{:style=>"padding-top:12px"}
-                                -if current_user.id==@ticket.requested_by
-                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
-                                        Add attachment
-                                
-                        -else 
-                            -file_count=0
-                            -@ticket.file.each do |x|
-                                %tr
-                                    %td
-                                        %a{:href=>url_for(x),:download=>"download"}
-                                            #{@ticket.data["file"][file_count]["original_filename"]}
-                                        -file_count=file_count+1
-                -if !@ticket.file.attached?
-                    %hr{:style=>"height:30px;color:white"}
-                        %table.table{:style=>"border-color:white;font-size:115%"}
-                            %center
-                                %h4
-                                    No attachment found.
-                                %hr{:style=>"height:30px;color:white"}
 
 
 :css
