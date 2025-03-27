@@ -21,8 +21,12 @@ Rails.application.routes.draw do
 
   # Concern Ticket Routes
   get "/concern_tickets", to: "concern_tickets#index"
+  get "/concern_tickets/:id/edit", to: "concern_tickets#edit_concern", as: "edit_concern_ticket"
+  patch "/concern_tickets/:id", to: "concern_tickets#update"
+  get "/concern_tickets/new_concern", to: "concern_tickets#new_concern", as: "new_concern_ticket"
   get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
   get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
+
 
   # online applications
   resources :online_applications, only: [:index, :show]
@@ -678,11 +682,13 @@ Rails.application.routes.draw do
 
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
+  get "system_tickets_:id/edit",            to: "system_tickets#show_st"
   get "system_tickets/:id",                 to: "system_tickets#show"
+
+  get "system_tickets/edit_ticket_status/:id",to: "system_tickets#edit_ticket_status"
   
   post "system_tickets/hold_ticket/:id",    to: "system_tickets#hold_ticket"
   post "system_tickets/create_milestone",   to: "system_tickets#create_milestone"
-  post "system_tickets/edit_ticket_status", to: "system_tickets#edit_ticket_status"
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"
   post "system_tickets/set_date_milestone", to: "system_tickets#set_date_milestone"
   post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
@@ -691,6 +697,10 @@ Rails.application.routes.draw do
   post "system_tickets/add_member",         to: "system_tickets#add_member"  
   post "system_tickets/delete_member",      to: "system_tickets#delete_member" 
   post "system_tickets/set_maindev",        to: "system_tickets#set_maindev"
+  post "system_tickets/add_attachment",     to: "system_tickets#add_attachment"
+  post "system_tickets/edit_member_status", to: "system_tickets#edit_member_status"
+  post "system_tickets/add_member_st",      to: "system_tickets#add_member_st"
+  post "system_tickets/join_st",            to: "system_tickets#join_st"
 
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"

@@ -1,30 +1,61 @@
-- @cs = ComputerSystem.all
-- @computer_systems = []
-- @cs.each do |x|
-  -if SystemTicket.where(computer_system_id:x.id).empty?
-    - @computer_systems.push([x.name,x.id])
-
 .card.some{:style=>"padding:1%"}
   %h2
-    New System Ticket
-  =form_tag "create_systemtix2", multipart: true, method: 'POST' do
-    %table.table{:style=>"border-color:white;font-size:110%"}
+    Edit Members of #{@system_name}
+  %table.table{:style=>"border-color:white;font-size:110%"}
+    %tr
+      %td{:style=>"width:35%"}
+        %label
+          Current Members
+      %td
+        %label
+          Status
+      %td{:style=>"width:60%"}
+    -@system_members.each do |x|
+      %tr
+        %td
+          #{User.find(x.user_id)}
+        %td
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+            .badge.bg-success
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+            .badge.bg-danger
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+            .badge.bg-warning
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="admin"
+            .badge.bg-primary
+              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+        %td
+          =form_tag "/system_tickets/edit_member_status", multipart: true, method: 'POST' do
+            .form-group
+              =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
+            .form-group
+              =text_field_tag :status,params[:status]=x.status,class:'form-control',style:'display:none'
+            .form-group
+              = button_tag type: 'submit',class:'btt-linkto' do
+                %p
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+                    Deactivate
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+                    Activate
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+                    Approve
+                  
+  =form_tag "/system_tickets/add_member_st", multipart: true, method: 'POST' do
+    .form-group
+      =text_field_tag :id,params[:id]=@system_id,class:'form-control',style:'display:none'
+    %table.table{:style=>"border-color:white;font-size:110%"} 
       %tr
         %td
           %label
-            System
-          .form-group
-            =select_tag :computer_system_id,options_for_select(@computer_systems, params[:computer_system_id]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
-      %tr
-        %td
-          %label
-            Select Members
+            Select New Member(s)
           %div{:style=>"display:flex"}
             %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
-              -User.all.each do |x|
-                -if x.id!=current_user.id
-                  %option{:value => x.id,:id=>"selected#{x.id}"}
-                    #{x.last_name} , #{x.first_name}
+              -@non_system_members.each do |x|
+                %option{:value => x,:id=>"selected#{x}"}
+                  #{User.find(x).last_name}, #{User.find(x).first_name}
             %div
               &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
@@ -38,17 +69,23 @@
       %tr
         %td
           %label
-            Members
+            Selected Members
           .card{:style=>"min-height:100px;padding:1%"}
             .form-group
               %table.table{:style=>"border-color:white;font-size:110%",:id=>"mem-container"}
       %tr
-        %td 
+        %td
           .form-group
-            %div{id:"sel-mem"}     
+            %div{id:"sel-mem"}
           .form-group
-            =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
-              Add Ticket              
+            =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn3" do
+              Save
+
+:css
+    .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
+    .btt-linkto:hover{color:#0A58CA;}
+    form {display: inline;}
+    .form-group {display: inline;}
 
 :javascript
   var arr=[]
@@ -67,7 +104,7 @@
     if(w==0)
     {
       document.getElementById("empty").style.display="none";
-      document.getElementById("sub-btn").type="submit"
+      document.getElementById("sub-btn3").type="submit"
       arr.push([x,y])
       document.getElementById("dup").style.display="none"
     }
@@ -94,7 +131,7 @@
 
     document.getElementById("sel-mem").append(slct)
 
-    if(arr.length==0) document.getElementById("sub-btn").type="button";
+    if(arr.length==0) document.getElementById("sub-btn3").type="button";
 
     for(x=0;x<arr.length;x++)
     {

@@ -26,11 +26,6 @@
         %label
           Ticket Status
         = select_tag :center_id, options_from_collection_for_select(Center.where(branch_id: @branches.pluck(:id)), :id, :name, @center), class: "form-control select-select2", id: "center-select", prompt: "-- SELECT --"
-    -# .col-md-2
-    -#   .form-group
-    -#     %label
-    -#       Status
-    -#     = select_tag :status, options_for_select(MembershipPaymentCollection::STATUSES, @status), class: "form-control select-select2", id: "status-select", prompt: "-- SELECT --"
     .col-md-2
       .form-group
         %label

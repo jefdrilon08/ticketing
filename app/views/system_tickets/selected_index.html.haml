@@ -28,6 +28,9 @@
                 Date received
         %th.some{:style=>"width:5%"}
             %h
+                Target Date
+        %th.some{:style=>"width:5%"}
+            %h
                 Start Date
         %th.some{:style=>"width:5%"}
             %h
@@ -56,7 +59,11 @@
                     %td
                         %p
                         %p
-                            #{x[2]}  
+                            #{x[2]}
+                    %td
+                        %p
+                        %p
+                            #{x[10]}    
                     %td
                         %p
                         %p
@@ -72,11 +79,11 @@
                     %td
                         %p
                         %p
-                            #{x[6]}
+                            #{x[6][1]}
                     %td
                         %p
                         %p
-                            #{x[7]}                       
+                            #{x[7][1]}                       
                     %td
                         %center
                             %p
@@ -107,17 +114,18 @@
                                     %a.button{class:"btn btn-primary",:style=>"margin:7% 7px 0 0;padding:0.5% 5% 0.5% 5%",:href => "/system_tickets/#{x[0]}"}
                                         %i.bi.bi-eye
                                 %div-col-12
-                                    -if !x[9]
-                                        -if x[8]!='done'
+                                    -if current_user.id==SystemTicketsUser.find(x[7][0]).user_id || current_user.id==x[6][0]
+                                        -if !x[9]
+                                            -if x[8]!='done'
+                                                = form_tag "system_tickets/hold_ticket/#{x[0]}", method: 'POST' do
+                                                    .form-group
+                                                        =button_tag type: 'submit', class: 'btn btn-danger',style:"margin:7% 0 0 7px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn" do
+                                                            %i.bi.bi-pause
+                                        -else
                                             = form_tag "system_tickets/hold_ticket/#{x[0]}", method: 'POST' do
                                                 .form-group
-                                                    =button_tag type: 'submit', class: 'btn btn-danger',style:"margin:7% 0 0 7px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn" do
-                                                        %i.bi.bi-pause
-                                    -else
-                                        = form_tag "system_tickets/hold_ticket/#{x[0]}", method: 'POST' do
-                                            .form-group
-                                                =button_tag type: 'submit', class: 'btn btn-success',style:"margin:7% 0 0 7px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn" do
-                                                    %i.bi.bi-play
+                                                    =button_tag type: 'submit', class: 'btn btn-success',style:"margin:7% 0 0 7px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn" do
+                                                        %i.bi.bi-play
 
     -if @system_tix_desc.empty?
         %center

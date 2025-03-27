@@ -2,246 +2,223 @@
 .card.some{:style=>"padding:1%"}
     %div.row{:style=>"width:100%"}
         %div
-            %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:-15px"}
+            %table.table.table-bordered{:style=>"font-size:115%;margin-bottom:0px"}
+                %tr
+                    %th{:style=>"width:10%"}
+                        %h
+                            Ticket no. 
+                    %td
+                        %d
+                            #{@ticket.ticket_number}
                 %tr
                     %th
                         %h
-                            Ticket no. #{@ticket.ticket_number}
+                            Subject
+                    %td
+                        %d
+                            #{@ticket.title}
         %center
-            %hr{:style=>"height:5px"}
-        %div.col-5
-            .card{:style=>"padding:3%"}
-                %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"}  
-                    %tr
-                        %th{:style=>"width:25%"}
-                            Description:
-                        %td
-                            %p
-                                #{@ticket.description}
-                %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"}    
-                    %tr
-                        %th{:style=>"width:25%"}
+            %hr{:style=>"height:0px"}
+        %div.col-3
+            %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"}   
+                %tr
+                    %th{:style=>"width:50%"}
+                        %p 
+                            System name:
+                    %td
+                        %p
+                            #{ComputerSystem.find(SystemTicket.find(@ticket.system_ticket_id).computer_system_id).name}
+                %tr
+                    %th
+                        %p 
+                            Request type:
+                    %td
+                        %p
+                            #{@ticket.request_type}
+                %tr
+                    %th
+                        %p{:style=>"margin-top:10%"}
                             Status:
                             -if !@ticket.data["on_hold"]
                                 - case @ticket.status
                                 - when "processing"
-                                    %td{:style=>"width:12px"}
+                                    %td
                                         %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
+                                            %p{:style=>"width:104px"}
                                                 .badge.bg-primary
                                                     #{@ticket.status}
                                     %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                                .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
                                 - when "approved"
-                                    %td{:style=>"width:10px"}
+                                    %td
                                         %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
+                                            %p{:style=>";width:104px"}
                                                 .badge.bg-success
                                                     #{@ticket.status} 
                                     %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                                .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
                                 - when "pending"
-                                    %td{:style=>"width:10%"}
+                                    %td
                                         %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
+                                            %p{:style=>"width:104px"}
                                                 .badge.bg-warning
                                                     #{@ticket.status} 
-                                    %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                                .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
                                 - when "for verification"
-                                    %td{:style=>"width:10%"}
+                                    %td
                                         %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
+                                            %p{:style=>"width:104px"}
                                                 .badge.bg-secondary
                                                     #{@ticket.status} 
-                                    %td
-                                        = form_tag "edit_ticket_status", method: 'POST' do
-                                            .form-group
-                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                                .form-group
-                                                    = button_tag type: 'submit',class:'btt-linkto' do
-                                                        Update
                                 -else
-                                    %td{:style=>"width:10%"}
+                                    %td
                                         %center
-                                            %p{:style=>"margin-top:-15%;width:104px"}
+                                            %p{:style=>"width:104px"}
                                                 .badge.bg-dark
                                                     #{@ticket.status}
-                                    %td
                             -else
-                                %td{:style=>"width:10%"}
+                                %td
                                     %center
-                                        %p{:style=>"margin-top:-15%;width:104px"}
+                                        %p{:style=>"width:104px"}
                                             .badge.bg-danger
                                                 on hold
-                                %td
-                %table.table.table-bordered.table-sm{:style=>"margin-bottom:0px"}
-                    %tr
-                        %th
-                            %p 
-                                System name:
-                        %td
-                            %p
-                                #{ComputerSystem.find(SystemTicket.find(@ticket.system_ticket_id).computer_system_id).name} 
-                        %th
-                            %p 
-                                Request type:
-                        %td
-                            %p
-                                #{@ticket.request_type}
-                    %tr
-                        %th{:style=>"width:25%"}
-                            %p
-                                Date received:
-                        %td
-                            %p
-                                #{@ticket.date_received}
-                        %th
-                            %p
-                                Date started:
-                        %td
-                            - case @ticket.start_date
-                            - when nil
+                 
+
+                %tr
+                    %th
+                        %p
+                            Date received:
+                    %td
+                        %p
+                            #{@ticket.date_received}
+                %tr
+                    %th
+                        %p
+                            Date started:
+                    %td
+                        - case @ticket.start_date
+                        - when nil
+                            -if @role==3
                                 =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date" },id:'btn-new-milestone' do
                                     %p
-                                        Set start date 
-                            - else
+                                        Set start date
+                            -else
                                 %p
-                                    #{@ticket.start_date}
-                %table.table.table-bordered.table-sm
-                    %tr
-                        %th{:style=>"width:25%"}
-                            %p 
-                                Requested by:
-                        %td
+                                    Not yet set. 
+                        - else
                             %p
-                                #{User.find(@ticket.requested_by).last_name}, #{User.find(@ticket.requested_by).first_name}
-                %hr{:style=>"width:100%"}
-                %table.table.table-bordered.table-sm
-                    %tr
-                        %th{:style=>"width:20%"}
-                            %p
-                                Main Dev:
-                        %td
-                            %p
-                                -case @maindev
-                                    -when ""
-                                        Not assigned
-                                    -else
-                                        #{@maindev}
-                        %td{:style=>"width:40%"}
-                            -if @ticket.status!="done"
+                                #{@ticket.start_date}
+                %tr
+                    %th
+                        %p 
+                            Requested by:
+                    %td
+                        %p
+                            #{User.find(@ticket.requested_by).last_name}, #{User.find(@ticket.requested_by).first_name}
+                %tr
+                    %th
+                        %p 
+                            Target date:
+                    %td
+                        %p
+                            #{@ticket.target_date}                
+            %hr{:style=>"width:100%"}
+            %table.table.table-bordered.table-sm
+                %tr
+                    %th{:style=>"width:25%"}
+                        %p
+                            Main Dev:
+                    %td
+                        %p
+                            -case @maindev
+                                -when ""
+                                    Not assigned
+                                -else
+                                    #{@maindev[0]}
+                    %td{:style=>"width:20%"}
+                        -if @ticket.status!="done"
+                            -if @role==3
                                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-main-dev" },id:"btn-milestone" do
-                                    Edit Main Dev
-                    -i_show=0
-                    -@mem_list.each do |x|
-                        %tr
-                            %th
-                                -if i_show==0
-                                    %p
-                                        Members:
-                                -else
-                                    %p
-                            %td
-                                %p
-                                    #{x[0]} 
-                                    %span{:style=>"color:gray"} - #{x[1]}
-                            %td
-                                -if i_show==0
-                                    -if @ticket.status!="done"
-                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
-                                            Edit Members
-                                -else
-                        -i_show+=1
-                    -if @mem_list.empty?
-                        %tr
-                            %th
+                                    Change
+                -i_show=0
+                -@mem_list.each do |x|
+                    %tr
+                        %th
+                            -if i_show==0
                                 %p
                                     Members:
-                            %td
+                            -else
                                 %p
-                                    No members
-                            %td
-                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
-                                    Edit Members
-        %div.col-7
-            .card{:style=>"padding:3%"}
-                %table.table{:style=>"border-color:white;font-size:115%"}
+                        %td
+                            %p
+                                #{x[0]} 
+                                %span{:style=>"color:gray"} - #{x[1]}
+                        %td
+                            -if i_show==0
+                                -if @ticket.status!="done" && @role==3
+                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                        Edit
+                            -else
+                    -i_show+=1
+                -if @mem_list.empty?
+                    %tr
+                        %th
+                            %p
+                                Members:
+                        %td
+                            %p
+                                No members
+                        %td
+                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
+                                Edit
+        %div.col-9
+            %table.table.table-bordered.table-sm{:style=>"margin-top:15px;margin-bottom:0px"}  
+                %tr
+                    %th{:style=>"width:10%"}
+                        %p 
+                            Description:
                     %td
-                        %h3
-                            Attached file(s)
+                        %p
+                            #{@ticket.description}
+            %hr
+            .card.some{:style=>"padding:1%;"}
+                %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:0px"}
+                    %tr
+                        %td{:style=>"width:15%"}
+                            %h3
+                                Milestones
+                        %td{:style=>"padding-top:12px"}
+                            -if !@ticket.data["on_hold"]
+                                -if @ticket.status!="done"
+                                    -if @role==3
+                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
+                                            Add milestone    
                     
-                    -if !@ticket.file.attached?
-                        %tr
-                            %td
-                                %center
-                                    %p
-                                        No attachment found
-                    -else 
-                        -file_count=0
-                        -@ticket.file.each do |x|
-                            %tr
-                                %td
-                                    %a{:href=>url_for(x),:download=>"download"}
-                                        #{@ticket.data["file"][file_count]["original_filename"]}
-                                    -file_count=file_count+1
-
-                                
-            %hr{style:"height:5px;color:white"}
-            .card{:style=>"padding:3%"}
                 %table.table{:style=>"border-color:white;font-size:115%"}
-                    %td
-                        %h3
-                            Milestones
-                    - case @empty
-                    - when true
-                        %table.table{:style=>"border-color:white;font-size:115%"}
-                            %tr
-                                %center
-                                    %p
-                                        No milestone found
-                    - when false
-                        %table.table.table-bordered.table-sm
-                            %tr
-                                %th{:style=>"width:30%"}
-                                    %p
-                                        %center
-                                            Details
-                                %th{:style=>"width:5%"}
-                                    %p
-                                        %center
-                                            Status
-                                %th{:style=>"width:10%"}
-                                    %p
-                                        %center
-                                            Target Date
-                                %th{:style=>"width:10%"}
-                                    %p
-                                        %center
-                                            Start Date
-                                %th{:style=>"width:10%"}
-                                    %p
-                                        %center
-                                            End Date
-                                %th{:style=>"width:5%"}
-                                    %p
-                                        %center
-                                            Action
+                    %table.table.table-bordered.table-sm
+                        %tr
+                            %th{:style=>"width:30%"}
+                                %p
+                                    %center
+                                        Details
+                            %th{:style=>"width:5%"}
+                                %p
+                                    %center
+                                        Status
+                            %th{:style=>"width:10%"}
+                                %p
+                                    %center
+                                        Target Date
+                            %th{:style=>"width:10%"}
+                                %p
+                                    %center
+                                        Start Date
+                            %th{:style=>"width:10%"}
+                                %p
+                                    %center
+                                        End Date
+                            %th{:style=>"width:5%"}
+                                %p
+                                    %center
+                                        Action
+                        - if !@empty
                             - @milestones.each do |x|
                                 -if x.start_date==nil
                                     %tr
@@ -276,6 +253,24 @@
                                                     #{"--"}
                                         %td
                                             %p
+                                    #modal-set-start-date-milestone.modal.fade
+                                        .modal-dialog
+                                            .modal-content
+                                                .modal-header
+                                                    %h3.modal-title 
+                                                        Set Start Date for Milestone
+                                                .modal-body
+                                                    %hr{style:"height:25px;color:white"}
+                                                    %center
+                                                        = form_tag "set_date_milestone", method: 'POST' do
+                                                            .form-group
+                                                                =text_field_tag :date,params[:date],class:'form-control',style:"width:60%",required:true,type: :date
+                                                            .form-group
+                                                                =text_field_tag :id,params[:id],class:'form-control',id:'ms_id',style:'display:none'
+                                                            %hr{style:"height:30px;color:white"}
+                                                            .form-group
+                                                                =button_tag type: 'submit', class: 'btn btn-primary',id:"set-date2" do
+                                                                    Set Date
                                 -else
                                     %tr
                                         = form_tag "edit_milestone", method: 'POST' do
@@ -319,29 +314,42 @@
                                                                     -if @ticket.status!="done"
                                                                         = button_tag type: 'submit',class:'btt-linkto' do
                                                                             Update
-                                #modal-set-start-date-milestone.modal.fade
-                                    .modal-dialog
-                                        .modal-content
-                                            .modal-header
-                                                %h3.modal-title 
-                                                    Set Start Date for Milestone
-                                            .modal-body
-                                                %hr{style:"height:25px;color:white"}
-                                                %center
-                                                    = form_tag "set_date_milestone", method: 'POST' do
-                                                        .form-group
-                                                            =text_field_tag :date,params[:date],class:'form-control',style:"width:60%",required:true,type: :date
-                                                        .form-group
-                                                            =text_field_tag :id,params[:id],class:'form-control',id:'ms_id',style:'display:none'
-                                                        %hr{style:"height:30px;color:white"}
-                                                        .form-group
-                                                            =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
-                                                                Set Date
-                                -@milestone1=@milestone1+1
-                -if !@ticket.data["on_hold"]
-                    -if @ticket.status!="done"
-                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
-                            Add milestone
+                                    -@milestone1=@milestone1+1   
+                    -if @empty
+                        %center
+                            %hr{:style=>"height:30px;color:white"}
+                            %h4
+                                No milestone found
+                            %hr{:style=>"height:30px;color:white"}   
+            %hr{style:"height:5px;"}
+            .card.some{:style=>"padding:1%;"}
+                %table.table{:style=>"border-color:white;font-size:115%"}
+                    %tr
+                        %td{:style=>"width:20%"}
+                            %h3
+                                Attached file(s)    
+                        -if !@ticket.file.attached?
+                            %td{:style=>"padding-top:12px"}
+                                -if current_user.id==@ticket.requested_by
+                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
+                                        Add attachment
+                                
+                        -else 
+                            -file_count=0
+                            -@ticket.file.each do |x|
+                                %tr
+                                    %td
+                                        %a{:href=>url_for(x),:download=>"download"}
+                                            #{@ticket.data["file"][file_count]["original_filename"]}
+                                        -file_count=file_count+1
+                -if !@ticket.file.attached?
+                    %hr{:style=>"height:30px;color:white"}
+                        %table.table{:style=>"border-color:white;font-size:115%"}
+                            %center
+                                %h4
+                                    No attachment found.
+                                %hr{:style=>"height:30px;color:white"}
+
 
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
@@ -361,3 +369,4 @@
 = render partial: "system_tickets/modals/main_dev"
 = render partial: "system_tickets/modals/members"
 = render partial: "system_tickets/modals/set_start_date"
+= render partial: "system_tickets/modals/add_attachment"

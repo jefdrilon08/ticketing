@@ -111,105 +111,21 @@ namespace :api do
   # Loan Products
   get "/loan_products", to: "loan_products#index"
 
-  # For member mobile client
-  namespace :members do
-    # Loans
-    get "/loans/:id", to: "loans#show"
-    get "/loans", to: "loans#index"
-    post "/loans", to: "loans#create"
-
-    # Insurance
-    get "/insurance_accounts", to: "insurance_accounts#index"
-    get "/insurance_accounts/:id", to: "insurance_accounts#show"
-    get "/insurance_accounts/:id/transactions", to: "insurance_accounts#transactions"
-   
-    # Savings
-    get "/savings_accounts", to: "savings_accounts#index"
-    get "/savings_accounts/:id", to: "savings_accounts#show"
-    get "/savings_accounts/:id/transactions", to: "savings_accounts#transactions"
-   
-    # Equities
-    get "/equity_accounts", to: "equity_accounts#index"
-    get "/equity_accounts/:id", to: "equity_accounts#show"
-    get "/equity_accounts/:id/transactions", to: "equity_accounts#transactions"
-
-    # Shares
-    get "/member_shares", to: "member_shares#index"
-
-    # Survey
-    get "/surveys", to: "surveys#index"
-    post "/surveys/create_survey_mobile", to: "surveys#create_survey_mobile"
-    post "/surveys/fetch_survey_answer", to: "surveys#fetch_survey_answer"
-    post "/surveys/update_survey_answer", to: "surveys#update_survey_answer"
-
-    # Loan Products
-    get "/loan_products", to: "loan_products#index"
-
-    # Co Makers
-    get "/co_makers", to: "co_makers#index"
-
-    # Loan Applications
-    get "/loan_applications", to: "loan_applications#index"
-  end
-
-  # Client Meta Services
-  get "/client_meta/loan_products", to: "client_meta#loan_products"
-
-  namespace :v2 do
-    post "/apply", to: "public#apply"
-    post "/branches/save_daily_branch_metric", to: "branches#save_daily_branch_metric"
-    post "/check_status", to: "public#check_status"
-    post "/check_mobile_number", to: "public#check_mobile_number"
-    get "/branches", to: "public#branches"
-    
-    # loans
-    post "/loans/apply", to: "loans#apply"
-    get "/loans/project_type_categories", to: "loans#project_type_categories"
-    get "/loans", to: "loans#index"
-    get "/loans/settings", to: "loans#settings"
-    post "/loans/quote", to: "loans#quote"
-    post "/loans/review", to: "loans#review"
-
-    # members
-    post "/members/update_password", to: "members#update_password"
-    get "/members/co_makers", to: "members#co_makers"
-    get "/members/loan_products", to: "members#loan_products"
-    get "/members/fetch_files", to: "members#fetch_files"
-    post "/members/upload_file", to: "members#upload_file"
-
-    # dashboard
-    post "/dashboard/generate_daily_report", to: "dashboard#generate_daily_report"
-    post "/dashboard/generate_accounting_report", to: "dashboard#generate_accounting_report"
-
-    # monthly_accounting_code_summaries
-    post "/monthly_accounting_code_summaries/create", to: "monthly_accounting_code_summaries#create"
-
-    # trends
-    get "/trends/fetch_yearly_data", to: "trends#fetch_yearly_data"
-
-    # users
-    post "/users/login", to: "users#login"
-    get "/users", to: "users#index"
-
-    namespace :members do
-      get "/insurances", to: "insurances#index"
-      get "/insurances/:id", to: "insurances#show"
-      get "/equities", to: "equities#index"
-      get "/equities/:id", to: "equities#show"
-      get "/savings", to: "savings#index"
-      get "/savings/:id", to: "savings#show"
-      get "/loans", to: "loans#index"
-      get "/loans/:id", to: "loans#show"
-      post "/settings/change_password", to: "settings#change_password"
-    end
-  end
-
   namespace :v1 do
 
     namespace :tickets do
-      get "/concern_tickets", to: "concern_tickets#index"
-      post "/concern_tickets", to: "concern_tickets#create_concern"
-      post "/concern_tickets/add_concern_type", to: "concern_tickets#add_concern_type"
+      post "/concern_tickets/create_concern", to: "concern_tickets#create_concern"
+      post "/concern_tickets/create_ticket", to: "concern_tickets#create_ticket"
+      post "/concern_tickets/add_member_concern_ticket", to: "concern_tickets#add_member_ct"
+      post "/concern_tickets/create_concern_type", to: "concern_tickets#create_concern_type"
+      post "/concern_tickets/create_concern_for", to: "concern_tickets#create_concern_for"
+      
+      # Explicit route for updating member status
+      patch "/concern_ticket_users/:id/update_status", to: "concern_tickets#update_member_status"
+      
+      # for javascript
+      post "concern_tickets/update_status", to: "concern_tickets#update_status"
+
     end
 
     # Process Online Application
@@ -801,4 +717,99 @@ namespace :api do
     post "/claims/save_date_paid", to: "claims#save_date_paid"
     post "/claims/add_transaction_fee", to: "claims#add_transaction_fee"    
   end
+
+  # For member mobile client
+  namespace :members do
+    # Loans
+    get "/loans/:id", to: "loans#show"
+    get "/loans", to: "loans#index"
+    post "/loans", to: "loans#create"
+
+    # Insurance
+    get "/insurance_accounts", to: "insurance_accounts#index"
+    get "/insurance_accounts/:id", to: "insurance_accounts#show"
+    get "/insurance_accounts/:id/transactions", to: "insurance_accounts#transactions"
+   
+    # Savings
+    get "/savings_accounts", to: "savings_accounts#index"
+    get "/savings_accounts/:id", to: "savings_accounts#show"
+    get "/savings_accounts/:id/transactions", to: "savings_accounts#transactions"
+   
+    # Equities
+    get "/equity_accounts", to: "equity_accounts#index"
+    get "/equity_accounts/:id", to: "equity_accounts#show"
+    get "/equity_accounts/:id/transactions", to: "equity_accounts#transactions"
+
+    # Shares
+    get "/member_shares", to: "member_shares#index"
+
+    # Survey
+    get "/surveys", to: "surveys#index"
+    post "/surveys/create_survey_mobile", to: "surveys#create_survey_mobile"
+    post "/surveys/fetch_survey_answer", to: "surveys#fetch_survey_answer"
+    post "/surveys/update_survey_answer", to: "surveys#update_survey_answer"
+
+    # Loan Products
+    get "/loan_products", to: "loan_products#index"
+
+    # Co Makers
+    get "/co_makers", to: "co_makers#index"
+
+    # Loan Applications
+    get "/loan_applications", to: "loan_applications#index"
+  end
+
+  # Client Meta Services
+  get "/client_meta/loan_products", to: "client_meta#loan_products"
+
+  namespace :v2 do
+    post "/apply", to: "public#apply"
+    post "/branches/save_daily_branch_metric", to: "branches#save_daily_branch_metric"
+    post "/check_status", to: "public#check_status"
+    post "/check_mobile_number", to: "public#check_mobile_number"
+    get "/branches", to: "public#branches"
+    
+    # loans
+    post "/loans/apply", to: "loans#apply"
+    get "/loans/project_type_categories", to: "loans#project_type_categories"
+    get "/loans", to: "loans#index"
+    get "/loans/settings", to: "loans#settings"
+    post "/loans/quote", to: "loans#quote"
+    post "/loans/review", to: "loans#review"
+
+    # members
+    post "/members/update_password", to: "members#update_password"
+    get "/members/co_makers", to: "members#co_makers"
+    get "/members/loan_products", to: "members#loan_products"
+    get "/members/fetch_files", to: "members#fetch_files"
+    post "/members/upload_file", to: "members#upload_file"
+
+    # dashboard
+    post "/dashboard/generate_daily_report", to: "dashboard#generate_daily_report"
+    post "/dashboard/generate_accounting_report", to: "dashboard#generate_accounting_report"
+
+    # monthly_accounting_code_summaries
+    post "/monthly_accounting_code_summaries/create", to: "monthly_accounting_code_summaries#create"
+
+    # trends
+    get "/trends/fetch_yearly_data", to: "trends#fetch_yearly_data"
+
+    # users
+    post "/users/login", to: "users#login"
+    get "/users", to: "users#index"
+
+    namespace :members do
+      get "/insurances", to: "insurances#index"
+      get "/insurances/:id", to: "insurances#show"
+      get "/equities", to: "equities#index"
+      get "/equities/:id", to: "equities#show"
+      get "/savings", to: "savings#index"
+      get "/savings/:id", to: "savings#show"
+      get "/loans", to: "loans#index"
+      get "/loans/:id", to: "loans#show"
+      post "/settings/change_password", to: "settings#change_password"
+    end
+  end
+
+  
 end

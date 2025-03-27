@@ -3,15 +3,37 @@ class SystemTicketsController < ApplicationController
     skip_forgery_protection
     
     def index
-        @tickets = SystemTicket.all
+        
+        @tickets_all=ComputerSystem.all
+
+        temp= ""
+        @q = params[:q]
+
+        if @q.present?
+            @tickets_all = @tickets_all.where(
+              "upper(name) LIKE :q",
+              q: "%#{@q.upcase}%"
+            )
+          end
+
+          @tickets = []
+
+          @tickets_all.each do |x|
+              @tickets.push(x)
+          end
+
         @computer_systems = []
         @tickets.each do |x|
-            temp= ComputerSystem.find(x.computer_system_id)
-            @computer_systems.push([temp.name,x.id])
+            if SystemTicket.where(computer_system_id:x.id).empty? then @tickets.delete(x)
+            else
+                temp=x.name
+                @computer_systems.push(SystemTicket.where(computer_system_id:x.id)[0])
+            end
         end
+        
         @subheader_side_actions = [
             {
-              id: "btn-new",
+              id: "btn-new-2",
               link: "/new_system_ticket/",
               class: "fa fa-plus",
               text: "New"
@@ -43,7 +65,7 @@ class SystemTicketsController < ApplicationController
             temp= system_tix
             system_tix=[]
             temp.each do |x|
-                if SystemTicketDesc.find(SystemTicketDesc.select(:id).where(system_ticket_id:x[:id]))[:date_received].to_s==@f_date
+                if x[:date_received].to_s==@f_date
                     system_tix.push(x)
                 end
             end
@@ -54,13 +76,14 @@ class SystemTicketsController < ApplicationController
                 id      =x[:id]
                 tixno   =x[:ticket_number]
                 date    =x[:date_received]
+                tdate   =x[:target_date]
                 sdate   =x[:start_date]
-                edate   ="--"
-                reqt    =x[:request_type]
-                reqn    ="#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"
-                md      ="Not yet set."
-                stat    =x[:status]
-                hold    =x[:data]["on_hold"]
+                edate   = "--"
+                reqt    = x[:request_type]
+                reqn    = [x[:requested_by],"#{User.find(x[:requested_by]).last_name}, #{User.find(x[:requested_by]).first_name}"]
+                md      = "Not yet set."
+                stat    = x[:status]
+                hold    = x[:data]["on_hold"]
                 
 
                 if x[:data]["save_details"]!=nil
@@ -70,9 +93,8 @@ class SystemTicketsController < ApplicationController
                 end
 
                 x[:data]["team_members"].each do |x|
-                    if x[1]=="Main Dev"
-                        then md="#{User.find(x[0]).last_name}, #{User.find(x[0]).first_name}"
-                    end
+                  if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md=[x[0],"#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"]
+                  end
                 end
 
                 if sdate==nil 
@@ -81,15 +103,15 @@ class SystemTicketsController < ApplicationController
     
                 case stat
                 when "pending"
-                    pending.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
+                    pending.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
                 when "approved"
-                    approved.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
+                    approved.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
                 when "processing"
-                    processing.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
+                    processing.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
                 when "for verification"
-                    for_verification.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
+                    for_verification.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
                 when "done"
-                    done.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold])
+                    done.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
                 end
             end
         end
@@ -118,17 +140,63 @@ class SystemTicketsController < ApplicationController
 
         @subheader_side_actions = [
             {
-                id: "btn-new",
+                id: "btn-new-3",
                 link: "/new_system_ticket/#{params[:id]}",
                 class: "fa fa-plus",
-                text: "New",
-                data: {id:"asdasd"}
+                text: "New"
             }
         ]
 
     end
 
-    def edit_member_st
+    def show_st
+        @system_name=ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id)[:name]
+        @system_id=params[:id]
+        puts ""
+        @system_members=[]
+        @non_system_members=[]
+        members=SystemTicketsUser.where(system_ticket_id:params[:id])
+
+        User.all.each do |x|
+            @non_system_members.push(x.id)
+        end
+
+        User.all.each do |x|
+            members.each do |y|
+                if x.id.to_s==y.user_id.to_s 
+                    then @non_system_members.each do |z|
+                        if z==y.user_id.to_s then @non_system_members.delete(z) end
+                    end 
+                end
+            end
+        end
+
+        active=[]
+        inactive=[]
+        pending=[]
+        admin=[]
+
+        members.each do |x|
+            if x.status=="active" then active.push(x)
+            elsif x.status=="inactive" then inactive.push(x)
+            elsif x.status=="pending" then pending.push(x)
+            elsif x.status=="admin" then admin.push(x)
+            end
+        end
+
+        @system_members.push(admin[0])
+
+        active.each do |x|
+            @system_members.push(x)
+        end
+
+        inactive.each do |x|
+            @system_members.push(x)
+        end
+
+        pending.each do |x|
+            @system_members.push(x)
+        end
     end
 
     def hold_ticket
@@ -168,10 +236,11 @@ class SystemTicketsController < ApplicationController
     end
 
     def show
-        all_u = User.all
+        @role=0
         @not_a_mem=[]
         @milestones=[]
         @ticket   = SystemTicketDesc.find(params[:id])
+        all_u = SystemTicket.find(@ticket[:system_ticket_id])[:data]["team_members"]
         @cs_id    = SystemTicket.find(@ticket[:system_ticket_id])[:computer_system_id]
         @empty    = Milestone.where(system_ticket_desc_id:@ticket[:id]).count==0
         if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("status DESC,target_date ASC") end
@@ -188,22 +257,102 @@ class SystemTicketsController < ApplicationController
         @mem_list= []
         @maindev= ""
         set_md.each do |x|
-            if x[1]!="Main Dev"
-                @mem_list.push(["#{User.find(x[0])[:last_name].to_s}, #{User.find(x[0])[:first_name].to_s}",x[1],x[0]])
+          system_ticket_user = SystemTicketsUser.find_by(id: x[0])
+          if system_ticket_user
+            user = User.find_by(id: system_ticket_user.user_id)
+
+            if user
+              name = "#{user.last_name}, #{user.first_name}"
             else
-                @maindev = "#{User.find(x[0])[:last_name]}, #{User.find(x[0])[:first_name].to_s}"
+              name = "Unknown User"
+            end
+          else
+            name = "Unknown SystemTicketsUser"
+          end
+
+          if system_ticket_user.status=="active"||system_ticket_user.status=="admin"
+            if x[1] != "Main Dev"
+                @mem_list.push([name, x[1], x[0]])
+              else
+                @maindev = [name,x[0]]
+              end
+          end
+          
+        end
+        puts "allu"
+        all_u.each do |x|
+            puts x
+            temp=0
+            temp2= ""
+            @ticket.data["team_members"].each do |y|
+                if x==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
+                end
+                temp2=SystemTicketsUser.where(user_id:x)[0].id
+            end
+            if temp==0&&SystemTicketsUser.find(temp2).status=="active" then
+                 @not_a_mem.push(temp2)
             end
         end
 
-        all_u.each do |x|
-            temp=0
-            @ticket.data["team_members"].each do |y|
-                if x.id.to_s==y[0] then temp+=1
+        @mem_list.each do |x|
+            if current_user.id==SystemTicketsUser.find(x[2]).user_id
+                case x[1]
+                when "Member" || "Viewer"
+                    @role=0
+                when "Approver"
+                    @role=1
+                when "Developer"
+                    @role=2
                 end
             end
-            if temp==0 then @not_a_mem.push(["#{x.last_name}, #{x.first_name}",x.id])
-            end
         end
+
+        if current_user.id==SystemTicketsUser.find(@maindev[1]).user_id then @role=3 end
+
+        puts "nonmem"
+        puts @not_a_mem
+
+        puts "mem"
+        puts @mem_list
+
+        @subheader_side_actions ||= []
+
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "Approve"
+            } end
+
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "Process"
+            } end
+
+        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "For verification"
+            } end
+
+        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1
+            @subheader_side_actions << {
+              id: "btn-status",
+              link: "edit_ticket_status/#{params[:id]}",
+              class: "fa fa-check",
+              data: { id: @ticket.id },
+              text: "Verify"
+            } end
+  
 
     end
 
@@ -281,12 +430,13 @@ class SystemTicketsController < ApplicationController
 
     def add_member
         puts params
+
         mem_add= SystemTicketDesc.find(params[:id])
         mem_add_data= mem_add[:data]
 
-        puts "pumasok1"
-        mem_add_data["team_members"].push([params[:new_mem],params[:task]])
-        puts "pumasok2"
+        params[:members].each do|x|
+            mem_add_data["team_members"].push([x,"Member",nil])
+        end
 
         puts mem_add_data
 
@@ -374,6 +524,82 @@ class SystemTicketsController < ApplicationController
 
         if mem_list_update.update(data:mem_list_update_data)
             redirect_to "/system_tickets/#{params[:id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def add_attachment
+        add_att=SystemTicketDesc.find(params[:id])
+        add_att_data=add_att[:data]
+        file_arr=[]
+
+        params[:file].each do |x|
+            file_arr.push(x)
+        end
+
+        add_att_data["file"]=file_arr
+        
+        if add_att.update(data:add_att_data,file:file_arr)
+            redirect_to "/system_tickets_#{add_att[:system_ticket_id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def edit_member_status
+        member=SystemTicketsUser.find(params[:id])
+        status= ""
+
+        if params[:status]=="active" then status="inactive"
+        else status="active"
+        end
+
+        if member.update(status:status)
+            redirect_to "/system_tickets_#{SystemTicketsUser.find(params[:id]).system_ticket_id}/edit"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def add_member_st
+        puts params
+
+        mem_add= SystemTicket.find(params[:id])
+        mem_add_data= mem_add[:data]
+
+        params[:members].each do|x|
+            mem_add_data["team_members"].push(x)
+            SystemTicketsUser.new(
+                                        user_id:x,
+                                        status:"active",
+                                        system_ticket_id:params[:id]
+                                    ).save
+        end
+
+        puts mem_add_data
+
+        if mem_add.update(data:mem_add_data)
+            redirect_to "/system_tickets_#{params[:id]}/edit"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def join_st
+        puts "pumasok sa jst"
+        ticket=SystemTicket.find(params[:id])
+        ticket_data=ticket[:data]
+
+            SystemTicketsUser.new(
+                                    user_id:params[:mem_id],
+                                    status:"pending",
+                                    system_ticket_id:params[:id]
+                                ).save!
+
+        ticket_data["team_members"].push(params[:mem_id])
+        if ticket.update(data:ticket_data)
+            redirect_to "/system_tickets"
         else
             render :edit, status: :unprocessable_entity
         end

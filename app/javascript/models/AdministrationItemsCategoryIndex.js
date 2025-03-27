@@ -2,8 +2,6 @@ import Mustache from "mustache";
 import $ from "jquery";
 import * as bootstrap from "bootstrap";
 
-console.log("fckk");
-
 let $btnNew;
 let $btnConfirmNew;
 let $inputName;
