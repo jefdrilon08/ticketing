@@ -1,0 +1,23 @@
+.card.some(style="padding:1%")
+  - if flash[:notice]
+    .alert.alert-success= flash[:notice]
+  - if flash[:alert]
+    .alert.alert-danger= flash[:alert]
+    
+  %h2 New Item Request 
+  = form_for @item_request, url: create_itemrequest_path, html: { multipart: true } do |f|
+    %table.table(style="border-color:white;font-size:110%")
+      %tr
+        %td
+          %label Requester Name
+          .form-group
+            = f.collection_select :user_id, @available_users, :id, :full_name, { prompt: "-- SELECT --" }, { class: "form-control" }
+      %tr
+        %td
+          %label Request Date
+          .form-group
+            = f.date_field :date_request, class: "form-control", value: Date.today
+      %tr
+        %td
+          .form-group
+            = f.submit "Submit Request", class: "btn btn-primary"

@@ -30,7 +30,7 @@ import AdministrationComputerSystemIndex from '../models/AdministrationComputerS
 import AdministrationItemsIndex from '../models/AdministrationItemsIndex.js';
 import AdministrationItemsCategoryIndex from '../models/AdministrationItemsCategoryIndex.js';
 import AdministrationSuppliersIndex from '../models/AdministrationSuppliersIndex.js';
-
+import ItemRequestIndex from '../models/ItemRequestIndex.js';
 import ConcernTicketIndex from '../models/ConcernTicketIndex.js';
 import ConcernTicketShow from '../models/ConcernTicketShow.js';
 
@@ -47,6 +47,8 @@ const hooks = {
   "administration/branches/index":                    [AdministrationBranchesIndex],
   "administration/branches/show":                     [AdministrationBranchesShow],
   "administration/centers/show":                      [AdministrationCentersShow],
+
+  "item_request/index":                               [ItemRequestIndex],
 
   "concern_tickets/index":                            [ConcernTicketIndex],
   "concern_tickets/show":                             [ConcernTicketShow],

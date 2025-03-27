@@ -661,6 +661,21 @@ Rails.application.routes.draw do
   get "/bank_transfer", to: "bank_transfer#index"
   get "/bank_transfer/new", to: "bank_transfer#new"
 
+  get "/item_request", to: "item_request#index", as: "item_request_index"
+  get "/new_item_request", to: "new_item_request#new", as: "new_item_request"
+  post "/new_item_request", to: "new_item_request#create_itemrequest", as: "create_itemrequest"
+  get "/item_request_details/:id", to: "item_request_details#index", as: "item_request_details"
+  get "/new_item_request/:id/view_details", to: "new_item_request#view_details", as: :new_item_request_details
+  post "item_request/create_itemrequest_detail/:id", to: "new_item_request#create_itemrequest_detail", as: :create_itemrequest_detail
+  get "/item_request_details/:id/details", to: "item_request_details#details", as: "details_item_request_details"
+  patch "/item_request_details/:id/update_status", to: "item_request_details#update_status", as: :update_status_item_request_detail
+  
+  resources :new_item_request, only: [:new] do
+    member do
+      get :details
+    end
+  end
+
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
   get "system_tickets/:id",                 to: "system_tickets#show"
