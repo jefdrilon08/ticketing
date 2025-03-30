@@ -29,8 +29,6 @@
                       options_from_collection_for_select(@concern_fors&.sort_by(&:name) || [], :id, :name), 
                       class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
                       id: "input-concern-for", prompt: "-- SELECT --"
-                    %button.btn.btn-success.btn-sm.ms-2{ type: "button", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-create-concern-for", title: "Add New Concern For" }
-                      %i.bi.bi-plus-lg
 
               .col-md-6
                 .form-group.mt-3
@@ -40,8 +38,6 @@
                       options_from_collection_for_select(@concern_types&.sort_by(&:name) || [], :id, :name), 
                       class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
                       id: "input-concern-type", prompt: "-- SELECT --"
-                    %button.btn.btn-success.btn-sm.ms-2{ type: "button", "data-bs-toggle" => "modal", "data-bs-target" => "#modal-create-concern-type", title: "Add New Concern Type" }
-                      %i.bi.bi-plus-lg
 
             .row
               .col-md-6

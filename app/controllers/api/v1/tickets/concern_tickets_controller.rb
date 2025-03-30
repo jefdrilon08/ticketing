@@ -5,7 +5,6 @@ module Api
         before_action :authenticate_user!
 
         def create_concern
-          Rails.logger.debug "PUMASOK DITO"
           config = {
             name: params[:name],
             ticket_name: params[:ticket_name],
@@ -79,9 +78,7 @@ module Api
           ticket_count = ConcernTicketDetail.where(concern_ticket_id: concern_ticket.id).count
           ticket_number = "#{concern_ticket.ticket_name} - #{(ticket_count + 1).to_s.rjust(4, '0')}"
 
-          Rails.logger.debug "concern_ticket: #{concern_ticket.inspect}"
-          Rails.logger.debug "ticket_count: #{ticket_count.inspect}"
-          Rails.logger.debug "ticket_number: #{ticket_number.inspect}"
+          Rails.logger.debug "batbat: #{concern_ticket.inspect}"
           @concern_ticket_record = ConcernTicketDetail.new(
             ticket_number: ticket_number,
             concern_ticket_id: params[:concern_ticket_id],
@@ -90,7 +87,8 @@ module Api
             name_for_id: params[:name_for_id],
             concern_type_id: params[:concern_type_id],
             branch_id: params[:branch_id],
-            requested_user_id: current_user.id
+            requested_user_id: current_user.id,
+            assigned_user_id: concern_ticket.user_id
           )
           Rails.logger.debug "status for updatezzz: #{params[:attachments].inspect}"
 

@@ -37,26 +37,53 @@ class ConcernTicketsController < ApplicationController
 
   def edit_concern
     @concern_ticket = ConcernTicket.find(params[:id])
-    Rails.logger.debug "zxc: #{@concern_ticket.inspect}"
     @computer_systems = ComputerSystem.select(:id, :name) || []
     @ct_users = User.select(:id, :first_name, :last_name).order(:last_name, :first_name)
   end
 
-  def update #para sa Concern Ticket
+  def update
     @concern_ticket = ConcernTicket.find(params[:id])
-
     @concern_ticket.name = params[:name]
     @concern_ticket.ticket_name = params[:ticket_name]
     @concern_ticket.computer_system_id = params[:computer_system_id]
-
-    if @concern_ticket.save
-      flash[:success] = "Concern Ticket updated successfully!"
-      redirect_to concern_tickets_path
-    else
-      flash[:error] = "Failed to update concern ticket."
-      render :edit_concern
+  
+    ActiveRecord::Base.transaction do
+      if @concern_ticket.save
+        Rails.logger.debug "Updated Concern Ticket ID: #{@concern_ticket.id}"
+  
+        # Update Concern For
+        if params[:selected_concern_fors].present?
+          concern_for_names = params[:selected_concern_fors].split(",").map(&:strip)
+          @concern_ticket.concern_fors.where.not(name: concern_for_names).destroy_all
+          concern_for_names.each do |name|
+            @concern_ticket.concern_fors.find_or_create_by!(name: name, status: "active")
+          end
+        else
+          @concern_ticket.concern_fors.destroy_all
+        end
+  
+        # Update Concern Types
+        if params[:selected_concern_types].present?
+          concern_type_names = params[:selected_concern_types].split(",").map(&:strip)
+          @concern_ticket.concern_types.where.not(name: concern_type_names).destroy_all
+          concern_type_names.each do |name|
+            @concern_ticket.concern_types.find_or_create_by!(name: name, status: "active")
+          end
+        else
+          @concern_ticket.concern_types.destroy_all
+        end
+  
+        flash[:success] = "Concern Ticket updated successfully!"
+        redirect_to concern_tickets_path
+      else
+        Rails.logger.error "Failed to update Concern Ticket: #{@concern_ticket.errors.full_messages.join(', ')}"
+        flash[:error] = "Failed to update concern ticket."
+        render :edit_concern
+      end
     end
   end
+  
+  
   
   def view_tix
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
