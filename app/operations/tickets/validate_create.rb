@@ -13,7 +13,6 @@ module Tickets
       def execute!
         validate_name
         validate_status
-        validate_computer_system_id
       
         return @errors if @errors[:messages].any?
       
@@ -21,18 +20,6 @@ module Tickets
         @errors
       end
       
-      private
-      
-      def validate_computer_system_id
-        if @config[:computer_system_id].blank? || !::ComputerSystem.exists?(id: @config[:computer_system_id])
-          @errors[:messages] << {
-            key: "computer_system_id",
-            message: "Computer system must exist."
-          }
-        end
-      end
-      
-
       private
 
       def validate_name

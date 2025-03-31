@@ -19,6 +19,35 @@
             required: true, 
             prompt: "-- SELECT --"
 
+    &nbsp;
+    .row
+      .col-md-6.col-12
+        .form-group
+          %label Concern For
+          .input-group
+            = text_field_tag :concern_for, "", id: "concern-for-input", class: "form-control", placeholder: "Enter Concern For"
+            = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-for"
+
+      .col-md-6.col-12
+        .form-group
+          %label Concern Type
+          .input-group
+            = text_field_tag :concern, "", id: "concern-type-input", class: "form-control", placeholder: "Enter Concern Type"
+            = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-type"
+
+      .row
+        .col-md-6.col-12
+          .form-group
+            %label Concern For Records:
+            %ul#concern-records-list.list-group.mt-2.w-100.p-0
+        = hidden_field_tag :selected_concern_fors, "", id: "selected-concern-fors" 
+
+        .col-md-6.col-12
+          .form-group
+            %label Concern Type Records:
+            %ul#concern-type-records-list.list-group.mt-2.w-100.p-0
+        = hidden_field_tag :selected_concern_types, "", id: "selected-concern-types"        
+
     &nbsp;      
     .row
       .col-12.text-end
@@ -66,9 +95,12 @@
                   - button_class = ct_user.status.downcase == "active" ? "btn-danger" : "btn-success"
                   - button_text = ct_user.status.downcase == "active" ? "Deactivate" : "Activate"
                   = button_tag button_text, class: "btn btn-sm #{button_class}", data: { id: ct_user.id }, onclick: "toggleMemberStatus(this)"
+                  
 
 :javascript
+
   document.addEventListener("DOMContentLoaded", function () {
+    console.log("Edit Concern JavaScript Loaded!");
     function toggleMemberStatus(button) {
       let memberId = button.getAttribute("data-id");
 
@@ -82,7 +114,7 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          location.reload(); // Refresh the page to reflect the status update
+          location.reload();
         } else {
           alert("Failed to update status: " + data.error);
         }
@@ -91,4 +123,96 @@
     }
 
     window.toggleMemberStatus = toggleMemberStatus;
+
+    function addToList(name, status, listId, hiddenFieldId) {
+      const list = document.getElementById(listId);
+      const hiddenField = document.getElementById(hiddenFieldId);
+
+      if (!list || !hiddenField) {
+        console.error("Missing elements:", { list, hiddenField });
+        return;
+      }
+
+      if (name !== "") {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+        const textSpan = document.createElement("span");
+        textSpan.textContent = name;
+
+        const statusBadge = document.createElement("span");
+        statusBadge.className = "badge ms-2";
+        statusBadge.textContent = status;
+
+        // Assign status colors
+        if (status.toLowerCase() === "active") {
+          statusBadge.classList.add("bg-success");
+        } else if (status.toLowerCase() === "inactive") {
+          statusBadge.classList.add("bg-danger");
+        } else {
+          statusBadge.classList.add("bg-secondary");
+        }
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn btn-sm btn-danger ms-2";
+        deleteBtn.textContent = "×";
+        deleteBtn.onclick = function () {
+          li.remove();
+          updateHiddenField(hiddenField, list);
+        };
+
+        li.appendChild(textSpan);
+        li.appendChild(statusBadge);
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+
+        updateHiddenField(hiddenField, list);
+      } else {
+        console.warn("Input field is empty");
+      }
+    }
+
+    function updateHiddenField(hiddenField, list) {
+      const items = [...list.children].map(li => li.firstChild.textContent.trim());
+      hiddenField.value = items.join(",");
+    }
+
+    // Load existing Concern For and Concern Type records with statuses
+    function loadExistingRecords() {
+      const concernForList = document.getElementById("concern-records-list");
+      const concernTypeList = document.getElementById("concern-type-records-list");
+      const concernForHidden = document.getElementById("selected-concern-fors");
+      const concernTypeHidden = document.getElementById("selected-concern-types");
+
+      if (!concernForList || !concernTypeList || !concernForHidden || !concernTypeHidden) {
+        console.error("Missing elements for loading existing records");
+        return;
+      }
+
+      // Fetch existing records (name and status) from Rails
+      const existingConcernFors = #{raw @concern_ticket.concern_fors.map { |cf| { name: cf.name, status: cf.status } }.to_json};
+      const existingConcernTypes = #{raw @concern_ticket.concern_types.map { |ct| { name: ct.name, status: ct.status } }.to_json};
+
+      existingConcernFors.forEach(cf => addToList(cf.name, cf.status, "concern-records-list", "selected-concern-fors"));
+      existingConcernTypes.forEach(ct => addToList(ct.name, ct.status, "concern-type-records-list", "selected-concern-types"));
+    }
+
+    document.getElementById("add-concern-for").addEventListener("click", function () {
+      const inputField = document.getElementById("concern-for-input");
+      addToList(inputField.value.trim(), "Pending", "concern-records-list", "selected-concern-fors"); 
+      inputField.value = "";
+    });
+
+    document.getElementById("add-concern-type").addEventListener("click", function () {
+      const inputField = document.getElementById("concern-type-input");
+      addToList(inputField.value.trim(), "Pending", "concern-type-records-list", "selected-concern-types"); 
+      inputField.value = "";
+    });
+
+    // Load existing data on page load
+    loadExistingRecords();
+
+    console.log("Event listeners added for Edit Concern");
   });
+
+

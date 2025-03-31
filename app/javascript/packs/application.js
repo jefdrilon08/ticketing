@@ -50,10 +50,8 @@ const hooks = {
 
   "item_request/index":                               [ItemRequestIndex],
 
-  "concern_tickets/index":                            [ConcernTicketIndex],
-//=======
-//  "concern_tickets/new_concern":                      [ConcernTicketIndex],
-//>>>>>>> main
+  // "concern_tickets/index":                            [ConcernTicketIndex],
+  "concern_tickets/new_concern":                      [ConcernTicketIndex],
   "concern_tickets/show":                             [ConcernTicketShow],
 
   "administration/computer_system/index":             [AdministrationComputerSystemIndex],

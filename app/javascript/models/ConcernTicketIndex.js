@@ -5,8 +5,6 @@ import * as bootstrap from "bootstrap";
 var _authenticityToken;
 var _selectedMembers = new Set();
 
-console.log("CONCERN TICKET INDEX");
-
 var _cacheDom = function() {
     return {
         select: document.getElementById("team-member-select"),
@@ -19,16 +17,20 @@ var _bindEvents = function(dom) {
     if (!dom.select || !dom.membersList) return;
 
     $(dom.select).on("change", function() {
+        console.log("Member selected:", this.value, this.options[this.selectedIndex].text);
         _addMember(dom, this.value, this.options[this.selectedIndex].text);
     });
 };
 
 var _addMember = function(dom, memberId, memberName) {
+    console.warn("Invalid memberId:", memberId);
     if (!memberId || _selectedMembers.has(memberId)) return;
 
     _selectedMembers.add(memberId);
     _updateHiddenInput(dom);
 
+    console.log("Adding member:", memberId, memberName);
+    
     let listItem = $(`
         <li class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 shadow-sm p-1 text-sm member-item">
             ${memberName}

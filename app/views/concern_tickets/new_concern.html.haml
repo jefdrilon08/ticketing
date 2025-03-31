@@ -15,8 +15,9 @@
           %label Computer System
           = select_tag :computer_system_id, options_from_collection_for_select(@computer_systems&.sort_by(&:name) || [], :id, :name),
             class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-            required: true, 
+            required: false, 
             prompt: "-- SELECT --"
+
     .row
       .col-md-6.col-12
         .form-group.mt-3
@@ -27,17 +28,144 @@
             required: false, 
             prompt: "-- SELECT --",
             id: "team-member-select"
+
     .row  
       .col-md-6.col-12
         .form-group    
           %label Members:
           %ul#members-list.list-group.mt-2.w-100.p-0
+
     = hidden_field_tag :selected_members, "", id: "selected-members-input"
-    &nbsp;      
+
+    &nbsp;
     .row
-      .col-12.text-end
-        = button_tag type: 'submit', class: 'btn btn-primary', id: "sub-btn" do
-          .fa.fa-check
-          Confirm
-        &nbsp;  
-        = link_to 'Cancel', concern_tickets_path, class: 'btn btn-secondary'
+      .col-md-6.col-12
+        .form-group
+          %label Concern For
+          .input-group
+            = text_field_tag :concern_for, "", id: "concern-for-input", class: "form-control", placeholder: "Enter Concern For"
+            = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-for"
+
+      .col-md-6.col-12
+        .form-group
+          %label Concern Type
+          .input-group
+            = text_field_tag :concern, "", id: "concern-type-input", class: "form-control", placeholder: "Enter Concern Type"
+            = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-type"
+
+      .row
+        .col-md-6.col-12
+          .form-group
+            %label Concern For Records:
+            %ul#concern-records-list.list-group.mt-2.w-100.p-0
+        = hidden_field_tag :selected_concern_fors, "", id: "selected-concern-fors" 
+
+        .col-md-6.col-12
+          .form-group
+            %label Concern Type Records:
+            %ul#concern-type-records-list.list-group.mt-2.w-100.p-0
+        = hidden_field_tag :selected_concern_types, "", id: "selected-concern-types"
+            
+      .row
+        .col-12.text-end
+          = button_tag type: 'submit', class: 'btn btn-primary', id: "sub-btn" do
+            .fa.fa-check
+            Confirm
+          &nbsp;  
+          = link_to 'Cancel', concern_tickets_path, class: 'btn btn-secondary'
+
+:javascript
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("JavaScript Loaded!");
+
+    function addToList(inputId, listId, hiddenFieldId) {
+      const inputField = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      const hiddenField = document.getElementById(hiddenFieldId);
+
+      if (!inputField || !list || !hiddenField) {
+        console.error("Missing elements:", { inputField, list, hiddenField });
+        return;
+      }
+
+      const value = inputField.value.trim();
+      if (value !== "") {
+
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.textContent = value;
+
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn btn-sm btn-danger";
+        deleteBtn.textContent = "×";
+        deleteBtn.onclick = function () {
+          li.remove();
+          updateHiddenField(hiddenField, list);
+        };
+
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+        updateHiddenField(hiddenField, list);
+
+        inputField.value = "";
+      } else {
+        console.warn("Input field is empty");
+      }
+    }
+
+    function updateHiddenField(hiddenField, list) {
+      const items = [...list.children].map(li => li.textContent.replace("×", "").trim());
+      hiddenField.value = items.join(",");
+    }
+
+    document.getElementById("add-concern-for").addEventListener("click", function () {
+      addToList("concern-for-input", "concern-records-list", "selected-concern-fors");
+    });
+
+    document.getElementById("add-concern-type").addEventListener("click", function () {
+      addToList("concern-type-input", "concern-type-records-list", "selected-concern-types");
+    });
+
+    console.log("Event listeners added");
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+    function addToList(inputId, listId, hiddenFieldId) {
+      const inputField = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      const hiddenField = document.getElementById(hiddenFieldId);
+      
+      if (inputField.value.trim() !== "") {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.textContent = inputField.value;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn btn-sm btn-danger";
+        deleteBtn.textContent = "×";
+        deleteBtn.onclick = function () {
+          li.remove();
+          updateHiddenField(hiddenField, list);
+        };
+
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+        updateHiddenField(hiddenField, list);
+
+        inputField.value = "";
+      }
+    }
+
+    function updateHiddenField(hiddenField, list) {
+      const items = [...list.children].map(li => li.textContent.replace("×", "").trim());
+      hiddenField.value = items.join(",");
+    }
+
+    document.getElementById("add-concern-for").addEventListener("click", function () {
+      addToList("concern-for-input", "concern-records-list", "selected-concern-fors");
+    });
+
+    document.getElementById("add-concern-type").addEventListener("click", function () {
+      addToList("concern-type-input", "concern-type-records-list", "selected-concern-types");
+    });
+  });
