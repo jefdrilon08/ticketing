@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   get "/concern_tickets/new_concern", to: "concern_tickets#new_concern", as: "new_concern_ticket"
   get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
   get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
+  post "/concern_tickets/join", to: "concern_tickets#join", as: "join_concern_ticket"
 
 
   # online applications
