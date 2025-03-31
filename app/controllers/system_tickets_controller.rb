@@ -22,12 +22,11 @@ class SystemTicketsController < ApplicationController
               @tickets.push(x)
           end
 
-        @computer_systems = []
+        @final_tix_list = []
+
         @tickets.each do |x|
-            if SystemTicket.where(computer_system_id:x.id).empty? then @tickets.delete(x)
-            else
-                temp=x.name
-                @computer_systems.push(SystemTicket.where(computer_system_id:x.id)[0])
+            if SystemTicket.where(computer_system_id:x.id).empty? then @tickets-=[x]
+            else @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0])
             end
         end
         
