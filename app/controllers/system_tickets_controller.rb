@@ -351,16 +351,19 @@ class SystemTicketsController < ApplicationController
               text: "Approve"
             } end
 
-        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
-            @subheader_side_actions << {
-              id: "btn-status",
-              link: "edit_ticket_status/#{params[:id]}",
-              class: "fa fa-check",
-              data: { id: @ticket.id },
-              text: "Process"
-            } end
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"]
+            if @role==2 || @role==3
+                @subheader_side_actions << {
+                id: "btn-status",
+                link: "edit_ticket_status/#{params[:id]}",
+                class: "fa fa-check",
+                data: { id: @ticket.id },
+                text: "Process"
+                } end
+        end
 
-        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
+        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"]
+            if @role==2 || @role==3
             @subheader_side_actions << {
               id: "btn-status",
               link: "edit_ticket_status/#{params[:id]}",
@@ -368,6 +371,7 @@ class SystemTicketsController < ApplicationController
               data: { id: @ticket.id },
               text: "For verification"
             } end
+              end
 
         if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1 && @ticket[:start_date]!=nil && @all_done==0
             @subheader_side_actions << {

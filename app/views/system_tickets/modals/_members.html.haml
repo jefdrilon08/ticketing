@@ -15,7 +15,8 @@
                         Current Members
                     %table.table{:style=>"border-color:white;font-size:110%"} 
                         %tr
-                            %th
+                            %td{:style=>"width:8%"}
+                            %th{:style=>"width:30%"}
                                 %p
                                     Member
                             %th
@@ -24,7 +25,8 @@
                             %td
                                 -temp_i=0
                         -@mem_list.each do |x|
-                            %tr    
+                            %tr 
+                                %td   
                                 %td
                                     #{x[0]}
                                 %td
