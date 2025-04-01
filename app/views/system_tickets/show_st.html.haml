@@ -1,116 +1,118 @@
 .card.some{:style=>"padding:1%"}
   %h2
     Edit Members of #{@system_name}
-  %div.row
-    %div.col-5
-      %table.table{:style=>"border-color:white;font-size:110%"}
-        %tr
-          %td{:style=>"width:20%"}
-            %label
-              Current Members
-          %td{:style=>"width:20%"}
-            %label
-              Role
-          %td{:style=>"width:10%"}
-            %label
-              Status
-        =form_tag "/system_tickets/edit_member",method: 'POST' do 
-          .form-group
-            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-          -@system_members.each do |x|
+  .card.some{:style=>"padding:1%"}
+    %div.row
+      %div.col-5
+        %table.table{:style=>"border-color:white;font-size:110%"}
+          %tr
+            %td{:style=>"width:20%"}
+              %label
+                Current Members
+            %td{:style=>"width:20%"}
+              %label
+                Role
+            %td{:style=>"width:10%"}
+              %label
+                Status
+          =form_tag "/system_tickets/edit_member",method: 'POST' do 
+            .form-group
+              =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+            -@system_members.each do |x|
+              %tr
+                %td
+                  #{User.find(x.user_id)}
+                %td
+                  .form-group
+                    =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:x.id,id:"sel/#{x.id}"
+                  -if x.role!="Admin"
+                    -if x.status!="pending"
+                      .form-group
+                        =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',style:"width:50%;margin-top:-6px",id:"#{x.role}/#{x.id}"
+                %td
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+                    .badge.bg-success
+                      #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+                    .badge.bg-danger
+                      #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+                    .badge.bg-warning
+                      #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="admin"
+                    .badge.bg-primary
+                      #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
             %tr
               %td
-                #{User.find(x.user_id)}
-              %td
                 .form-group
-                  =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:x.id,id:"sel/#{x.id}"
-                -if x.role!="Admin"
-                  -if x.status!="pending"
-                    .form-group
-                      =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',style:"width:50%;margin-top:-6px",id:"#{x.role}/#{x.id}"
-              %td
-                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
-                  .badge.bg-success
-                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
-                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
-                  .badge.bg-danger
-                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
-                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
-                  .badge.bg-warning
-                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
-                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="admin"
-                  .badge.bg-primary
-                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+                  =button_tag type: 'submit', class: 'btn btn-primary' do
+                    Save Roles
+      %div.col-3
+        %table.table{:style=>"border-color:white;font-size:110%;"}
           %tr
             %td
-              .form-group
-                =button_tag type: 'submit', class: 'btn btn-primary' do
-                  Save 
-    %div.col-3
-      %table.table{:style=>"border-color:white;font-size:110%;"}
-        %tr
-          %td
-        %tr
-          %td
-        %tr
-          %th
-        -@system_members.each do |x|
-          %tr{:style=>"line-height:95%"}
+          %tr
             %td
-              =form_tag "/system_tickets/edit_member_status", multipart: true, method: 'POST' do
-                .form-group
-                  =text_field_tag :mem_id,params[:mem_id]=x.id,class:'form-control',style:'display:none'
-                .form-group
-                  =text_field_tag :status,params[:status]=x.status,class:'form-control',style:'display:none'
-                .form-group
-                  = button_tag type: 'submit',class:'btt-linkto' do
-                    %p
-                      -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
-                        Deactivate
-                      -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
-                        Activate
-                      -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
-                        Approve
+          %tr
+            %th
+          -@system_members.each do |x|
+            %tr{:style=>"line-height:95%"}
               %td
-    %div.col-4
-                  
-  =form_tag "/system_tickets/add_member_st", multipart: true, method: 'POST' do
-    .form-group
-      =text_field_tag :id,params[:id]=@system_id,class:'form-control',style:'display:none'
-    %table.table{:style=>"border-color:white;font-size:110%"} 
-      %tr
-        %td
-          %label
-            Select New Member(s)
-          %div{:style=>"display:flex"}
-            %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
-              -@non_system_members.each do |x|
-                %option{:value => x,:id=>"selected#{x}"}
-                  #{User.find(x).last_name}, #{User.find(x).first_name}
-            %div
-              &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-            %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
-              Add
-            %div{:id=>"dup",:style=>"display:none;color:red;margin-bottom:-20px;padding-top:10px"}
-              %p
-                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*Duplicate member
-            %div{:id=>"empty",:style=>"display:none;color:red;margin-bottom:-20px;padding-top:10px"}
-              %p
-                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*Members cannot be empty
-      %tr
-        %td
-          %label
-            Selected Members
-          .card{:style=>"min-height:100px;padding:1%"}
+                =form_tag "/system_tickets/edit_member_status", multipart: true, method: 'POST' do
+                  .form-group
+                    =text_field_tag :mem_id,params[:mem_id]=x.id,class:'form-control',style:'display:none'
+                  .form-group
+                    =text_field_tag :status,params[:status]=x.status,class:'form-control',style:'display:none'
+                  .form-group
+                    = button_tag type: 'submit',class:'btt-linkto' do
+                      %p
+                        -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+                          Deactivate
+                        -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+                          Activate
+                        -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+                          Approve
+                %td
+      %div.col-4
+  %hr{:style=>"color:white"}
+  .card.some{:style=>"padding:1%"}                  
+    =form_tag "/system_tickets/add_member_st", multipart: true, method: 'POST' do
+      .form-group
+        =text_field_tag :id,params[:id]=@system_id,class:'form-control',style:'display:none'
+      %table.table{:style=>"border-color:white;font-size:110%"} 
+        %tr
+          %td
+            %label
+              Select New Member(s)
+            %div{:style=>"display:flex"}
+              %select{:class => "form-control",:style=>"width:50%",:id=>"member-sel"}
+                -@non_system_members.each do |x|
+                  %option{:value => x,:id=>"selected#{x}"}
+                    #{User.find(x).last_name}, #{User.find(x).first_name}
+              %div
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+              %button{:class=> "btn btn-info btn-block", :onclick => "{addMember()}", :type=>"button"}
+                Add
+              %div{:id=>"dup",:style=>"display:none;color:red;margin-bottom:-20px;padding-top:10px"}
+                %p
+                  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*Duplicate member
+              %div{:id=>"empty",:style=>"display:none;color:red;margin-bottom:-20px;padding-top:10px"}
+                %p
+                  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*Members cannot be empty
+        %tr
+          %td
+            %label
+              Selected Members
+            .card{:style=>"min-height:100px;padding:1%"}
+              .form-group
+                %table.table{:style=>"border-color:white;font-size:110%",:id=>"mem-container"}
+        %tr
+          %td
             .form-group
-              %table.table{:style=>"border-color:white;font-size:110%",:id=>"mem-container"}
-      %tr
-        %td
-          .form-group
-            %div{id:"sel-mem"}
-          .form-group
-            =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn3" do
-              Save
+              %div{id:"sel-mem"}
+            .form-group
+              =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn3" do
+                Save Members
 
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
