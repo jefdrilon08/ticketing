@@ -1,0 +1,31 @@
+#modal-edit-assigned-person.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-keyboard" => "false" }
+  .modal-dialog.modal-sm
+    .modal-content.bg-white.p-3
+      .modal-header
+        %h5.modal-title.w-200.text-primary Choose Assigned Person
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      %hr.mt-0.mb-3
+
+      .modal-body
+        = form_tag "/api/v1/tickets/concern_tickets/update_assigned_person", method: 'POST', multipart: true do
+          = hidden_field_tag :ctd_id, @concern_ticket_details.id
+          .modal-body-content
+            .row
+              .col
+                .form-group
+                  %label.font-weight-bold User
+                  .d-flex.align-items-center
+                    = select_tag :assigned_person_id, 
+                      options_from_collection_for_select(@ticket_users.map { |tu| [tu.user.full_name, tu.user.id] }, :last, :first), 
+                      class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+                      id: "input-assigned_person", prompt: "-- SELECT --"
+
+          .modal-footer.d-flex.justify-content-center
+            .controls
+              = button_tag type: 'submit', class: 'btn btn-primary' do
+                %bi.bi-save.me-2 
+                Save
+              &nbsp;
+              = button_tag type: 'button', class: 'btn btn-secondary', "data-bs-dismiss" => "modal" do
+                %bi.bi-x-lg
+                Close

@@ -108,38 +108,6 @@ module Api
             redirect_back(fallback_location: request.referer || root_path)
           end
         end
-        
-        # def create_concern_for
-        #   @concern_for_record = ConcernFor.new(
-        #     concern_id: params[:concern_id],
-        #     name: params[:name],
-        #     description: params[:description],
-        #     status: "active"
-        #   )
-
-        #   if @concern_for_record.save
-        #     redirect_to "/concern_tickets/#{@concern_for_record[:concern_id]}"
-        #   else
-        #     flash[:danger] = "Failed to add Concern For: #{@concern_for_record.errors.full_messages.join(', ')}"
-        #     redirect_back(fallback_location: request.referer || root_path)
-        #   end
-        # end
-
-        # def create_concern_type
-        #   @concern_type_record = ConcernType.new(
-        #     concern_id: params[:concern_id],
-        #     name: params[:name],
-        #     description: params[:description],
-        #     status: "active"
-        #   )
-
-        #   if @concern_type_record.save
-        #     redirect_to "/concern_tickets/#{@concern_type_record[:concern_id]}"
-        #   else
-        #     flash[:danger] = "Failed to add Concern Type: #{@concern_type_record.errors.full_messages.join(', ')}"
-        #     redirect_back(fallback_location: request.referer || root_path)
-        #   end
-        # end
 
         def update_status #para sa Ticket Status or Concern Ticket Detail
           Rails.logger.debug "Received update request: #{params.inspect}"
@@ -170,7 +138,6 @@ module Api
           end
         end
         
-
         def add_member_ct
           @concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
           user_id = params[:ct_user_id]
@@ -185,6 +152,26 @@ module Api
             redirect_to "/concern_tickets/#{@concern_ticket.id}/edit"
           else
             flash[:danger] = "Failed to add Member: #{@ctd_member.errors.full_messages.join(', ')}"
+            redirect_back(fallback_location: request.referer || root_path)
+          end
+        end
+        
+        def update_assigned_person
+          @ticket_details = ConcernTicketDetail.find_by(id: params[:ctd_id])
+        
+          if @ticket_details
+            @ticket_details.assigned_user_id = params[:assigned_person_id]
+        
+            # Save the updated ticket detail
+            if @ticket_details.save
+              # Redirect to the ticket details page after saving
+              redirect_to concern_ticket_path(@ticket_details.concern_ticket_id), notice: "Assigned person updated successfully!"
+            else
+              flash[:error] = "Failed to update assigned person: #{@ticket_details.errors.full_messages.join(", ")}"
+              redirect_back(fallback_location: request.referer || root_path)
+            end
+          else
+            flash[:error] = "Ticket not found"
             redirect_back(fallback_location: request.referer || root_path)
           end
         end

@@ -101,11 +101,16 @@ class ConcernTicketsController < ApplicationController
     redirect_to concern_tickets_path
   end
   
-  
-  
   def view_tix
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
+  
+    # Fetch ConcernTicketUsers associated with the current concern_ticket
+    @ticket_users = ConcernTicketUser.where(concern_ticket_id: @concern_ticket.id).includes(:user)
+  
+    # Log the ticket users to check if it's working correctly
+    Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
   end
+  
 end
