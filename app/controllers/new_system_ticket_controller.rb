@@ -4,6 +4,13 @@ class NewSystemTicketController < ApplicationController
 
     def create_systemtix2
         members_arr=[]
+        options_arr=[]
+
+        options_arr=params[:options].split(",")
+
+        options_arr.each do |x|
+            x=x.strip!
+        end
 
         members_arr.push(current_user.id)
         params[:members].each do|x|
@@ -14,9 +21,11 @@ class NewSystemTicketController < ApplicationController
                                         status:'pending',
                                         user_id:current_user.id,
                                         data:   {
-                                                    team_members:members_arr
+                                                    team_members:members_arr,
+                                                    options_for_select:options_arr,
                                                 },
-                                        system_number:SystemTicket.all.count+1
+                                        system_number:SystemTicket.all.count+1,
+                                        is_private:params[:is_private]
                                     ).save
 
         members_arr.each do|x|
@@ -24,12 +33,14 @@ class NewSystemTicketController < ApplicationController
                 SystemTicketsUser.new(
                                         user_id:x,
                                         status:"admin",
+                                        role:"Admin",
                                         system_ticket_id:SystemTicket.where(computer_system_id:params[:computer_system_id])[0].id
                                     ).save
             else
                 SystemTicketsUser.new(
                                         user_id:x,
                                         status:"active",
+                                        role:"Viewer",
                                         system_ticket_id:SystemTicket.where(computer_system_id:params[:computer_system_id])[0].id
                                     ).save
             end

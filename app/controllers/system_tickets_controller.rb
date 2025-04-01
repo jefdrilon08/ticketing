@@ -16,19 +16,35 @@ class SystemTicketsController < ApplicationController
             )
           end
 
-          @tickets = []
+        @tickets = []
+        @tickets_all.each do |x|
+            @tickets.push(x)
+        end
 
-          @tickets_all.each do |x|
-              @tickets.push(x)
-          end
 
         @final_tix_list = []
 
         @tickets.each do |x|
+            puts "kkkk"
+            puts SystemTicket.where(computer_system_id:x.id).empty?
             if SystemTicket.where(computer_system_id:x.id).empty? then @tickets-=[x]
-            else @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0])
+            else 
+                is_member=0
+                if SystemTicket.where(computer_system_id:x.id)[0].is_private   
+                    SystemTicket.where(computer_system_id:x.id)[0].data["team_members"].each do |y|
+                        if y==current_user.id.to_s then is_member=is_member+1
+                        end
+                    end
+                    puts "pumasok"
+                    if is_member!=0 then @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0]) end
+                else
+                    @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0])
+                end
             end
         end
+
+        puts "final"
+        puts @final_tix_list
         
         @subheader_side_actions = [
             {
@@ -238,6 +254,7 @@ class SystemTicketsController < ApplicationController
         @role=0
         @all_done=0
         @not_a_mem=[]
+        @mem_list_dev=[]
         @milestones=[]
         @ticket   = SystemTicketDesc.find(params[:id])
         all_u = SystemTicket.find(@ticket[:system_ticket_id])[:data]["team_members"]
@@ -275,7 +292,7 @@ class SystemTicketsController < ApplicationController
 
           if system_ticket_user.status=="active"||system_ticket_user.status=="admin"
             if x[1] != "Main Dev"
-                @mem_list.push([name, x[1], x[0]])
+                @mem_list.push([name, system_ticket_user.role, system_ticket_user.id])
               else
                 @maindev = [name,x[0]]
               end
@@ -300,8 +317,8 @@ class SystemTicketsController < ApplicationController
         end
 
         @mem_list.each do |x|
-            if current_user.id==SystemTicketsUser.find(x[2]).user_id
-                case x[1]
+            if current_user.id==SystemTicketsUser.find(x[2]).user_id && SystemTicketsUser.find(x[2]).system_ticket_id==SystemTicketDesc.find(params[:id]).system_ticket_id
+                case SystemTicketsUser.find(x[2]).role
                 when "Member" || "Viewer"
                     @role=0
                 when "Approver"
@@ -309,6 +326,9 @@ class SystemTicketsController < ApplicationController
                 when "Developer"
                     @role=2
                 end
+            end
+            if SystemTicketsUser.find(x[2]).role=="Developer"||SystemTicketsUser.find(x[2]).role=="Admin"
+                then @mem_list_dev.push(x)
             end
         end
 
@@ -331,16 +351,19 @@ class SystemTicketsController < ApplicationController
               text: "Approve"
             } end
 
-        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
-            @subheader_side_actions << {
-              id: "btn-status",
-              link: "edit_ticket_status/#{params[:id]}",
-              class: "fa fa-check",
-              data: { id: @ticket.id },
-              text: "Process"
-            } end
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"]
+            if @role==2 || @role==3
+                @subheader_side_actions << {
+                id: "btn-status",
+                link: "edit_ticket_status/#{params[:id]}",
+                class: "fa fa-check",
+                data: { id: @ticket.id },
+                text: "Process"
+                } end
+        end
 
-        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==2
+        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"]
+            if @role==2 || @role==3
             @subheader_side_actions << {
               id: "btn-status",
               link: "edit_ticket_status/#{params[:id]}",
@@ -348,6 +371,7 @@ class SystemTicketsController < ApplicationController
               data: { id: @ticket.id },
               text: "For verification"
             } end
+              end
 
         if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1 && @ticket[:start_date]!=nil && @all_done==0
             @subheader_side_actions << {
@@ -440,7 +464,7 @@ class SystemTicketsController < ApplicationController
         mem_add_data= mem_add[:data]
 
         params[:members].each do|x|
-            mem_add_data["team_members"].push([x,"Member",nil])
+            mem_add_data["team_members"].push([x,nil])
         end
 
         puts mem_add_data
@@ -454,30 +478,27 @@ class SystemTicketsController < ApplicationController
     end
 
     def edit_member
-        edit_data_mem= SystemTicketDesc.find(params[:id])
-        edit_data_mem_data=edit_data_mem[:data]
+
+        puts params
+        edit_data_mem= SystemTicket.find(params[:id])
+        edit_data_mem_data=edit_data_mem.data
 
         lo0p=edit_data_mem_data["team_members"].count
         i=0
 
         while i <= lo0p
             edit_data_mem_data["team_members"].each do |x|
-                if x[0].to_s==params["o-#{i}"].to_s && x[1]!="Main Dev"
-                    if params["t-#{i}"]==nil then x[1]=params[:task] 
-                    else x[1]=params["t-#{i}"]
+                temp=SystemTicketsUser.where(user_id:x,system_ticket_id:params[:id])[0]
+                if temp.id==params["o-#{i}"].to_s && temp.role!="Main Dev"
+                    if params["t-#{i}"]==nil then temp.update(role:params["t-#{i}"])
+                    else temp.update(role:params["t-#{i}"])
                     end 
                 end
             end
             i+=1
         end
 
-        puts edit_data_mem_data
-
-        if edit_data_mem.update(data:edit_data_mem_data)
-            redirect_to "/system_tickets/#{params[:id]}"
-        else
-            render :edit, status: :unprocessable_entity
-        end
+        redirect_to "/system_tickets_#{params[:id]}/edit"
 
     end
 
@@ -492,7 +513,7 @@ class SystemTicketsController < ApplicationController
         while i <= lo0p
             mem_delete_data["team_members"].each do |x|
                 if x[1].to_s!="Main Dev"
-                    if params[:button]==params["d-#{i}"]
+                    if x[0]==params["d1-#{x[0]}"]
                         then mem_delete_data["team_members"].delete(x)
                     end
                     i+=1
@@ -517,7 +538,7 @@ class SystemTicketsController < ApplicationController
             puts x[0]
             puts "space"
             if x[1].to_s=="Main Dev"
-                then x[1]="Member"
+                then x[1]=nil
             end
             if x[0].to_s==params[:maindev].to_s
                 then x[1]="Main Dev"
@@ -553,7 +574,7 @@ class SystemTicketsController < ApplicationController
     end
 
     def edit_member_status
-        member=SystemTicketsUser.find(params[:id])
+        member=SystemTicketsUser.find(params[:mem_id])
         status= ""
 
         if params[:status]=="active" then status="inactive"
@@ -561,7 +582,7 @@ class SystemTicketsController < ApplicationController
         end
 
         if member.update(status:status)
-            redirect_to "/system_tickets_#{SystemTicketsUser.find(params[:id]).system_ticket_id}/edit"
+            redirect_to "/system_tickets_#{SystemTicketsUser.find(params[:mem_id]).system_ticket_id}/edit"
         else
             render :edit, status: :unprocessable_entity
         end
@@ -592,7 +613,6 @@ class SystemTicketsController < ApplicationController
     end
 
     def join_st
-        puts "pumasok sa jst"
         ticket=SystemTicket.find(params[:id])
         ticket_data=ticket[:data]
 
