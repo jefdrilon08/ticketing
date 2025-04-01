@@ -26,7 +26,7 @@
                                     =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
                             %td
                                 .form-group
-                                    =select_tag :maindev,options_for_select(@mem_list, params[:maindev]),class:'form-control select-select2',prompt:"-- SELECT --",required:true
+                                    =select_tag :maindev,options_for_select(@mem_list_dev, params[:maindev]),class:'form-control select-select2',prompt:"-- SELECT --",required:true
                         %tr
                             %td
                                 .form-group

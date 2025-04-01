@@ -15,8 +15,10 @@
             System
           .form-group
             =select_tag :computer_system_id,options_for_select(@computer_systems, params[:computer_system_id]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
-      %tr
-        %td
+          %label
+            Options for Request Type (separate each option with a COMMA)
+          .form-group 
+            =text_field_tag :options,params[:options],class:'form-control',required:true, placeholder:'e.g. Module Enhancement,New Module'
           %label
             Select Members
           %div{:style=>"display:flex"}
@@ -42,10 +44,12 @@
           .card{:style=>"min-height:100px;padding:1%"}
             .form-group
               %table.table{:style=>"border-color:white;font-size:110%",:id=>"mem-container"}
-      %tr
-        %td 
           .form-group
-            %div{id:"sel-mem"}     
+            %div{id:"sel-mem"}  
+          .form-group
+            %label
+              Private&nbsp&nbsp
+            =check_box_tag :is_private, true, style:"transform: scale(1.5);"
           .form-group
             =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
               Add Ticket              

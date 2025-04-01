@@ -1,47 +1,78 @@
 .card.some{:style=>"padding:1%"}
   %h2
     Edit Members of #{@system_name}
-  %table.table{:style=>"border-color:white;font-size:110%"}
-    %tr
-      %td{:style=>"width:35%"}
-        %label
-          Current Members
-      %td
-        %label
-          Status
-      %td{:style=>"width:60%"}
-    -@system_members.each do |x|
-      %tr
-        %td
-          #{User.find(x.user_id)}
-        %td
-          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
-            .badge.bg-success
-              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
-          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
-            .badge.bg-danger
-              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
-          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
-            .badge.bg-warning
-              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
-          -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="admin"
-            .badge.bg-primary
-              #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
-        %td
-          =form_tag "/system_tickets/edit_member_status", multipart: true, method: 'POST' do
-            .form-group
-              =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
-            .form-group
-              =text_field_tag :status,params[:status]=x.status,class:'form-control',style:'display:none'
-            .form-group
-              = button_tag type: 'submit',class:'btt-linkto' do
-                %p
-                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
-                    Deactivate
-                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
-                    Activate
-                  -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
-                    Approve
+  %div.row
+    %div.col-5
+      %table.table{:style=>"border-color:white;font-size:110%"}
+        %tr
+          %td{:style=>"width:20%"}
+            %label
+              Current Members
+          %td{:style=>"width:20%"}
+            %label
+              Role
+          %td{:style=>"width:10%"}
+            %label
+              Status
+        =form_tag "/system_tickets/edit_member",method: 'POST' do 
+          .form-group
+            =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+          -@system_members.each do |x|
+            %tr
+              %td
+                #{User.find(x.user_id)}
+              %td
+                .form-group
+                  =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:x.id,id:"sel/#{x.id}"
+                -if x.role!="Admin"
+                  -if x.status!="pending"
+                    .form-group
+                      =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',style:"width:50%;margin-top:-6px",id:"#{x.role}/#{x.id}"
+              %td
+                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+                  .badge.bg-success
+                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+                  .badge.bg-danger
+                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+                  .badge.bg-warning
+                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+                -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="admin"
+                  .badge.bg-primary
+                    #{SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status}
+          %tr
+            %td
+              .form-group
+                =button_tag type: 'submit', class: 'btn btn-primary' do
+                  Save 
+    %div.col-3
+      %table.table{:style=>"border-color:white;font-size:110%;"}
+        %tr
+          %td
+        %tr
+          %td
+        %tr
+          %th
+        -@system_members.each do |x|
+          %tr{:style=>"line-height:95%"}
+            %td
+              =form_tag "/system_tickets/edit_member_status", multipart: true, method: 'POST' do
+                .form-group
+                  =text_field_tag :mem_id,params[:mem_id]=x.id,class:'form-control',style:'display:none'
+                .form-group
+                  =text_field_tag :status,params[:status]=x.status,class:'form-control',style:'display:none'
+                .form-group
+                  = button_tag type: 'submit',class:'btt-linkto' do
+                    %p
+                      -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="active"
+                        Deactivate
+                      -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="inactive"
+                        Activate
+                      -if SystemTicketsUser.where(user_id:x.user_id,system_ticket_id:@system_id)[0].status=="pending"
+                        Approve
+              %td
+    %div.col-4
                   
   =form_tag "/system_tickets/add_member_st", multipart: true, method: 'POST' do
     .form-group
@@ -89,6 +120,7 @@
 
 :javascript
   var arr=[]
+  onload=taskSelect()
   
   function addMember() {
     var x=document.getElementById("member-sel").value
@@ -185,3 +217,50 @@
       return arr;
     }
   }
+
+  function taskSelect()
+    {
+        var arr_id=[]
+        var sel=document.getElementsByName("task");
+        console.log("lld")
+
+        for(i=0;i<=sel.length-1;i++)
+        {
+            var id=sel[i].id
+            var temp=id.split("/")
+            arr_id.push([temp[1],id])
+            
+            for(j=0;j<=2;j++)
+            {
+                var opt=document.createElement("option");
+                switch(j)
+                {
+                    case 0:
+                    {
+                        opt.text="Viewer"
+                        opt.value="Viewer"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    } break;
+                    case 1:
+                    {
+                        opt.text="Developer"
+                        opt.value="Developer"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    } break;
+                    case 2:
+                    {
+                        opt.text="Approver"
+                        opt.value="Approver"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    }
+                }
+                document.getElementById(id).add(opt)
+            }
+        }
+        console.log("anthos")
+        for(i=0;i<=arr_id.length-1;i++)
+        {
+            document.getElementById("sel/"+arr_id[i][0]).name="o-"+i
+            document.getElementById(arr_id[i][1]).name="t-"+i
+        }
+    }

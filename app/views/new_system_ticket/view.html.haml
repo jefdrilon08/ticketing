@@ -22,7 +22,7 @@
           %label
             Request Type
           .form-group
-            =select_tag :request_type,options_for_select(["Report Request","Module Enhancement","New Module"], params[:request_type]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
+            =select_tag :request_type,options_for_select(SystemTicket.find(params[:id]).data["options_for_select"], params[:request_type]),class:'form-control select-select2',required:true,prompt:"-- SELECT --"
       %tr
         %td
           %label

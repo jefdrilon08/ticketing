@@ -13,61 +13,35 @@
                 -if !@mem_list.empty?
                     %h4
                         Current Members
-                    %div.row
-                        %div.col-9
-                            =form_tag "edit_member",method: 'POST' do 
-                                %table.table{:style=>"border-color:white;font-size:110%"} 
-                                    %tr
-                                        %th{:style=>"width:10%"}
-                                        %th
-                                            %p
-                                                Member
-                                        %th
+                    %table.table{:style=>"border-color:white;font-size:110%"} 
+                        %tr
+                            %th
+                                %p
+                                    Member
+                            %th
+                                %p
+                                    Task
+                            %td
+                                -temp_i=0
+                        -@mem_list.each do |x|
+                            %tr    
+                                %td
+                                    #{x[0]}
+                                %td
+                                    #{x[1]}
+                                %td   
+                                    -if @mem_list.length!=1                            
+                                        =form_tag "delete_member",method: 'POST' do
                                             .form-group
-                                                Task
-                                        %td
-                                    .form-group
-                                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
-                                    -@mem_list.each do |x|
-                                        %tr    
-                                            %td
-                                            %td
-                                                %p
-                                                    #{x[0]}
-                                                .form-group
-                                                    =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:x[2],id:"sel/#{x[2]}"
-                                            %td
-                                                .form-group
-                                                    =select_tag :task,options_for_select([], params[:task]),class:'form-control select-select2',style:"width:50%;margin-top:-6px",id:"#{x[1]}/#{x[2]}"
-                                    %tr
-                                        %td    
-                                        %td
+                                                =text_field_tag :count,params[:count],class:'form-control',style:'display:none',value:@mem_list.count,id:"count"
                                             .form-group
-                                                =button_tag type: 'submit', class: 'btn btn-primary' do
-                                                    Save 
-                        -if @mem_list.length!=1                            
-                            %div.col-3
-                                =form_tag "delete_member",method: 'POST' do
-                                    %table.table{:style=>"border-color:white;font-size:110%"} 
-                                        %tr
-                                            %th
-                                                %p
-                                                    .form-group
-                                                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'   
-                                        %tr
-                                            %th
-                                                %p{:style=>"margin-top:-6px"} 
-                                        -temp_i=0                           
-                                        -@mem_list.each do |x|
-                                            %tr
-                                                %td
-                                                    %p{:style=>"margin-top:-9px"}
-                                                        .form-group
-                                                            =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:temp_i,id:"d-#{temp_i}"
-                                                        .form-group
-                                                            = button_tag type: 'submit',class:'btt-linkto2', value:temp_i do
-                                                                Remove
-                                            -temp_i+=1 
+                                                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'                              
+                                            .form-group
+                                                =text_field_tag :mem_id,params[:mem_id],class:'form-control',style:'display:none',value:x[2],id:"d1-#{temp_i}"
+                                            .form-group
+                                                = button_tag type: 'submit',class:'btt-linkto2', value:temp_i do
+                                                    Remove
+                                        -temp_i=temp_i+1 
                 -if !@not_a_mem.empty? && !@mem_list.empty?                            
                     %hr   
                 -if !@not_a_mem.empty?
@@ -118,11 +92,12 @@
 :css
     .btt-linkto2{background:none!important;border:none;padding:0!important;color:red;text-decoration:underline;cursor:pointer;}
     .btt-linkto2:hover{color:#8B0000;}
+    .form-group {display: inline;}
 
 :javascript
     
     var arr=[]
-    onload=taskSelect()
+    onload=deleteMember()
   
     function addMember() {
         var x=document.getElementById("member-sel").value
@@ -221,61 +196,13 @@
         }
     }
 
-    function taskSelect()
+    function deleteMember()
     {
         var arr_id=[]
-        var sel=document.getElementsByName("task");
-        console.log("lld")
-
-        for(i=0;i<=sel.length-1;i++)
+        for(i=0;i<=document.getElementById("count").value-1;i++)
         {
-            var id=sel[i].id
-            var temp=id.split("/")
-            arr_id.push([temp[1],id])
-            
-            for(j=0;j<=3;j++)
-            {
-                var opt=document.createElement("option");
-                switch(j)
-                {
-                    case 0:
-                    {
-                        opt.text="Viewer"
-                        opt.value="Viewer"
-                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
-                    } break;
-                    case 1:
-                    {
-                        opt.text="Member"
-                        opt.value="Member"
-                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
-                    } break;
-                    case 2:
-                    {
-                        opt.text="Developer"
-                        opt.value="Developer"
-                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
-                    } break;
-                    case 3:
-                    {
-                        opt.text="Approver"
-                        opt.value="Approver"
-                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
-                    }
-                }
-                document.getElementById(id).add(opt)
-            }
-        }
-        console.log("anthos")
-        for(i=0;i<=arr_id.length-1;i++)
-        {
-            document.getElementById("sel/"+arr_id[i][0]).name="o-"+i
-            document.getElementById("d-"+i).name="d-"+i
-            document.getElementById(arr_id[i][1]).name="t-"+i
+            document.getElementById("d1-"+i).name="d1-"+document.getElementById("d1-"+i).value
         }
     }
-
-    
-
     
     
