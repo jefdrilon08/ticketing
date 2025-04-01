@@ -90,8 +90,8 @@ module Api
             requested_user_id: current_user.id,
             assigned_user_id: concern_ticket.user_id
           )
+          Rails.logger.debug "BWISET: #{@concern_ticket_record.inspect}"
           Rails.logger.debug "status for updatezzz: #{params[:attachments].inspect}"
-
           if params[:attachments].present?
             attachments = Array(params[:attachments]) # para maging array
             Rails.logger.debug "Processed attachments array: #{attachments.map(&:original_filename)}"
@@ -102,6 +102,7 @@ module Api
           end
         
           if @concern_ticket_record.save
+            Rails.logger.debug "nagsave"
             redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
           else
             flash[:error] = "Failed to create ticket: #{@concern_ticket_record.errors.full_messages.join(', ')}"

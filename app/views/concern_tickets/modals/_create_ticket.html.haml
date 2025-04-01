@@ -18,7 +18,7 @@
                 .form-group.mt-3
                   %label.font-weight-bold Description
                   = text_area_tag :description, "", id: "input-description", 
-                    class: "form-control bg-light text-dark border-0 shadow-sm", rows: 3
+                    class: "form-control bg-light text-dark border-0 shadow-sm", required: true,  rows: 3
 
             .row
               .col-md-6
@@ -36,7 +36,7 @@
                   .d-flex.align-items-center
                     = select_tag :concern_type_id, 
                       options_from_collection_for_select(@concern_types&.sort_by(&:name) || [], :id, :name), 
-                      class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+                      class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", required: true, 
                       id: "input-concern-type", prompt: "-- SELECT --"
 
             .row

@@ -22,13 +22,31 @@ class ConcernTicketsController < ApplicationController
         text: "Create Ticket"
       }
     ]
-
+  
     @concern_ticket = ConcernTicket.includes(concern_ticket_details: [:branch, :requested_user, :assigned_user]).find(params[:id])
     @branches = Branch.select(:id, :name)
-    @details_records = @concern_ticket.concern_ticket_details.order(status: :desc, created_at: :asc).page(params[:page]).per(15)
     @concern_types = ConcernType.where(concern_id: @concern_ticket.id)
     @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
+  
+    #para sa filter
+    @details_records = @concern_ticket.concern_ticket_details
+  
+    if params[:branch_id].present?
+      @details_records = @details_records.where(branch_id: params[:branch_id])
+    end
+  
+    if params[:start_date].present?
+      start_date = Date.parse(params[:start_date]) rescue nil
+      @details_records = @details_records.where("DATE(created_at) = ?", start_date) if start_date
+    end
+  
+    if params[:ticket_status].present?
+      @details_records = @details_records.where(status: params[:ticket_status])
+    end
+  
+    @details_records = @details_records.order(status: :desc, created_at: :asc).page(params[:page]).per(15)
   end
+  
 
   def new_concern
     @computer_systems = ComputerSystem.select(:id, :name)
@@ -105,11 +123,8 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
-  
-    # Fetch ConcernTicketUsers associated with the current concern_ticket
+
     @ticket_users = ConcernTicketUser.where(concern_ticket_id: @concern_ticket.id).includes(:user)
-  
-    # Log the ticket users to check if it's working correctly
     Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
   end
   
