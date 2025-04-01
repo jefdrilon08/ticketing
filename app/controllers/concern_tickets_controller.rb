@@ -81,6 +81,24 @@ class ConcernTicketsController < ApplicationController
         render :edit_concern
       end
     end
+  end  
+
+  def join
+    concern_ticket_id = params[:concern_ticket_id]
+    
+    if concern_ticket_id.present?
+      ConcernTicketUser.create!(
+        user_id: current_user.id,
+        concern_ticket_id: concern_ticket_id,
+        status: "active",
+        task: nil
+      )
+      flash[:success] = "You have successfully joined the concern!"
+    else
+      flash[:error] = "Failed to join the concern."
+    end
+  
+    redirect_to concern_tickets_path
   end
   
   

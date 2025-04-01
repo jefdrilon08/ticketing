@@ -1,0 +1,13 @@
+.modal.fade#joinModal{ tabindex: "-1", "aria-labelledby" => "joinModalLabel", "aria-hidden" => "true" }
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h5.modal-title#joinModalLabel Confirmation
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      .modal-body
+        = form_tag join_concern_ticket_path, method: :post do
+          = hidden_field_tag :concern_ticket_id, nil, id: "concern_ticket_id"
+          %p Are you sure you want to join this concern?
+      .modal-footer
+        %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Cancel
+        %button.btn.btn-success{ type: "submit" } Confirm
