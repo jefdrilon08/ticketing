@@ -21,22 +21,22 @@ class User < ApplicationRecord
   ]
 
   ROLES = [
-    "OAS",
-    "BK",
-    "SBK",
-    "CM",
-    "SO",
-    "FM",
-    "AM",
     "MIS",
-    "ACC",
-    "AO",
-    "REMOTE-OAS",
-    "REMOTE-BK",
-    "REMOTE-MIS",
-    "REMOTE-FM",
-    "OM",
     "OJT"
+    # "OAS",
+    # "BK",
+    # "SBK",
+    # "CM",
+    # "SO",
+    # "FM",
+    # "AM",
+    # "ACC",
+    # "AO",
+    # "REMOTE-OAS",
+    # "REMOTE-BK",
+    # "REMOTE-MIS",
+    # "REMOTE-FM",
+    # "OM",
   ]
 
   FOR_MANAGING_BRANCH_ROLES = [

@@ -1,4 +1,4 @@
-!!!
+!!!  
 %html
   %head
     %title
@@ -8,6 +8,7 @@
     = csrf_meta_tags
     = csp_meta_tag
     %meta{ name: "viewport", content: "width=device-width, initial-scale=1, shrink-to-fit=no" }
+    
     - if Settings.activate_microloans?
       %meta{ name: "branch-ids", content: "#{{ branch_ids: @branches.pluck(:id) }.to_json}" }
     %meta{ name: "parameters", content: "#{{ route: "#{params[:controller]}/#{params[:action]}", payload: (@payload || {}) }.to_json}" }
@@ -19,9 +20,34 @@
 
   %body
     = render partial: "shared/sidebar"
+    
     %section.main-section
       = render partial: "shared/top_navigation"
+
       .container-fluid.main-wrapper
+        / Flash Messages Section
+        - if flash.any?
+          #flash-messages
+            - flash.each do |type, message|
+              - alert_class = type.to_s == "success" ? "alert-success" : "alert-danger"
+              .alert{ class: "alert #{alert_class} alert-dismissible fade show", role: "alert" }
+                = message
+                %button.btn-close{ type: "button", "data-bs-dismiss" => "alert", "aria-label" => "Close" }
+
         = yield
+
     = render partial: "templates/error_list"
     = render partial: "templates/loader"
+
+    / JavaScript to auto-hide flash messages
+    :javascript
+      document.addEventListener("DOMContentLoaded", function () {
+        let flashMessages = document.getElementById("flash-messages");
+        if (flashMessages) {
+          setTimeout(() => {
+            flashMessages.style.transition = "opacity 0.5s";
+            flashMessages.style.opacity = "0";
+            setTimeout(() => flashMessages.remove(), 500);
+          }, 1000);  // Change timeout to 1000ms (1 second)
+        }
+      });

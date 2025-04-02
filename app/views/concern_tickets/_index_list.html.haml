@@ -28,12 +28,15 @@
           %td.text-center
             = link_to concern_ticket_path(a), class: "btn btn-primary btn-md", title: "View Ticket", data: { bs_toggle: "tooltip" } do
               %i.bi.bi-eye
-            = link_to edit_concern_ticket_path(a), class: "btn btn-warning btn-md ms-2", title: "Edit Concern Ticket", data: { bs_toggle: "tooltip" } do
-              %i.bi.bi-pencil
-            = form_tag join_concern_ticket_path, method: :post, class: "d-inline" do
-              = hidden_field_tag :concern_ticket_id, a.id
-              %button.btn.btn-success.btn-md.ms-2{ type: "submit", title: "Join", data: { bs_toggle: "tooltip" } }
-                %i.bi.bi-person-plus
+            
+            - if current_user.is_mis?
+              = link_to edit_concern_ticket_path(a), class: "btn btn-warning btn-md ms-2", title: "Edit Concern Ticket", data: { bs_toggle: "tooltip" } do
+                %i.bi.bi-pencil
+
+              = form_tag join_concern_ticket_path, method: :post, class: "d-inline" do
+                = hidden_field_tag :concern_ticket_id, a.id
+                %button.btn.btn-success.btn-md.ms-2{ type: "submit", title: "Join", data: { bs_toggle: "tooltip" } }
+                  %i.bi.bi-person-plus
     - else
       %tr
         %td{ colspan: 6, class: "text-center" } No records found

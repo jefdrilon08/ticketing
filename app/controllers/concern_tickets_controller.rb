@@ -5,13 +5,16 @@ class ConcernTicketsController < ApplicationController
     @subheader_side_actions = [
       {
         id: "btn-new",
-        link: new_concern_ticket_path,
-        class: "fa fa-plus",
+        link: current_user.is_mis? ? new_concern_ticket_path : "#",
+        class: "fa fa-plus #{'disabled' unless current_user.is_mis?}",
         text: "New"
       }
     ]
     @records = ConcernTicket.includes(:user, :computer_system).order(:name).page(params[:page]).per(15)
   end
+  
+  
+  
 
   def show
     @subheader_side_actions = [
@@ -46,7 +49,6 @@ class ConcernTicketsController < ApplicationController
   
     @details_records = @details_records.order(status: :desc, created_at: :asc).page(params[:page]).per(15)
   end
-  
 
   def new_concern
     @computer_systems = ComputerSystem.select(:id, :name)
@@ -123,7 +125,7 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
-
+  
     @ticket_users = ConcernTicketUser.where(concern_ticket_id: @concern_ticket.id).includes(:user)
     Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
   end

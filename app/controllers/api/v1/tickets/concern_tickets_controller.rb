@@ -90,7 +90,6 @@ module Api
             requested_user_id: current_user.id,
             assigned_user_id: concern_ticket.user_id
           )
-          Rails.logger.debug "BWISET: #{@concern_ticket_record.inspect}"
           Rails.logger.debug "status for updatezzz: #{params[:attachments].inspect}"
           if params[:attachments].present?
             attachments = Array(params[:attachments]) # para maging array
@@ -102,7 +101,6 @@ module Api
           end
         
           if @concern_ticket_record.save
-            Rails.logger.debug "nagsave"
             redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
           else
             flash[:error] = "Failed to create ticket: #{@concern_ticket_record.errors.full_messages.join(', ')}"
@@ -163,9 +161,7 @@ module Api
           if @ticket_details
             @ticket_details.assigned_user_id = params[:assigned_person_id]
         
-            # Save the updated ticket detail
             if @ticket_details.save
-              # Redirect to the ticket details page after saving
               redirect_to concern_ticket_path(@ticket_details.concern_ticket_id), notice: "Assigned person updated successfully!"
             else
               flash[:error] = "Failed to update assigned person: #{@ticket_details.errors.full_messages.join(", ")}"
@@ -176,7 +172,6 @@ module Api
             redirect_back(fallback_location: request.referer || root_path)
           end
         end
-        
 
       end
     end
