@@ -1,6 +1,7 @@
 class Branch < ApplicationRecord
   validates :name, presence: true
   validates :short_name, presence: true
+  validates :description, presence: true, length: { maximum: 255 }
 
   belongs_to :cluster
   has_many :centers

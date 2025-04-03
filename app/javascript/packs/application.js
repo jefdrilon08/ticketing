@@ -1,6 +1,7 @@
 require("@rails/ujs").start();
 
 import $ from 'jquery';
+import './items';
 
 import React from 'react';
 import { createRoot } from "react-dom/client";

@@ -1,0 +1,35 @@
+%h2.text-center.text-primary.mt-4 Item Distribution Details
+%hr(style="height:2px; background-color:#007bff;")
+
+.container.mt-4
+  .row
+    .col-md-8.offset-md-2
+      .card.shadow-sm
+        .card-header.bg-primary.text-white
+          %h4.mb-0.text-center Distribution Information
+        .card-body
+          %table.table.table-bordered.table-striped
+            %tbody
+              %tr
+                %th ID
+                %td.text-muted= @item_distribution.id # Display the database primary key (integer ID)
+              %tr
+                %th Item
+                %td.text-muted= @item_distribution.item_table # Display the stored item name
+              %tr
+                %th Branch
+                %td.text-muted= @item_distribution.branch_id # Display the stored branch name
+              %tr
+                %th Employee
+                %td.text-muted= @item_distribution.employee_id # Display the stored employee name
+              %tr
+                %th Quantity
+                %td.text-muted= @item_distribution.quantity
+              %tr
+                %th Distributed By
+                %td.text-muted= @item_distribution.distributed_by
+              %tr
+                %th Received By
+                %td.text-muted= @item_distribution.receive_by
+      .card-footer.text-center.mt-3
+        = link_to 'Back to Distributions', item_distributions_path, class: 'btn btn-secondary btn-sm'

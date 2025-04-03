@@ -15,33 +15,34 @@ module Administration
           GROUP BY branches.id
           ORDER BY branches.name ASC
         "
+        @branches = Branch.find_by_sql(sql)
       else
-        ids = ReadOnlyUserBranch.where(active: true, user_id: current_user.id).pluck(:branch_id).map{ |o| "'#{o}'" }.join(',')
-        sql = "
-          SELECT 
-            branches.*, 
-            count(centers.*) AS center_count
-          FROM branches 
-          INNER JOIN centers
-          ON centers.branch_id = branches.id
-          WHERE branches.id IN (#{ids})
-          GROUP BY branches.id
-          ORDER BY branches.name ASC
-        "
+        ids = ReadOnlyUserBranch.where(active: true, user_id: current_user.id).pluck(:branch_id)
+
+        if ids.empty?
+          @branches = [] # Return an empty array if no branches are found
+        else
+          sql = "
+            SELECT 
+              branches.*, 
+              count(centers.*) AS center_count
+            FROM branches 
+            INNER JOIN centers
+            ON centers.branch_id = branches.id
+            WHERE branches.id IN (#{ids.map { |id| "'#{id}'" }.join(',')})
+            GROUP BY branches.id
+            ORDER BY branches.name ASC
+          "
+          @branches = Branch.find_by_sql(sql)
+        end
       end
 
-      @branches  = Branch.find_by_sql(sql)
-
       @subheader_items = [
-        {
-          text: "Administration"
-        },
-        {
-          text: "Branches"
-        }
+        { text: "Administration" },
+        { text: "Branches" }
       ]
-      
-      if helpers.is_mis_user? 
+
+      if helpers.is_mis_user?
         @subheader_side_actions = [
           {
             id: "btn-new",
@@ -57,17 +58,9 @@ module Administration
       @branch = Branch.new
 
       @subheader_items = [
-        {
-          text: "Administration"
-        },
-        {
-          is_link: true,
-          path: administration_branches_path,
-          text: "Branches"
-        },
-        {
-          text: "New"
-        }
+        { text: "Administration" },
+        { is_link: true, path: administration_branches_path, text: "Branches" },
+        { text: "New" }
       ]
 
       @subheader_side_actions = []
@@ -76,26 +69,22 @@ module Administration
     def create
       @branch = Branch.new(branch_params)
 
-      if @branch.save
-        redirect_to administration_branch_path(@branch)
-      else
-        @subheader_items = [
-          {
-            text: "Administration"
-          },
-          {
-            is_link: true,
-            path: administration_branches_path,
-            text: "Branches"
-          },
-          {
-            text: "New"
-          }
-        ]
+      respond_to do |format|
+        if @branch.save
+          format.html { redirect_to administration_branches_path, notice: "Branch was successfully created." }
+          format.js   # Render create.js.erb for AJAX requests
+        else
+          @subheader_items = [
+            { text: "Administration" },
+            { is_link: true, path: administration_branches_path, text: "Branches" },
+            { text: "New" }
+          ]
 
-        @subheader_side_actions = []
+          @subheader_side_actions = []
 
-        render :new
+          format.html { render :new, status: :unprocessable_entity }
+          format.js   # Render create.js.erb for AJAX requests with errors
+        end
       end
     end
 
@@ -103,17 +92,9 @@ module Administration
       @branch = Branch.find(params[:id])
 
       @subheader_items = [
-        {
-          text: "Administration"
-        },
-        {
-          is_link: true,
-          path: administration_branches_path,
-          text: "Branches"
-        },
-        {
-          text: "Edit #{@branch.name}"
-        }
+        { text: "Administration" },
+        { is_link: true, path: administration_branches_path, text: "Branches" },
+        { text: "Edit #{@branch.name}" }
       ]
 
       @subheader_side_actions = []
@@ -123,35 +104,24 @@ module Administration
       @branch = Branch.find(params[:id])
 
       if @branch.update(branch_params)
-        redirect_to administration_branch_path(@branch)
+        redirect_to administration_branches_path, notice: "Branch was successfully updated."
       else
         @subheader_items = [
-          {
-            text: "Administration"
-          },
-          {
-            is_link: true,
-            path: administration_branches_path,
-            text: "Branches"
-          },
-          {
-            text: "Edit #{@branch.name}"
-          }
+          { text: "Administration" },
+          { is_link: true, path: administration_branches_path, text: "Branches" },
+          { text: "Edit #{@branch.name}" }
         ]
 
         @subheader_side_actions = []
 
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 
     def show
       @branch = ReadOnlyBranch.find(params[:id])
 
-      cmd = ::Branches::BuildBranchHash.new(
-        branch: @branch
-      )
-
+      cmd = ::Branches::BuildBranchHash.new(branch: @branch)
       cmd.execute!
 
       @payload = {
@@ -171,12 +141,8 @@ module Administration
 
     private
 
-    def load_user!
-      @branch = Branch.find(params[:id])
-    end
-
     def branch_params
-      params.require(:branch).permit!
+      params.require(:branch).permit(:name, :description, :active)
     end
   end
 end

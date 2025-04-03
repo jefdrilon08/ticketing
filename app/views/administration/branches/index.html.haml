@@ -1,9 +1,63 @@
 .col
   .card
     .card-body
-      - if @branches.any?
+      %button.btn.btn-primary.mb-3#new-branch-button{ data: { bs_toggle: "modal", bs_target: "#newBranchModal" } }
+        %i.fa.fa-plus
+        New Branch
 
-        = render partial: "index_list"
+      - if @branches.any?
+        %table#branches-table.display.table.table-bordered.table-hover.table-sm
+          %thead
+            %tr
+              %th Name
+              %th Description
+              %th.text-center Status
+              %th.text-center{ style: 'width:10%' } Actions
+          %tbody
+            - @branches.each do |branch|
+              %tr
+                %td{ style: "text-transform: uppercase;" }
+                  = branch.name
+                %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
+                  = branch.description.presence || "N/A"
+                %td.text-center
+                  - if branch.active?
+                    %span.badge.bg-success Active
+                  - else
+                    %span.badge.bg-secondary Inactive
+                %td.text-center
+                  %button.btn.btn-info.btn-sm.update-branch-button{
+                    data: {
+                      id: branch.id,
+                      name: branch.name,
+                      description: branch.description,
+                      status: branch.active?
+                    }
+                  }
+                    Update
+                  %button.btn.btn-sm.btn-danger.delete-branch-button{
+                    data: { id: branch.id }
+                  }
+                    %i.fa.fa-times
+                    Delete
       - else
-        %p
-          No branches found
+        %p.text-muted
+          No branches found.
+
+  // Modal for creating a new branch
+  .modal.fade#newBranchModal{ tabindex: "-1", aria: { labelledby: "newBranchModalLabel", hidden: "true" } }
+    .modal-dialog
+      .modal-content
+        .modal-header
+          %h5.modal-title#newBranchModalLabel New Branch
+          %button.btn-close{ type: "button", data: { bs_dismiss: "modal" }, aria: { label: "Close" } }
+        .modal-body
+          = simple_form_for [:administration, Branch.new], remote: true do |f|
+            .mb-3
+              = f.input :name, label: "Branch Name", input_html: { class: "form-control" }
+            .mb-3
+              = f.input :description, label: "Description", input_html: { class: "form-control" }
+            .mb-3
+              = f.input :active, as: :boolean, label: "Active"
+            .text-end
+              = f.submit "Create Branch", class: "btn btn-primary"

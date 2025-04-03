@@ -66,7 +66,10 @@ Rails.application.routes.draw do
   get "/import_legal_dependents", to: "pages#import_legal_dependents"
   get "/import_insurance_accounts", to: "pages#import_insurance_accounts"
   get "/import_insurance_account_transactions", to: "pages#import_insurance_account_transactions"
-
+  
+  #Item Distribution
+  resources :item_distributions, only: [:index, :new, :show, :create, :edit, :update, :destroy]
+  
   # upload-deposit page
   get "/upload_deposit", to: "pages#upload_deposit"
   get "/upload_insurance_withdrawal", to: "pages#upload_insurance_withdrawal"

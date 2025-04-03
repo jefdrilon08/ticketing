@@ -1,0 +1,3 @@
+class ItemDistribution < ApplicationRecord
+ 
+end

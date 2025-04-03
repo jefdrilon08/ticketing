@@ -1,0 +1,31 @@
+%h2.text-center.text-primary.mt-4 Item Distributions
+%hr(style="height:2px; background-color:#007bff;")
+
+.container-fluid.mt-4
+  .row
+    .col
+      .card.shadow-sm
+        .card-header.bg-primary.text-white
+          %h4.mb-0.text-center Distribution List
+        .card-body
+          .row.mb-3
+            .col.text-start
+              = link_to 'New Distribution', new_item_distribution_path, class: 'btn btn-primary btn-sm'
+
+          %table.table.table-bordered.table-hover.table-striped
+            %thead.table-dark
+              %tr
+                %th.text-center Item
+                %th.text-center Branch
+                %th.text-center Employee
+                %th.text-center Actions
+            %tbody
+              - @item_distributions.each do |distribution|
+                %tr
+                  %td.text-center= distribution.item_table # Display the stored item name
+                  %td.text-center= distribution.branch_id  # Display the stored branch name
+                  %td.text-center= distribution.employee_id # Display the stored employee name
+                  %td.text-center
+                    = link_to 'Details', item_distribution_path(distribution), class: 'btn btn-primary btn-sm mx-1' # Details button
+                    = link_to 'Edit', edit_item_distribution_path(distribution), class: 'btn btn-primary btn-sm mx-1' # Edit button
+                    = link_to 'Delete', item_distribution_path(distribution), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-primary btn-sm mx-1' # Delete button
