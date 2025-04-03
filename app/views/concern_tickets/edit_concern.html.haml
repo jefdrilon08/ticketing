@@ -77,6 +77,7 @@
           %thead
             %tr
               %th.text-center Member Name
+              %th.text-center Roles
               %th.text-center Status
               %th.text-center Action
           %tbody
@@ -84,46 +85,54 @@
               %tr
                 %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
                 %td.text-center
-                  - case ct_user.status.downcase
-                  - when "active"
-                    .badge.bg-success Active
-                  - when "inactive"
-                    .badge.bg-danger Inactive
-                  - else
-                    .badge.bg-secondary Pending
+                  = select_tag "roles_#{ct_user.id}", 
+                    options_for_select(["Developer", "Requester", "Unassigned"], ct_user.task || "Unassigned"), 
+                    class: "form-control form-select-sm", 
+                    data: { id: ct_user.id, field: "roles" }
                 %td.text-center
-                  - button_class = ct_user.status.downcase == "active" ? "btn-danger" : "btn-success"
-                  - button_text = ct_user.status.downcase == "active" ? "Deactivate" : "Activate"
-                  = button_tag button_text, class: "btn btn-sm #{button_class}", data: { id: ct_user.id }, onclick: "toggleMemberStatus(this)"
-                  
-
+                  = select_tag "status_#{ct_user.id}", 
+                    options_for_select(["Active", "Inactive", "Pending"], ct_user.status.titleize || "Pending"), 
+                    class: "form-control form-select-sm", 
+                    data: { id: ct_user.id, field: "status" }
+                %td.text-center
+                  = button_tag "Save", 
+                    class: "btn btn-sm btn-success save-member-btn", 
+                    data: { id: ct_user.id }
 :javascript
-
   document.addEventListener("DOMContentLoaded", function () {
-    console.log("Edit Concern JavaScript Loaded!");
-    function toggleMemberStatus(button) {
-      let memberId = button.getAttribute("data-id");
+    document.querySelectorAll(".save-member-btn").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const memberId = button.dataset.id;
+        console.log(`Saving member with ID: ${memberId}`);
+        const rolesField = document.querySelector(`select[data-id="${memberId}"][data-field="roles"]`);
+        const statusField = document.querySelector(`select[data-id="${memberId}"][data-field="status"]`);
 
-      fetch(`/api/v1/tickets/concern_ticket_users/${memberId}/update_status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
-        },
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          location.reload();
-        } else {
-          alert("Failed to update status: " + data.error);
-        }
-      })
-      .catch(error => console.error("Error updating status:", error));
-    }
+        const updatedData = {
+          roles: rolesField.value,
+          status: statusField.value,
+        };
+        fetch(`/api/v1/tickets/concern_ticket_users/${memberId}/update_status`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+          },
+          body: JSON.stringify(updatedData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert("Member updated successfully!");
+              location.reload();
+            } else {
+              alert("Failed to update member: " + data.error);
+            }
+          })
+          .catch((error) => console.error("Error updating member:", error));
+      });
+    });
 
-    window.toggleMemberStatus = toggleMemberStatus;
-
+    //para makapag add sa Concern For and Concern Type
     function addToList(name, status, listId, hiddenFieldId) {
       const list = document.getElementById(listId);
       const hiddenField = document.getElementById(hiddenFieldId);
@@ -144,7 +153,6 @@
         statusBadge.className = "badge ms-2";
         statusBadge.textContent = status;
 
-        // Assign status colors
         if (status.toLowerCase() === "active") {
           statusBadge.classList.add("bg-success");
         } else if (status.toLowerCase() === "inactive") {
@@ -172,12 +180,13 @@
       }
     }
 
+    //update ng values
     function updateHiddenField(hiddenField, list) {
-      const items = [...list.children].map(li => li.firstChild.textContent.trim());
+      const items = [...list.children].map((li) => li.firstChild.textContent.trim());
       hiddenField.value = items.join(",");
     }
 
-    // Load existing Concern For and Concern Type records with statuses
+    //pag load
     function loadExistingRecords() {
       const concernForList = document.getElementById("concern-records-list");
       const concernTypeList = document.getElementById("concern-type-records-list");
@@ -189,30 +198,28 @@
         return;
       }
 
-      // Fetch existing records (name and status) from Rails
+      //pag fetch
       const existingConcernFors = #{raw @concern_ticket.concern_fors.map { |cf| { name: cf.name, status: cf.status } }.to_json};
       const existingConcernTypes = #{raw @concern_ticket.concern_types.map { |ct| { name: ct.name, status: ct.status } }.to_json};
 
-      existingConcernFors.forEach(cf => addToList(cf.name, cf.status, "concern-records-list", "selected-concern-fors"));
-      existingConcernTypes.forEach(ct => addToList(ct.name, ct.status, "concern-type-records-list", "selected-concern-types"));
+      existingConcernFors.forEach((cf) => addToList(cf.name, cf.status, "concern-records-list", "selected-concern-fors"));
+      existingConcernTypes.forEach((ct) => addToList(ct.name, ct.status, "concern-type-records-list", "selected-concern-types"));
     }
 
+    // Add Concern For
     document.getElementById("add-concern-for").addEventListener("click", function () {
       const inputField = document.getElementById("concern-for-input");
-      addToList(inputField.value.trim(), "Pending", "concern-records-list", "selected-concern-fors"); 
+      addToList(inputField.value.trim(), "Pending", "concern-records-list", "selected-concern-fors");
       inputField.value = "";
     });
 
+    // Add Concern Type
     document.getElementById("add-concern-type").addEventListener("click", function () {
       const inputField = document.getElementById("concern-type-input");
-      addToList(inputField.value.trim(), "Pending", "concern-type-records-list", "selected-concern-types"); 
+      addToList(inputField.value.trim(), "Pending", "concern-type-records-list", "selected-concern-types");
       inputField.value = "";
     });
 
-    // Load existing data on page load
+    //load ng existing records
     loadExistingRecords();
-
-    console.log("Event listeners added for Edit Concern");
   });
-
-

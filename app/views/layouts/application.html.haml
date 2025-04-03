@@ -23,9 +23,7 @@
     
     %section.main-section
       = render partial: "shared/top_navigation"
-
       .container-fluid.main-wrapper
-        / Flash Messages Section
         - if flash.any?
           #flash-messages
             - flash.each do |type, message|
@@ -39,7 +37,6 @@
     = render partial: "templates/error_list"
     = render partial: "templates/loader"
 
-    / JavaScript to auto-hide flash messages
     :javascript
       document.addEventListener("DOMContentLoaded", function () {
         let flashMessages = document.getElementById("flash-messages");
@@ -48,6 +45,6 @@
             flashMessages.style.transition = "opacity 0.5s";
             flashMessages.style.opacity = "0";
             setTimeout(() => flashMessages.remove(), 500);
-          }, 1000);  // Change timeout to 1000ms (1 second)
+          }, 1000); // Adjust the delay as needed
         }
       });
