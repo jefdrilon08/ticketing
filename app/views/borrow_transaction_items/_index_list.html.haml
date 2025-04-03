@@ -1,0 +1,217 @@
+:css
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+
+  .status-pending {
+    background-color: #ffeb3b;
+    color: black;
+  }
+
+  .status-approved {
+    background-color: #4caf50;
+    color: #ffffff;
+  }
+
+  .status-rejected {
+    background-color: #f44336;
+    color: #ffffff;
+  }
+
+  .status-returned {
+    background-color: #2196f3;
+    color: #ffffff;
+  }
+
+  .status-borrowed {
+    background-color: #ffeb3b;
+    color: black;
+  }
+
+  .status-returned-item {
+    background-color: #4caf50;
+    color: #ffffff;
+  }
+
+  .status-overdue {
+    background-color: #f44336;
+    color: #ffffff;
+  }
+
+  .btn-return-disabled {
+    background-color: #4caf50 !important;
+    border-color: #4caf50 !important;
+    color: #ffffff !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+  }
+
+%div.card
+  %div.card-body
+    %form{ action: borrow_transaction_items_path(@borrow_transaction), method: "post", id: "borrowTransactionForm" }
+      %input{ type: "hidden", name: "authenticity_token", value: form_authenticity_token }
+
+      %div.form-group
+        %label{ for: "branch" } Branch Name
+        %div.form-control-static{ style: "background-color: #f1f1f1; padding: 8px;" }
+          = @borrow_transaction.branch.name
+
+      %div.form-group
+        %label{ for: "request_date" } Request Date
+        %div.form-control-static{ style: "background-color: #f1f1f1; padding: 8px;" }
+          = @borrow_transaction.request_date.strftime("%Y-%m-%d")
+
+      %div.form-group
+        %label{ for: "status" } Status
+        %div.form-control-static{ style: "background-color: #f1f1f1; padding: 8px;" }
+          - case @borrow_transaction.status.to_s.downcase
+          - when "pending"
+            %span.badge.status-pending Pending
+          - when "approved"
+            %span.badge.status-approved Approved
+          - when "rejected"
+            %span.badge.status-rejected Rejected
+          - when "completed"
+            %span.badge.status-returned Returned
+          - else
+            %span.badge.bg-secondary= @borrow_transaction.status.presence || "Pending Return"
+
+      %div.form-group
+        %label{ for: "item" } Select Item
+        %select.form-control{ id: "item", name: "borrow_transaction_item[item_id]" }
+          %option{ value: "" } -- SELECT --
+          - @items.each do |item|
+            %option{ value: item.id }= item.name
+
+      %div.form-group
+        %label{ for: "quantity" } Quantity
+        %input.form-control{ type: "number", id: "quantity", name: "borrow_transaction_item[quantity]", min: 1, required: true }
+
+      %div.form-group
+        %button.btn.btn-primary{ type: "submit" } Add Item
+
+    %div.table-responsive
+      %table.table.table-bordered.table-hover.table-sm
+        %thead
+          %tr
+            %th Item Name
+            %th.text-center Quantity
+            %th.text-center Request Date
+            %th.text-center Returned Date
+            %th.text-center Status
+            %th.text-center Action
+        %tbody
+          - @borrow_transaction_items.each do |transaction_item|
+            %tr
+              %td= transaction_item.item.name
+              %td.text-end= transaction_item.quantity
+              %td.text-center= @borrow_transaction.request_date.strftime("%Y-%m-%d")
+              %td.text-center.return-date= transaction_item.return_date&.strftime("%Y-%m-%d") || "Pending Return"
+              %td.text-center
+                - case transaction_item.status.to_s.downcase
+                - when "borrowed"
+                  %span.badge.status-borrowed.status-badge Borrowed
+                - when "returned"
+                  %span.badge.status-returned-item.status-badge Returned
+                - when "overdue"
+                  %span.badge.status-overdue.status-badge Overdue
+                - else
+                  %span.badge.bg-secondary.status-badge= transaction_item.status.presence || "N/A"
+              %td.text-center
+                %button.btn.btn-success.btn-sm.return-button{ data: { id: transaction_item.id, status: transaction_item.status }, disabled: (transaction_item.status == "returned") }
+                  = transaction_item.status == "returned" ? "Returned" : "Return"
+
+    - if @subheader_side_actions.present? && @subheader_side_actions.none? { |action| action[:id] == "btn-approve" }
+      %button.btn.btn-primary{ type: "button", id: "btn-approve", data: { transaction_id: @borrow_transaction.id } }
+        %i.fas.fa-check
+        Approve
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('borrowTransactionForm');
+    const itemSelect = document.getElementById('item');
+    const approveButton = document.getElementById('btn-approve');
+
+    form.addEventListener('submit', function(e) {
+      if (itemSelect.value === "") {
+        e.preventDefault();
+        alert("Please select an item. It is required!");
+      } else {
+        alert("Item added successfully!");
+      }
+    });
+
+    document.body.addEventListener('click', function(e) {
+      if (e.target && e.target.matches('.return-button')) {
+        const button = e.target;
+        const transactionItemId = button.getAttribute('data-id');
+        const returnDate = new Date().toISOString().split('T')[0];
+
+        fetch(`/borrow_transaction_items/${transactionItemId}/update_status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({ status: 'returned', return_date: returnDate })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Item status successfully updated!');
+            const row = button.closest('tr');
+            const statusBadge = row.querySelector('.status-badge');
+            if (statusBadge) {
+              statusBadge.textContent = 'Returned';
+              statusBadge.className = 'badge status-returned-item status-badge';
+            }
+            const returnDateCell = row.querySelector('.return-date');
+            if (returnDateCell) {
+              returnDateCell.textContent = returnDate;
+            }
+            button.disabled = true;
+            button.innerText = 'Returned';
+            // Do not change the button style, keep the same button class
+            button.classList.remove('btn-success');
+            button.classList.add('btn-return-disabled');
+          } else {
+            alert('Failed to update status.');
+          }
+        })
+        .catch(error => {
+          alert('An error occurred while updating the status.');
+          console.error('Error:', error);
+        });
+      }
+    });
+
+    if (approveButton) {
+      approveButton.addEventListener('click', function() {
+        const transactionId = approveButton.getAttribute('data-transaction-id');
+        if (!transactionId) {
+          alert("Transaction ID is missing.");
+          return;
+        }
+        if (confirm("Are you sure you want to approve this transaction?")) {
+          fetch(`/borrow_transactions/${transactionId}/approve`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert(data.message || 'Transaction approved successfully!');
+              location.reload();
+            } else {
+              alert(data.message || 'Failed to approve transaction.');
+            }
+          })
+          .catch(error => {
+            alert('An error occurred while approving the transaction.');
+            console.error('Error:', error);
+          });
+        }
+      });
+    }
+  });

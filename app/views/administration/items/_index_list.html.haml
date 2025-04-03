@@ -13,7 +13,7 @@
           = a.name
         %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
           = a.description
-        %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
+        %td{ style: "text-transform: uppercase;" }
           = a.unit
         %td.text-center
           - case a.status.to_s.downcase
@@ -28,17 +28,25 @@
         %td.text-center
           %button.btn.btn-info.btn-sm.update-button{
             data: {
-              id: a.id,
-              name: a.name,
-              unit: a.unit,
-              description: a.description,
-              status: a.status,
-              items_category: a.items_category_id
-            }
+              "id"                => a.id.to_s,
+              "name"              => a.name.to_s,
+              "description"       => a.description.to_s,
+              "unit"              => a.unit.to_s,
+              "status"            => a.status.to_s,
+              "items-category"    => a.items_category_id.to_s,
+              "mr-number"         => a.mr_number.to_s,
+              "serial-number"     => a.serial_number.to_s,
+              "total-quantity"    => a.total_quantity.to_s,
+              "available-quantity"=> a.available_quantity.to_s
+            },
+            title: "Update Item"
           }
             Update
           %button.btn.btn-sm.btn-danger.delete-button{
-            data: { id: a.id }
+            data: { "id" => a.id.to_s },
+            title: "Delete Item",
+            type: "button",
+            onclick: "confirmDelete('#{a.id}')"
           }
             %i.fa.fa-times
             Delete

@@ -1,13 +1,11 @@
-
-- request_icon = "bi-chat-left-text"      
-- item_request_icon = "bi-box-seam"        
-
-%li{ class: "#{['item_request'].include?(params[:controller]) ? 'active' : ''}" }
+%li{ class: "#{['borrow_items', 'item_request'].include?(params[:controller]) ? 'active' : ''}" }
+  - request_icon = "bi-chat-left-text"
+  - item_request_icon = "bi-box-seam"
+  - finance_items_icon = "bi-wallet2"
   .icon-link
     = link_to "#", class: "" do
-      %i{class: "bi #{request_icon}"}
-      %span.link-name
-        Request
+      %i{ class: "bi #{request_icon}" }
+      %span.link-name Request
     %i.bi.bi-caret-down.arrow
   %ul.sub-menu
     %li
@@ -15,5 +13,9 @@
         Item Request
     %li
       = link_to "/item_request" do
-        %i{class: "bi #{item_request_icon}"}
+        %i{ class: "bi #{finance_items_icon}" }
+        Finance Items
+    %li
+      = link_to "/borrow_items" do
+        %i{ class: "bi #{item_request_icon}" }
         Items

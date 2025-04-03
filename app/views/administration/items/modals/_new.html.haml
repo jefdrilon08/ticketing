@@ -1,30 +1,53 @@
 #modal-new.modal.fade{ tabindex: "-1" }
-  .modal-dialog
+  .modal-dialog.modal-lg
     .modal-content
       .modal-header
-        %h3.modal-title New Item
+        %h3.modal-title Item Form
       .modal-body
         .modal-body-content
-          .bs-callout.bs-callout-info
+          .container-fluid
             .row
-              .col
+              .col-md-6
                 .form-group
-                  %label Name
+                  %label(for="input-name") Name
                   = text_field_tag(:name, "", id: "input-name", class: "form-control")
-                .form-group.mt-3
-                  %label Unit
+              .col-md-6
+                .form-group
+                  %label(for="input-unit") Unit
                   = text_field_tag(:unit, "", id: "input-unit", class: "form-control")
-                .form-group.mt-3
-                  %label Description
-                  = text_area_tag(:description, "", id: "input-description", class: "form-control", rows: 3)
-                .form-group.mt-3
-                  %label Category
+            .row.mt-3
+              .col-md-6
+                .form-group
+                  %label(for="input-description") Description
+                  = text_area_tag(:description, "", id: "input-description", class: "form-control", rows: 2)
+              .col-md-6
+                .form-group
+                  %label(for="input-items-category") Category
                   = select_tag("items_category_id", options_for_select([["--SELECT--", ""]] + ::ItemsCategory.all.pluck(:name, :id)), id: "input-items-category", class: "form-control")
-                -# The status dropdown is wrapped in its own form-group with a class to allow toggling
-                .form-group.mt-3.status-group
-                  %label Status
+            .row.mt-3
+              .col-md-6
+                .form-group
+                  %label(for="input-mr-number") MR Number
+                  = text_field_tag(:mr_number, "", id: "input-mr-number", class: "form-control")
+              .col-md-6
+                .form-group
+                  %label(for="input-serial-number") Serial Number
+                  = text_field_tag(:serial_number, "", id: "input-serial-number", class: "form-control")
+            .row.mt-3
+              .col-md-6
+                .form-group
+                  %label(for="input-total-quantity") Total Quantity
+                  = number_field_tag(:total_quantity, "", id: "input-total-quantity", class: "form-control")
+              .col-md-6
+                .form-group
+                  %label(for="input-available-quantity") Available Quantity
+                  = number_field_tag(:available_quantity, "", id: "input-available-quantity", class: "form-control")
+            .row.mt-3#status-row
+              .col-md-12
+                .form-group.status-group
+                  %label(for="input-status") Status
                   = select_tag("status", options_for_select([["--SELECT--", ""], ["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]]), id: "input-status", class: "form-control")
-                = hidden_field_tag(:id, "", id: "item-id")
+            = hidden_field_tag(:id, "", id: "item-id")
           .message
       .modal-footer
         .controls

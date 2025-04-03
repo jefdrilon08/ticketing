@@ -2,7 +2,6 @@ module Api
   module V1
     module Administration
       class ItemsController < ApplicationController
- 
         def create
           errors = ::Administration::Items::ValidateCreate.new(config: item_params).execute!
           if errors[:messages].any?
@@ -14,7 +13,6 @@ module Api
         rescue StandardError => e
           render json: { status: "error", messages: e.message }, status: 422
         end
-
 
         def update
           service = ::Administration::Items::Update.new(config: item_params)
@@ -35,7 +33,19 @@ module Api
         private
 
         def item_params
-          params.permit(:name, :description, :status, :unit, :id, :items_category_id, :authenticity_token)
+          params.permit(
+            :name,
+            :description,
+            :status,
+            :unit,
+            :id,
+            :items_category_id,
+            :mr_number,
+            :serial_number,
+            :total_quantity,
+            :available_quantity,
+            :authenticity_token
+          )
         end
       end
     end

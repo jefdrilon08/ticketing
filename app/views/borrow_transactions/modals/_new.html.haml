@@ -1,0 +1,18 @@
+.modal#borrowTransactionModal{ tabindex: "-1", role: "dialog", aria: { labelledby: "borrowTransactionModalLabel" } }
+  .modal-dialog{ role: "document" }
+    .modal-content
+      .modal-header
+        %h5.modal-title#borrowTransactionModalLabel New Borrow Transaction
+        %button.btn-close{ type: "button", data: { bs_dismiss: "modal" }, aria: { label: "Close" } }
+      .modal-body
+        .message
+        .form-group
+          %label{ for: "branch" } Branch
+          %select#branch.form-control{ name: "branch_id" }
+            %option{ value: "0", selected: true } -- SELECT --
+            - @branches.each do |branch|
+              %option{ value: branch.id }= branch.name
+        %input{ type: "hidden", name: "request_date", value: Time.now.strftime("%Y-%m-%d") }
+      .modal-footer
+        %button.btn.btn-secondary{ type: "button", data: { bs_dismiss: "modal" } } Close
+        %button#btn-confirm-transaction.btn.btn-primary Confirm
