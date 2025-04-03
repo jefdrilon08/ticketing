@@ -684,6 +684,23 @@ Rails.application.routes.draw do
     end
   end
 
+  # BORROW TRANSACTION
+  get "/borrow_items", to: "borrow_transactions#index"
+  post "/borrow_transactions", to: "borrow_transactions#create"
+  patch "/borrow_transactions/:id", to: "borrow_transactions#update"
+  post "/borrow_transactions/delete", to: "borrow_transactions#delete"
+  patch '/borrow_transactions/:id/approve', to: 'borrow_transaction_items#approve'
+
+  #BORROW TRANSACTION_ITEMS
+  get "/borrow_transaction_items/:transaction_id", to: "borrow_transaction_items#index", as: 'borrow_transaction_items'
+  post "/borrow_transaction_items/:transaction_id", to: "borrow_transaction_items#create"
+
+  resources :borrow_transaction_items do
+    member do
+      patch :update_status
+    end
+  end
+
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
   get "system_tickets_:id/edit",            to: "system_tickets#show_st"

@@ -1,0 +1,58 @@
+:css
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+
+  .badge.bg-warning,
+  .badge.bg-info {
+    color: black !important;  /* Ensures font color is black for light badge colors */
+  }
+
+%div.card
+  %div.card-body
+    %table#data-table.display.table.table-bordered.table-hover.table-sm
+      %thead
+        %tr
+          %th
+          %th Name
+          %th Branch
+          %th.text-center Request Date
+          %th.text-center Status
+          %th.text-center Actions
+      %tbody
+        - @borrow_transactions.each do |transaction|
+          %tr
+            %td{ style: "text-align: center;" }
+              = link_to borrow_transaction_items_path(transaction_id: transaction.id, branch_id: transaction.branch.id, user_id: transaction.user.id), title: "View Borrow Items" do
+                %i.fa-solid.fa-magnifying-glass.fa-lg
+            %td{ style: "text-transform: uppercase;" }
+              = "#{transaction.user.first_name} #{transaction.user.last_name}"
+            %td
+              = transaction.branch ? transaction.branch.name : "N/A"
+            %td.text-center{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
+              = transaction.request_date.strftime("%Y-%m-%d")
+            %td.text-center
+              - case transaction.status.to_s.downcase
+              - when "pending"
+                %span.badge.bg-warning Pending
+              - when "approved"
+                %span.badge.bg-success Approved
+              - when "rejected"
+                %span.badge.bg-danger Rejected
+              - when "completed"
+                %span.badge.bg-info Returned
+              - else
+                %span.badge.bg-secondary= transaction.status.presence || "N/A"
+            %td.text-center
+              %button.btn.btn-info.btn-sm.update-button{
+                data: {
+                  id: transaction.id,
+                  branch_id: transaction.branch_id,
+                  request_date: transaction.request_date
+                },
+                title: "Update Transaction"
+              }
+                Update
+              %button.btn.btn-sm.btn-danger.delete-button{
+                data: { id: transaction.id },
+                title: "Delete Transaction"
+              }
+                Delete

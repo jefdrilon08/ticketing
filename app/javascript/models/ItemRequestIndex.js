@@ -13,7 +13,7 @@ let $statusModal,
 const cacheDom = () => {
   const modalElement = document.getElementById("status-modal");
   if (!modalElement) {
-    return;
+    return false; 
   }
   $statusModal = new bootstrap.Modal(modalElement);
   $detailIdInput = $("#status-modal #detail-id");
@@ -21,19 +21,28 @@ const cacheDom = () => {
   $btnConfirmStatusUpdate = $("#btn-confirm-status-update");
   $message = $(".message");
   templateErrorList = $("#template-error-list").html() || "<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>";
+
+  return true;
 };
 
 const bindEvents = () => {
-  $(document).on("click", ".update-status-button", function (e) {
+  if (!$btnConfirmStatusUpdate || !$btnConfirmStatusUpdate.length) {
+    return;
+  }
+
+  $(document).off("click", ".update-status-button").on("click", ".update-status-button", function (e) {
     e.preventDefault();
     const id = $(this).data("id");
     const currentStatus = $(this).data("status");
+    if (!$statusModal) {
+      return;
+    }
     $detailIdInput.val(id);
     $statusModalInputStatus.val(currentStatus);
     $statusModal.show();
   });
 
-  $btnConfirmStatusUpdate.on("click", function (e) {
+  $btnConfirmStatusUpdate.off("click").on("click", function (e) {
     e.preventDefault();
     const id = $detailIdInput.val();
     const newStatus = $statusModalInputStatus.val();
@@ -57,7 +66,6 @@ const bindEvents = () => {
         window.location.reload();
       },
       error: function (xhr) {
-        console.error("Update error:", xhr.responseText);
         let errors = [];
         try {
           const errorData = JSON.parse(xhr.responseText);
@@ -75,9 +83,17 @@ const bindEvents = () => {
 
 const init = (options) => {
   _authenticityToken = options.authenticityToken;
-  cacheDom();
-  bindEvents();
+  if (cacheDom()) {
+    bindEvents();
+  }
 };
+
+
+$(document).on("shown.bs.modal", "#status-modal", function () {
+  if (cacheDom()) {
+    bindEvents();
+  }
+});
 
 $(document).ready(function () {
   const authToken = $('meta[name="csrf-token"]').attr("content");

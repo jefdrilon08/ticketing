@@ -9,7 +9,7 @@ class User < ApplicationRecord
   has_many :concern_tickets
   has_many :concern_ticket_details
   
-
+  has_many :borrow_transactions, foreign_key: :user_id, dependent: :destroy
         
 # end
 
