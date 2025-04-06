@@ -127,11 +127,11 @@ module Api
         end
 
         def update_member_status
+          Rails.logger.debug "Params received: #{params.inspect}"
           ct_user = ConcernTicketUser.find(params[:id])
-          new_status = ct_user.status.downcase == "active" ? "inactive" : "active"
-        
-          if ct_user.update(status: new_status)
-            render json: { success: true, status: new_status }
+          
+          if ct_user.update(task: params[:roles], status: params[:status])
+            render json: { success: true }
           else
             render json: { success: false, error: ct_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
           end
@@ -143,6 +143,7 @@ module Api
         
           @ctd_member = ConcernTicketUser.new(
             user_id: user_id,
+            task: "unassigned",
             status: "active",
             concern_ticket_id: @concern_ticket.id
           )
