@@ -11,9 +11,9 @@
         %span.link-name
           Dashboard
 
-    = render partial: "shared/sidebar_members"
+    = render partial: "shared/sidebar_tickets"
+    = render partial: "shared/sidebar_inventory"
     = render partial: "shared/sidebar_config"
-    = render partial: "shared/sidebar_request"
     = render partial: "shared/sidebar_item_distributions"
 
     %li
@@ -41,6 +41,7 @@
 = render partial: "shared/modals/insurance_reports"
 = render partial: "shared/modals/insurance_transactions"
 = render partial: "shared/modals/admin"
+= render partial: "shared/modals/inventory_transaction"
 = render partial: "shared/modals/system_tools"
 = render partial: "shared/modals/visualize"
 

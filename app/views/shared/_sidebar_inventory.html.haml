@@ -1,0 +1,27 @@
+%li{ class: "#{['members', 'online_applications'].include?(params[:controller]) ? 'active' : ''}" }
+  .icon-link
+    = link_to "#", class: "" do
+      %i.bi.bi-box-seam
+      %span.link-name
+        Inventory
+    %i.bi.bi-caret-down.arrow
+  %ul.sub-menu
+    %li
+      = link_to "#", class: "link-name" do
+        Tickets
+    %li
+      = link_to "#" do
+        %i.bi.bi-ticket
+        Stock
+    %li
+      = link_to "#" do
+        %i.bi.bi-ticket
+        Unreleased
+    %li
+      = link_to "#" do
+        %i.bi.bi-ticket
+        Released Item
+    %li
+      = link_to "#", class: "", data: { "bs-toggle": "modal", "bs-target": "#modal-inv-trans" } do
+        %i.bi.bi-shield-fill-check
+        Transaction

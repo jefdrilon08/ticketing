@@ -1,4 +1,4 @@
-class ItemRequestDetail < ApplicationRecord
+class ItemRequestDetails < ApplicationRecord
   belongs_to :item_request
   belongs_to :item
 

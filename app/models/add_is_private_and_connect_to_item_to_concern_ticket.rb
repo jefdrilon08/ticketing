@@ -1,0 +1,2 @@
+class AddIsPrivateAndConnectToItemToConcernTicket < ApplicationRecord
+end
