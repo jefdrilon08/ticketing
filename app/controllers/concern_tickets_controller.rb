@@ -13,9 +13,6 @@ class ConcernTicketsController < ApplicationController
     @records = ConcernTicket.includes(:user, :computer_system).order(:name).page(params[:page]).per(15)
   end
   
-  
-  
-
   def show
     @subheader_side_actions = [
       {
@@ -105,20 +102,26 @@ class ConcernTicketsController < ApplicationController
 
   def join
     concern_ticket_id = params[:concern_ticket_id]
-    
-    if concern_ticket_id.present?
-      ConcernTicketUser.create!(
-        user_id: current_user.id,
-        concern_ticket_id: concern_ticket_id,
-        status: "active",
-        task: nil
-      )
-      flash[:success] = "You have successfully joined the concern!"
-    else
-      flash[:error] = "Failed to join the concern."
-    end
   
-    redirect_to concern_tickets_path
+    if concern_ticket_id.present?
+      existing_record = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: concern_ticket_id)
+      if existing_record
+        flash[:error] = "You have already joined this concern!"
+        redirect_to concern_tickets_path
+      else
+        ConcernTicketUser.create!(
+          user_id: current_user.id,
+          concern_ticket_id: concern_ticket_id,
+          status: "active",
+          task: nil
+        )
+        flash[:success] = "You have successfully joined the concern!"
+        redirect_to concern_tickets_path
+      end
+    else
+      flash[:error] = "Failed to join the concern. Concern Ticket ID is missing."
+      redirect_to concern_tickets_path
+    end
   end
   
   def view_tix

@@ -77,8 +77,8 @@
           %thead
             %tr
               %th.text-center Member Name
-              %th.text-center Roles
-              %th.text-center Status
+              %th.text Roles
+              %th.text Status
               %th.text-center Action
           %tbody
             - @concern_ticket.concern_ticket_users.sort_by { |ct_user| ct_user.status.downcase }.each do |ct_user|
