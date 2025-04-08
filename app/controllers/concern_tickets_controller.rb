@@ -10,7 +10,24 @@ class ConcernTicketsController < ApplicationController
         text: "New"
       }
     ]
-    @records = ConcernTicket.includes(:user, :computer_system).order(:name).page(params[:page]).per(15)
+  
+    if current_user.is_mis?
+      @records = ConcernTicket.includes(:user, :computer_system)
+                               .order(:name)
+                               .page(params[:page])
+                               .per(15)
+    else
+      active_ticket_ids = current_user.concern_ticket_users
+                                      .where(status: "Active")
+                                      .where.not(task: "Unassigned")
+                                      .pluck(:concern_ticket_id)
+  
+      @records = ConcernTicket.includes(:user, :computer_system)
+                               .where("is_private = ? OR id IN (?)", false, active_ticket_ids)
+                               .order(:name)
+                               .page(params[:page])
+                               .per(15)
+    end
   end
   
   def show
@@ -63,6 +80,8 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket.name = params[:name]
     @concern_ticket.ticket_name = params[:ticket_name]
     @concern_ticket.computer_system_id = params[:computer_system_id]
+    @concern_ticket.is_private = params[:is_private] == "1"
+    @concern_ticket.connect_to_item = params[:connect_to_item] == "1"
   
     ActiveRecord::Base.transaction do
       if @concern_ticket.save
@@ -70,10 +89,11 @@ class ConcernTicketsController < ApplicationController
   
         # Update Concern For
         if params[:selected_concern_fors].present?
-          concern_for_names = params[:selected_concern_fors].split(",").map(&:strip)
-          @concern_ticket.concern_fors.where.not(name: concern_for_names).destroy_all
-          concern_for_names.each do |name|
-            @concern_ticket.concern_fors.find_or_create_by!(name: name, status: "active")
+          concern_for_data = params[:selected_concern_fors].split(",").map { |item| item.split(":") }
+          concern_for_data.each do |name, status|
+            concern_for = @concern_ticket.concern_fors.find_or_initialize_by(name: name.strip)
+            concern_for.status = status.strip.downcase
+            concern_for.save!
           end
         else
           @concern_ticket.concern_fors.destroy_all
@@ -81,10 +101,11 @@ class ConcernTicketsController < ApplicationController
   
         # Update Concern Types
         if params[:selected_concern_types].present?
-          concern_type_names = params[:selected_concern_types].split(",").map(&:strip)
-          @concern_ticket.concern_types.where.not(name: concern_type_names).destroy_all
-          concern_type_names.each do |name|
-            @concern_ticket.concern_types.find_or_create_by!(name: name, status: "active")
+          concern_type_data = params[:selected_concern_types].split(",").map { |item| item.split(":") }
+          concern_type_data.each do |name, status|
+            concern_type = @concern_ticket.concern_types.find_or_initialize_by(name: name.strip)
+            concern_type.status = status.strip.downcase
+            concern_type.save!
           end
         else
           @concern_ticket.concern_types.destroy_all
@@ -98,7 +119,7 @@ class ConcernTicketsController < ApplicationController
         render :edit_concern
       end
     end
-  end  
+  end
 
   def join
     concern_ticket_id = params[:concern_ticket_id]
@@ -120,7 +141,6 @@ class ConcernTicketsController < ApplicationController
       end
     else
       flash[:error] = "Failed to join the concern. Concern Ticket ID is missing."
-      redirect_to concern_tickets_path
     end
   end
   

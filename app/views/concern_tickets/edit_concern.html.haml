@@ -2,15 +2,15 @@
   %h2 Edit Concern Ticket
   = form_for @concern_ticket, url: concern_ticket_path(@concern_ticket), method: :patch do |f|
     .row
-      .col-md-4.col-12
+      .col-md-3.col-12
         .form-group
           %label Name
           = text_field_tag :name, @concern_ticket.name, id: "input-name", class: "form-control", required: true, placeholder: "Enter Name"
-      .col-md-4.col-12
+      .col-md-3.col-12
         .form-group
           %label Ticket Name
           = text_field_tag :ticket_name, @concern_ticket.ticket_name, id: "input-ticket-name", class: "form-control", required: true, placeholder: "ex.:ABC", size: 6, maxlength: 6
-      .col-md-4.col-12
+      .col-md-3.col-12
         .form-group
           %label Computer System
           = select_tag :computer_system_id, 
@@ -18,6 +18,16 @@
             class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
             required: true, 
             prompt: "-- SELECT --"
+      .col-md-3.col-12
+        .form-group
+          .form-check
+            = hidden_field_tag :is_private, "0"
+            = check_box_tag :is_private, "1", @concern_ticket.is_private, id: "is-private-checkbox", class: "form-check-input"
+            %label.form-check-label{for: "is-private-checkbox"} Is Private?
+          .form-check.mt-2
+            = hidden_field_tag :connect_to_item, "0"
+            = check_box_tag :connect_to_item, "1", @concern_ticket.connect_to_item, id: "connect-to-item-checkbox", class: "form-check-input"
+            %label.form-check-label{for: "connect-to-item-checkbox"} Connect to Item?
 
     &nbsp;
     .row
@@ -46,7 +56,7 @@
           .form-group
             %label Concern Type Records:
             %ul#concern-type-records-list.list-group.mt-2.w-100.p-0
-        = hidden_field_tag :selected_concern_types, "", id: "selected-concern-types"        
+        = hidden_field_tag :selected_concern_types, "", id: "selected-concern-types"
 
     &nbsp;      
     .row
@@ -100,39 +110,6 @@
                     data: { id: ct_user.id }
 :javascript
   document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".save-member-btn").forEach(function (button) {
-      button.addEventListener("click", function () {
-        const memberId = button.dataset.id;
-        console.log(`Saving member with ID: ${memberId}`);
-        const rolesField = document.querySelector(`select[data-id="${memberId}"][data-field="roles"]`);
-        const statusField = document.querySelector(`select[data-id="${memberId}"][data-field="status"]`);
-
-        const updatedData = {
-          roles: rolesField.value,
-          status: statusField.value,
-        };
-        fetch(`/api/v1/tickets/concern_ticket_users/${memberId}/update_status`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
-          },
-          body: JSON.stringify(updatedData),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              alert("Member updated successfully!");
-              location.reload();
-            } else {
-              alert("Failed to update member: " + data.error);
-            }
-          })
-          .catch((error) => console.error("Error updating member:", error));
-      });
-    });
-
-    //para makapag add sa Concern For and Concern Type
     function addToList(name, status, listId, hiddenFieldId) {
       const list = document.getElementById(listId);
       const hiddenField = document.getElementById(hiddenFieldId);
@@ -155,23 +132,41 @@
 
         if (status.toLowerCase() === "active") {
           statusBadge.classList.add("bg-success");
-        } else if (status.toLowerCase() === "inactive") {
-          statusBadge.classList.add("bg-danger");
+        } else if (status.toLowerCase() === "pending") {
+        statusBadge.classList.add("bg-secondary");
         } else {
-          statusBadge.classList.add("bg-secondary");
+          statusBadge.classList.add("bg-danger");
         }
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "btn btn-sm btn-danger ms-2";
-        deleteBtn.textContent = "×";
-        deleteBtn.onclick = function () {
-          li.remove();
+        const toggleBtn = document.createElement("button");
+        toggleBtn.className = `btn btn-sm ms-2 ${status.toLowerCase() === "active" ? "btn-danger" : "btn-success"}`;
+        toggleBtn.textContent = status.toLowerCase() === "active" ? "Deactivate" : "Activate";
+
+        toggleBtn.addEventListener("click", function (event) {
+          event.preventDefault();
+
+          if (statusBadge.textContent.toLowerCase() === "active") {
+            statusBadge.textContent = "inactive";
+            statusBadge.classList.remove("bg-success");
+            statusBadge.classList.add("bg-danger");
+            toggleBtn.textContent = "Activate";
+            toggleBtn.classList.remove("btn-danger");
+            toggleBtn.classList.add("btn-success");
+          } else {
+            statusBadge.textContent = "active";
+            statusBadge.classList.remove("bg-danger");
+            statusBadge.classList.add("bg-success");
+            toggleBtn.textContent = "Deactivate";
+            toggleBtn.classList.remove("btn-success");
+            toggleBtn.classList.add("btn-danger");
+          }
+
           updateHiddenField(hiddenField, list);
-        };
+        });
 
         li.appendChild(textSpan);
         li.appendChild(statusBadge);
-        li.appendChild(deleteBtn);
+        li.appendChild(toggleBtn);
         list.appendChild(li);
 
         updateHiddenField(hiddenField, list);
@@ -180,13 +175,15 @@
       }
     }
 
-    //update ng values
     function updateHiddenField(hiddenField, list) {
-      const items = [...list.children].map((li) => li.firstChild.textContent.trim());
+      const items = [...list.children].map((li) => {
+        const name = li.firstChild.textContent.trim();
+        const status = li.querySelector(".badge").textContent.trim();
+        return `${name}:${status}`;
+      });
       hiddenField.value = items.join(",");
     }
 
-    //pag load
     function loadExistingRecords() {
       const concernForList = document.getElementById("concern-records-list");
       const concernTypeList = document.getElementById("concern-type-records-list");
@@ -198,7 +195,6 @@
         return;
       }
 
-      //pag fetch
       const existingConcernFors = #{raw @concern_ticket.concern_fors.map { |cf| { name: cf.name, status: cf.status } }.to_json};
       const existingConcernTypes = #{raw @concern_ticket.concern_types.map { |ct| { name: ct.name, status: ct.status } }.to_json};
 
@@ -206,20 +202,51 @@
       existingConcernTypes.forEach((ct) => addToList(ct.name, ct.status, "concern-type-records-list", "selected-concern-types"));
     }
 
-    // Add Concern For
     document.getElementById("add-concern-for").addEventListener("click", function () {
       const inputField = document.getElementById("concern-for-input");
       addToList(inputField.value.trim(), "Pending", "concern-records-list", "selected-concern-fors");
       inputField.value = "";
     });
 
-    // Add Concern Type
     document.getElementById("add-concern-type").addEventListener("click", function () {
       const inputField = document.getElementById("concern-type-input");
       addToList(inputField.value.trim(), "Pending", "concern-type-records-list", "selected-concern-types");
       inputField.value = "";
     });
-
-    //load ng existing records
     loadExistingRecords();
+
+    document.querySelectorAll(".save-member-btn").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const memberId = button.dataset.id;
+        const rolesField = document.querySelector(`select[data-id="${memberId}"][data-field="roles"]`);
+        const statusField = document.querySelector(`select[data-id="${memberId}"][data-field="status"]`);
+
+        const updatedData = {
+          roles: rolesField.value,
+          status: statusField.value,
+        };
+
+        fetch(`/api/v1/tickets/concern_ticket_users/${memberId}/update_member_status`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+          body: JSON.stringify(updatedData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert("Member updated successfully!");
+              location.reload();
+            } else {
+              alert("Failed to update member: " + data.error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating member:", error);
+            alert("An error occurred while updating the member.");
+          });
+      });
+    });
+    
   });
