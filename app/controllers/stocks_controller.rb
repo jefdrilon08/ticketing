@@ -33,12 +33,16 @@ class StocksController < ApplicationController
   
   def new
     @inventory = Inventory.new
+    @inventory.data ||= {}  
     @items = Item.all
     @suppliers = Supplier.all
   end
   
   def create
     @inventory = Inventory.new(inventory_params)
+
+
+    @inventory.data = { "title" => params[:inventory][:title] }
 
     if @inventory.save
       redirect_to stocks_path, notice: "Inventory item added successfully."
@@ -58,6 +62,9 @@ class StocksController < ApplicationController
   end
   
   def update
+
+    @inventory.data = { "title" => params[:inventory][:title] }
+
     if @inventory.update(inventory_params)
       redirect_to stocks_path, notice: "Inventory item updated successfully."
     else
@@ -69,13 +76,17 @@ class StocksController < ApplicationController
   end
 
   def destroy
-    if @inventory.destroy
-      redirect_to stocks_path, notice: "Inventory item deleted successfully."
-    else
-      redirect_to stocks_path, alert: "Failed to delete inventory item."
+    begin
+      if @inventory.destroy
+        redirect_to stocks_path, notice: "Inventory item deleted successfully."
+      else
+        redirect_to stocks_path, alert: "Failed to delete inventory item."
+      end
+    rescue ActiveRecord::InvalidForeignKey => e
+      redirect_to stocks_path, alert: "Unable to delete. This inventory is already used in another module."
     end
   end
-
+  
   private
 
   def set_inventory

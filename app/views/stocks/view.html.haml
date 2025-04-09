@@ -1,6 +1,6 @@
 :css
   @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
-
+  
   .form-control-plaintext {
     background-color: #f1f1f1;
     padding: 8px 12px;
@@ -15,16 +15,16 @@
 
   %div.card-body
     %div.form-group
-      %label Supplier Name:
-      %p.form-control-plaintext= @inventory.supplier.try(:name) || "N/A"
-
-    %div.form-group
-      %label Type:
-      %p.form-control-plaintext= @inventory.type.present? ? @inventory.type.titleize : "N/A"
+      %label Title:
+      %p.form-control-plaintext= @inventory.data["title"].presence || "N/A"
 
     %div.form-group
       %label Item Name:
       %p.form-control-plaintext= @inventory.item.try(:name) || "N/A"
+
+    %div.form-group
+      %label Type:
+      %p.form-control-plaintext= @inventory.type.present? ? @inventory.type.titleize : "N/A"
 
     %div.form-group
       %label Serial Number:
@@ -41,6 +41,10 @@
     %div.form-group
       %label Purchase Date:
       %p.form-control-plaintext= @inventory.purchase_date
+
+    %div.form-group
+      %label Supplier Name:
+      %p.form-control-plaintext= @inventory.supplier.try(:name) || "N/A"
 
     %div.form-group
       %label Status:

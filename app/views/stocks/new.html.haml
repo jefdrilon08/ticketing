@@ -1,34 +1,18 @@
 :css
-  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css")
 
 %div.card
   %div.card-header
     %h4= @inventory.new_record? ? "New Item - Stock" : "Update Item - Stock"
   %div.card-body
-    -# For new records, action remains as stocks_path
-    -# For updates, use update_inventory_path and override method to PATCH
     %form{ action: @inventory.new_record? ? stocks_path : update_inventory_path(@inventory), method: "post", id: "inventoryForm" }
       %input{ type: "hidden", name: "authenticity_token", value: form_authenticity_token }
       - unless @inventory.new_record?
         %input{ type: "hidden", name: "_method", value: "patch" }
 
       %div.form-group
-        %label{ for: "supplier_name" } Supplier Name
-        - if @suppliers.present?
-          %select.form-control{ id: "supplier_name", name: "inventory[supplier_id]", required: true }
-            %option{ value: "" } -- SELECT SUPPLIER --
-            - @suppliers.each do |supplier|
-              %option{ value: supplier.id, selected: @inventory.supplier_id == supplier.id }= supplier.name
-        - else
-          %p No suppliers available.
-
-      %div.form-group
-        %label{ for: "inventory_type" } Type
-        %select.form-control{ id: "inventory_type", name: "inventory[type]", required: true }
-          %option{ value: "" } -- SELECT --
-          %option{ value: "regular", selected: @inventory.type == 'regular' } Regular
-          %option{ value: "service", selected: @inventory.type == 'service' } Service
-          %option{ value: "distribute", selected: @inventory.type.nil? || @inventory.type == 'distribute' } Distribute
+        %label{ for: "title" } Title
+        %input.form-control{ type: "text", id: "title", name: "inventory[title]", value: @inventory.data["title"].to_s, required: false }
 
       %div.form-group
         %label{ for: "item_name" } Item Name
@@ -39,6 +23,14 @@
               %option{ value: item.id, selected: @inventory.item_id == item.id }= item.name
         - else
           %p No items available.
+
+      %div.form-group
+        %label{ for: "inventory_type" } Type
+        %select.form-control{ id: "inventory_type", name: "inventory[type]", required: true }
+          %option{ value: "" } -- SELECT --
+          %option{ value: "regular", selected: @inventory.type == 'regular' } Regular
+          %option{ value: "service", selected: @inventory.type == 'service' } Service
+          %option{ value: "distribute", selected: @inventory.type.nil? || @inventory.type == 'distribute' } Distribute
 
       %div.form-group
         %label{ for: "serial_number" } Serial Number
@@ -69,6 +61,16 @@
       %div.form-group
         %label{ for: "purchase_date" } Purchase Date
         %input.form-control{ type: "date", id: "purchase_date", name: "inventory[purchase_date]", value: @inventory.purchase_date, required: true }
+
+      %div.form-group
+        %label{ for: "supplier_name" } Supplier Name
+        - if @suppliers.present?
+          %select.form-control{ id: "supplier_name", name: "inventory[supplier_id]", required: true }
+            %option{ value: "" } -- SELECT SUPPLIER --
+            - @suppliers.each do |supplier|
+              %option{ value: supplier.id, selected: @inventory.supplier_id == supplier.id }= supplier.name
+        - else
+          %p No suppliers available.
 
       %div.form-group
         %label{ for: "status" } Status
