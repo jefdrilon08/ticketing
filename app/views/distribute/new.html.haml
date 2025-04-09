@@ -1,0 +1,133 @@
+:css
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css")
+
+.row
+  .col
+    .card
+      .card-header
+        %h3.card-title= @inventory_distribution.new_record? ? 'Add Unreleased Item' : 'Update Unreleased Item'
+      .card-body
+        = form_with model: @inventory_distribution, url: @inventory_distribution.new_record? ? inventory_distribute_path : inventory_distribution_path(@inventory_distribution), local: true do |f|
+          
+          .form-group
+            %label{ for: "inventory_id" } Item
+            - if @inventory_distribution.new_record? && @inventory_id.present?
+             
+              .form-control-plaintext{ id: "selected_inventory_display", data: { item_type: @item_type } }
+                .card.form-control
+                  %p= @item_name || "N/A"
+              = f.hidden_field :inventory_id, value: @inventory_id
+            - else
+             
+              - if @inventory_items.present?
+                %select.form-control{ id: "inventory_id", name: "inventory_distribution[inventory_id]", required: true, onchange: "checkItemType()" }
+                  %option{ value: "" } -- SELECT --
+                  - @inventory_items.each do |inv|
+                    - current_item_type = inv['item_item_type']
+                    %option{ value: inv.id, selected: @inventory_distribution.inventory_id == inv.id, data: { item_type: current_item_type } }= inv["name"] || "N/A"
+              - else
+                %p No items available for distribution.
+          
+          .form-group
+            %label{ for: "mr_number" } MR Number
+            = f.text_field :mr_number, class: "form-control", id: "mr_number_field"
+          
+          .form-group
+            %label{ for: "cluster_id" } Cluster
+            - if @clusters.present?
+              %select.form-control{ id: "cluster_id", name: "inventory_distribution[cluster_id]", required: true }
+                %option{ value: "" } -- SELECT --
+                - @clusters.each do |cluster|
+                  %option{ value: cluster.id, selected: @inventory_distribution.cluster_id == cluster.id }= cluster.name
+            - else
+              %p No clusters available.
+          
+          .form-group
+            %label{ for: "branch_id" } Sato
+            - if @branches.present?
+              %select.form-control{ id: "branch_id", name: "inventory_distribution[branch_id]", required: true }
+                %option{ value: "" } -- SELECT --
+                - @branches.each do |branch|
+                  %option{ value: branch.id, selected: @inventory_distribution.branch_id == branch.id }= branch.name
+            - else
+              %p No branches available.
+          
+          .form-group
+            %label{ for: "user_id" } Employee
+            - if @users.present?
+              %select.form-control{ id: "user_id", name: "inventory_distribution[user_id]", required: true }
+                %option{ value: "" } -- SELECT --
+                - @users.each do |user|
+                  %option{ value: user.id, selected: @inventory_distribution.user_id == user.id }= user.full_name
+            - else
+              %p No employees available.
+          
+          .form-group
+            %label{ for: "quantity" } Quantity
+            = f.number_field :quantity, class: "form-control", min: 1
+          
+          .form-group
+            %label{ for: "date_distribute" } Date Distribute
+            = f.date_field :date_distribute, class: "form-control"
+          
+          .form-group
+            %label{ for: "recieve_by" } Received By
+            = f.text_field :recieve_by, class: "form-control"
+          
+          .form-group
+            %label{ for: "distribution_type" } Type
+            %select.form-control{ id: "distribution_type", name: "inventory_distribution[distribution_type]", required: true }
+              %option{ value: "" } -- SELECT --
+              %option{ value: "regular", selected: @inventory_distribution.distribution_type.nil? || @inventory_distribution.distribution_type == "regular" } Regular
+              %option{ value: "service", selected: @inventory_distribution.distribution_type == "service" } Service
+              %option{ value: "stock", selected: @inventory_distribution.distribution_type == "stock" } Stock
+              %option{ value: "service_unit", selected: @inventory_distribution.distribution_type == "service_unit" } Service Unit
+          
+          .form-group
+            %label{ for: "status" } Status
+            %select.form-control{ id: "status", name: "inventory_distribution[status]", required: true }
+              %option{ value: "" } -- SELECT --
+              %option{ value: "regular", selected: @inventory_distribution.status == "regular" } Regular
+              %option{ value: "for_repair", selected: @inventory_distribution.status == "for_repair" } For Repair
+              %option{ value: "pull_out", selected: @inventory_distribution.status == "pull_out" } Pull Out
+              %option{ value: "for_replacement", selected: @inventory_distribution.status == "for_replacement" } For Replacement
+              %option{ value: "pending", selected: @inventory_distribution.status.nil? || @inventory_distribution.status == "pending" } Pending
+          
+          .form-group
+            = f.submit @inventory_distribution.new_record? ? "Add Inventory Distribution" : "Update Inventory Distribution", class: "btn btn-primary"
+          
+          :javascript
+            function checkItemType() {
+              var mrField = document.getElementById('mr_number_field');
+              var itemType = null;
+              
+            
+              var inventoryDropdown = document.getElementById('inventory_id');
+              if (inventoryDropdown) {
+                var selectedOption = inventoryDropdown.options[inventoryDropdown.selectedIndex];
+                itemType = selectedOption.getAttribute('data-item-type');
+              }
+              
+          
+              var selectedDisplay = document.getElementById('selected_inventory_display');
+              if (!itemType && selectedDisplay) {
+                itemType = selectedDisplay.getAttribute('data-item-type');
+              }
+              
+              if (itemType && itemType.toLowerCase() === 'supply') {
+                mrField.disabled = true;
+                mrField.value = "";  
+                mrField.removeAttribute('required');
+              } else {
+                mrField.disabled = false;
+                mrField.setAttribute('required', 'required');
+              }
+            }
+            
+            document.addEventListener('DOMContentLoaded', function() {
+              checkItemType();
+              var inventoryDropdown = document.getElementById('inventory_id');
+              if (inventoryDropdown) {
+                inventoryDropdown.addEventListener('change', checkItemType);
+              }
+            });
