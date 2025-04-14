@@ -1,0 +1,22 @@
+%h2 Inventory Request Details
+
+%table.table.table-striped.table-hover
+  %thead
+    %tr
+      %th Item
+      %th Quantity Requested
+      %th Approved Quantity
+      %th Unit
+      %th Description
+      %th Remarks
+      %th Status
+  %tbody
+    - @inventory_details.each do |detail|
+      %tr
+        %td= detail.item.name
+        %td= detail.quantity_requested
+        %td= detail.approve_quantity
+        %td= detail.unit
+        %td= detail.description
+        %td= detail.remarks
+        %td= detail.status
