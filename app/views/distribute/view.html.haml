@@ -1,0 +1,121 @@
+:css
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+
+  .form-control-plaintext {
+    background-color: #f1f1f1;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+  }
+
+  .badge.bg-success {
+    background-color: #28a745;
+  }
+
+  .badge.bg-warning {
+    background-color: #ffc107;
+  }
+
+  .badge.bg-danger {
+    background-color: #dc3545;
+  }
+
+  .badge.bg-info {
+    background-color: #17a2b8;
+  }
+
+  .badge.bg-secondary {
+    background-color: #6c757d;
+  }
+
+  .mt-4 {
+    margin-top: 1.5rem;
+  }
+
+.row
+  .col
+    .card
+      .card-header
+        %h3.card-title Unreleased Item Details
+      .card-body
+        - if @inventory_distribution.nil?
+          %p No Inventory Distribution found. Debug Info: = @inventory_distribution.inspect
+        - else
+          %div.form-group
+            %label Item
+            %p.form-control-plaintext
+              - if @inventory_distribution.inventory.present? && @inventory_distribution.inventory.item.present?
+                = @inventory_distribution.inventory.item.name
+              - else
+                = "N/A"
+
+          %div.form-group
+            %label MR Number
+            %p.form-control-plaintext
+              = @inventory_distribution.mr_number.presence || "N/A"
+
+          %div.form-group
+            %label Cluster
+            %p.form-control-plaintext
+              = @inventory_distribution.cluster&.name || "N/A"
+
+          %div.form-group
+            %label Sato
+            %p.form-control-plaintext
+              = @inventory_distribution.branch&.name || "N/A"
+
+          %div.form-group
+            %label Employee
+            %p.form-control-plaintext
+              = @inventory_distribution.user&.full_name || "N/A"
+
+          %div.form-group
+            %label Quantity
+            %p.form-control-plaintext
+              = @inventory_distribution.quantity || 0
+
+          %div.form-group
+            %label Date Distribute
+            %p.form-control-plaintext
+              = @inventory_distribution.date_distribute&.strftime("%B %d, %Y") || "N/A"
+
+          %div.form-group
+            %label Received By
+            %p.form-control-plaintext
+              = @inventory_distribution.recieve_by.presence || "N/A"
+
+          %div.form-group
+            %label Type
+            %p.form-control-plaintext
+              - case @inventory_distribution.distribution_type
+                - when "regular"
+                  Regular
+                - when "service"
+                  Service
+                - when "stock"
+                  Stock
+                - when "service_unit"
+                  Service Unit
+                - else
+                  N/A
+
+          %div.form-group
+            %label Status
+            %p.form-control-plaintext
+              - if @inventory_distribution.status.present?
+                - case @inventory_distribution.status
+                  - when "regular"
+                    %span.badge.bg-success Regular
+                  - when "for_repair"
+                    %span.badge.bg-warning.text-dark For Repair
+                  - when "pull_out"
+                    %span.badge.bg-danger Pull Out
+                  - when "for_replacement"
+                    %span.badge.bg-info.text-white For Replacement
+                  - when "pending"
+                    %span.badge.bg-warning.text-dark Pending
+                  - else
+                    %span.badge.bg-secondary.text-white Unknown
+              - else
+                %span.badge.bg-secondary.text-white N/A
