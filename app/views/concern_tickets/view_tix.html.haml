@@ -12,6 +12,23 @@
                 .p-3.border.rounded.bg-light.min-vh-50.fs-10
                     = @concern_ticket_details.description.presence
 
+                %strong.h4.mt-4 Chat:
+                .chat-box.border.rounded.bg-light.p-3.min-vh-50.fs-7
+                    - if @concern_ticket_details.data.present? && @concern_ticket_details.data["chat_history"].present?
+                        - @concern_ticket_details.data["chat_history"].each do |message|
+                            .chat-message.mb-2
+                                %small.text-muted= message["timestamp"]
+                                %br
+                                %strong= message["user"]
+                                %p= message["comment"]
+                    - else
+                        %p.text-muted No messages yet.
+
+                = form_with url: chat_message_concern_ticket_path(@concern_ticket_details.id), method: :post, local: true do |f|
+                    .d-flex.align-items-center.gap-2
+                        = f.text_area :content, class: "form-control", placeholder: "Type your message here...", rows: 1, style: "resize: none; width: 85%;"
+                        = f.submit "Send", class: "btn btn-primary btn-sm", style: "height: 38px;"
+
             .col-md-4
                 .row.mb-3
                     .col-12
@@ -62,9 +79,9 @@
                         %strong.h6 Files Attached:
                         - if @concern_ticket_details.attachments.attached?
                             %ul.fs-7
-                            - @concern_ticket_details.attachments.each do |file|
-                                %li
-                                    = link_to file.filename.to_s, url_for(file), target: "_blank"
+                                - @concern_ticket_details.attachments.each do |file|
+                                    %li
+                                        = link_to file.filename.to_s, url_for(file), target: "_blank"
                         - else
                             %p.text-muted No files attached.        
 

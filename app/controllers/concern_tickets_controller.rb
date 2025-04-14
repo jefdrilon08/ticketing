@@ -153,4 +153,30 @@ class ConcernTicketsController < ApplicationController
     Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
   end
   
+  def chat_message
+    ticket_detail = ConcernTicketDetail.find(params[:id])
+  
+    if params[:content].blank?
+      return redirect_back(fallback_location: view_tix_concern_ticket_path(ticket_detail.concern_ticket_id))
+    end
+
+    ticket_detail.data ||= {}
+
+    chat_history = ticket_detail.data["chat_history"] || []
+    chat_history << {
+      user: "#{current_user.first_name.capitalize} #{current_user.last_name.capitalize}",
+      comment: params[:content],
+      timestamp: Time.current.strftime("%b %d, %Y %I:%M %p")
+    }
+  
+    ticket_detail.data["chat_history"] = chat_history
+  
+    if ticket_detail.save
+      flash[:success] = "Message sent!"
+    else
+      flash[:error] = "Failed to send message: #{ticket_detail.errors.full_messages.join(', ')}"
+    end
+  
+    redirect_back(fallback_location: view_tix_concern_ticket_path(ticket_detail.concern_ticket_id))
+  end
 end
