@@ -16,7 +16,7 @@
                   %label.font-weight-bold User
                   .d-flex.align-items-center
                     = select_tag :assigned_person_id, 
-                      options_from_collection_for_select(@ticket_users.map { |tu| [tu.user.full_name, tu.user.id] }, :last, :first), 
+                      options_from_collection_for_select(@ticket_users.map { |tu| ["#{tu.user.first_name.titleize} #{tu.user.last_name.titleize}", tu.user.id] }, :last, :first), 
                       class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
                       id: "input-assigned_person", prompt: "-- SELECT --"
 
