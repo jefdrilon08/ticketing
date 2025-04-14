@@ -1,0 +1,38 @@
+%h1.text-2xl.font-semibold.mb-4 Edit Item Request
+
+= form_for @item_request, url: update_item_request_path(@item_request), method: :patch, html: { class: 'space-y-4' } do |f|
+  .form-group
+    = f.label :request_supply_id, "Request Supply", class: 'form-label font-medium'
+    = f.select :request_supply_id, RequestSupply.all.map { |rs| [rs.name, rs.id] }, {}, class: 'form-control'
+
+  .form-group
+    = f.label :item_id, "Item", class: 'form-label font-medium'
+    = f.select :item_id, Item.all.map { |i| [i.name, i.id] }, {}, class: 'form-control'
+
+  .form-group
+    = f.label :description, class: 'form-label font-medium'
+    = f.text_field :description, class: 'form-control'
+
+  .form-group
+    = f.label :unit, class: 'form-label font-medium'
+    = f.text_field :unit, class: 'form-control'
+
+  .form-group
+    = f.label :quantity_requested, "Quantity Requested", class: 'form-label font-medium'
+    = f.number_field :quantity_requested, class: 'form-control'
+
+  .form-group
+    = f.label :approve_quantity, "Approved Quantity", class: 'form-label font-medium'
+    = f.number_field :approve_quantity, class: 'form-control'
+
+  .form-group
+    = f.label :remarks, class: 'form-label font-medium'
+    = f.text_area :remarks, rows: 3, class: 'form-control'
+
+  .form-group
+    = f.label :status, class: 'form-label font-medium'
+    = f.select :status, ['Pending', 'Approve', 'On Process', 'For Deliver', 'Receive'], {}, class: 'form-control'
+
+  .flex.gap-2.mt-4
+    = f.submit 'Update Request', class: 'btn btn-primary'
+    = link_to 'Back to Item Requests', item_requests_path, class: 'btn btn-secondary'

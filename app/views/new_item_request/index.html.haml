@@ -1,0 +1,25 @@
+%div
+  = link_to 'New Item Request', new_item_request_path, class: 'btn btn-primary btn-sm mb-3'
+
+%table.table.table-hover.table-striped
+  %thead
+    %tr
+      %th.text-center Date
+      %th.text-center ID
+      %th.text-center Request Number
+      %th.text-center Sato ID
+      %th.text-center User ID
+      %th.text-center Status
+      %th.text-center Actions
+  %tbody
+    - @item_requests.each do |item_request|
+      %tr
+        %td.text-center= item_request.date_request.strftime("%m/%d/%Y") if item_request.date_request
+        %td.text-center= item_request.id
+        %td.text-center= item_request.request_number
+        %td.text-center= item_request.sato_id
+        %td.text-center= item_request.user_id
+        %td.text-center= item_request.status
+        %td.text-center
+          = link_to 'Details', details_item_request_path(item_request), class: 'btn btn-info btn-sm', style: 'padding: 4px 8px; font-size: 0.9rem;'
+          = link_to 'Delete', item_request_path(item_request), method: :delete, data: { confirm: 'Are you sure you want to delete this item request?' }, class: 'btn btn-danger btn-sm ml-2', style: 'padding: 4px 8px; font-size: 0.9rem;'
