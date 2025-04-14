@@ -3,38 +3,20 @@
     .alert.alert-success= flash[:notice]
   - if flash[:alert]
     .alert.alert-danger= flash[:alert]
-
-  %div.mb-3
-    = link_to 'New Item Request', new_item_request_path, class: 'btn btn-primary btn-sm me-2'
-
+    
   %h2 New Item Request 
-
   = form_for @item_request, url: create_itemrequest_path, html: { multipart: true } do |f|
     %table.table(style="border-color:white;font-size:110%")
       %tr
         %td
           %label Requester Name
           .form-group
-            = current_user.full_name
-
+            = f.collection_select :user_id, @available_users, :id, :full_name, { prompt: "-- SELECT --" }, { class: "form-control" }
       %tr
         %td
           %label Request Date
           .form-group
-            = f.text_field :date_request, class: "form-control datepicker", value: Date.today.strftime("%m/%d/%Y")
-
-      %tr
-        %td
-          %label Sato
-          .form-group
-            = f.select :sato_id, Sato.all.collect { |s| [s.name, s.id] }, { prompt: "Select Sato" }, { class: "form-control" }
-
-      %tr
-        %td
-          %label Status
-          .form-group
-            = f.select :status, ['Pending', 'Approve', 'On Process', 'For Deliver', 'Receive'], { prompt: "Select Status" }, { class: "form-control" }
-
+            = f.date_field :date_request, class: "form-control", value: Date.today
       %tr
         %td
           .form-group

@@ -339,15 +339,7 @@ Rails.application.routes.draw do
     resources :income_statements, only: [:index, :show, :destroy]
   end
   
-    # Item Requests
-    get "/item_requests", to: "new_item_request#index", as: "item_requests"
-    get "/item_requests/new", to: "new_item_request#new", as: "new_item_request"
-    post "/item_requests", to: "new_item_request#create_itemrequest", as: "create_item_request"
-    get "/item_requests/:id/edit", to: "new_item_request#edit", as: "edit_item_request"
-    patch "/item_requests/:id", to: "new_item_request#update", as: "update_item_request"
 
-# Item Distribution
-resources :item_distributions, only: [:index, :new, :show, :create, :edit, :update, :destroy]
   
   # Billing
   get "/billings/excel", to: "billings#excel"
@@ -677,8 +669,8 @@ resources :item_distributions, only: [:index, :new, :show, :create, :edit, :upda
   get "/bank_transfer", to: "bank_transfer#index"
   get "/bank_transfer/new", to: "bank_transfer#new"
 
-  get "/item_request", to: "new_item_request#index", as: "item_request_index"
-  get "/new_item_request", to: "new_item_request#new", as: "custom_new_item_request"
+  get "/item_request", to: "item_request#index", as: "item_request_index"
+  get "/new_item_request", to: "new_item_request#new", as: "new_item_request"
   post "/new_item_request", to: "new_item_request#create_itemrequest", as: "create_itemrequest"
   get "/item_request_details/:id", to: "item_request_details#index", as: "item_request_details"
   get "/new_item_request/:id/view_details", to: "new_item_request#view_details", as: :new_item_request_details
@@ -686,30 +678,11 @@ resources :item_distributions, only: [:index, :new, :show, :create, :edit, :upda
   get "/item_request_details/:id/details", to: "item_request_details#details", as: "details_item_request_details"
   patch "/item_request_details/:id/update_status", to: "item_request_details#update_status", as: :update_status_item_request_detail
   
-  resources :item_requests, only: [:index, :show, :create, :destroy, :new] do
+  resources :new_item_request, only: [:new] do
     member do
       get :details
     end
   end
-  
-  
-  resources :inventory_requests do
-    resources :inventory_request_details
-  end
-  
-  
-  
-
-
-  
-  resources :new_item_request do
-    member do
-      get :details
-    end
-  end
-
-  resources :inventory_details, only: [:index, :update]
-
 
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
@@ -776,5 +749,3 @@ resources :item_distributions, only: [:index, :new, :show, :create, :edit, :upda
   post "new_system_ticket/create_systemtix2",   to: "new_system_ticket#create_systemtix2"
 
 end
-
-
