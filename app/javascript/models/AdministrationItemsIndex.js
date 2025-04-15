@@ -9,178 +9,152 @@ let $inputDesc;
 let $inputUnit;
 let $inputItemsCategory;
 let $inputStatus;
-let $inputMRNumber;
-let $inputSerialNumber;
-let $inputTotalQuantity;
-let $inputAvailableQuantity;
-let $modalNew;
 let $message;
 let $itemId;
 let _authenticityToken;
-
+let $isParentCheckbox;
+let $parentItemDropdown;
+let $inputParentItem;
 let templateErrorList;
+let modalInstance;
 
 const _cacheDom = () => {
-  $btnNew             = $("#btn-new");
-  $btnConfirmNew      = $("#btn-confirm-new");
-  $inputName          = $("#input-name");
-  $inputDesc          = $("#input-description");
-  $inputUnit          = $("#input-unit");
+  $btnNew = $("#btn-new");
+  $btnConfirmNew = $("#btn-confirm-new");
+  $inputName = $("#input-name");
+  $inputDesc = $("#input-description");
+  $inputUnit = $("#input-unit");
   $inputItemsCategory = $("#input-items-category");
-  $inputStatus        = $("#input-status");
-  $inputMRNumber      = $("#input-mr-number");
-  $inputSerialNumber  = $("#input-serial-number");
-  $inputTotalQuantity = $("#input-total-quantity");
-  $inputAvailableQuantity = $("#input-available-quantity");
-  $itemId             = $("#item-id");
-  $modalNew           = new bootstrap.Modal(document.getElementById("modal-new"));
-  $message            = $(".message");
-  templateErrorList   = $("#template-error-list").html() || "<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>";
+  $inputStatus = $("#input-status");
+  $itemId = $("#item-id");
+  $message = $(".message");
+  $isParentCheckbox = $("#input-is-parent");
+  $parentItemDropdown = $("#parent-item-dropdown-container");
+  $inputParentItem = $("#input-parent-item");
+  templateErrorList = $("#template-error-list").html() || "<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>";
+
+  const modalElement = document.getElementById("myModal");
+  if (modalElement) {
+    modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+  }
+};
+
+const _toggleParentDropdown = () => {
+  const isChecked = $isParentCheckbox.is(":checked");
+  $parentItemDropdown.toggle(isChecked);
+  $inputParentItem.prop("required", isChecked);
+  if (!isChecked) $inputParentItem.val("");
 };
 
 const _bindEvents = () => {
-  $btnNew.on("click", () => {
+  $btnNew.off("click").on("click", () => {
     $inputName.val("");
     $inputDesc.val("");
     $inputUnit.val("");
     $inputItemsCategory.val("");
     $inputStatus.val("Active");
-    $inputMRNumber.val("");
-    $inputSerialNumber.val("");
-    $inputTotalQuantity.val("");
-    $inputAvailableQuantity.val("");
     $itemId.val("");
+    $inputParentItem.val("");
+    $isParentCheckbox.prop("checked", false);
+    _toggleParentDropdown();
+    $message.html("").removeClass("text-danger");
 
-    $("#modal-new .modal-title").text("New Item");
-    $("#status-row").hide(); 
-    $modalNew.show();
-    $message.html("");
+    if (modalInstance) modalInstance.show();
   });
 
-  $(document).on("click", ".update-button", function() {
-    const _id                = $(this).attr("data-id");
-    const _name              = $(this).attr("data-name");
-    const _description       = $(this).attr("data-description");
-    const _unit              = $(this).attr("data-unit");
-    const _itemsCategory     = $(this).attr("data-items-category");
-    const _status            = $(this).attr("data-status");
-    const _mrNumber          = $(this).attr("data-mr-number");
-    const _serialNumber      = $(this).attr("data-serial-number");
-    const _totalQuantity     = $(this).attr("data-total-quantity");
-    const _availableQuantity = $(this).attr("data-available-quantity");
+  $isParentCheckbox.off("change").on("change", _toggleParentDropdown);
 
-
-    $itemId.val(_id);
-    $inputName.val(_name);
-    $inputDesc.val(_description);
-    $inputUnit.val(_unit);
-    $inputItemsCategory.val(_itemsCategory);
-    $inputStatus.val(_status);
-    $inputMRNumber.val(_mrNumber);
-    $inputSerialNumber.val(_serialNumber);
-    $inputTotalQuantity.val(_totalQuantity);
-    $inputAvailableQuantity.val(_availableQuantity);
-
-    $("#modal-new .modal-title").text("Update Item");
-    $("#status-row").show(); 
-    $modalNew.show();
-    $inputName.focus();
+  $(document).off("click", ".update-button").on("click", ".update-button", function () {
+    const itemId = $(this).data("id");
+    if (itemId) window.location.href = `/administration/items/${itemId}/edit`;
   });
 
-  $btnConfirmNew.on("click", () => {
-    const id                = $itemId.val();
-    const name              = $inputName.val();
-    const description       = $inputDesc.val();
-    const unit              = $inputUnit.val();
-    const itemsCategoryId   = $inputItemsCategory.find("option:selected").val();
-    const status            = $inputStatus.val();
-    const mrNumber          = $inputMRNumber.val();
-    const serialNumber      = $inputSerialNumber.val();
-    const totalQuantity     = $inputTotalQuantity.val();
-    const availableQuantity = $inputAvailableQuantity.val();
+  $(document).off("click", ".delete-button").on("click", ".delete-button", function () {
+    const itemId = $(this).data("id");
+    if (!itemId) return;
 
-    if (itemsCategoryId === "") {
-      alert("Please select a category value");
-      return;
-    }
-    if (id && status === "") {
-      alert("Please select a valid status");
-      return;
-    }
-
-    const data = {
-      name:              name,
-      description:       description,
-      unit:              unit,
-      status:            status,
-      mr_number:         mrNumber,
-      serial_number:     serialNumber,
-      total_quantity:    totalQuantity,
-      available_quantity: availableQuantity,
-      id:                id,
-      items_category_id: itemsCategoryId,
-      authenticity_token: _authenticityToken
-    };
-
-    let url    = "/api/v1/administration/items/create";
-    let method = "POST";
-    if (id) {
-      url    = "/api/v1/administration/items/update";
-      method = "PUT";
-    }
+    const confirmed = window.confirm("Are you sure you want to delete this item?");
+    if (!confirmed) return;
 
     $.ajax({
-      url: url,
-      method: method,
-      data: data,
-      success: function(response) {
-        alert(id ? "Successfully Updated!" : "Successfully Saved!");
+      url: `/api/v1/administration/items/${itemId}`,
+      method: "DELETE",
+      headers: {
+        "X-CSRF-Token": _authenticityToken
+      },
+      success: () => {
+        alert("Item deleted successfully.");
         window.location.reload();
       },
-      error: function(response) {
-        const errorTemplate = "<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>";
-        let errors = [];
-        try {
-          const errorData = JSON.parse(response.responseText);
-          errors = Array.isArray(errorData.messages)
-            ? errorData.messages.map(err => err.message)
-            : [errorData.messages || "An unexpected error occurred."];
-        } catch (err) {
-          errors.push("Something went wrong. Please try again.");
-        }
-        $btnConfirmNew.prop("disabled", false);
-        $message.html(Mustache.render(errorTemplate, { errors })).addClass("text-danger");
+      error: () => {
+        alert("Unable to delete. This item is already used in another module");
       }
     });
   });
 
-  $(document).on("click", ".delete-button", function() {
-    const id = $(this).attr("data-id");
-    $message.html("").removeClass("text-danger");
+  $btnConfirmNew.off("click").on("click", () => {
+    const id = $itemId.val();
+    const name = $inputName.val();
+    const description = $inputDesc.val();
+    const unit = $inputUnit.val();
+    const category = $inputItemsCategory.val();
+    const status = $inputStatus.val();
+    const isParent = $isParentCheckbox.is(":checked");
+    const parentId = $inputParentItem.val();
 
-    if (confirm("Are you sure you want to delete this Item record?")) {
-      $.ajax({
-        url: "/api/v1/administration/items/delete",
-        method: "POST",
-        data: {
-          id: id,
-          authenticity_token: _authenticityToken
-        },
-        success: function(response) {
-          alert("Item record successfully deleted!");
-          window.location.reload();
-        },
-        error: function(response) {
-          let errors = [];
-          try {
-            errors = JSON.parse(response.responseText).messages;
-          } catch (err) {
-            errors.push("Something went wrong");
-          }
-          $message.html(Mustache.render(templateErrorList, { errors }));
-        }
-      });
+    if (!name || !unit || !category || !status) {
+      alert("Please fill in all required fields (Name, Unit, Category, Status).");
+      return;
     }
+
+    if (isParent && !parentId) {
+      alert("Please select a Parent Item when 'Is Parent?' is checked.");
+      return;
+    }
+
+    const itemData = {
+      id,
+      name,
+      description,
+      unit,
+      items_category_id: category,
+      status,
+      is_parent: isParent,
+      parent_id: isParent ? parentId : null
+    };
+
+    const data = {
+      authenticity_token: _authenticityToken,
+      item: itemData
+    };
+
+    const url = id ? `/api/v1/administration/items/${id}` : "/api/v1/administration/items";
+    const method = id ? "PUT" : "POST";
+
+    $.ajax({
+      url,
+      method,
+      data,
+      headers: {
+        "X-CSRF-Token": _authenticityToken
+      },
+      success: () => {
+        alert(id ? "Successfully Updated!" : "Successfully Saved!");
+        window.location.reload();
+      },
+      error: function (response) {
+        let errors = [];
+        try {
+          const errorData = JSON.parse(response.responseText);
+          errors = Array.isArray(errorData.messages)
+            ? errorData.messages.map((err) => err.message || err)
+            : [errorData.messages || "An unexpected error occurred."];
+        } catch (err) {
+          errors.push("Something went wrong. Please try again.");
+        }
+        $message.html(Mustache.render(templateErrorList, { errors })).addClass("text-danger");
+      }
+    });
   });
 };
 
@@ -188,6 +162,12 @@ const init = (options) => {
   _authenticityToken = options.authenticityToken;
   _cacheDom();
   _bindEvents();
+  _toggleParentDropdown();
 };
+
+$(document).ready(function () {
+  const options = { authenticityToken: $("meta[name='csrf-token']").attr("content") };
+  init(options);
+});
 
 export default { init };
