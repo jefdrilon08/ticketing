@@ -256,6 +256,7 @@ class SystemTicketsController < ApplicationController
         @not_a_mem=[]
         @mem_list_dev=[]
         @milestones=[]
+        @chat=SystemTicketDesc.find(params[:id])[:data]["chat"]
         @ticket   = SystemTicketDesc.find(params[:id])
         all_u = SystemTicket.find(@ticket[:system_ticket_id])[:data]["team_members"]
         @cs_id    = SystemTicket.find(@ticket[:system_ticket_id])[:computer_system_id]
@@ -628,5 +629,20 @@ class SystemTicketsController < ApplicationController
         else
             render :edit, status: :unprocessable_entity
         end
+    end
+
+    def chat
+
+        puts params
+        add_msg=SystemTicketDesc.find(params[:id])
+        add_msg_data=add_msg.data
+
+        add_msg_data["chat"].push([current_user.id,Time.new.strftime("%A %B %d, %Y %I:%M %p"),params[:msg]])
+
+        puts add_msg_data["chat"]
+
+        add_msg.update(data:add_msg_data)
+
+        redirect_to "/system_tickets/#{params[:id]}"
     end
 end
