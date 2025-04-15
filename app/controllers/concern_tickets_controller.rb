@@ -149,7 +149,10 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
   
-    @ticket_users = ConcernTicketUser.where(concern_ticket_id: @concern_ticket.id).includes(:user)
+    @ticket_users = ConcernTicketUser
+                    .where(concern_ticket_id: @concern_ticket.id, task: "Developer")
+                    .includes(:user)
+                    .sort_by { |tu| tu.user.full_name.downcase }
     Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
   end
   

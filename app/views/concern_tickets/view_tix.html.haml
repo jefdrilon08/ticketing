@@ -11,8 +11,9 @@
                 %strong.h4 Description:
                 .p-3.border.rounded.bg-light.min-vh-50.fs-10
                     = @concern_ticket_details.description.presence
-
-                %strong.h4.mt-4 Chat:
+                %br
+                %br
+                %strong.h6.mt-4 Chat:
                 .chat-box.border.rounded.bg-light.p-3.min-vh-50.fs-7
                     - if @concern_ticket_details.data.present? && @concern_ticket_details.data["chat_history"].present?
                         - @concern_ticket_details.data["chat_history"].each do |message|
@@ -65,15 +66,26 @@
 
                 .row.mb-3
                     .col-12
-                        %strong.h6 Posted Date:
+                        %strong.h6 Date Posted:
                         = @concern_ticket_details.created_at.strftime("%b %d, %Y %I:%M %p")
+
+                - if @concern_ticket_details.status.in?(["processing", "verification", "closed"])
+                    .row.mb-3
+                        .col-12
+                            %strong.h6 Date Processed:
+                            = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
+
+                - if @concern_ticket_details.status.in?(["verification", "closed"])
+                    .row.mb-3
+                        .col-12
+                            %strong.h6 Date Verified:
+                            = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
 
                 - if @concern_ticket_details.status == "closed"
                     .row.mb-3
                         .col-12
-                            %strong.h6 Closed Date:
+                            %strong.h6 Date Closed:
                             = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
-
                 .row.mb-3
                     .col-12
                         %strong.h6 Files Attached:

@@ -12,10 +12,15 @@ namespace :administration do
   resources :centers
   resources :announcements
 
-  resources :items, only: [:index] do 
-  get "items", to: "items#index"
+ 
+  Rails.application.routes.draw do
+    namespace :administration do
+      resources :items
+    end
   end
-
+  
+   
+  
   resources :items_category, only: [:index] do 
   get "items_category", to: "items_category#index"
   end

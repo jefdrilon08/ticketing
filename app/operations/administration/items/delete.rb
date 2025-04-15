@@ -1,6 +1,5 @@
 module Administration
   module Items
-    # This class handles the deletion of an item record.
     class Delete
       def initialize(config:)
         @id = config[:id]

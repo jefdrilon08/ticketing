@@ -684,6 +684,21 @@ Rails.application.routes.draw do
     end
   end
 
+
+  namespace :api do
+    namespace :v1 do
+      namespace :administration do
+        resources :items, only: [:create, :update, :destroy, :show] # Ensure :show is included here
+      end
+    end
+  end
+  
+  
+  
+
+  
+  
+
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
   get "/stocks/new", to: "stocks#new", as: :new_inventory
@@ -703,6 +718,7 @@ Rails.application.routes.draw do
   delete '/distribute/:id', to: 'distribute#destroy', as: 'destroy_inventory_distribution'
   get '/distribute/:id/view', to: 'distribute#view', as: 'view_inventory_distribution'
 
+
   # BORROW TRANSACTION
   get "/borrow_items", to: "borrow_transactions#index"
   post "/borrow_transactions", to: "borrow_transactions#create"
@@ -719,6 +735,7 @@ Rails.application.routes.draw do
       patch :update_status
     end
   end
+
 
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
