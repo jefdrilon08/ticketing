@@ -343,7 +343,7 @@ class SystemTicketsController < ApplicationController
 
         @subheader_side_actions ||= []
 
-        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1 && @ticket.start_date!=nil
             @subheader_side_actions << {
               id: "btn-status",
               link: "edit_ticket_status/#{params[:id]}",
@@ -352,7 +352,7 @@ class SystemTicketsController < ApplicationController
               text: "Approve"
             } end
 
-        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"]
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] 
             if @role==2 || @role==3
                 @subheader_side_actions << {
                 id: "btn-status",
@@ -442,6 +442,16 @@ class SystemTicketsController < ApplicationController
         edit_date=SystemTicketDesc.find(params[:id])
 
         if edit_date.update(start_date:params[:date])
+            redirect_to "/system_tickets/#{params[:id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def edit_target_date
+        edit_date=SystemTicketDesc.find(params[:id])
+
+        if edit_date.update(target_date:params[:date])
             redirect_to "/system_tickets/#{params[:id]}"
         else
             render :edit, status: :unprocessable_entity

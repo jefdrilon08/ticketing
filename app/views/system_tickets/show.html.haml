@@ -117,7 +117,11 @@
                             Target date:
                     %td
                         %p
-                            #{@ticket.target_date}                
+                            #{@ticket.target_date}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                            -if !@ticket.data["on_hold"] && @ticket.status=="pending" && @role==3
+                                %span
+                                    =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-target-date" },id:'btn-new-milestone' do
+                                        Edit
             %hr{:style=>"width:100%"}
             %table.table.table-bordered.table-sm
                 %tr
@@ -429,4 +433,5 @@
 = render partial: "system_tickets/modals/main_dev"
 = render partial: "system_tickets/modals/members"
 = render partial: "system_tickets/modals/set_start_date"
+= render partial: "system_tickets/modals/edit_target_date"
 = render partial: "system_tickets/modals/add_attachment"
