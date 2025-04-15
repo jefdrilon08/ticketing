@@ -6,10 +6,14 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :trackable, :timeoutable
 
-  has_many :concern_tickets
+  
+  has_many :concern_tickets, through: :concern_ticket_users
   has_many :concern_ticket_details
+  has_many :concern_ticket_users
   
   has_many :borrow_transactions, foreign_key: :user_id, dependent: :destroy
+  
+  
         
 # end
 
@@ -22,8 +26,8 @@ class User < ApplicationRecord
 
   ROLES = [
     "MIS",
+    "REQUESTER",
     "OJT"
-    # "OAS",
     # "BK",
     # "SBK",
     # "CM",

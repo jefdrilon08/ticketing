@@ -5,7 +5,6 @@ module Api
         before_action :authenticate_user!
 
         def create
-
           config = suppliers_params.to_h
           errors = ::Administration::Suppliers::ValidateCreate.new(config: config).execute!
           if errors[:messages].any?
@@ -43,7 +42,16 @@ module Api
         private
 
         def suppliers_params
-          params.permit(:id, :code, :name, :status, :authenticity_token)
+          params.permit(
+            :id,
+            :code,
+            :name,
+            :status,
+            :authenticity_token,
+            :contact_person,
+            :contact_number,
+            :address
+          )
         end
       end
     end

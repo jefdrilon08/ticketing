@@ -5,17 +5,22 @@ module Api
         before_action :authenticate_user!
 
         def create_concern
+          Rails.logger.debug "Params received: #{params.inspect}"
           config = {
             name: params[:name],
             ticket_name: params[:ticket_name],
             description: nil,
             status: "active",
             computer_system_id: params[:computer_system_id],
-            user_id: current_user.id
+            user_id: current_user.id,
+            is_private: params[:is_private] == "1",
+            connect_to_item: params[:connect_to_item] == "1"
           }
         
+          Rails.logger.debug "Config: #{config.inspect}"
+        
           errors = ::Tickets::ValidateCreate.new(config: config).execute!
-          
+        
           if errors[:messages].any?
             render json: errors, status: 400
           else
@@ -25,10 +30,9 @@ module Api
               concern_ticket.reload
               Rails.logger.debug "New Concern Ticket ID: #{concern_ticket.id}"
         
+              # Handle members, concern_fors, and concern_types as before
               if params[:selected_members].present?
                 member_ids = params[:selected_members].split(",")
-                Rails.logger.debug "Member IDs: #{member_ids.inspect}"
-                
                 member_ids.each do |user_id|
                   ConcernTicketUser.create!(
                     user_id: user_id,
@@ -37,10 +41,9 @@ module Api
                   )
                 end
               end
-
+        
               if params[:selected_concern_fors].present?
                 concern_for_names = params[:selected_concern_fors].split(",")
-              
                 concern_for_names.each do |name|
                   ConcernFor.create!(
                     concern_id: concern_ticket.id,
@@ -50,10 +53,9 @@ module Api
                   )
                 end
               end
-              
+        
               if params[:selected_concern_types].present?
                 concern_type_names = params[:selected_concern_types].split(",")
-              
                 concern_type_names.each do |name|
                   ConcernType.create!(
                     concern_id: concern_ticket.id,
@@ -63,7 +65,7 @@ module Api
                   )
                 end
               end
-              
+        
               redirect_to "/concern_tickets"
             else
               Rails.logger.error "Failed to create Concern Ticket: #{concern_ticket.errors.full_messages.join(', ')}"
@@ -127,7 +129,7 @@ module Api
         end
 
         def update_member_status
-          Rails.logger.debug "Params received: #{params.inspect}"
+          Rails.logger.debug "Params receivedz: #{params.inspect}"
           ct_user = ConcernTicketUser.find(params[:id])
           
           if ct_user.update(task: params[:roles], status: params[:status])
@@ -143,8 +145,8 @@ module Api
         
           @ctd_member = ConcernTicketUser.new(
             user_id: user_id,
-            task: "unassigned",
-            status: "active",
+            task: "Unassigned",
+            status: "Active",
             concern_ticket_id: @concern_ticket.id
           )
         

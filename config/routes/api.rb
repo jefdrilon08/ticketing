@@ -120,7 +120,7 @@ namespace :api do
       post "/concern_tickets/update_assigned_person", to: "concern_tickets#update_assigned_person"
       
       # for member status
-      patch "/concern_ticket_users/:id/update_status", to: "concern_tickets#update_member_status"
+      patch "/concern_ticket_users/:id/update_member_status", to: "concern_tickets#update_member_status"
       # for javascript
       post "concern_tickets/update_status", to: "concern_tickets#update_status"
     end
