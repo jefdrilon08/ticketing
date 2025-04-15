@@ -10,12 +10,26 @@ class ConcernTicketsController < ApplicationController
         text: "New"
       }
     ]
-    @records = ConcernTicket.includes(:user, :computer_system).order(:name).page(params[:page]).per(15)
+  
+    if current_user.is_mis?
+      @records = ConcernTicket.includes(:user, :computer_system)
+                               .order(:name)
+                               .page(params[:page])
+                               .per(15)
+    else
+      active_ticket_ids = current_user.concern_ticket_users
+                                      .where(status: "Active")
+                                      .where.not(task: "Unassigned")
+                                      .pluck(:concern_ticket_id)
+  
+      @records = ConcernTicket.includes(:user, :computer_system)
+                               .where("is_private = ? OR id IN (?)", false, active_ticket_ids)
+                               .order(:name)
+                               .page(params[:page])
+                               .per(15)
+    end
   end
   
-  
-  
-
   def show
     @subheader_side_actions = [
       {
@@ -66,6 +80,8 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket.name = params[:name]
     @concern_ticket.ticket_name = params[:ticket_name]
     @concern_ticket.computer_system_id = params[:computer_system_id]
+    @concern_ticket.is_private = params[:is_private] == "1"
+    @concern_ticket.connect_to_item = params[:connect_to_item] == "1"
   
     ActiveRecord::Base.transaction do
       if @concern_ticket.save
@@ -73,10 +89,11 @@ class ConcernTicketsController < ApplicationController
   
         # Update Concern For
         if params[:selected_concern_fors].present?
-          concern_for_names = params[:selected_concern_fors].split(",").map(&:strip)
-          @concern_ticket.concern_fors.where.not(name: concern_for_names).destroy_all
-          concern_for_names.each do |name|
-            @concern_ticket.concern_fors.find_or_create_by!(name: name, status: "active")
+          concern_for_data = params[:selected_concern_fors].split(",").map { |item| item.split(":") }
+          concern_for_data.each do |name, status|
+            concern_for = @concern_ticket.concern_fors.find_or_initialize_by(name: name.strip)
+            concern_for.status = status.strip.downcase
+            concern_for.save!
           end
         else
           @concern_ticket.concern_fors.destroy_all
@@ -84,10 +101,11 @@ class ConcernTicketsController < ApplicationController
   
         # Update Concern Types
         if params[:selected_concern_types].present?
-          concern_type_names = params[:selected_concern_types].split(",").map(&:strip)
-          @concern_ticket.concern_types.where.not(name: concern_type_names).destroy_all
-          concern_type_names.each do |name|
-            @concern_ticket.concern_types.find_or_create_by!(name: name, status: "active")
+          concern_type_data = params[:selected_concern_types].split(",").map { |item| item.split(":") }
+          concern_type_data.each do |name, status|
+            concern_type = @concern_ticket.concern_types.find_or_initialize_by(name: name.strip)
+            concern_type.status = status.strip.downcase
+            concern_type.save!
           end
         else
           @concern_ticket.concern_types.destroy_all
@@ -101,24 +119,29 @@ class ConcernTicketsController < ApplicationController
         render :edit_concern
       end
     end
-  end  
+  end
 
   def join
     concern_ticket_id = params[:concern_ticket_id]
-    
-    if concern_ticket_id.present?
-      ConcernTicketUser.create!(
-        user_id: current_user.id,
-        concern_ticket_id: concern_ticket_id,
-        status: "active",
-        task: nil
-      )
-      flash[:success] = "You have successfully joined the concern!"
-    else
-      flash[:error] = "Failed to join the concern."
-    end
   
-    redirect_to concern_tickets_path
+    if concern_ticket_id.present?
+      existing_record = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: concern_ticket_id)
+      if existing_record
+        flash[:error] = "You have already joined this concern!"
+        redirect_to concern_tickets_path
+      else
+        ConcernTicketUser.create!(
+          user_id: current_user.id,
+          concern_ticket_id: concern_ticket_id,
+          status: "active",
+          task: nil
+        )
+        flash[:success] = "You have successfully joined the concern!"
+        redirect_to concern_tickets_path
+      end
+    else
+      flash[:error] = "Failed to join the concern. Concern Ticket ID is missing."
+    end
   end
   
   def view_tix
@@ -126,8 +149,37 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
   
-    @ticket_users = ConcernTicketUser.where(concern_ticket_id: @concern_ticket.id).includes(:user)
+    @ticket_users = ConcernTicketUser
+                    .where(concern_ticket_id: @concern_ticket.id, task: "Developer")
+                    .includes(:user)
+                    .sort_by { |tu| tu.user.full_name.downcase }
     Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
   end
   
+  def chat_message
+    ticket_detail = ConcernTicketDetail.find(params[:id])
+  
+    if params[:content].blank?
+      return redirect_back(fallback_location: view_tix_concern_ticket_path(ticket_detail.concern_ticket_id))
+    end
+
+    ticket_detail.data ||= {}
+
+    chat_history = ticket_detail.data["chat_history"] || []
+    chat_history << {
+      user: "#{current_user.first_name.capitalize} #{current_user.last_name.capitalize}",
+      comment: params[:content],
+      timestamp: Time.current.strftime("%b %d, %Y %I:%M %p")
+    }
+  
+    ticket_detail.data["chat_history"] = chat_history
+  
+    if ticket_detail.save
+      flash[:success] = "Message sent!"
+    else
+      flash[:error] = "Failed to send message: #{ticket_detail.errors.full_messages.join(', ')}"
+    end
+  
+    redirect_back(fallback_location: view_tix_concern_ticket_path(ticket_detail.concern_ticket_id))
+  end
 end

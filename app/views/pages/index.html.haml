@@ -4,30 +4,40 @@
     %h2
       Dashboard
     %hr{:style=>"height:10px;color:white"}
-    .col-3{:style=>"padding:20px"}
-      %div
-        = link_to "/system_tickets", class: "btn-nav-square-md",style: "padding:100px 30px" do
-          %center
-            %h4
-              Total No. of System Tickets
-            %hr{:style=>"color:white"}
-            %h1
-              #{SystemTicketDesc.count}
+    .row
+      .col-md-3{:style=>"padding:20px"}
+        %div
+          = link_to "/system_tickets", class: "btn-nav-square-md w-100", style: "padding:100px 30px" do
+            %center
+              %h4
+                SYSTEM TICKETS
+              %hr{:style=>"color:white"}
+              %h1
+                #{SystemTicketDesc.count}
+      .col-md-3{:style=>"padding:20px"}
+        %div
+          = link_to "/concern_tickets", class: "btn-nav-square-md w-100", style: "padding:100px 30px" do
+            %center
+              %h4
+                CONCERN TICKETS
+              %hr{:style=>"color:white"}
+              %h1
+                #{ConcernTicket.count}
     %hr{:style=>"height:10px;color:white"}
     %div
       %table.table.table-bordered.table-sm{:style=>"font-size:20px"}
         %tr
           %th{:colspan=>"6"}
             %center
-              Your tickets
+              YOUR TICKETS:
         %tr
-          %th{:style=>"width:20%;padding-top:20px",:rowspan=>"2"}
+          %th{:style=>"width:20%;padding-top:40px",:rowspan=>"2"}
             %center
-              %h3
+              %h4
                 Computer Systems
           %th{:colspan=>"5"}
             %center
-              Ticket status
+              Ticket Status
         %tr
           %th{:style=>"width:10%"}
             Pending

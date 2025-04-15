@@ -27,8 +27,8 @@ Rails.application.routes.draw do
   get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
   get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
   post "/concern_tickets/join", to: "concern_tickets#join", as: "join_concern_ticket"
-
-
+  post "/concern_tickets/:id/chat", to: "concern_tickets#chat_message", as: "chat_message_concern_ticket"
+  
   # online applications
   resources :online_applications, only: [:index, :show]
   
@@ -684,6 +684,7 @@ Rails.application.routes.draw do
     end
   end
 
+
   namespace :api do
     namespace :v1 do
       namespace :administration do
@@ -697,6 +698,26 @@ Rails.application.routes.draw do
 
   
   
+
+  # STOCK
+  get "/stocks", to: "stocks#index", as: :stocks
+  get "/stocks/new", to: "stocks#new", as: :new_inventory
+  post "/stocks", to: "stocks#create", as: :stocks_create
+  get "/stocks/:id/edit", to: "stocks#edit", as: :edit_inventory
+  patch "/stocks/:id", to: "stocks#update", as: :update_inventory
+  delete "/stocks/:id", to: "stocks#destroy", as: :destroy_inventory
+  get "/stocks/:id/view", to: "stocks#view", as: :view_inventory
+
+
+  # DISTRIBUTE 
+  get '/distribute', to: 'distribute#index', as: 'distribute'
+  get '/distribute/new', to: 'distribute#new', as: 'new_distribute'
+  post '/distribute', to: 'distribute#create', as: 'inventory_distribute'
+  get '/distribute/:id/edit', to: 'distribute#edit', as: 'edit_inventory_distribution'
+  patch '/distribute/:id', to: 'distribute#update', as: 'inventory_distribution'
+  delete '/distribute/:id', to: 'distribute#destroy', as: 'destroy_inventory_distribution'
+  get '/distribute/:id/view', to: 'distribute#view', as: 'view_inventory_distribution'
+
 
   # BORROW TRANSACTION
   get "/borrow_items", to: "borrow_transactions#index"
