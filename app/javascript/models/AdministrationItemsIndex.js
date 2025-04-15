@@ -166,7 +166,12 @@ const init = (options) => {
 };
 
 $(document).ready(function () {
-  const options = { authenticityToken: $("meta[name='csrf-token']").attr("content") };
+  const isItemsPage = $("[data-controller='administration-items']").length > 0;
+  if (!isItemsPage) return;
+
+  const options = {
+    authenticityToken: $("meta[name='csrf-token']").attr("content")
+  };
   init(options);
 });
 

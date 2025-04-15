@@ -683,8 +683,7 @@ Rails.application.routes.draw do
       get :details
     end
   end
-
-
+  
   namespace :api do
     namespace :v1 do
       namespace :administration do
@@ -692,12 +691,6 @@ Rails.application.routes.draw do
       end
     end
   end
-  
-  
-  
-
-  
-  
 
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
