@@ -684,14 +684,6 @@ Rails.application.routes.draw do
     end
   end
 
-  namespace :api do
-    namespace :v1 do
-      namespace :administration do
-        resources :items, only: [:create, :update, :destroy, :show] # Ensure :show is included here
-      end
-    end
-  end
-  
 
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
