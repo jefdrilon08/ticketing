@@ -14,19 +14,19 @@
           .col-md-12
             .form-group
               %label(for="input-item-type") Item Type
-              = f.select :item_type, options_for_select([["Item", "Item"], ["Supply", "Supply"]], @item.item_type), { prompt: "--SELECT--" }, { class: "form-control", id: "input-item-type" }
+              = f.select :item_type, options_for_select([["Item", "Item"], ["Supply", "Supply"]], @item.item_type), { prompt: "--SELECT--" }, { class: "form-control", id: "input-item-type", required: true }
 
         .row.mt-3
           .col-md-12
             .form-group
               %label(for="input-items-category") Item Category
-              = f.select :items_category_id, options_for_select(::ItemsCategory.all.pluck(:name, :id), @item.items_category_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-items-category" }
+              = f.select :items_category_id, options_for_select(::ItemsCategory.all.pluck(:name, :id), @item.items_category_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-items-category", required: true }
 
         .row.mt-3
           .col-md-12
             .form-group
               %label(for="input-name") Name
-              = f.text_field :name, class: "form-control", id: "input-name"
+              = f.text_field :name, class: "form-control", id: "input-name", required: true
 
         .row.mt-3
           .col-md-12
@@ -37,24 +37,27 @@
         .row.mt-3
           .col-md-12
             .form-group
-              %label(for="input-status") Status
-              = f.select :status, options_for_select([["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status" }
-
-        .row.mt-3
-          .col-md-12
-            .form-group
               %label(for="input-description") Description
               = f.text_area :description, class: "form-control", id: "input-description", rows: 2
 
         .row.mt-3
           .col-md-12
             .form-group
-              %label(for="input-supplier-id") Supplier
-              %select.form-control{ name: "item[supplier_id]", id: "input-supplier-id" }
-                %option{ value: "" } --SELECT--
+              %label(for="input-supplier-id") Suppliers
+              %select.form-control.select2{ name: "item[supplier_ids][]", id: "input-supplier-id", multiple: true, required: true }
                 - Supplier.all.each do |supplier|
-                  - selected = (params[:item] && params[:item][:supplier_id].to_s == supplier.id.to_s) || (@item.data && @item.data["supplier"] && @item.data["supplier"]["supplier_id"].to_s == supplier.id.to_s)
+                  - selected = false
+                  - if params[:item] && params[:item][:supplier_ids]
+                    - selected = params[:item][:supplier_ids].map(&:to_s).include?(supplier.id.to_s)
+                  - elsif @item.data && @item.data["supplier_ids"]
+                    - selected = @item.data["supplier_ids"].map(&:to_s).include?(supplier.id.to_s)
                   %option{ value: supplier.id, selected: selected }= supplier.name
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              %label(for="input-status") Status
+              = f.select :status, options_for_select([["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status", required: true }
 
         .row.mt-3
           .col-md-12
@@ -75,38 +78,52 @@
         .form-group.mt-3
           = f.submit @item.persisted? ? "Update" : "Submit", class: "btn btn-primary"
 
-    :javascript
-      window.itemData = #{raw(@item.to_json)};
+  = stylesheet_link_tag 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+  = javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js'
+  = javascript_include_tag 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
 
-      $(document).ready(function() {
-        const parentCheckbox = $('#input-is-parent');
-        const parentItemDropdown = $('#input-parent-item');
-        const parentItemDropdownContainer = $('#parent-item-dropdown-container');
-        const form = $('#item-form');
+  :javascript
+    window.itemData = #{raw(@item.to_json)};
 
-        // This function shows or hides the parent item dropdown
-        function toggleParentDropdown() {
-          if (parentCheckbox.is(':checked')) {
-            parentItemDropdownContainer.show();
-            parentItemDropdown.prop('required', true);
-          } else {
-            parentItemDropdownContainer.hide();
-            parentItemDropdown.prop('required', false);
-          }
+    $(document).ready(function() {
+      const parentCheckbox = $('#input-is-parent');
+      const parentItemDropdown = $('#input-parent-item');
+      const parentItemDropdownContainer = $('#parent-item-dropdown-container');
+      const form = $('#item-form');
+
+      function toggleParentDropdown() {
+        if (parentCheckbox.is(':checked')) {
+          parentItemDropdownContainer.show();
+          parentItemDropdown.prop('required', true);
+        } else {
+          parentItemDropdownContainer.hide();
+          parentItemDropdown.prop('required', false);
+        }
+      }
+
+      toggleParentDropdown();
+
+      parentCheckbox.change(function() {
+        toggleParentDropdown();
+      });
+
+      form.submit(function(event) {
+        if (parentCheckbox.is(':checked') && parentItemDropdown.val() === "") {
+          alert("Please select a valid Parent Item.");
+          event.preventDefault();
+          return;
         }
 
-        toggleParentDropdown();
-
-        // Listen for checkbox changes to toggle the parent dropdown visibility
-        parentCheckbox.change(function() {
-          toggleParentDropdown();
-        });
-
-        // Ensure the form is valid before submission
-        form.submit(function(event) {
-          if (parentCheckbox.is(':checked') && parentItemDropdown.val() === "") {
-            alert("Please select a valid Parent Item.");
-            event.preventDefault();
-          }
-        });
+        if ($('#input-supplier-id').val().length === 0) {
+          alert("Please select at least one Supplier.");
+          event.preventDefault();
+          return;
+        }
       });
+
+      $('#input-supplier-id').select2({
+        placeholder: "--SELECT SUPPLIERS--",
+        width: '100%',
+        allowClear: true
+      });
+    });
