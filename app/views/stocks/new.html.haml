@@ -3,127 +3,234 @@
 
 %div.card
   %div.card-header
-    %h4= @inventory.new_record? ? "New Item - Stock" : "Update Item - Stock"
+    %h4
+      = @inventory.new_record? ? "New Item - Stock" : "Update Item - Stock"
+
   %div.card-body
     %form{ action: @inventory.new_record? ? stocks_path : update_inventory_path(@inventory), method: "post", id: "inventoryForm" }
-      %input{ type: "hidden", name: "authenticity_token", value: form_authenticity_token }
+      = hidden_field_tag :authenticity_token, form_authenticity_token
       - unless @inventory.new_record?
-        %input{ type: "hidden", name: "_method", value: "patch" }
+        = hidden_field_tag :_method, "patch"
 
-      %div.form-group
+      .form-group
         %label{ for: "title" } Title
-        %input.form-control{ type: "text", id: "title", name: "inventory[title]", value: @inventory.data["title"].to_s, required: false }
+        %input.form-control{
+          type: "text",
+          id: "title",
+          name: "inventory[title]",
+          value: @inventory.data["title"].to_s,
+          required: true
+        }
 
-      %div.form-group
+      .form-group
+        %label{ for: "brand_name" } Brand Name
+        - if @brands.present?
+          %select.form-control{
+            id: "brand_name",
+            name: "inventory[brand_id]",
+            required: true
+          }
+            %option{ value: "" } -- SELECT --
+            - @brands.each do |brand|
+              %option{ value: brand.id, selected: @inventory.data["brand_id"].to_s == brand.id.to_s }= brand.name
+        - else
+          %p No brand available.
+
+      .form-group
+        %label{ for: "model" } Model
+        %input.form-control{
+          type: "text",
+          id: "model",
+          name: "inventory[model]",
+          value: @inventory.data["model"].to_s,
+          required: true
+        }
+
+      .form-group
+        %label{ for: "threshhold_alerts" } Threshold Alerts
+        %input.form-control{
+          type: "text",
+          id: "threshhold_alerts",
+          name: "inventory[threshhold_alerts]",
+          value: @inventory.data["threshhold_alerts"].to_s.presence || "0.0",
+          required: true
+        }
+
+      .form-group
+        %label{ for: "reorder_points" } Re-order Points
+        %input.form-control{
+          type: "text",
+          id: "reorder_points",
+          name: "inventory[reorder_points]",
+          value: @inventory.data["reorder_points"].to_s.presence || "0.0",
+          required: true
+        }
+
+      .form-group
         %label{ for: "item_name" } Item Name
         - if @items.present?
-          %select.form-control{ id: "item_name", name: "inventory[item_id]", required: true }
-            %option{ value: "" } -- SELECT ITEM --
+          %select.form-control{
+            id: "item_name",
+            name: "inventory[item_id]",
+            required: true
+          }
+            %option{ value: "" } -- SELECT --
             - @items.each do |item|
               %option{ value: item.id, selected: @inventory.item_id == item.id }= item.name
         - else
           %p No items available.
 
-      %div.form-group
+      .form-group
         %label{ for: "inventory_type" } Type
-        %select.form-control{ id: "inventory_type", name: "inventory[type]", required: true }
+        %select.form-control{
+          id: "inventory_type",
+          name: "inventory[type]",
+          required: true
+        }
           %option{ value: "" } -- SELECT --
           %option{ value: "regular", selected: @inventory.type == 'regular' } Regular
           %option{ value: "service", selected: @inventory.type == 'service' } Service
           %option{ value: "distribute", selected: @inventory.type.nil? || @inventory.type == 'distribute' } Distribute
 
-      %div.form-group
+      .form-group
         %label{ for: "serial_number" } Serial Number
-        %input.form-control{ 
-          type: "text", 
-          id: "serial_number", 
-          name: "inventory[serial_number]", 
-          value: @inventory.serial_number, 
-          disabled: false, 
-          required: true 
+        %input.form-control{
+          type: "text",
+          id: "serial_number",
+          name: "inventory[serial_number]",
+          value: @inventory.serial_number,
+          required: true
         }
 
-      %div.form-group
+      .form-group
         %label{ for: "unit" } Unit
-        %input.form-control{ type: "text", id: "unit", name: "inventory[unit]", value: @inventory.unit, required: true }
+        %input.form-control{
+          type: "text",
+          id: "unit_input",
+          name: "inventory[unit]",
+          value: @inventory.unit,
+          required: true
+        }
+        = hidden_field_tag "inventory[unit]", "", id: "unit_hidden", disabled: true
+        %div#unit_display.card.form-control{ style: "display: none; margin-top: 5px;" }
+          = @inventory.unit
 
-      %div.form-group
+      .form-group
         %label{ for: "quantity" } Quantity
-        %input.form-control{ 
-          type: "number", 
-          id: "quantity", 
-          name: "inventory[quantity]", 
-          value: @inventory.new_record? ? 0 : @inventory.quantity, 
-          min: 0, 
-          required: true 
+        %input.form-control{
+          type: "number",
+          id: "quantity",
+          name: "inventory[quantity]",
+          value: @inventory.new_record? ? 0 : @inventory.quantity,
+          min: 0,
+          required: true
         }
 
-      %div.form-group
+      .form-group
         %label{ for: "purchase_date" } Purchase Date
-        %input.form-control{ type: "date", id: "purchase_date", name: "inventory[purchase_date]", value: @inventory.purchase_date, required: true }
+        %input.form-control{
+          type: "date",
+          id: "purchase_date",
+          name: "inventory[purchase_date]",
+          value: @inventory.purchase_date,
+          required: true
+        }
 
-      %div.form-group
+      .form-group
         %label{ for: "supplier_name" } Supplier Name
-        - if @suppliers.present?
-          %select.form-control{ id: "supplier_name", name: "inventory[supplier_id]", required: true }
-            %option{ value: "" } -- SELECT SUPPLIER --
-            - @suppliers.each do |supplier|
-              %option{ value: supplier.id, selected: @inventory.supplier_id == supplier.id }= supplier.name
-        - else
-          %p No suppliers available.
+        %select.form-control{
+          id: "supplier_name",
+          name: "inventory[supplier_id]",
+          required: true
+        }
+          %option{ value: "" } -- SELECT --
 
-      %div.form-group
+      .form-group
         %label{ for: "status" } Status
-        %select.form-control{ id: "status", name: "inventory[status]", required: true }
-          %option{ value: "" } -- SELECT STATUS --
+        %select.form-control{
+          id: "status",
+          name: "inventory[status]",
+          required: true
+        }
+          %option{ value: "" } -- SELECT --
           %option{ value: "Active", selected: @inventory.status == "Active" } Active
           %option{ value: "Dispose", selected: @inventory.status == "Dispose" } Dispose
 
-      %div.form-group
-        %button.btn.btn-primary{ type: "submit" }= @inventory.new_record? ? "Add Stock" : "Update Stock"
+      .form-group
+        %button.btn.btn-primary{ type: "submit" }
+          = @inventory.new_record? ? "Add Stock" : "Update Stock"
 
 :javascript
-  document.addEventListener("DOMContentLoaded", function() {
-    var items = #{raw @items.to_json.html_safe};
+  document.addEventListener("DOMContentLoaded", function () {
+    const items = #{raw @items.to_json.html_safe};
+    const suppliers = #{raw @suppliers.to_json.html_safe};
 
-    function checkItemType() {
-      var form = document.getElementById("inventoryForm");
-      if (!form) return;
+    const itemSelect = document.getElementById("item_name");
+    const supplierSelect = document.getElementById("supplier_name");
 
-      var itemSelect = form.querySelector("#item_name");
-      var serialNumberInput = form.querySelector("#serial_number");
-      var selectedItemId = itemSelect.value;
+    const serialNumberInput = document.getElementById("serial_number");
+    const unitInput = document.getElementById("unit_input");
+    const unitDisplay = document.getElementById("unit_display");
+    const unitHidden = document.getElementById("unit_hidden");
 
-      if (!selectedItemId) {
-        serialNumberInput.disabled = false;
-        serialNumberInput.required = true;
-        return;
+    function updateSupplierDropdown(itemId) {
+      const selectedItem = items.find(item => item.id === itemId);
+      supplierSelect.innerHTML = '<option value="">-- SELECT --</option>';
+
+      if (selectedItem && selectedItem.data && selectedItem.data.supplier_ids && selectedItem.data.supplier_names) {
+        selectedItem.data.supplier_ids.forEach((id, index) => {
+          const name = selectedItem.data.supplier_names[index] || "Unknown";
+          const opt = document.createElement("option");
+          opt.value = id;
+          opt.textContent = name;
+          supplierSelect.appendChild(opt);
+        });
       }
+    }
 
-      var selectedItem = items.find(function(item) {
-        return item.id == selectedItemId;
-      });
+    function updateUnitAndSerialDisplay(itemId) {
+      const selectedItem = items.find(item => item.id === itemId);
+      if (!selectedItem) return;
 
-      if (selectedItem && selectedItem.hasOwnProperty('item_type')) {
-        if (selectedItem.item_type === 'supply') {
-          serialNumberInput.disabled = true;
-          serialNumberInput.required = false;
-        } else {
-          serialNumberInput.disabled = false;
-          serialNumberInput.required = true;
-        }
+      const type = selectedItem.item_type?.toLowerCase();
+      const unit = selectedItem.unit || '';
+
+      if (type === 'supply') {
+        serialNumberInput.disabled = true;
+        serialNumberInput.required = false;
+
+        unitInput.style.display = "none";
+        unitInput.required = false;
+        unitInput.disabled = true;
+
+        unitDisplay.textContent = unit;
+        unitDisplay.style.display = "block";
+        unitHidden.value = unit;
+        unitHidden.disabled = false;
       } else {
         serialNumberInput.disabled = false;
         serialNumberInput.required = true;
+
+        unitInput.style.display = "block";
+        unitInput.required = true;
+        unitInput.disabled = false;
+
+        unitDisplay.style.display = "none";
+        unitHidden.value = unitInput.value;
+        unitHidden.disabled = true;
       }
     }
 
-    var itemSelect = document.getElementById("item_name");
     if (itemSelect) {
-      itemSelect.addEventListener("change", function() {
-        checkItemType();
+      itemSelect.addEventListener("change", function () {
+        const selectedItemId = this.value;
+        updateSupplierDropdown(selectedItemId);
+        updateUnitAndSerialDisplay(selectedItemId);
       });
-    }
 
-    checkItemType(); 
+      if (itemSelect.value) {
+        updateSupplierDropdown(itemSelect.value);
+        updateUnitAndSerialDisplay(itemSelect.value);
+      }
+    }
   });

@@ -1,6 +1,6 @@
 :css
   @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
-  
+
   .form-control-plaintext {
     background-color: #f1f1f1;
     padding: 8px 12px;
@@ -15,39 +15,58 @@
 
   %div.card-body
     %div.form-group
-      %label Title:
+      %label Title
       %p.form-control-plaintext= @inventory.data["title"].presence || "N/A"
 
     %div.form-group
-      %label Item Name:
+      %label Brand Name
+      - if @inventory.brand_id.present?
+        %p.form-control-plaintext= @brands.find { |brand| brand.id == @inventory.brand_id }&.name || "N/A"
+      - else
+        %p.form-control-plaintext N/A
+
+    %div.form-group
+      %label Model
+      %p.form-control-plaintext= @inventory.data["model"].presence || "N/A"
+
+    %div.form-group
+      %label Threshold Alerts
+      %p.form-control-plaintext= @inventory.data["threshhold_alerts"].presence || "N/A"
+
+    %div.form-group
+      %label Re-order Points
+      %p.form-control-plaintext= @inventory.data["reorder_points"].presence || "N/A"    
+
+    %div.form-group
+      %label Item Name
       %p.form-control-plaintext= @inventory.item.try(:name) || "N/A"
 
     %div.form-group
-      %label Type:
+      %label Type
       %p.form-control-plaintext= @inventory.type.present? ? @inventory.type.titleize : "N/A"
 
     %div.form-group
-      %label Serial Number:
+      %label Serial Number
       %p.form-control-plaintext= @inventory.serial_number.presence || "N/A"
 
     %div.form-group
-      %label Unit:
+      %label Unit
       %p.form-control-plaintext= @inventory.unit.presence || "N/A"
 
     %div.form-group
-      %label Quantity:
+      %label Quantity
       %p.form-control-plaintext= @inventory.quantity
 
     %div.form-group
-      %label Purchase Date:
+      %label Purchase Date
       %p.form-control-plaintext= @inventory.purchase_date
 
     %div.form-group
-      %label Supplier Name:
+      %label Supplier Name
       %p.form-control-plaintext= @inventory.supplier.try(:name) || "N/A"
 
     %div.form-group
-      %label Status:
+      %label Status
       %p.form-control-plaintext
         - if @inventory.status == "Active"
           %span.badge.bg-success Active
@@ -55,3 +74,5 @@
           %span.badge.bg-danger Dispose
         - else
           %span.badge.bg-secondary= @inventory.status.presence || "N/A"
+
+  
