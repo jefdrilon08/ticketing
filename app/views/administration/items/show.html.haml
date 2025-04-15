@@ -1,0 +1,63 @@
+:css
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+
+  .form-control-plaintext {
+    background-color: #f1f1f1;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+  }
+
+.card
+  .card-header
+    %h4.mb-0 Item Details
+
+  .card-body
+    .form-group
+      %label Item Type
+      %p.form-control-plaintext= @item&.item_type.presence || "N/A"
+
+    .form-group
+      %label Item Category
+      %p.form-control-plaintext= @item&.items_category&.name || "N/A"
+
+    .form-group
+      %label Name
+      %p.form-control-plaintext= @item&.name.presence || "N/A"
+
+    .form-group
+      %label Unit
+      %p.form-control-plaintext= @item&.unit.presence || "N/A"
+
+    .form-group
+      %label Description
+      %p.form-control-plaintext= @item&.description.presence || "N/A"
+
+    .form-group
+      %label Supplier
+      %p.form-control-plaintext= @item&.data&.dig("supplier", "supplier_name") || "N/A"
+
+    .form-group
+      %label Is Parent?
+      %p.form-control-plaintext= @item&.is_parent ? "Yes" : "No"
+
+    .form-group
+      %label Parent Item
+      - if @item&.parent_id.present?
+        %p.form-control-plaintext= Item.find_by(id: @item.parent_id)&.name || "N/A"
+      - else
+        %p.form-control-plaintext N/A
+
+    .form-group
+      %label Status
+      %p.form-control-plaintext
+        - case @item&.status.to_s.downcase
+        - when "active"
+          %span.badge.bg-success Active
+        - when "pending"
+          %span.badge.bg-warning Pending
+        - when "processing"
+          %span.badge.bg-info Processing
+        - else
+          %span.badge.bg-secondary= @item&.status.presence || "N/A"
