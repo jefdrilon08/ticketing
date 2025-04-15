@@ -36,7 +36,15 @@
 
     .form-group
       %label Supplier
-      %p.form-control-plaintext= @item&.data&.dig("supplier", "supplier_name") || "N/A"
+      - if @item&.data && @item&.data["supplier_ids"].present?
+        %p.form-control-plaintext
+          - suppliers = Supplier.where(id: @item.data["supplier_ids"])
+          - suppliers.each_with_index do |supplier, index|
+            - if index > 0
+              %span , 
+            %span= supplier.name
+      - else
+        %p.form-control-plaintext N/A
 
     .form-group
       %label Is Parent?

@@ -29,21 +29,15 @@ module Administration
     def show
       @item = Item.find(params[:id])
     end
-   
 
     def create
       @item = Item.new(item_params)
 
-      if params[:item][:supplier_id].present?
-        supplier = Supplier.find_by(id: params[:item][:supplier_id])
-        if supplier
-          @item.data = {
-            "supplier" => {
-              "supplier_id" => supplier.id,
-              "name" => supplier.name
-            }
-          }
-        end
+      if params[:item][:supplier_ids].present?
+        @item.data ||= {}
+        @item.data["supplier_ids"] = params[:item][:supplier_ids]
+        suppliers = Supplier.where(id: @item.data["supplier_ids"])
+        @item.data["supplier_names"] = suppliers.map(&:name)
       end
 
       logger.debug("Creating new item with params: #{item_params.inspect}")
@@ -62,32 +56,29 @@ module Administration
 
     def update
       @item = Item.find(params[:id])
-
+    
+      if params[:item][:supplier_ids].present?
+        @item.data ||= {}
+        @item.data["supplier_ids"] = params[:item][:supplier_ids]
+        suppliers = Supplier.where(id: @item.data["supplier_ids"])
+        @item.data["supplier_names"] = suppliers.map(&:name)
+      end
+    
       if @item.is_parent && @item.parent_id.blank?
         @item.errors.add(:parent_id, "must be selected when 'Is Parent?' is checked")
       end
-
+    
       if @item.update(item_params)
-
-        if params[:item][:supplier_id].present?
-          supplier = Supplier.find_by(id: params[:item][:supplier_id])
-          if supplier
-            @item.update(data: {
-              "supplier" => {
-                "supplier_id" => supplier.id,
-                "supplier_name" => supplier.name
-              }
-            })
-          end
-        end
-
+       
+        @item.save if @item.data_changed?
+    
         redirect_to administration_items_path, notice: 'Item updated successfully.'
       else
         @items_list = Item.all.sort_by(&:name)
         render :new
       end
     end
-
+    
     def destroy
       @item = Item.find(params[:id])
 
