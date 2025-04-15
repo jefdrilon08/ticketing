@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_14_010126) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -127,6 +127,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
     t.index ["cluster_id"], name: "index_branches_on_cluster_id"
   end
 
+  create_table "brands", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.uuid "item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_brands_on_item_id"
+  end
+
   create_table "centers", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "branch_id"
     t.string "name"
@@ -226,6 +235,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
     t.json "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "available_for_distribution"
     t.index ["item_id"], name: "index_inventories_on_item_id"
     t.index ["supplier_id"], name: "index_inventories_on_supplier_id"
   end
@@ -241,7 +251,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
     t.string "distribute_by"
     t.string "recieve_by"
     t.json "data"
-    t.string "type"
+    t.string "distribution_type"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -290,17 +300,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "item_request_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "item_request_id", null: false
-    t.uuid "item_id", null: false
-    t.integer "qty", null: false
-    t.string "status", default: "Pending", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_item_request_details_on_item_id"
-    t.index ["item_request_id"], name: "index_item_request_details_on_item_request_id"
-  end
-
   create_table "item_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.date "date_request", null: false
@@ -312,12 +311,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
   end
 
   create_table "items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
-    t.string "description"
-    t.string "status"
+    t.string "name", null: false
+    t.text "description"
+    t.string "status", null: false
     t.string "unit"
     t.uuid "items_category_id", null: false
-    t.json "data"
+    t.jsonb "data", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "item_type"
@@ -355,8 +354,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
     t.date "target_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.date "start_date"
-    t.date "end_date"
   end
 
   create_table "repair_maintenances", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -397,13 +394,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
     t.string "requested_by"
     t.string "request_type"
     t.date "target_date"
-  end
-
-  create_table "system_ticket_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "user_id"
-    t.json "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "system_tickets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -496,6 +486,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
   add_foreign_key "borrow_transactions", "branches"
   add_foreign_key "borrow_transactions", "users"
   add_foreign_key "branches", "clusters"
+  add_foreign_key "brands", "items"
   add_foreign_key "centers", "branches"
   add_foreign_key "clusters", "areas"
   add_foreign_key "inventories", "items"
@@ -508,8 +499,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_014048) do
   add_foreign_key "inventory_request_details", "items"
   add_foreign_key "inventory_requests", "branches"
   add_foreign_key "inventory_requests", "users"
-  add_foreign_key "item_request_details", "item_requests"
-  add_foreign_key "item_request_details", "items"
   add_foreign_key "item_requests", "users"
   add_foreign_key "items", "items", column: "parent_id"
   add_foreign_key "items", "items_categories"
