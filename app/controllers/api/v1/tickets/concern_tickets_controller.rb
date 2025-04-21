@@ -142,19 +142,25 @@ module Api
         def add_member_ct
           @concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
           user_id = params[:ct_user_id]
+          existing_member = ConcernTicketUser.find_by(user_id: user_id, concern_ticket_id: @concern_ticket.id)
         
-          @ctd_member = ConcernTicketUser.new(
-            user_id: user_id,
-            task: "Unassigned",
-            status: "Active",
-            concern_ticket_id: @concern_ticket.id
-          )
-        
-          if @ctd_member.save
-            redirect_to "/concern_tickets/#{@concern_ticket.id}/edit"
-          else
-            flash[:danger] = "Failed to add Member: #{@ctd_member.errors.full_messages.join(', ')}"
+          if existing_member
+            flash[:danger] = "The user is already a member of this concern ticket."
             redirect_back(fallback_location: request.referer || root_path)
+          else
+            @ctd_member = ConcernTicketUser.new(
+              user_id: user_id,
+              task: "Unassigned",
+              status: "Active",
+              concern_ticket_id: @concern_ticket.id
+            )
+        
+            if @ctd_member.save
+              redirect_to "/concern_tickets/#{@concern_ticket.id}/edit"
+            else
+              flash[:danger] = "Failed to add Member: #{@ctd_member.errors.full_messages.join(', ')}"
+              redirect_back(fallback_location: request.referer || root_path)
+            end
           end
         end
         

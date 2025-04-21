@@ -91,7 +91,7 @@
               %th.text Status
               %th.text-center Action
           %tbody
-            - @concern_ticket.concern_ticket_users.sort_by { |ct_user| ct_user.status.downcase }.each do |ct_user|
+            - @concern_ticket.concern_ticket_users.sort_by { |ct_user| "#{ct_user.user.last_name.downcase}, #{ct_user.user.first_name.downcase}" }.each do |ct_user|
               %tr
                 %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
                 %td.text-center

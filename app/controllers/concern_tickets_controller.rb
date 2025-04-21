@@ -2,16 +2,17 @@ class ConcernTicketsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @subheader_side_actions = [
-      {
-        id: "btn-new",
-        link: current_user.is_mis? ? new_concern_ticket_path : "#",
-        class: "fa fa-plus #{'disabled' unless current_user.is_mis?}",
-        text: "New"
-      }
-    ]
-  
     if current_user.is_mis?
+      @subheader_side_actions = [
+        {
+          id: "btn-new",
+          link: current_user.is_mis? ? new_concern_ticket_path : "#",
+          class: "fa fa-plus",
+          text: "New"
+        }
+      ]
+  
+    
       @records = ConcernTicket.includes(:user, :computer_system)
                                .order(:name)
                                .page(params[:page])
