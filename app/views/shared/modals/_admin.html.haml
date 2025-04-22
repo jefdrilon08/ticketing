@@ -2,40 +2,37 @@
   .modal-dialog.modal-xl
     .modal-content
       .modal-header
-        %h3.modal-title 
+        %h3.modal-title{ style: "font-size: 1.5rem;" }
           Administration
       .modal-body
         .row
-          .mt-4
-          .row
-            .col
-              = link_to administration_users_path, class: "btn-nav-square-md" do
-                Users
+          .col
+            = link_to administration_users_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
+              Users
         .mt-4
         .row
           - if is_mis_user?
             .col
-              = link_to administration_areas_path, class: "btn-nav-square-md" do
+              = link_to administration_areas_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
                 Areas
             .col
-              = link_to administration_clusters_path, class: "btn-nav-square-md" do
+              = link_to administration_clusters_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
                 Clusters
-          
+            .col
+              = link_to administration_branches_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
+                Branches
+        .mt-4        
+        .row         
           .col
-            = link_to administration_branches_path, class: "btn-nav-square-md" do
-              Branches
-          .col
-            = link_to "/administration/computer_system", class: "btn-nav-square-md" do
+            = link_to "/administration/computer_system", class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Computer System
           
           .col
-            = link_to "/administration/items", class: "btn-nav-square-md" do
+            = link_to "/administration/items", class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Items
           .col
-            = link_to "/administration/items_category", class: "btn-nav-square-md" do
+            = link_to "/administration/items_category", class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Item Categories
           .col
-            = link_to "/administration/suppliers", class: "btn-nav-square-md" do
+            = link_to "/administration/suppliers", class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Suppliers
-
-          
