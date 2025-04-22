@@ -256,6 +256,7 @@ class SystemTicketsController < ApplicationController
         @not_a_mem=[]
         @mem_list_dev=[]
         @milestones=[]
+        @chat=SystemTicketDesc.find(params[:id])[:data]["chat"]
         @ticket   = SystemTicketDesc.find(params[:id])
         all_u = SystemTicket.find(@ticket[:system_ticket_id])[:data]["team_members"]
         @cs_id    = SystemTicket.find(@ticket[:system_ticket_id])[:computer_system_id]
@@ -342,7 +343,7 @@ class SystemTicketsController < ApplicationController
 
         @subheader_side_actions ||= []
 
-        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1 && @ticket.start_date!=nil
             @subheader_side_actions << {
               id: "btn-status",
               link: "edit_ticket_status/#{params[:id]}",
@@ -351,7 +352,7 @@ class SystemTicketsController < ApplicationController
               text: "Approve"
             } end
 
-        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"]
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] 
             if @role==2 || @role==3
                 @subheader_side_actions << {
                 id: "btn-status",
@@ -441,6 +442,16 @@ class SystemTicketsController < ApplicationController
         edit_date=SystemTicketDesc.find(params[:id])
 
         if edit_date.update(start_date:params[:date])
+            redirect_to "/system_tickets/#{params[:id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def edit_target_date
+        edit_date=SystemTicketDesc.find(params[:id])
+
+        if edit_date.update(target_date:params[:date])
             redirect_to "/system_tickets/#{params[:id]}"
         else
             render :edit, status: :unprocessable_entity
@@ -628,5 +639,20 @@ class SystemTicketsController < ApplicationController
         else
             render :edit, status: :unprocessable_entity
         end
+    end
+
+    def chat
+
+        puts params
+        add_msg=SystemTicketDesc.find(params[:id])
+        add_msg_data=add_msg.data
+
+        add_msg_data["chat"].push([current_user.id,Time.new.strftime("%A %B %d, %Y %I:%M %p"),params[:msg]])
+
+        puts add_msg_data["chat"]
+
+        add_msg.update(data:add_msg_data)
+
+        redirect_to "/system_tickets/#{params[:id]}"
     end
 end

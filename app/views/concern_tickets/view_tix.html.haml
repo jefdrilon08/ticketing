@@ -98,12 +98,13 @@
                             %p.text-muted No files attached.        
 
     .card-footer.d-flex.justify-content-end.bg-light
-        - if @concern_ticket_details.status == "open"
+        - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
+        - if @concern_ticket_details.status == "open" && developer_task
             = button_tag "Process Ticket", 
                 { class: "btn btn-success fs-6 me-2 update-status", 
                   data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing" } }
 
-        - elsif @concern_ticket_details.status == "processing"
+        - elsif @concern_ticket_details.status == "processing" && developer_task
             = button_tag "Move for Verification", 
                 { class: "btn btn-warning fs-6 me-2 update-status", 
                   data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }

@@ -742,6 +742,7 @@ Rails.application.routes.draw do
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"
   post "system_tickets/set_date_milestone", to: "system_tickets#set_date_milestone"
   post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
+  post "system_tickets/edit_target_date",   to: "system_tickets#edit_target_date"
   post "system_tickets/set_expected_goal",  to: "system_tickets#set_expected_goal"
   post "system_tickets/edit_member",        to: "system_tickets#edit_member"
   post "system_tickets/add_member",         to: "system_tickets#add_member"  
@@ -751,6 +752,7 @@ Rails.application.routes.draw do
   post "system_tickets/edit_member_status", to: "system_tickets#edit_member_status"
   post "system_tickets/add_member_st",      to: "system_tickets#add_member_st"
   post "system_tickets/join_st",            to: "system_tickets#join_st"
+  post "system_tickets/chat",               to: "system_tickets#chat"
 
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"

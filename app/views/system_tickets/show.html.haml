@@ -1,5 +1,5 @@
 -@milestone1=0
-.card.some{:style=>"padding:1%"}
+.card.some{:style=>"padding:1%",:onclick=>"scrollUp()"}
     %div.row{:style=>"width:100%"}
         %div
             %table.table.table-bordered{:style=>"font-size:115%;margin-bottom:0px"}
@@ -117,7 +117,11 @@
                             Target date:
                     %td
                         %p
-                            #{@ticket.target_date}                
+                            #{@ticket.target_date}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                            -if !@ticket.data["on_hold"] && @ticket.status=="pending" && @role==3
+                                %span
+                                    =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-target-date" },id:'btn-new-milestone' do
+                                        Edit
             %hr{:style=>"width:100%"}
             %table.table.table-bordered.table-sm
                 %tr
@@ -349,8 +353,56 @@
                             %hr{:style=>"height:30px;color:white"}
                             %h4
                                 No milestone found
-                            %hr{:style=>"height:30px;color:white"}   
-
+                            %hr{:style=>"height:30px;color:white"}
+.card.some{:style=>"padding:1%;"}
+    %div{:style=>"height:650px;padding:0px 50px",:id=>"chat-div",:onclick=>"scrollBot()"}
+        %div
+            %center
+                %h2{:style=>"margin-bottom:-2px"}
+                    Chat
+                %p
+                    -if @chat.empty?
+                        No messages yet.
+                    -else
+                        Last message by 
+                        %span{:style=>"font-weight:bold"}
+                            #{User.find(@chat.last()[0]).first_name} #{User.find(@chat.last()[0]).last_name}
+                        on
+                        %span{:style=>"font-weight:bold"}
+                            #{@chat.last()[1]}
+        %hr{:style=>"height:10px"}  
+        %div{:style=>"height:500px;max-height:500px;display:flex;flex-direction:column-reverse;overflow:auto;",:id=>"chat-box"}
+            -if @chat.empty?
+                %p 
+                    No messages yet.
+            -else 
+                -@chat.reverse_each do |x|
+                    %div.snap-to-bottom
+                        %p{:style=>"opacity:80%;font-size:15px;margin-bottom:-3px;"}
+                            #{x[1]}
+                        -if current_user.id==x[0]
+                            %p{:style=>"font-weight:bold;font-size:20px;margin-bottom:-3px;color:#0D6EFD"}
+                                #{User.find(x[0]).first_name} #{User.find(x[0]).last_name}
+                        -else
+                            %p{:style=>"font-weight:bold;font-size:20px;margin-bottom:-3px"}
+                                #{User.find(x[0]).first_name} #{User.find(x[0]).last_name}
+                        %p{:style=>"font-size:20px"}
+                            #{x[2]}
+                %p{:style=>"font-size:15px;margin-bottom:10px"}
+                    This marks the beginning of the chat.
+                    
+        = form_tag "chat", method: 'POST' do
+            %div.row
+                .form-group
+                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                %div.col-11
+                    .form-group
+                        =text_field_tag :msg,params[:msg],class:'form-control',style:"width:100%;",placeholder:"Type a message..."
+                %div.col-1  
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-primary',style:"width:100px" do
+                            Send
+%hr{:style=>"height:15px;color:white"}
 
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
@@ -366,8 +418,20 @@
         console.log(passId.value)
     }    
 
+    function scrollBot()
+    {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function scrollUp()
+    {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+
 = render partial: "system_tickets/modals/new_milestone"
 = render partial: "system_tickets/modals/main_dev"
 = render partial: "system_tickets/modals/members"
 = render partial: "system_tickets/modals/set_start_date"
+= render partial: "system_tickets/modals/edit_target_date"
 = render partial: "system_tickets/modals/add_attachment"
