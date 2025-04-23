@@ -6,8 +6,8 @@ module Administration
         end
   
         def execute!
-          brand = ::Brand.find(@id)   
-          brand.destroy!
+          brands = ::Brands.find(@id)   
+          brands.destroy!
           { message: 'Brand successfully deleted' }
         end
       end

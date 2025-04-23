@@ -38,13 +38,13 @@ module Administration
         end
   
         def duplicate_code_exists?
-          ::Brand.where("LOWER(code) = ?", @code.to_s.downcase)
+          ::Brands.where("LOWER(code) = ?", @code.to_s.downcase)
                  .where.not(id: @id)
                  .exists?
         end
   
         def duplicate_name_exists?
-          ::Brand.where("LOWER(name) = ?", @name.to_s.downcase)
+          ::Brands.where("LOWER(name) = ?", @name.to_s.downcase)
                  .where.not(id: @id)
                  .exists?
         end
