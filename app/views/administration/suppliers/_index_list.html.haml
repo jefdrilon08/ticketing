@@ -3,9 +3,6 @@
     %tr
       %th Code
       %th Name
-      %th Contact Person
-      %th Contact Number
-      %th Address
       %th.text-center Status
       %th.text-center{ style: 'width:10%' } Actions
   %tbody
@@ -15,27 +12,23 @@
           = a.code
         %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
           = a.name
-        %td
-          = a.contact_person.presence || "-"
-        %td
-          = a.contact_number.presence || "-"
-        %td{ style: "word-wrap: break-word; white-space: normal; max-width: 300px;" }
-          = a.address.presence || "-"
         %td.text-center
-          - if a.status == true || a.status.to_s.downcase == "active"
+          - case a.status.to_s.downcase
+          - when "active"
             %span.badge.bg-success Active
+          - when "pending"
+            %span.badge.bg-warning Pending
+          - when "processing"
+            %span.badge.bg-info Processing
           - else
-            %span.badge.bg-danger Inactive
+            %span.badge.bg-secondary= a.status.presence || "N/A"
         %td.text-center
           %button.btn.btn-info.btn-sm.update-button{
             data: {
               id: a.id,
               code: a.code,
               name: a.name,
-              status: (a.status == true || a.status.to_s.downcase == "active") ? "Active" : "Inactive",
-              contact_person: a.contact_person || "",
-              contact_number: a.contact_number || "",
-              address: a.address || ""
+              status: a.status
             }
           }
             Update

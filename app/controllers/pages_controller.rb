@@ -27,12 +27,8 @@ class PagesController < ApplicationController
 
     SystemTicket.all.each do |x|
       x.data["team_members"].each do |y|
-
-        if !SystemTicketsUser.where(system_ticket_id:x.id,user_id:y).empty?
-
-          status=SystemTicketsUser.where(system_ticket_id:x.id,user_id:y)[0].status=="active" || SystemTicketsUser.where(system_ticket_id:x.id,user_id:y)[0].status=="admin"
-        end
-          if current_user.id==y && status then @systemtix.push(x) end
+        status=SystemTicketsUser.where(system_ticket_id:x.id,user_id:y)[0].status=="active" || SystemTicketsUser.where(system_ticket_id:x.id,user_id:y)[0].status=="admin"
+        if current_user.id==y && status then @systemtix.push(x) end
       end
     end
 

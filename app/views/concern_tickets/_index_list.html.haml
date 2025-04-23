@@ -44,6 +44,8 @@
 
 = render "concern_tickets/modals/join_team"
 
+
+
 :javascript
   document.addEventListener("DOMContentLoaded", () => {
     const joinButtons = document.querySelectorAll('button[data-bs-target="#modal-join-team"]');
@@ -52,7 +54,7 @@
       button.addEventListener("click", () => {
         const concernTicketId = button.dataset.concernTicketId;
         const modalConcernTicketIdField = document.getElementById("modal_concern_ticket_id");
-        modalConcernTicketIdField.value = concernTicketId;
+        modalConcernTicketIdField.value = concernTicketId; // Set the hidden field value
       });
     });
   });

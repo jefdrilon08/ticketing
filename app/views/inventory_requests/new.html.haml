@@ -1,0 +1,26 @@
+%h1 New Inventory Request
+
+= form_for @inventory_request do |f|
+  %table.table(style="border-color:white;font-size:110%")
+    %tr
+      %td
+        %label Request Date
+        .form-group
+          = f.date_field :date_request, class: "form-control datepicker", value: @inventory_request.date_request
+
+    %tr
+      %td
+        %label Branch
+        .form-group
+          = f.select :branch_id, Branch.order(:name).collect { |b| [b.name, b.id] }, { prompt: "Select Branch" }, { class: "form-control" }
+
+    %tr
+      %td
+        %label Status
+        .form-group
+          = f.select :status, ['Pending', 'Approve', 'On Process', 'For Deliver', 'Receive'], { prompt: "Select Status" }, { class: "form-control" }
+
+    %tr
+      %td
+        .form-group
+          = f.submit "Submit Request", class: "btn btn-primary"

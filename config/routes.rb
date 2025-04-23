@@ -729,6 +729,20 @@ Rails.application.routes.draw do
     end
   end
 
+  #INVENTORY REQUEST
+  #batman
+  get "/inventory_requests", to: "inventory_requests#index"
+  get "/inventory_requests/new", to: "inventory_requests#new", as: "new_inventory_request"
+  get "/inventory_requests/:id", to: "inventory_requests#show", as: "view_inventory_detail" 
+  post "/inventory_requests", to: "inventory_requests#create", as: "create_inventory_request"
+  post "/inventory_requests/:inventory_request_id/inventory_request_details", to: "inventory_request_details#create", as: "inventory_request_details"
+
+  resources :inventory_requests do
+    resources :inventory_request_details, only: [:create, :destroy]
+  end
+  
+  
+
 
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
