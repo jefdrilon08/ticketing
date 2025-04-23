@@ -649,6 +649,10 @@ namespace :api do
       post "suppliers/create", to: "suppliers#create"
       put "/suppliers/update", to: "suppliers#update"
       post "/suppliers/delete", to: "suppliers#delete"
+
+      post "brands/create", to: "brands#create"
+      put "brands/update",  to: "brands#update"
+      post "brands/delete", to: "brands#delete"
      
     
       post "/user_demerits/approve", to: "user_demerits#approve"
