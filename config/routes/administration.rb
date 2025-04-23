@@ -18,6 +18,10 @@ namespace :administration do
       resources :items
     end
   end
+
+  namespace :administration do
+    get 'brands', to: 'brands#index' 
+  end
   
    
   

@@ -1,0 +1,13 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        - if @brands_list.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No brands found
+            
+= render partial: "administration/brands/modals/new"
+

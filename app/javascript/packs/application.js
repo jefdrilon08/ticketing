@@ -30,6 +30,7 @@ import AdministrationBranchesIndex from "../models/AdministrationBranchesIndex.j
 import AdministrationBranchesShow from "../components/administration/branches/Show.js";
 import AdministrationCentersShow from "../components/administration/centers/Show.js";
 import AdministrationComputerSystemIndex from '../models/AdministrationComputerSystemIndex.js';
+import AdministrationBrandsIndex from '../models/AdministrationBrandsIndex.js';
 import AdministrationItemsIndex from '../models/AdministrationItemsIndex.js';
 import AdministrationItemsCategoryIndex from '../models/AdministrationItemsCategoryIndex.js';
 import AdministrationSuppliersIndex from '../models/AdministrationSuppliersIndex.js';
@@ -64,6 +65,7 @@ const hooks = {
   "administration/items/index":                       [AdministrationItemsIndex],
   "administration/items_category/index":              [AdministrationItemsCategoryIndex],
   "administration/suppliers/index":                   [AdministrationSuppliersIndex],
+  "administration/brands/index":                      [AdministrationBrandsIndex],
 
   "inventory_requests/show":                          [InventoryRequest],
 

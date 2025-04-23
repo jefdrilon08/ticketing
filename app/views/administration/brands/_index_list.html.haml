@@ -1,0 +1,23 @@
+%table#data-table.display.table.table-bordered.table-hover.table-sm
+  %thead
+    %tr
+      %th Code
+      %th Name
+      %th.text-center{ style: 'width:10%' } Actions
+  %tbody
+    - @brands_list.each do |brand|
+      %tr
+        %td{ style: "text-transform: uppercase;" }= brand.code
+        %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }= brand.name
+        %td.text-center
+          %button.btn.btn-info.btn-sm.update-button{
+            data: {
+              id: brand.id,
+              code: brand.code,
+              name: brand.name,
+              "item-id": brand.item_id
+            }
+          }
+            Update
+          %button.btn.btn-sm.btn-danger.delete-button{ data: { id: brand.id } }
+            %i.fa.fa-times Delete
