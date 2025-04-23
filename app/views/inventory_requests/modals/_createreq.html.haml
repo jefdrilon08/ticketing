@@ -1,0 +1,75 @@
+#createRequestModal.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-keyboard" => "false" }
+  .modal-dialog.modal-lg
+    .modal-content.bg-white.p-3
+      .modal-header
+        %h3.modal-title.text-primary.text-center ADD DETAILS
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      %hr.mt-0.mb-3
+
+      .modal-body
+        = form_tag inventory_request_details_path(@inventory_request), method: 'post' do
+          = hidden_field_tag "inventory_request_detail[inventory_request_id]", @inventory_request.id
+          .modal-body-content
+
+            .row
+              .col-md-6
+                .form-group.mt-3
+                  %label.font-weight-bold{ for: "inventory_request_detail_item_id" } Item
+                  = select_tag "inventory_request_detail[item_id]",
+                    options_from_collection_for_select(@items, :id, :name),
+                    class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", id: "inventory_request_detail_item_id"
+
+              .col-md-6
+                .form-group.mt-3
+                  %label.font-weight-bold{ for: "inventory_request_detail_description" } Description
+                  = text_field_tag "inventory_request_detail[description]", "",
+                    class: "form-control bg-light text-dark border-0 shadow-sm", id: "inventory_request_detail_description"
+
+            .row
+              .col-md-6
+                .form-group.mt-3
+                  %label.font-weight-bold{ for: "inventory_request_detail_unit" } Unit
+                  = text_field_tag "inventory_request_detail[unit]", "",
+                    class: "form-control bg-light text-dark border-0 shadow-sm", id: "inventory_request_detail_unit"
+
+              .col-md-6
+                .form-group.mt-3
+                  %label.font-weight-bold{ for: "inventory_request_detail_quantity_requested" } Quantity Requested
+                  = number_field_tag "inventory_request_detail[quantity_requested]", nil,
+                    class: "form-control bg-light text-dark border-0 shadow-sm", id: "inventory_request_detail_quantity_requested"
+
+            .row
+              .col-md-6
+                .form-group.mt-3
+                  %label.font-weight-bold{ for: "inventory_request_detail_approve_quantity" } Approved Quantity
+                  = number_field_tag "inventory_request_detail[approve_quantity]", nil,
+                    class: "form-control bg-light text-dark border-0 shadow-sm", id: "inventory_request_detail_approve_quantity"
+
+              .col-md-6
+                .form-group.mt-3
+                  %label.font-weight-bold{ for: "inventory_request_detail_remarks" } Remarks
+                  = text_field_tag "inventory_request_detail[remarks]", "",
+                    class: "form-control bg-light text-dark border-0 shadow-sm", id: "inventory_request_detail_remarks"
+
+            -# .row
+            -#   .col-md-6
+            -#     .form-group.mt-3
+            -#       %label.font-weight-bold{ for: "inventory_request_detail_status" } Status
+            -#       = select_tag "inventory_request_detail[status][]",
+            -#         options_for_select([
+            -#           ["Pending", "pending"],
+            -#           ["Approved", "approved"],
+            -#           ["On Process", "on_process"],
+            -#           ["For Delivery", "for_delivery"],
+            -#           ["Received", "received"]
+            -#         ]),
+            -#         class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", id: "inventory_request_detail_status"
+
+          .modal-footer.d-flex.justify-content-center
+            .controls
+              = button_tag type: 'submit', class: 'btn btn-primary' do
+                %i.bi.bi-save.me-2
+                Create Request
+              = button_tag type: 'button', class: 'btn btn-secondary', "data-bs-dismiss" => "modal" do
+                %i.bi.bi-x-lg
+                Close

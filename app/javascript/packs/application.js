@@ -1,7 +1,9 @@
-require("@rails/ujs").start();
+import Rails from "@rails/ujs"
+Rails.start()
 
 import $ from 'jquery';
 import './items';
+import "./inventory_request_modal"
 
 import React from 'react';
 import { createRoot } from "react-dom/client";
@@ -35,6 +37,8 @@ import ItemRequestIndex from '../models/ItemRequestIndex.js';
 import BorrowTransactionsIndex from '../models/BorrowTransactionsIndex.js';
 import ConcernTicketIndex from '../models/ConcernTicketIndex.js';
 import ConcernTicketShow from '../models/ConcernTicketShow.js';
+import InventoryRequest from '../models/InventoryRequestShow.js';
+
 
 const hooks = {
   "pages/index":                                      [DashboardMainUI, Dashboard],
@@ -60,6 +64,8 @@ const hooks = {
   "administration/items/index":                       [AdministrationItemsIndex],
   "administration/items_category/index":              [AdministrationItemsCategoryIndex],
   "administration/suppliers/index":                   [AdministrationSuppliersIndex],
+
+  "inventory_requests/show":                          [InventoryRequest],
 
 
 }

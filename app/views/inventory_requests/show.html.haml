@@ -1,0 +1,26 @@
+%table.table-auto.w-full.border-collapse.border.border-gray-300.text-center
+  %thead.bg-gray-200
+    %tr
+      %th.px-4.py-2.border.text-center Item ID
+      %th.px-4.py-2.border.text-center Description
+      %th.px-4.py-2.border.text-center Unit
+      %th.px-4.py-2.border.text-center Quantity Requested
+      %th.px-4.py-2.border.text-center Approved Quantity
+      %th.px-4.py-2.border.text-center Remarks
+      %th.px-4.py-2.border.text-center Status
+      %th.px-4.py-2.border.text-center Actions
+
+  %tbody
+    - @inventory_request.inventory_request_details.each do |detail|
+      %tr
+        %td.px-4.py-2.border= detail.item.name
+        %td.px-4.py-2.border= detail.description
+        %td.px-4.py-2.border= detail.unit
+        %td.px-4.py-2.border= detail.quantity_requested
+        %td.px-4.py-2.border= detail.approve_quantity
+        %td.px-4.py-2.border= detail.remarks
+        %td.px-4.py-2.border= @inventory_request.status.titleize
+        %td.px-4.py-2.border
+          = button_to 'Delete', inventory_request_inventory_request_detail_path(@inventory_request, detail), method: :delete, data: { confirm: 'Are you sure?' }, class: 'bg-red-500 hover:bg-red-600 text-black font-bold py-1 px-3 rounded'
+
+= render "inventory_requests/modals/createreq"

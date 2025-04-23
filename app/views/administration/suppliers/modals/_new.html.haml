@@ -9,26 +9,15 @@
             .row
               .col
                 .form-group
-                  %label{ for: "input-code" } Code
+                  %label Code
                   = text_field_tag :code, "", id: "input-code", class: "form-control"
                 .form-group
-                  %label{ for: "input-name" } Name
+                  %label Name
                   = text_field_tag :name, "", id: "input-name", class: "form-control"
                 .form-group.mt-3.status-group
-                  %label{ for: "input-status" } Status
-                  = select_tag("status", options_for_select([["--SELECT--", ""], ["Active", "Active"], ["Inactive", "Inactive"]]), id: "input-status", class: "form-control")
+                  %label Status
+                  = select_tag("status", options_for_select([["--SELECT--", ""], ["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]]), id: "input-status", class: "form-control")
                 = hidden_field_tag(:id, "", id: "item-id")
-
-                <!-- New Fields (Contact Person, Contact Number, Address) -->
-                .form-group.mt-3
-                  %label{ for: "input-contact-person" } Contact Person
-                  = text_field_tag :contact_person, "", id: "input-contact-person", class: "form-control"
-                .form-group.mt-3
-                  %label{ for: "input-contact-number" } Contact Number
-                  = text_field_tag :contact_number, "", id: "input-contact-number", class: "form-control", inputmode: "numeric", pattern: "\d*"
-                .form-group.mt-3
-                  %label{ for: "input-address" } Address
-                  = text_field_tag :address, "", id: "input-address", class: "form-control"
           .message
       .modal-footer
         .controls

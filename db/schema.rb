@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_14_010126) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_22_082624) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
@@ -263,7 +263,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_14_010126) do
 
   create_table "inventory_request_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "inventory_request_id", null: false
-    t.uuid "item_id", null: false
+    t.uuid "item_id"
     t.string "description"
     t.string "unit"
     t.integer "quantity_requested"
@@ -284,6 +284,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_14_010126) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "date_request"
     t.index ["branch_id"], name: "index_inventory_requests_on_branch_id"
     t.index ["user_id"], name: "index_inventory_requests_on_user_id"
   end
@@ -315,6 +316,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_14_010126) do
     t.text "description"
     t.string "status", null: false
     t.string "unit"
+    t.string "mr_number"
+    t.string "serial_number"
+    t.integer "total_quantity", default: 0, null: false
+    t.integer "available_quantity", default: 0, null: false
     t.uuid "items_category_id", null: false
     t.jsonb "data", default: {}
     t.datetime "created_at", null: false

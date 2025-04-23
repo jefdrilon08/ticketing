@@ -1,0 +1,24 @@
+%table.table.table-bordered.table-striped.table-hover{ style: "width: 100%; border-collapse: collapse;" }
+  %thead.text-center
+    %tr
+      %th Date
+      %th ID
+      %th Request Number
+      %th Branch 
+      %th User 
+      %th Status
+      %th Actions
+  %tbody
+    - @inventory_requests.each do |request|
+      %tr.text-center
+        %td= request.date_request
+        %td= request.id
+        %td= request.request_number
+        %td= request.branch.name 
+        %td= request.user.full_name    
+        %td= request.status.titleize
+        %td
+          = link_to view_inventory_detail_path(request), class: "btn btn-outline-info btn-sm me-1", title: "View Inventory Request", data: { bs_toggle: "tooltip" } do
+            %i.bi.bi-eye
+          = link_to inventory_request_path(request), method: :delete, data: { confirm: "Are you sure?", bs_toggle: "tooltip" }, class: "btn btn-outline-danger btn-sm", title: "Delete Inventory Request" do
+            %i.bi.bi-trash

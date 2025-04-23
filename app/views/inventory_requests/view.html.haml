@@ -5,11 +5,11 @@
     .alert.alert-danger= flash[:alert]
 
 %div.mb-3
-  = link_to 'New Inventory Request', new_inventory_request_path, class: 'btn btn-primary btn-sm me-2'
+  = link_to 'New Inventory Request', new_inventory_requests_path, class: 'btn btn-primary btn-sm me-2'
 
 %h2 New Inventory Request
 
-= form_for @inventory_request, url: inventory_request_path, html: { multipart: true } do |f|  # Correct path for creating an Inventory Request
+= form_for @inventory_request, html: { multipart: true } do |f|
   %table.table(style="border-color:white;font-size:110%")
     %tr
       %td
@@ -21,7 +21,7 @@
       %td
         %label Request Date
         .form-group
-          = f.text_field :date_request, class: "form-control datepicker", value: Date.today.strftime("%m/%d/%Y")
+          = f.text_field :date_request, class: "form-control datepicker"
 
     %tr
       %td
