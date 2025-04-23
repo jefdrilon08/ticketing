@@ -5,8 +5,9 @@
   %thead
     %tr
       %th 
-      %th Supplier Name
+      %th Title
       %th Item Name
+      %th Supplier Name
       %th(style="text-align: center;") Status
       %th(style="text-align: center;") Actions  
   %tbody
@@ -16,8 +17,9 @@
           %td{ style: "text-align: center;" }
             = link_to view_inventory_path(inventory), title: "View Stock" do
               %i.fa-solid.fa-magnifying-glass.fa-lg
-          %td= inventory.supplier.try(:name) || "N/A"
+          %td= inventory.data["title"].presence || "N/A"
           %td= inventory.item.try(:name) || "N/A"
+          %td= inventory.supplier.try(:name) || "N/A"
           %td(style="text-align: center;")
             - if inventory.status == "Active"
               %span.badge.bg-success= inventory.status
