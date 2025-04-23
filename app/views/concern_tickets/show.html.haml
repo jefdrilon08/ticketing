@@ -1,4 +1,4 @@
-%h3 Concern Ticket: #{@concern_ticket.name}
+%h3{ style: "font-weight: bold;" } CONCERN TICKET: #{@concern_ticket.name}
 = render partial: "show_filter"
 %table.table.table-sm.table-hover.table-bordered
   %thead
@@ -7,7 +7,7 @@
       %th.text-center Name
       %th.text-center Concern Type
       %th.text-center Requested By
-      %th.text-center Branch
+      %th.text-center SATO
       %th.text-center Assigned Person
       %th.text-center Posted Date
       %th.text-center Status
@@ -39,13 +39,17 @@
             = link_to view_tix_concern_ticket_path(ticket), class: "btn btn-primary btn-md", title: "View Tickets", data: { bs_toggle: "tooltip" } do
               %i.bi.bi-eye
 
+            - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
+            - if developer_task
+              - case ticket.status
+              - when "open"
+                = button_tag class: "btn btn-primary update-status", data: { ticket_number: ticket.ticket_number, status: "processing" }, title: "Process Ticket" do
+                  %i.bi.bi-gear
+              - when "processing"
+                = button_tag class: "btn btn-warning update-status", data: { ticket_number: ticket.ticket_number, status: "verification" }, title: "Move for Verification" do
+                  %i.bi.bi-arrow-right-circle
+
             - case ticket.status
-            - when "open"
-              = button_tag class: "btn btn-primary update-status", data: { ticket_number: ticket.ticket_number, status: "processing" }, title: "Process Ticket" do
-                %i.bi.bi-gear
-            - when "processing"
-              = button_tag class: "btn btn-warning update-status", data: { ticket_number: ticket.ticket_number, status: "verification" }, title: "Move for Verification" do
-                %i.bi.bi-arrow-right-circle
             - when "verification"
               = button_tag class: "btn btn-danger update-status", data: { ticket_number: ticket.ticket_number, status: "closed" }, title: "Close Ticket" do
                 %i.bi.bi-x-circle

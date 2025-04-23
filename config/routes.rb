@@ -27,8 +27,8 @@ Rails.application.routes.draw do
   get "/concern_tickets/:id", to: "concern_tickets#show", as: "concern_ticket"
   get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
   post "/concern_tickets/join", to: "concern_tickets#join", as: "join_concern_ticket"
-
-
+  post "/concern_tickets/:id/chat", to: "concern_tickets#chat_message", as: "chat_message_concern_ticket"
+  
   # online applications
   resources :online_applications, only: [:index, :show]
   
@@ -683,6 +683,34 @@ Rails.application.routes.draw do
       get :details
     end
   end
+  
+  namespace :api do
+    namespace :v1 do
+      namespace :administration do
+        resources :items, only: [:create, :update, :destroy, :show] # Ensure :show is included here
+      end
+    end
+  end
+
+  # STOCK
+  get "/stocks", to: "stocks#index", as: :stocks
+  get "/stocks/new", to: "stocks#new", as: :new_inventory
+  post "/stocks", to: "stocks#create", as: :stocks_create
+  get "/stocks/:id/edit", to: "stocks#edit", as: :edit_inventory
+  patch "/stocks/:id", to: "stocks#update", as: :update_inventory
+  delete "/stocks/:id", to: "stocks#destroy", as: :destroy_inventory
+  get "/stocks/:id/view", to: "stocks#view", as: :view_inventory
+
+
+  # DISTRIBUTE 
+  get '/distribute', to: 'distribute#index', as: 'distribute'
+  get '/distribute/new', to: 'distribute#new', as: 'new_distribute'
+  post '/distribute', to: 'distribute#create', as: 'inventory_distribute'
+  get '/distribute/:id/edit', to: 'distribute#edit', as: 'edit_inventory_distribution'
+  patch '/distribute/:id', to: 'distribute#update', as: 'inventory_distribution'
+  delete '/distribute/:id', to: 'distribute#destroy', as: 'destroy_inventory_distribution'
+  get '/distribute/:id/view', to: 'distribute#view', as: 'view_inventory_distribution'
+
 
   # BORROW TRANSACTION
   get "/borrow_items", to: "borrow_transactions#index"
@@ -701,6 +729,7 @@ Rails.application.routes.draw do
     end
   end
 
+
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
   get "system_tickets_:id/edit",            to: "system_tickets#show_st"
@@ -713,6 +742,7 @@ Rails.application.routes.draw do
   post "system_tickets/edit_milestone",     to: "system_tickets#edit_milestone"
   post "system_tickets/set_date_milestone", to: "system_tickets#set_date_milestone"
   post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
+  post "system_tickets/edit_target_date",   to: "system_tickets#edit_target_date"
   post "system_tickets/set_expected_goal",  to: "system_tickets#set_expected_goal"
   post "system_tickets/edit_member",        to: "system_tickets#edit_member"
   post "system_tickets/add_member",         to: "system_tickets#add_member"  
@@ -722,6 +752,7 @@ Rails.application.routes.draw do
   post "system_tickets/edit_member_status", to: "system_tickets#edit_member_status"
   post "system_tickets/add_member_st",      to: "system_tickets#add_member_st"
   post "system_tickets/join_st",            to: "system_tickets#join_st"
+  post "system_tickets/chat",               to: "system_tickets#chat"
 
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"

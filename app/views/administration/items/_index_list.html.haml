@@ -1,6 +1,10 @@
+:css
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+
 %table#data-table.display.table.table-bordered.table-hover.table-sm
   %thead
     %tr
+      %th
       %th Name
       %th Description
       %th Unit
@@ -9,12 +13,12 @@
   %tbody
     - @items_list.each do |a|
       %tr
-        %td{ style: "text-transform: uppercase;" }
-          = a.name
-        %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
-          = a.description
-        %td{ style: "text-transform: uppercase;" }
-          = a.unit
+        %td{ style: "text-align: center;"}
+          = link_to administration_item_path(a), title: "View Item" do
+            %i.fa-solid.fa-magnifying-glass.fa-lg
+        %td{ style: "text-transform: uppercase;" }= a.name
+        %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }= a.description
+        %td{ style: "text-transform: uppercase;" }= a.unit
         %td.text-center
           - case a.status.to_s.downcase
           - when "active"
@@ -28,25 +32,25 @@
         %td.text-center
           %button.btn.btn-info.btn-sm.update-button{
             data: {
-              "id"                => a.id.to_s,
-              "name"              => a.name.to_s,
-              "description"       => a.description.to_s,
-              "unit"              => a.unit.to_s,
-              "status"            => a.status.to_s,
-              "items-category"    => a.items_category_id.to_s,
-              "mr-number"         => a.mr_number.to_s,
-              "serial-number"     => a.serial_number.to_s,
-              "total-quantity"    => a.total_quantity.to_s,
-              "available-quantity"=> a.available_quantity.to_s
+              id:                a.id,
+              name:              a.name,
+              description:       a.description,
+              unit:              a.unit,
+              status:            a.status,
+              items_category_id: a.items_category_id,
+              is_parent:         a.is_parent,
+              parent_id:         a.parent_id
             },
-            title: "Update Item"
+            title: "Update Item",
+            type: "button"
           }
             Update
+
           %button.btn.btn-sm.btn-danger.delete-button{
-            data: { "id" => a.id.to_s },
+            data: { id: a.id },
             title: "Delete Item",
-            type: "button",
-            onclick: "confirmDelete('#{a.id}')"
+            type: "button"
           }
             %i.fa.fa-times
             Delete
+

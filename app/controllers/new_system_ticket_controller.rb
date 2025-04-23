@@ -75,7 +75,8 @@ class NewSystemTicketController < ApplicationController
                             save_details:nil,
                             on_hold:false,
                             hold_details:nil,
-                            file:file_arr
+                            file:file_arr,
+                            chat:[]
                         },
                 date_received:DateTime.now(),
                 start_date:nil,
@@ -97,7 +98,8 @@ class NewSystemTicketController < ApplicationController
                             save_details:nil,
                             on_hold:false,
                             hold_details:nil,
-                            file:file_arr
+                            file:file_arr,
+                            chat:[]
                         },
                 date_received:DateTime.now(),
                 start_date:nil,

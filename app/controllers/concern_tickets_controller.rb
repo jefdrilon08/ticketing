@@ -2,16 +2,17 @@ class ConcernTicketsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @subheader_side_actions = [
-      {
-        id: "btn-new",
-        link: current_user.is_mis? ? new_concern_ticket_path : "#",
-        class: "fa fa-plus #{'disabled' unless current_user.is_mis?}",
-        text: "New"
-      }
-    ]
-  
     if current_user.is_mis?
+      @subheader_side_actions = [
+        {
+          id: "btn-new",
+          link: current_user.is_mis? ? new_concern_ticket_path : "#",
+          class: "fa fa-plus",
+          text: "New"
+        }
+      ]
+  
+    
       @records = ConcernTicket.includes(:user, :computer_system)
                                .order(:name)
                                .page(params[:page])
@@ -149,8 +150,37 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
   
-    @ticket_users = ConcernTicketUser.where(concern_ticket_id: @concern_ticket.id).includes(:user)
+    @ticket_users = ConcernTicketUser
+                    .where(concern_ticket_id: @concern_ticket.id, task: "Developer")
+                    .includes(:user)
+                    .sort_by { |tu| tu.user.full_name.downcase }
     Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
   end
   
+  def chat_message
+    ticket_detail = ConcernTicketDetail.find(params[:id])
+  
+    if params[:content].blank?
+      return redirect_back(fallback_location: view_tix_concern_ticket_path(ticket_detail.concern_ticket_id))
+    end
+
+    ticket_detail.data ||= {}
+
+    chat_history = ticket_detail.data["chat_history"] || []
+    chat_history << {
+      user: "#{current_user.first_name.capitalize} #{current_user.last_name.capitalize}",
+      comment: params[:content],
+      timestamp: Time.current.strftime("%b %d, %Y %I:%M %p")
+    }
+  
+    ticket_detail.data["chat_history"] = chat_history
+  
+    if ticket_detail.save
+      flash[:success] = "Message sent!"
+    else
+      flash[:error] = "Failed to send message: #{ticket_detail.errors.full_messages.join(', ')}"
+    end
+  
+    redirect_back(fallback_location: view_tix_concern_ticket_path(ticket_detail.concern_ticket_id))
+  end
 end

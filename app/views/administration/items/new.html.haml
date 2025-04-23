@@ -1,0 +1,129 @@
+.card
+  .card-header
+    %h4 Item Form
+  .card-body
+    - if @item.errors.any?
+      .alert.alert-danger
+        %ul
+          - @item.errors.full_messages.each do |message|
+            %li= message
+
+    = form_for [:administration, @item], url: @item.persisted? ? administration_item_path(@item) : administration_items_path, method: @item.persisted? ? :patch : :post, html: { id: "item-form" } do |f|
+      .container-fluid
+        .row
+          .col-md-12
+            .form-group
+              %label(for="input-item-type") Item Type
+              = f.select :item_type, options_for_select([["Item", "Item"], ["Supply", "Supply"]], @item.item_type), { prompt: "--SELECT--" }, { class: "form-control", id: "input-item-type", required: true }
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              %label(for="input-items-category") Item Category
+              = f.select :items_category_id, options_for_select(::ItemsCategory.all.pluck(:name, :id), @item.items_category_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-items-category", required: true }
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              %label(for="input-name") Name
+              = f.text_field :name, class: "form-control", id: "input-name", required: true
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              %label(for="input-unit") Unit
+              = f.text_field :unit, class: "form-control", id: "input-unit"
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              %label(for="input-description") Description
+              = f.text_area :description, class: "form-control", id: "input-description", rows: 2
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              %label(for="input-supplier-id") Suppliers
+              %select.form-control.select2{ name: "item[supplier_ids][]", id: "input-supplier-id", multiple: true, required: true }
+                - Supplier.all.each do |supplier|
+                  - selected = false
+                  - if params[:item] && params[:item][:supplier_ids]
+                    - selected = params[:item][:supplier_ids].map(&:to_s).include?(supplier.id.to_s)
+                  - elsif @item.data && @item.data["supplier_ids"]
+                    - selected = @item.data["supplier_ids"].map(&:to_s).include?(supplier.id.to_s)
+                  %option{ value: supplier.id, selected: selected }= supplier.name
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              %label(for="input-status") Status
+              = f.select :status, options_for_select([["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status", required: true }
+
+        .row.mt-3
+          .col-md-12
+            .form-group
+              .form-check
+                = f.hidden_field :is_parent, value: false
+                = f.check_box :is_parent, { class: "form-check-input", id: "input-is-parent" }, true, false
+                %label.form-check-label{ for: "input-is-parent" } Is Parent?
+
+        .row.mt-3#parent-item-dropdown-container{ style: "display: none;" }
+          .col-md-12
+            .form-group
+              %label(for="input-parent-item") Parent Item
+              = f.select :parent_id, options_for_select(Item.all.pluck(:name, :id), @item.parent_id), { prompt: "--SELECT Parent Item--" }, { class: "form-control", id: "input-parent-item", required: false }
+
+        = f.hidden_field :id, id: "item-id"
+
+        .form-group.mt-3
+          = f.submit @item.persisted? ? "Update" : "Submit", class: "btn btn-primary"
+
+  = stylesheet_link_tag 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+  = javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js'
+  = javascript_include_tag 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+
+  :javascript
+    window.itemData = #{raw(@item.to_json)};
+
+    $(document).ready(function() {
+      const parentCheckbox = $('#input-is-parent');
+      const parentItemDropdown = $('#input-parent-item');
+      const parentItemDropdownContainer = $('#parent-item-dropdown-container');
+      const form = $('#item-form');
+
+      function toggleParentDropdown() {
+        if (parentCheckbox.is(':checked')) {
+          parentItemDropdownContainer.show();
+          parentItemDropdown.prop('required', true);
+        } else {
+          parentItemDropdownContainer.hide();
+          parentItemDropdown.prop('required', false);
+        }
+      }
+
+      toggleParentDropdown();
+
+      parentCheckbox.change(function() {
+        toggleParentDropdown();
+      });
+
+      form.submit(function(event) {
+        if (parentCheckbox.is(':checked') && parentItemDropdown.val() === "") {
+          alert("Please select a valid Parent Item.");
+          event.preventDefault();
+          return;
+        }
+
+        if ($('#input-supplier-id').val().length === 0) {
+          alert("Please select at least one Supplier.");
+          event.preventDefault();
+          return;
+        }
+      });
+
+      $('#input-supplier-id').select2({
+        placeholder: "--SELECT SUPPLIERS--",
+        width: '100%',
+        allowClear: true
+      });
+    });

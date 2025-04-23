@@ -1,6 +1,6 @@
 .card
     .card-header.d-flex.justify-content-between.align-items-center{ style: "background-color:rgb(46, 46, 46); color: white;" }
-        %h4.mb-0.text-white.h5
+        %h4.mb-0.text-white.h5{ style: "font-weight: bold;" }
             Ticket Number: #{@concern_ticket_details.ticket_number}
         %h6.mb-0.text-white.h5
             #{@concern_ticket&.name}
@@ -11,12 +11,30 @@
                 %strong.h4 Description:
                 .p-3.border.rounded.bg-light.min-vh-50.fs-10
                     = @concern_ticket_details.description.presence
+                %br
+                %br
+                %strong.h6.mt-4 Chat:
+                .chat-box.border.rounded.bg-light.p-3.min-vh-50.fs-7
+                    - if @concern_ticket_details.data.present? && @concern_ticket_details.data["chat_history"].present?
+                        - @concern_ticket_details.data["chat_history"].each do |message|
+                            .chat-message.mb-2
+                                %small.text-muted= message["timestamp"]
+                                %br
+                                %strong= message["user"]
+                                %p= message["comment"]
+                    - else
+                        %p.text-muted No messages yet.
+
+                = form_with url: chat_message_concern_ticket_path(@concern_ticket_details.id), method: :post, local: true do |f|
+                    .d-flex.align-items-center.gap-2
+                        = f.text_area :content, class: "form-control", placeholder: "Type your message here...", rows: 1, style: "resize: none; width: 85%;"
+                        = f.submit "Send", class: "btn btn-primary btn-sm", style: "height: 38px;"
 
             .col-md-4
                 .row.mb-3
                     .col-12
-                        %strong.h5 Branch:
-                        = @concern_ticket_details.branch&.name
+                        %strong.h5 SATO: &nbsp;
+                        %span.h5= @concern_ticket_details.branch&.name
 
                 .row.mb-3
                     .col-12
@@ -48,33 +66,45 @@
 
                 .row.mb-3
                     .col-12
-                        %strong.h6 Posted Date:
+                        %strong.h6 Date Posted:
                         = @concern_ticket_details.created_at.strftime("%b %d, %Y %I:%M %p")
+
+                - if @concern_ticket_details.status.in?(["processing", "verification", "closed"])
+                    .row.mb-3
+                        .col-12
+                            %strong.h6 Date Processed:
+                            = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
+
+                - if @concern_ticket_details.status.in?(["verification", "closed"])
+                    .row.mb-3
+                        .col-12
+                            %strong.h6 Date Verified:
+                            = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
 
                 - if @concern_ticket_details.status == "closed"
                     .row.mb-3
                         .col-12
-                            %strong.h6 Closed Date:
+                            %strong.h6 Date Closed:
                             = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
-
                 .row.mb-3
                     .col-12
                         %strong.h6 Files Attached:
                         - if @concern_ticket_details.attachments.attached?
                             %ul.fs-7
-                            - @concern_ticket_details.attachments.each do |file|
-                                %li
-                                    = link_to file.filename.to_s, url_for(file), target: "_blank"
+                                - @concern_ticket_details.attachments.each do |file|
+                                    %li
+                                        = link_to file.filename.to_s, url_for(file), target: "_blank"
                         - else
                             %p.text-muted No files attached.        
 
     .card-footer.d-flex.justify-content-end.bg-light
-        - if @concern_ticket_details.status == "open"
+        - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
+        - if @concern_ticket_details.status == "open" && developer_task
             = button_tag "Process Ticket", 
                 { class: "btn btn-success fs-6 me-2 update-status", 
                   data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing" } }
 
-        - elsif @concern_ticket_details.status == "processing"
+        - elsif @concern_ticket_details.status == "processing" && developer_task
             = button_tag "Move for Verification", 
                 { class: "btn btn-warning fs-6 me-2 update-status", 
                   data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }

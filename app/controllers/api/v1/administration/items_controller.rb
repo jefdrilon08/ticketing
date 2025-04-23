@@ -1,50 +1,73 @@
 module Api
   module V1
     module Administration
-      class ItemsController < ApplicationController
+      class ItemsController < ActionController::API
+        before_action :set_item, only: [:show, :update, :destroy]
+
+        def index
+          items = Item.all.order(:name)
+          render json: items
+        end
+
+        def show
+          @item = Item.find(params[:id])
+        end
+        
         def create
-          errors = ::Administration::Items::ValidateCreate.new(config: item_params).execute!
-          if errors[:messages].any?
-            return render json: { status: "error", messages: errors[:full_messages] }, status: 422
+          @item = Item.new(item_params)
+
+          if @item.is_parent && @item.parent_id.blank?
+            render json: { messages: ["Parent Item must be selected when 'Is Parent?' is checked"] }, status: :unprocessable_entity
+            return
           end
-          service = ::Administration::Items::AddItems.new(config: item_params)
-          item = service.execute!
-          render json: { status: "success", item: item }
-        rescue StandardError => e
-          render json: { status: "error", messages: e.message }, status: 422
+
+          if @item.save
+            render json: @item, status: :created
+          else
+            render json: { messages: @item.errors.full_messages }, status: :unprocessable_entity
+          end
         end
 
         def update
-          service = ::Administration::Items::Update.new(config: item_params)
-          item = service.execute!
-          render json: { status: "success", item: item }
-        rescue StandardError => e
-          render json: { status: "error", messages: e.message }, status: 422
+          if @item.is_parent && @item.parent_id.blank?
+            render json: { messages: ["Parent Item must be selected when 'Is Parent?' is checked"] }, status: :unprocessable_entity
+            return
+          end
+
+          if @item.update(item_params)
+            render json: @item
+          else
+            render json: { messages: @item.errors.full_messages }, status: :unprocessable_entity
+          end
         end
 
-        def delete
-          service = ::Administration::Items::Delete.new(config: { id: params[:id] })
-          result = service.execute!
-          render json: { status: "success", message: result[:message] }
-        rescue StandardError => e
-          render json: { status: "error", messages: e.message }, status: 422
+        def destroy
+          if @item.destroy
+            render json: { message: 'Item deleted successfully.' }, status: :ok
+          else
+            render json: { messages: ['Error deleting item.'] }, status: :unprocessable_entity
+          end
         end
 
         private
 
+        def set_item
+          @item = Item.find_by(id: params[:id])
+          unless @item
+            render json: { messages: ['Item not found'] }, status: :not_found
+          end
+        end
+
         def item_params
-          params.permit(
+          params.require(:item).permit(
+            :item_type,
+            :items_category_id,
             :name,
-            :description,
             :status,
             :unit,
-            :id,
-            :items_category_id,
-            :mr_number,
-            :serial_number,
-            :total_quantity,
-            :available_quantity,
-            :authenticity_token
+            :description,
+            :is_parent,
+            :parent_id
           )
         end
       end

@@ -1,0 +1,18 @@
+#modal-edit-target-date.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Edit Target Date
+            .modal-body
+                %hr{style:"height:25px;color:white"}
+                %center
+                    = form_tag "edit_target_date", method: 'POST' do
+                        .form-group
+                            =text_field_tag :date,params[:date],class:'form-control',style:"width:60%",required:true,type: :date
+                        .form-group
+                            =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'  
+                        %hr{style:"height:30px;color:white"}
+                        .form-group
+                            =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
+                                Set Date
