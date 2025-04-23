@@ -9,19 +9,19 @@ module Administration
         end
   
         def execute!
-          create_brand
+          create_brands
         end
   
         private
   
-        def create_brand
-          brand = ::Brand.new(
+        def create_brands
+          brands = ::Brand.new(
             name:    @name,
             code:    @code,
             item_id: @item_id
           )
-          brand.save!
-          brand
+          brands.save!
+          brands
         end
       end
     end

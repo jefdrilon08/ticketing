@@ -11,8 +11,8 @@ module Api
             return render json: { status: "error", messages: errors[:full_messages] }, status: 422
           end
           service = ::Administration::Brands::AddBrands.new(config: config)
-          brand   = service.execute!
-          render json: { status: "success", message: "Brand Created", brand: brand }, status: 200
+          brands   = service.execute!
+          render json: { status: "success", message: "Brand Created", brands: brands }, status: 200
         rescue StandardError => e
           render json: { status: "error", messages: e.message }, status: 422
         end
@@ -24,8 +24,8 @@ module Api
             return render json: { status: "error", messages: errors[:full_messages] }, status: 422
           end
           service = ::Administration::Brands::Update.new(config: config)
-          brand   = service.execute!
-          render json: { status: "success", message: "Brand Updated", brand: brand }, status: 200
+          brands   = service.execute!
+          render json: { status: "success", message: "Brand Updated", brands: brands }, status: 200
         rescue StandardError => e
           render json: { status: "error", messages: e.message }, status: 422
         end
