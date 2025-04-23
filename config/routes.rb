@@ -692,6 +692,11 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :administration do
+  resources :brands
+end
+
+
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
   get "/stocks/new", to: "stocks#new", as: :new_inventory
