@@ -4,14 +4,17 @@ class InventoryRequestsController < ApplicationController
 
   def index
     @inventory_requests = current_user.inventory_requests.order(created_at: :desc).page(params[:page])
+    @inventory_request = InventoryRequest.new
     @subheader_side_actions = [
       {
         id: "btn-create-ticket",
-        link: new_inventory_request_path,
+        link: "#newInventoryRequestModal",
         class: "fa fa-plus",
-        text: "New Request"
+        text: "New Request",
+        data: { bs_toggle: "modal" }
       }
     ]
+    
   end
 
   def new
@@ -20,14 +23,23 @@ class InventoryRequestsController < ApplicationController
   end
 
   def create
-    @inventory_request = current_user.inventory_requests.new(inventory_request_params)
+    @inventory_request = current_user.inventory_requests.build(inventory_request_params)
+    @inventory_request.status = "Pending"
+    
     if @inventory_request.save
-      redirect_to inventory_requests_path, notice: 'Inventory request was successfully created.'
+      respond_to do |format|
+        format.html { redirect_to inventory_request_path(@inventory_request), notice: 'Request created successfully.' }
+        format.js   # looks for create.js.erb
+      end
     else
-      flash.now[:alert] = 'There was an error creating the request.'
-      render :new
+      respond_to do |format|
+        format.html { render :new }
+        format.js   # renders create.js.erb with errors
+      end
     end
   end
+  
+  
 
   def destroy
     @inventory_request.destroy
@@ -65,14 +77,7 @@ def show
   @items = Item.all 
   @inventory_request = InventoryRequest.find(params[:id])
   @inventory_request.inventory_request_details
-  @subheader_side_actions = [
-    {
-      id: "btn-create-request",
-      link: "#",
-      class: "fa fa-plus",
-      text: "Add Details",
-    }
-  ]  
+
 end
 
   def edit

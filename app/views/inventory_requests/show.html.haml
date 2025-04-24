@@ -1,26 +1,156 @@
-%table.table-auto.w-full.border-collapse.border.border-gray-300.text-center
-  %thead.bg-gray-200
-    %tr
-      %th.px-4.py-2.border.text-center Item ID
-      %th.px-4.py-2.border.text-center Description
-      %th.px-4.py-2.border.text-center Unit
-      %th.px-4.py-2.border.text-center Quantity Requested
-      %th.px-4.py-2.border.text-center Approved Quantity
-      %th.px-4.py-2.border.text-center Remarks
-      %th.px-4.py-2.border.text-center Status
-      %th.px-4.py-2.border.text-center Actions
+.container.mt-1
+  .card.shadow-sm.p-4.mb-5
+    %h4.text-primary.mb-3 Add New Inventory Detail
 
-  %tbody
-    - @inventory_request.inventory_request_details.each do |detail|
+    = form_tag inventory_request_details_path(@inventory_request), method: 'post', id: 'addDetailsForm' do
+      = hidden_field_tag "inventory_request_detail[inventory_request_id]", @inventory_request.id
+      = hidden_field_tag "inventory_request_detail[id]", nil, id: 'inventory_request_detail_id'
+
+      .row
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "inventory_request_detail_item_id" } Item
+            = select_tag "inventory_request_detail[item_id]",
+              options_from_collection_for_select(@items, :id, :name),
+              class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "inventory_request_detail_item_id"
+
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "inventory_request_detail_description" } Description
+            = text_field_tag "inventory_request_detail[description]", "",
+              class: "form-control bg-light text-dark shadow-sm", id: "inventory_request_detail_description"
+
+      .row
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "inventory_request_detail_unit" } Unit
+            = text_field_tag "inventory_request_detail[unit]", "",
+              class: "form-control bg-light text-dark shadow-sm", id: "inventory_request_detail_unit"
+
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "inventory_request_detail_quantity_requested" } Quantity Requested
+            = number_field_tag "inventory_request_detail[quantity_requested]", nil,
+              class: "form-control bg-light text-dark shadow-sm", id: "inventory_request_detail_quantity_requested"
+
+      .row
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "inventory_request_detail_approve_quantity" } Approved Quantity
+            = number_field_tag "inventory_request_detail[approve_quantity]", nil,
+              class: "form-control bg-light text-dark shadow-sm", id: "inventory_request_detail_approve_quantity"
+
+        .col-md-6
+          .form-group.mb-4
+            %label.font-weight-bold{ for: "inventory_request_detail_remarks" } Remarks
+            = text_field_tag "inventory_request_detail[remarks]", "",
+              class: "form-control bg-light text-dark shadow-sm", id: "inventory_request_detail_remarks"
+
+      .text-end
+        = button_tag type: 'submit', class: 'btn btn-success shadow-sm px-4 py-2 rounded', form: 'addDetailsForm', id: 'submitDetailBtn' do
+          %i.bi.bi-plus-lg.me-2
+          Add Details
+
+%h4.text-primary.mt-5.mb-3 Inventory Request Details
+
+.table-responsive
+  %table.table.table-hover.table-bordered.text-center.shadow-sm
+    %thead.table-light
       %tr
-        %td.px-4.py-2.border= detail.item.name
-        %td.px-4.py-2.border= detail.description
-        %td.px-4.py-2.border= detail.unit
-        %td.px-4.py-2.border= detail.quantity_requested
-        %td.px-4.py-2.border= detail.approve_quantity
-        %td.px-4.py-2.border= detail.remarks
-        %td.px-4.py-2.border= @inventory_request.status.titleize
-        %td.px-4.py-2.border
-          = button_to 'Delete', inventory_request_inventory_request_detail_path(@inventory_request, detail), method: :delete, data: { confirm: 'Are you sure?' }, class: 'bg-red-500 hover:bg-red-600 text-black font-bold py-1 px-3 rounded'
+        %th.px-3.py-2 Item ID
+        %th.px-3.py-2 Description
+        %th.px-3.py-2 Unit
+        %th.px-3.py-2 Quantity Requested
+        %th.px-3.py-2 Approved Quantity
+        %th.px-3.py-2 Remarks
+        %th.px-3.py-2 Status
+        %th.px-3.py-2 Actions
 
-= render "inventory_requests/modals/createreq"
+    %tbody
+      - @inventory_request.inventory_request_details.each_with_index do |detail, index|
+        %tr{ class: index.even? ? 'bg-white' : 'bg-gray-100' }
+          %td.px-3.py-2= detail.item.name
+          %td.px-3.py-2= detail.description
+          %td.px-3.py-2= detail.unit
+          %td.px-3.py-2= detail.quantity_requested
+          %td.px-3.py-2= detail.approve_quantity
+          %td.px-3.py-2= detail.remarks
+          %td.px-3.py-2= @inventory_request.status.titleize
+          %td.px-3.py-2
+            .d-flex.justify-content-center.gap-2
+              = link_to '#', class: 'btn btn-sm btn-warning shadow-sm edit-detail-btn', title: 'Edit', data: { detail: detail.to_json } do
+                %i.bi.bi-pencil-fill
+              = button_to 'Delete', inventory_request_inventory_request_detail_path(@inventory_request, detail),
+                method: :delete,
+                data: { confirm: 'Are you sure?' },
+                class: 'btn btn-sm btn-danger shadow-sm'
+
+:javascript
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('addDetailsForm')
+    const submitBtn = document.getElementById('submitDetailBtn')
+    const baseUrl = "#{inventory_request_details_path(@inventory_request)}"
+    let editingRow = null
+
+    form.addEventListener('submit', (e) => {
+      const detailId = document.getElementById('inventory_request_detail_id').value
+
+      if (detailId) {
+        e.preventDefault()
+
+        const updateUrl = `/inventory_requests/${form.querySelector('[name="inventory_request_detail[inventory_request_id]"]').value}/inventory_request_details/${detailId}`
+        const hiddenMethod = document.createElement('input')
+        hiddenMethod.type = 'hidden'
+        hiddenMethod.name = '_method'
+        hiddenMethod.value = 'patch'
+        form.appendChild(hiddenMethod)
+        form.action = updateUrl
+        form.submit()
+
+        setTimeout(() => {
+          form.reset()
+          document.getElementById('inventory_request_detail_id').value = ''
+          submitBtn.innerHTML = '<i class="bi bi-plus-lg me-2"></i>Add Details'
+          submitBtn.classList.remove('btn-warning')
+          submitBtn.classList.add('btn-success')
+
+          if (editingRow) {
+            editingRow.classList.remove('d-none')
+            editingRow.classList.remove('editing')
+            editingRow = null
+          }
+        }, 300)
+      }
+    })
+
+    document.querySelectorAll('.edit-detail-btn').forEach(button => {
+      button.addEventListener('click', e => {
+        e.preventDefault()
+
+        if (editingRow) {
+          editingRow.classList.remove('d-none')
+          editingRow.classList.remove('editing')
+        }
+
+        const detail = JSON.parse(button.dataset.detail)
+        document.getElementById('inventory_request_detail_id').value = detail.id
+        document.getElementById('inventory_request_detail_item_id').value = detail.item_id
+        document.getElementById('inventory_request_detail_description').value = detail.description
+        document.getElementById('inventory_request_detail_unit').value = detail.unit
+        document.getElementById('inventory_request_detail_quantity_requested').value = detail.quantity_requested
+        document.getElementById('inventory_request_detail_approve_quantity').value = detail.approve_quantity
+        document.getElementById('inventory_request_detail_remarks').value = detail.remarks
+
+        editingRow = button.closest('tr')
+        editingRow.classList.add('editing')
+        editingRow.classList.add('d-none')
+
+        submitBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Update Details'
+        submitBtn.classList.remove('btn-success')
+        submitBtn.classList.add('btn-warning')
+
+        form.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
+  })
+

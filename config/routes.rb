@@ -692,11 +692,6 @@ Rails.application.routes.draw do
     end
   end
 
-  namespace :administration do
-  resources :brands
-end
-
-
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
   get "/stocks/new", to: "stocks#new", as: :new_inventory
@@ -734,21 +729,21 @@ end
     end
   end
 
-  #INVENTORY REQUEST
-  #batman
+  # INVENTORY REQUEST
+  # batman
   get "/inventory_requests", to: "inventory_requests#index"
   get "/inventory_requests/new", to: "inventory_requests#new", as: "new_inventory_request"
   get "/inventory_requests/:id", to: "inventory_requests#show", as: "view_inventory_detail" 
   post "/inventory_requests", to: "inventory_requests#create", as: "create_inventory_request"
   post "/inventory_requests/:inventory_request_id/inventory_request_details", to: "inventory_request_details#create", as: "inventory_request_details"
+  patch "/inventory_requests/:inventory_request_id/inventory_request_details/:id", to: "inventory_request_details#update", as: "update_inventory_request_detail"
+  delete "/inventory_requests/:inventory_request_id/inventory_request_details/:id", to: "inventory_request_details#destroy", as: "destroy_inventory_request_detail"
 
   resources :inventory_requests do
-    resources :inventory_request_details, only: [:create, :destroy]
+    resources :inventory_request_details, only: [:create, :update, :destroy]
   end
-  
-  
 
-
+  
   get "/system_tickets",                    to: "system_tickets#index"
   get "system_tickets_:id",                 to: "system_tickets#selected_index"
   get "system_tickets_:id/edit",            to: "system_tickets#show_st"
