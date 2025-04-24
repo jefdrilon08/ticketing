@@ -172,11 +172,11 @@ class SystemTicketsController < ApplicationController
         @non_system_members=[]
         members=SystemTicketsUser.where(system_ticket_id:params[:id])
 
-        User.all.each do |x|
+        User.order("last_name ASC").all.each do |x|
             @non_system_members.push(x.id)
         end
 
-        User.all.each do |x|
+        User.order("last_name ASC").all.each do |x|
             members.each do |y|
                 if x.id.to_s==y.user_id.to_s 
                     then @non_system_members.each do |z|
