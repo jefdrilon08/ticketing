@@ -11,7 +11,6 @@ module Tickets
       end
 
       def execute!
-        validate_name
         validate_status
       
         return @errors if @errors[:messages].any?

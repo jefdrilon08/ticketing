@@ -24,22 +24,24 @@ var _bindEvents = function(dom) {
 };
 
 var _addMember = function(dom, memberId, memberName) {
-    console.warn("Invalid memberId:", memberId);
-    if (!memberId || _selectedMembers.has(memberId)) return;
+    if (!memberId || typeof memberId !== "string" || memberId.trim() === "" || _selectedMembers.has(memberId)) {
+        console.warn("Invalid memberId:", memberId);
+        return;
+    }
 
     _selectedMembers.add(memberId);
     _updateHiddenInput(dom);
 
     console.log("Adding member:", memberId, memberName);
     
-    let listItem = $(`
-        <li class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 shadow-sm p-1 text-sm member-item">
+    let listItem = $(
+        `<li class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 shadow-sm p-1 text-sm member-item">
             ${memberName}
             <button type="button" class="btn btn-danger btn-sm remove-member">
                 <i class="bi bi-dash"></i>
             </button>
-        </li>
-    `);
+        </li>`
+    );
 
     listItem.on("mouseover", function() {
         $(this).addClass("bg-danger-subtle");
