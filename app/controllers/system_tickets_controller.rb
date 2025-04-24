@@ -641,6 +641,14 @@ class SystemTicketsController < ApplicationController
         end
     end
 
+    def make_private
+        if SystemTicket.find(params[:id]).is_private then SystemTicket.find(params[:id]).update!(is_private:false)
+        else SystemTicket.find(params[:id]).update!(is_private:true)
+        end
+
+        redirect_to "/system_tickets_#{params[:id]}/edit"
+    end
+
     def chat
 
         puts params

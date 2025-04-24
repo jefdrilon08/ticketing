@@ -767,6 +767,7 @@ Rails.application.routes.draw do
   post "system_tickets/add_member_st",      to: "system_tickets#add_member_st"
   post "system_tickets/join_st",            to: "system_tickets#join_st"
   post "system_tickets/chat",               to: "system_tickets#chat"
+  post "system_tickets/make_private",       to: "system_tickets#make_private"
 
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"
