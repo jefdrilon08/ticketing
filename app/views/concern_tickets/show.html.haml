@@ -40,7 +40,7 @@
               %i.bi.bi-eye
 
             - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
-            - if developer_task
+            - if developer_task || current_user.is_mis?
               - case ticket.status
               - when "open"
                 = button_tag class: "btn btn-primary update-status", data: { ticket_number: ticket.ticket_number, status: "processing" }, title: "Process Ticket" do

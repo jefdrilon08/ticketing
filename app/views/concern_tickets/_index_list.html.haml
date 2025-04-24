@@ -10,6 +10,7 @@
   %tbody
     - if @records.present?
       - @records.each do |a|
+        - user_concern_ticket = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: a.id)
         %tr
           %td.text-center= a.name
           %td.text-center= a.computer_system&.name || "N/A"
@@ -26,15 +27,21 @@
             - else
               .badge.bg-secondary Pending
           %td.text-center
-            = link_to concern_ticket_path(a), class: "btn btn-primary btn-md", title: "View Ticket", data: { bs_toggle: "tooltip" } do
-              %i.bi.bi-eye
+            - if current_user.is_mis? || (user_concern_ticket && user_concern_ticket.status != "inactive" && user_concern_ticket.task != "unassigned")
+              = link_to concern_ticket_path(a), class: "btn btn-primary btn-md ms-2", title: "View Ticket", data: { bs_toggle: "tooltip" } do
+                %i.bi.bi-eye
             
             - if current_user.is_mis?
               = link_to edit_concern_ticket_path(a), class: "btn btn-warning btn-md ms-2", title: "Edit Concern Ticket", data: { bs_toggle: "tooltip" } do
                 %i.bi.bi-pencil
 
+            - if current_user.is_mis? || user_concern_ticket.nil?
               %button.btn.btn-success.btn-md.ms-2{ type: "button", title: "Join", data: { bs_toggle: "modal", bs_target: "#modal-join-team", concern_ticket_id: a.id } }
-                %i.bi.bi-person-plus  
+                %i.bi.bi-box-arrow-in-right
+
+            - unless current_user.is_mis? || user_concern_ticket.nil? || (user_concern_ticket && user_concern_ticket.status != "inactive" && user_concern_ticket.task != "unassigned")
+              %div{ style: "min-height: 38px; display: flex; align-items: center; justify-content: center;" }
+                %span.text-muted Pending Join Request     
     - else
       %tr
         %td{ colspan: 6, class: "text-center" } No records found
@@ -43,20 +50,3 @@
   = paginate @records
 
 = render "concern_tickets/modals/join_team"
-
-
-
-:javascript
-  document.addEventListener("DOMContentLoaded", () => {
-    const joinButtons = document.querySelectorAll('button[data-bs-target="#modal-join-team"]');
-
-    joinButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const concernTicketId = button.dataset.concernTicketId;
-        const modalConcernTicketIdField = document.getElementById("modal_concern_ticket_id");
-        modalConcernTicketIdField.value = concernTicketId;
-      });
-    });
-  });
-
-  

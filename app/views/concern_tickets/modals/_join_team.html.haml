@@ -11,3 +11,19 @@
       .modal-footer
         %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Cancel
         %button.btn.btn-success{ type: "submit", form: "joinForm" } Confirm
+
+:javascript
+  document.addEventListener("DOMContentLoaded", () => {
+    const joinButtons = document.querySelectorAll('button[data-bs-target="#modal-join-team"]');
+
+    joinButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const concernTicketId = button.dataset.concernTicketId;
+        const modalConcernTicketIdField = document.getElementById("modal_concern_ticket_id");
+        if (modalConcernTicketIdField) {
+          modalConcernTicketIdField.value = concernTicketId;
+          console.log("Set concern_ticket_id in modal:", concernTicketId);
+        }
+      });
+    });
+  });

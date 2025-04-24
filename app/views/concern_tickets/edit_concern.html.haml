@@ -86,6 +86,7 @@
         %table.table.table-bordered.mt-2
           %thead
             %tr
+              %th.text-center{ style: "width: 1%;" }
               %th.text-center Member Name
               %th.text Roles
               %th.text Status
@@ -93,15 +94,16 @@
           %tbody
             - @concern_ticket.concern_ticket_users.sort_by { |ct_user| "#{ct_user.user.last_name.downcase}, #{ct_user.user.first_name.downcase}" }.each do |ct_user|
               %tr
+                %td.text-center{ style: "background-color: #{ct_user.task == 'unassigned' || ct_user.status == 'inactive' ? 'red' : 'green'};" }
                 %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
                 %td.text-center
                   = select_tag "roles_#{ct_user.id}", 
-                    options_for_select(["Developer", "Requester", "Unassigned"], ct_user.task || "Unassigned"), 
+                    options_for_select(["Developer", "Requester", "Unassigned"], ct_user.task&.capitalize || "Unassigned"), 
                     class: "form-control form-select-sm", 
                     data: { id: ct_user.id, field: "roles" }
                 %td.text-center
                   = select_tag "status_#{ct_user.id}", 
-                    options_for_select(["Active", "Inactive", "Pending"], ct_user.status.titleize || "Pending"), 
+                    options_for_select(["Active", "Inactive"], ct_user.status.titleize || "Active"), 
                     class: "form-control form-select-sm", 
                     data: { id: ct_user.id, field: "status" }
                 %td.text-center
@@ -237,7 +239,6 @@
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              alert("Member updated successfully!");
               location.reload();
             } else {
               alert("Failed to update member: " + data.error);

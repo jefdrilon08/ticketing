@@ -11,16 +11,15 @@
               Users
         .mt-4
         .row
-          - if is_mis_user?
-            .col
-              = link_to administration_areas_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
-                Areas
-            .col
-              = link_to administration_clusters_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
-                Clusters
-            .col
-              = link_to administration_branches_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
-                Branches
+          .col
+            = link_to administration_areas_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
+              Areas
+          .col
+            = link_to administration_clusters_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
+              Clusters
+          .col
+            = link_to administration_branches_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
+              Branches
         .mt-4        
         .row         
           .col

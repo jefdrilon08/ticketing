@@ -37,6 +37,7 @@ module Api
                   ConcernTicketUser.create!(
                     user_id: user_id,
                     status: "active",
+                    task: "unassigned",
                     concern_ticket_id: concern_ticket.id
                   )
                 end
@@ -128,10 +129,14 @@ module Api
         end
 
         def update_member_status
-          Rails.logger.debug "Params receivedz: #{params.inspect}"
+          Rails.logger.debug "Params received: #{params.inspect}"
           ct_user = ConcernTicketUser.find(params[:id])
           
-          if ct_user.update(task: params[:roles], status: params[:status])
+          # Convert roles and status to lowercase before saving
+          roles = params[:roles].downcase if params[:roles].present?
+          status = params[:status].downcase if params[:status].present?
+        
+          if ct_user.update(task: roles, status: status)
             render json: { success: true }
           else
             render json: { success: false, error: ct_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
@@ -149,8 +154,8 @@ module Api
           else
             @ctd_member = ConcernTicketUser.new(
               user_id: user_id,
-              task: "Unassigned",
-              status: "Active",
+              task: "unassigned",
+              status: "active",
               concern_ticket_id: @concern_ticket.id
             )
         
