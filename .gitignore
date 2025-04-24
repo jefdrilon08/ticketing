@@ -65,10 +65,11 @@ config/settings/_*.yml
 *.rdb
 *.csv
 
+
 /shared
 
 # Ignore db backups
-/*.dump
+#/*.dump
 
 # Ignore package-lock.json since we're using yarn
 package-lock.json
