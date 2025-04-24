@@ -6,10 +6,11 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :trackable, :timeoutable
 
+  has_many :concern_tickets, through: :concern_ticket_users
   has_many :concern_tickets
   has_many :concern_ticket_details
   has_many :inventory_requests
-  
+  has_many :concern_ticket_users
   has_many :borrow_transactions, foreign_key: :user_id, dependent: :destroy
         
 # end
@@ -23,21 +24,21 @@ class User < ApplicationRecord
 
   ROLES = [
     "MIS",
-    "OJT"
-    # "OAS",
-    # "BK",
-    # "SBK",
-    # "CM",
-    # "SO",
-    # "FM",
-    # "AM",
-    # "ACC",
-    # "AO",
-    # "REMOTE-OAS",
-    # "REMOTE-BK",
-    # "REMOTE-MIS",
-    # "REMOTE-FM",
-    # "OM",
+    "OJT",
+    "OAS",
+    "BK",
+    "SBK",
+    "CM",
+    "SO",
+    "FM",
+    "AM",
+    "ACC",
+    "AO",
+    "REMOTE-OAS",
+    "REMOTE-BK",
+    "REMOTE-MIS",
+    "REMOTE-FM",
+    "OM"
   ]
 
   FOR_MANAGING_BRANCH_ROLES = [
