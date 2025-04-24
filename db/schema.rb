@@ -301,6 +301,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_22_082624) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "item_request_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "item_request_id", null: false
+    t.uuid "item_id", null: false
+    t.integer "qty", null: false
+    t.string "status", default: "Pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_item_request_details_on_item_id"
+    t.index ["item_request_id"], name: "index_item_request_details_on_item_request_id"
+  end
+
   create_table "item_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.date "date_request", null: false
@@ -308,20 +319,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_22_082624) do
     t.jsonb "status_dates", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "sato_id"
+    t.string "date"
+    t.string "description"
     t.index ["user_id"], name: "index_item_requests_on_user_id"
   end
 
   create_table "items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name", null: false
-    t.text "description"
-    t.string "status", null: false
+    t.string "name"
+    t.string "description"
+    t.string "status"
     t.string "unit"
-    t.string "mr_number"
-    t.string "serial_number"
-    t.integer "total_quantity", default: 0, null: false
-    t.integer "available_quantity", default: 0, null: false
     t.uuid "items_category_id", null: false
-    t.jsonb "data", default: {}
+    t.json "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "item_type"
@@ -359,6 +369,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_22_082624) do
     t.date "target_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "start_date"
+    t.date "end_date"
   end
 
   create_table "repair_maintenances", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -399,6 +411,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_22_082624) do
     t.string "requested_by"
     t.string "request_type"
     t.date "target_date"
+  end
+
+  create_table "system_ticket_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "user_id"
+    t.json "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "system_tickets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -504,6 +523,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_22_082624) do
   add_foreign_key "inventory_request_details", "items"
   add_foreign_key "inventory_requests", "branches"
   add_foreign_key "inventory_requests", "users"
+  add_foreign_key "item_request_details", "item_requests"
+  add_foreign_key "item_request_details", "items"
   add_foreign_key "item_requests", "users"
   add_foreign_key "items", "items", column: "parent_id"
   add_foreign_key "items", "items_categories"

@@ -1,0 +1,12 @@
+.row
+  .col
+    .card
+      .card-header
+        %h3.card-title Manage Stock 
+      .card-body
+        - if @inventories.present? && @inventories.any?
+          = render partial: "index_list"
+        - else
+          %p No records found
+
+
