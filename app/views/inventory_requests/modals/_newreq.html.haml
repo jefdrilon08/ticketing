@@ -1,0 +1,24 @@
+#newInventoryRequestModal.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-keyboard" => "false" }
+  .modal-dialog.modal-md
+    .modal-content.bg-white.rounded-4.shadow-lg
+      .modal-header.border-0.pb-0
+        %h3.modal-title.text-primary.fw-bold New Inventory Request
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+
+      %hr.my-2
+
+      .modal-body
+        = form_for @inventory_request do |f|
+          .form-group.mb-4
+            %label.fw-semibold.mb-2{ for: "inventory_request_branch_id" } Branch
+            = f.select :branch_id,
+              Branch.order(:name).collect { |b| [b.name, b.id] },
+              { prompt: "Select Branch" },
+              class: "form-select bg-secondary-subtle text-dark shadow-sm"
+
+          .d-flex.justify-content-end.gap-2.mt-3
+            = button_tag type: 'button', class: 'btn btn-outline-secondary px-4 py-2 rounded shadow-sm', "data-bs-dismiss" => "modal" do
+              %i.bi.bi-x-lg.me-2
+              Close
+
+            = f.submit "Submit Request", class: "btn btn-primary px-4 py-2 rounded shadow-sm"
