@@ -22,20 +22,6 @@ module Tickets
       
       private
 
-      def validate_name
-        if @name.blank?
-          @errors[:messages] << {
-            key: "name",
-            message: "Name cannot be blank."
-          }
-        elsif duplicate_name_exists?
-          @errors[:messages] << {
-            key: "computer_system",
-            message: "Computer system with name '#{@name}' already exists."
-          }
-        end
-      end
-
       def validate_status
         if @status.blank?
           @errors[:messages] << {

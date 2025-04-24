@@ -144,7 +144,7 @@ class ConcernTicketsController < ApplicationController
       flash[:error] = "Failed to join the concern. Concern Ticket ID is missing."
     end
   end
-  
+   
   def view_tix
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)

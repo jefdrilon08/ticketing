@@ -5,6 +5,7 @@ import * as bootstrap from "bootstrap";
 var _authenticityToken;
 var _selectedMembers = new Set();
 
+
 var _cacheDom = function() {
     return {
         select: document.getElementById("team-member-select"),

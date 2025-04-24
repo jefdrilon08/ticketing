@@ -80,7 +80,6 @@ module Api
           ticket_count = ConcernTicketDetail.where(concern_ticket_id: concern_ticket.id).count
           ticket_number = "#{concern_ticket.ticket_name} - #{(ticket_count + 1).to_s.rjust(4, '0')}"
 
-          Rails.logger.debug "batbat: #{concern_ticket.inspect}"
           @concern_ticket_record = ConcernTicketDetail.new(
             ticket_number: ticket_number,
             concern_ticket_id: params[:concern_ticket_id],
@@ -92,7 +91,7 @@ module Api
             requested_user_id: current_user.id,
             assigned_user_id: concern_ticket.user_id
           )
-          Rails.logger.debug "status for updatezzz: #{params[:attachments].inspect}"
+
           if params[:attachments].present?
             attachments = Array(params[:attachments]) # para maging array
             Rails.logger.debug "Processed attachments array: #{attachments.map(&:original_filename)}"
