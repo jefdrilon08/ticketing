@@ -285,6 +285,7 @@ class SystemTicketsController < ApplicationController
         all_u = SystemTicket.find(@ticket[:system_ticket_id])[:data]["team_members"]
         @cs_id    = SystemTicket.find(@ticket[:system_ticket_id])[:computer_system_id]
         @empty    = Milestone.where(system_ticket_desc_id:@ticket[:id]).count==0
+        @id_forchat=params[:id]
         if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("status DESC,target_date ASC") end
         @milestones.each do |x|
             if x.status=="pending" then @all_done=@all_done+1 end

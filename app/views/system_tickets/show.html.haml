@@ -405,7 +405,7 @@
             = form_tag "chat", method: 'POST' do
                 %div.row
                     .form-group
-                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none',value:@id_forchat
                     %div.col-11
                         .form-group
                             =text_field_tag :msg,params[:msg],class:'form-control',style:"width:100%;",placeholder:"Type a message..."
