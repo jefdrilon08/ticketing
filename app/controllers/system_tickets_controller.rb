@@ -373,7 +373,7 @@ class SystemTicketsController < ApplicationController
             end
         @subheader_side_actions ||= []
 
-        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket.start_date!=nil
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] 
             if @role==1 || @role==5
                 @subheader_side_actions << {
                 id: "btn-status",
