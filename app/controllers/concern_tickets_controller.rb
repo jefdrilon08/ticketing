@@ -79,7 +79,7 @@ class ConcernTicketsController < ApplicationController
       @details_records = @details_records.where(status: params[:ticket_status])
     end
   
-    @details_records = @details_records.order(status: :desc, created_at: :asc).page(params[:page]).per(15)
+    @details_records = @details_records.order(status: :desc, created_at: :asc).page(params[:page]).per(20)
   end
 
   def new_concern

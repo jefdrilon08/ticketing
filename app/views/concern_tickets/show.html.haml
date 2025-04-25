@@ -57,5 +57,6 @@
     - else
       %tr
         %td{ colspan: 9, class: "text-center" } No ticket details found
-
+.pagination-container.mt-3.d-flex.justify-content-center
+  = paginate @details_records
 = render "concern_tickets/modals/create_ticket"

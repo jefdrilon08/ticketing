@@ -23,7 +23,7 @@
             .row
               .col-md-6
                 .form-group.mt-3
-                  %label.font-weight-bold Concern For
+                  %label.font-weight-bold Concern From
                   .d-flex.align-items-center
                     = select_tag :name_for_id, 
                       options_from_collection_for_select(@concern_fors&.sort_by(&:name) || [], :id, :name), 
