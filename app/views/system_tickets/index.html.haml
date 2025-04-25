@@ -31,7 +31,7 @@
                             -if current_user.id==x.user_id.to_s
                                 =link_to "/system_tickets_#{x.id}/edit" do
                                     %p
-                                        Edit Members
+                                        Edit
                             -else
                                 -SystemTicket.find(x.id).data["team_members"].each do |y|
                                     -if current_user.id==y
