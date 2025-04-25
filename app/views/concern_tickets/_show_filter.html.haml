@@ -1,28 +1,46 @@
 = form_tag "", method: 'GET', id: "filter-form" do
-  .row
+  .row.g-2{ style: "row-gap: 0rem;" }
     .col-md-2.col-12
       .form-group
         %label
           SATO
-        = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, params[:branch_id]), class: "form-control select-select2", id: "branch-select", prompt: "-- SELECT --"
+        = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "branch-select", prompt: "-- SELECT --"
     
     .col-md-2.col-12
       .form-group
         %label
-          Requested Date
-        = text_field_tag :start_date, params[:start_date], class: 'form-control', type: :date, id: "start-date"
+          Concern From
+        = select_tag :concern_for_id, options_from_collection_for_select(@concern_fors, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "concern-for-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
       .form-group
         %label
-          Ticket Status
-        = select_tag :ticket_status, options_for_select([['Open', 'open'], ['Processing', 'processing'], ['For Verification', 'verification'], ['Closed', 'closed']], params[:ticket_status]), class: "form-control select-select2", id: "ticket-status-select", prompt: "-- SELECT --"
+          Concern Type
+        = select_tag :concern_type_id, options_from_collection_for_select(@concern_types, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "concern-type-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
+      .form-group
+        %label
+          Start Date
+        = text_field_tag :start_date, nil, class: 'form-control form-control-sm', type: :date, id: "start-date"
+
+    .col-md-2.col-12
+      .form-group
+        %label
+          End Date
+        = text_field_tag :end_date, nil, class: 'form-control form-control-sm', type: :date, id: "end-date"
+
+    .col-md-1.col-12
+      .form-group
+        %label
+          Status
+        = select_tag :ticket_status, options_for_select([['Open', 'open'], ['Processing', 'processing'], ['For Verification', 'verification'], ['Closed', 'closed']], nil), class: "form-control select-select2 form-control-sm", id: "ticket-status-select", prompt: "-- SELECT --"
+
+    .col-auto
       .form-group
         %label
           Actions
         .form-group
           .btn-group
-            = button_tag type: 'submit', class: 'btn btn-info btn-block', id: "search-btn" do
+            = button_tag type: 'submit', class: 'btn btn-info btn-sm btn-block', id: "search-btn" do
               .bi.bi-search

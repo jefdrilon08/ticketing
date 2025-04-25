@@ -31,7 +31,7 @@
     .row
       .col-md-6.col-12
         .form-group
-          %label Concern For
+          %label Concern From
           .input-group
             = text_field_tag :concern_for, "", id: "concern-for-input", class: "form-control", placeholder: "Enter Concern For"
             = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-for"
@@ -46,7 +46,7 @@
     .row
       .col-md-6.col-12
         .form-group
-          %label Concern For Records:
+          %label Concern From Records:
           %ul#concern-records-list.list-group.mt-2.w-100.p-0
         = hidden_field_tag :selected_concern_fors, "", id: "selected-concern-fors" 
 

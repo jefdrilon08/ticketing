@@ -44,8 +44,14 @@ class ConcernTicketsController < ApplicationController
     @concern_types = ConcernType.where(concern_id: @concern_ticket.id)
     @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
   
-    #para sa filter
+    # Filters
     @details_records = @concern_ticket.concern_ticket_details
+  
+
+    user_concern_ticket = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: @concern_ticket.id)
+    if user_concern_ticket&.task == "requester"
+      @details_records = @details_records.where(requested_user_id: current_user.id)
+    end
   
     if params[:branch_id].present?
       @details_records = @details_records.where(branch_id: params[:branch_id])
@@ -53,7 +59,20 @@ class ConcernTicketsController < ApplicationController
   
     if params[:start_date].present?
       start_date = Date.parse(params[:start_date]) rescue nil
-      @details_records = @details_records.where("DATE(created_at) = ?", start_date) if start_date
+      @details_records = @details_records.where("DATE(created_at) >= ?", start_date) if start_date
+    end
+  
+    if params[:end_date].present?
+      end_date = Date.parse(params[:end_date]) rescue nil
+      @details_records = @details_records.where("DATE(created_at) <= ?", end_date) if end_date
+    end
+  
+    if params[:concern_for_id].present?
+      @details_records = @details_records.where(name_for_id: params[:concern_for_id])
+    end
+  
+    if params[:concern_type_id].present?
+      @details_records = @details_records.where(concern_type_id: params[:concern_type_id])
     end
   
     if params[:ticket_status].present?

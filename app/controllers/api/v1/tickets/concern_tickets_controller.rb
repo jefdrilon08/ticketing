@@ -30,7 +30,6 @@ module Api
               concern_ticket.reload
               Rails.logger.debug "New Concern Ticket ID: #{concern_ticket.id}"
         
-              # Handle members, concern_fors, and concern_types as before
               if params[:selected_members].present?
                 member_ids = params[:selected_members].split(",")
                 member_ids.each do |user_id|
@@ -132,7 +131,6 @@ module Api
           Rails.logger.debug "Params received: #{params.inspect}"
           ct_user = ConcernTicketUser.find(params[:id])
           
-          # Convert roles and status to lowercase before saving
           roles = params[:roles].downcase if params[:roles].present?
           status = params[:status].downcase if params[:status].present?
         
@@ -187,7 +185,6 @@ module Api
         end
 
         def edit_concern_type
-          Rails.logger.debug "BATMAN: #{params.inspect}"
           @ticket_details = ConcernTicketDetail.find_by(id: params[:ctd_id])
           if params[:concern_type_id].present?
             @ticket_details.concern_type_id = params[:concern_type_id]
