@@ -4,8 +4,7 @@
 %table.table.table-bordered.table-hover
   %thead
     %tr
-      %th 
-      %th Title
+      %th
       %th Item Name
       %th Supplier Name
       %th(style="text-align: center;") Status
@@ -17,7 +16,6 @@
           %td{ style: "text-align: center;" }
             = link_to view_inventory_path(inventory), title: "View Stock" do
               %i.fa-solid.fa-magnifying-glass.fa-lg
-          %td= inventory.data["title"].presence || "N/A"
           %td= inventory.item.try(:name) || "N/A"
           %td= inventory.supplier.try(:name) || "N/A"
           %td(style="text-align: center;")

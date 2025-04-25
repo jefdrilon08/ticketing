@@ -9,6 +9,9 @@
     margin-bottom: 10px;
   }
 
+- inventory_data = @inventory.data["inventory_data"].first || {}
+- child_item = @inventory.data["child_item"].first || {}
+
 %div.card
   %div.card-header
     %h4.mb-0 Stock Details
@@ -16,26 +19,27 @@
   %div.card-body
     %div.form-group
       %label Title
-      %p.form-control-plaintext= @inventory.data["title"].presence || "N/A"
+      %p.form-control-plaintext= inventory_data["title"].presence || "N/A"
 
     %div.form-group
       %label Brand Name
-      - if @inventory.brand_id.present?
-        %p.form-control-plaintext= @brands.find { |brand| brand.id == @inventory.brand_id }&.name || "N/A"
+      - if inventory_data["brand_id"].present?
+        - brand = @brands.find { |brand| brand.id == inventory_data["brand_id"] }
+        %p.form-control-plaintext= brand&.name || "N/A"
       - else
         %p.form-control-plaintext N/A
 
     %div.form-group
       %label Model
-      %p.form-control-plaintext= @inventory.data["model"].presence || "N/A"
+      %p.form-control-plaintext= inventory_data["model"].presence || "N/A"
 
     %div.form-group
       %label Threshold Alerts
-      %p.form-control-plaintext= @inventory.data["threshhold_alerts"].presence || "N/A"
+      %p.form-control-plaintext= inventory_data["threshhold_alerts"].presence || "N/A"
 
     %div.form-group
       %label Re-order Points
-      %p.form-control-plaintext= @inventory.data["reorder_points"].presence || "N/A"    
+      %p.form-control-plaintext= inventory_data["reorder_points"].presence || "N/A"
 
     %div.form-group
       %label Item Name
@@ -63,7 +67,7 @@
 
     %div.form-group
       %label Supplier Name
-      %p.form-control-plaintext= @inventory.supplier.try(:name) || "N/A"
+      %p.form-control-plaintext= @inventory.supplier.try(:name) || "N/A"  
 
     %div.form-group
       %label Status
@@ -74,5 +78,3 @@
           %span.badge.bg-danger Dispose
         - else
           %span.badge.bg-secondary= @inventory.status.presence || "N/A"
-
-  
