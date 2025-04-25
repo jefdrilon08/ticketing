@@ -186,6 +186,24 @@ module Api
           end
         end
 
+        def edit_concern_type
+          Rails.logger.debug "BATMAN: #{params.inspect}"
+          @ticket_details = ConcernTicketDetail.find_by(id: params[:ctd_id])
+          if params[:concern_type_id].present?
+            @ticket_details.concern_type_id = params[:concern_type_id]
+      
+            if @ticket_details.save
+              redirect_to concern_ticket_path(@ticket_details.concern_ticket_id), notice: "Concern type updated successfully!"
+            else
+              flash[:error] = "Failed to update concern type: #{@ticket_details.errors.full_messages.join(', ')}"
+              redirect_back(fallback_location: request.referer || root_path)
+            end
+          else
+            flash[:error] = "Concern type cannot be blank."
+            redirect_back(fallback_location: request.referer || root_path)
+          end
+        end
+
       end
     end
   end

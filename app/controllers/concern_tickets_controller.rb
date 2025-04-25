@@ -145,10 +145,10 @@ class ConcernTicketsController < ApplicationController
   end
    
   def view_tix
-    @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user).find(params[:id])
+    @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user, :concern_type).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
-  
+    @concern_types = ConcernType.where(concern_id: @concern_ticket_details.concern_ticket_id)
     @ticket_users = ConcernTicketUser
                     .where(concern_ticket_id: @concern_ticket.id, task: "Developer")
                     .includes(:user)
