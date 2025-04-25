@@ -12,9 +12,10 @@
           Dashboard
 
     = render partial: "shared/sidebar_tickets"
-    = render partial: "shared/sidebar_inventory"
-    = render partial: "shared/sidebar_item_distributions"
-    = render partial: "shared/sidebar_config"
+    - if current_user.is_mis?
+      = render partial: "shared/sidebar_inventory"
+      = render partial: "shared/sidebar_item_distributions"
+      = render partial: "shared/sidebar_config"
 
     %li
       .profile-details

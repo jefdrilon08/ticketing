@@ -6,25 +6,23 @@ class ConcernTicketsController < ApplicationController
       @subheader_side_actions = [
         {
           id: "btn-new",
-          link: current_user.is_mis? ? new_concern_ticket_path : "#",
+          link: new_concern_ticket_path,
           class: "fa fa-plus",
           text: "New"
         }
       ]
+    end  
   
-    
+    if current_user.is_mis?
+      # MIS users can see all concern tickets, including private ones
       @records = ConcernTicket.includes(:user, :computer_system)
                                .order(:name)
                                .page(params[:page])
                                .per(15)
     else
-      active_ticket_ids = current_user.concern_ticket_users
-                                      .where(status: "Active")
-                                      .where.not(task: "Unassigned")
-                                      .pluck(:concern_ticket_id)
-  
+      # Non-MIS users can only see non-private tickets or tickets they are associated with
       @records = ConcernTicket.includes(:user, :computer_system)
-                               .where("is_private = ? OR id IN (?)", false, active_ticket_ids)
+                               .where("is_private = ? OR id IN (?)", false, current_user.concern_ticket_users.pluck(:concern_ticket_id))
                                .order(:name)
                                .page(params[:page])
                                .per(15)
@@ -124,7 +122,6 @@ class ConcernTicketsController < ApplicationController
 
   def join
     concern_ticket_id = params[:concern_ticket_id]
-  
     if concern_ticket_id.present?
       existing_record = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: concern_ticket_id)
       if existing_record
@@ -133,15 +130,17 @@ class ConcernTicketsController < ApplicationController
       else
         ConcernTicketUser.create!(
           user_id: current_user.id,
-          concern_ticket_id: concern_ticket_id,
           status: "active",
-          task: nil
+          task: "unassigned",
+          concern_ticket_id: concern_ticket_id
         )
         flash[:success] = "You have successfully joined the concern!"
         redirect_to concern_tickets_path
       end
     else
+      Rails.logger.error "Failed to join: concern_ticket_id is missing"
       flash[:error] = "Failed to join the concern. Concern Ticket ID is missing."
+      redirect_to concern_tickets_path
     end
   end
    
