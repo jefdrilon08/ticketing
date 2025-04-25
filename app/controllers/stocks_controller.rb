@@ -1,5 +1,6 @@
 class StocksController < ApplicationController
   before_action :set_inventory, only: [:edit, :update, :destroy]
+  before_action :load_collections, only: [:new, :create, :edit, :update]
 
   def index
     @subheader_side_actions = [
@@ -10,18 +11,14 @@ class StocksController < ApplicationController
         text: "New"
       }
     ]
-    @inventories = Inventory.all || []
+    @inventories = Inventory.all
   end
 
   def view
     @inventory = Inventory.find_by(id: params[:id])
+    return redirect_to(stocks_path, alert: "Inventory not found") if @inventory.nil?
+
     @brands = Brand.all
-
-    if @inventory.nil?
-      redirect_to stocks_path, alert: "Inventory not found"
-      return
-    end
-
     @subheader_side_actions = [
       {
         id: "btn-distribute",
@@ -35,99 +32,61 @@ class StocksController < ApplicationController
   def new
     @inventory = Inventory.new
     @inventory.data ||= {}
-    @items = Item.all
-    @suppliers = Supplier.all
-    @brands = Brand.all
+    @inventories = Inventory.all
   end
 
   def create
-    @inventory = Inventory.new(inventory_params)
+    @inventory = Inventory.new(inventory_params.except(:data))
+    @inventory.data = build_inventory_data(params)
 
-    @inventory.data = {
-      "title" => params[:inventory][:title],
-      "brand_id" => params[:inventory][:brand_id],
-      "model" => params[:inventory][:model],
-      "threshhold_alerts" => params[:inventory][:threshhold_alerts],
-      "reorder_points" => params[:inventory][:reorder_points]
-    }
-
-
-    if params[:inventory][:item_id].present?
-      selected_item = Item.find(params[:inventory][:item_id])
-      if selected_item.item_type == 'supply'
-        @inventory.unit = selected_item.unit
-      else
-        @inventory.unit = params[:inventory][:unit]
-      end
-    else
-      @inventory.unit = params[:inventory][:unit]
-    end
+    assign_unit_from_item!
 
     if @inventory.save
       redirect_to stocks_path, notice: "Inventory item added successfully."
     else
-      @items = Item.all
-      @suppliers = Supplier.all
-      @brands = Brand.all
+      @inventories = Inventory.all
       flash.now[:alert] = "Failed to add inventory item. Please check the form."
       render :new
     end
   end
 
   def edit
-    @items = Item.all
-    @suppliers = Supplier.all
-    @brands = Brand.all
+    @inventories = Inventory.all
     render :new
   end
 
   def update
-    @inventory.data = {
-      "title" => params[:inventory][:title],
-      "brand_id" => params[:inventory][:brand_id],
-      "model" => params[:inventory][:model],
-      "threshhold_alerts" => params[:inventory][:threshhold_alerts],
-      "reorder_points" => params[:inventory][:reorder_points]
-    }
+    @inventory.assign_attributes(inventory_params.except(:data))
+    @inventory.data = build_inventory_data(params)
 
-    if params[:inventory][:item_id].present?
-      selected_item = Item.find(params[:inventory][:item_id])
-      if selected_item.item_type == 'supply'
-        @inventory.unit = selected_item.unit
-      else
-        @inventory.unit = params[:inventory][:unit]
-      end
-    else
-      @inventory.unit = params[:inventory][:unit]
-    end
+    assign_unit_from_item!
 
-    if @inventory.update(inventory_params)
+    if @inventory.save
       redirect_to stocks_path, notice: "Inventory item updated successfully."
     else
-      @items = Item.all
-      @suppliers = Supplier.all
-      @brands = Brand.all
+      @inventories = Inventory.all
       flash.now[:alert] = "Failed to update inventory item. Please check the form."
       render :edit
     end
   end
 
   def destroy
-    begin
-      if @inventory.destroy
-        redirect_to stocks_path, notice: "Inventory item deleted successfully."
-      else
-        redirect_to stocks_path, alert: "Failed to delete inventory item."
-      end
-    rescue ActiveRecord::InvalidForeignKey
-      redirect_to stocks_path, alert: "Unable to delete. This item is already used in another module."
-    end
+    @inventory.destroy
+    redirect_to stocks_path, notice: "Inventory item deleted successfully."
+  rescue ActiveRecord::InvalidForeignKey
+    redirect_to stocks_path, alert: "Unable to delete. This item is already used in another module."
   end
 
   private
 
   def set_inventory
     @inventory = Inventory.find(params[:id])
+  end
+
+  def load_collections
+    @items     = Item.all
+    @suppliers = Supplier.all
+    @brands    = Brand.all
   end
 
   def inventory_params
@@ -140,7 +99,67 @@ class StocksController < ApplicationController
       :quantity,
       :purchase_date,
       :status,
-      :data
+      data: {
+        child_item: [
+          :child_name,
+          :child_brand,
+          :child_serial_number,
+          :child_quantity
+        ]
+      }
     )
+  end
+
+  def assign_unit_from_item!
+    if params[:inventory][:item_id].present?
+      selected = Item.find(params[:inventory][:item_id])
+      if selected.item_type.to_s.downcase == 'supply'
+        @inventory.unit          = selected.unit
+        @inventory.serial_number = nil
+      else
+        @inventory.unit = params[:inventory][:unit]
+      end
+    else
+      @inventory.unit = params[:inventory][:unit]
+    end
+  end
+
+  def build_inventory_data(params)
+    raw_children = params.dig(:inventory, :data, :child_item) || []
+
+    child_items = case raw_children
+                  when ActionController::Parameters
+                    raw_children.to_unsafe_h.values
+                  when Hash
+                    raw_children.values
+                  when Array
+                    raw_children
+                  else
+                    []
+                  end
+
+    formatted_children = []
+    child_items.each do |child|
+      child = child.to_unsafe_h if child.is_a?(ActionController::Parameters)
+      formatted_children << {
+        "child_name" => child[:child_name],
+        "child_brand" => child[:child_brand],
+        "child_serial_number" => child[:child_serial_number],
+        "child_quantity" => child[:child_quantity]
+      }
+    end
+
+    inventory_data_hash = {
+      "title"             => params[:inventory][:title],
+      "brand_id"          => params[:inventory][:brand_id],
+      "model"             => params[:inventory][:model],
+      "threshhold_alerts" => params[:inventory][:threshhold_alerts],
+      "reorder_points"    => params[:inventory][:reorder_points]
+    }
+
+    {
+      "inventory_data" => [inventory_data_hash],
+      "child_item" => formatted_children
+    }
   end
 end
