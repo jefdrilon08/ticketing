@@ -22,7 +22,9 @@
         %th.some{:style=>"width:5%"}
             %h
                 Ticket No.
-                
+        %th.some{:style=>"width:5%"}
+            %h
+                Subject
         %th.some{:style=>"width:5%"}
             %h
                 Date received
@@ -56,6 +58,10 @@
                         %p
                         %p
                             #{x[1]}  
+                    %td
+                        %p
+                        %p
+                            #{SystemTicketDesc.find(x[0]).title}  
                     %td
                         %p
                         %p

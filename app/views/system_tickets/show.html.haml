@@ -275,10 +275,15 @@
                                                 %center
                                                     #{x.target_date}
                                         %td
-                                            %p
-                                                %center
-                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestone1})" do
-                                                        Set date
+                                            -if @role==3 || @role==2
+                                                %p
+                                                    %center
+                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestone1})" do
+                                                            Set date
+                                            -else
+                                                %p 
+                                                    %center 
+                                                        #{"--"}
                                         %td
                                             %p
                                                 %center
