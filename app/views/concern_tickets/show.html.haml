@@ -39,20 +39,20 @@
             = link_to view_tix_concern_ticket_path(ticket), class: "btn btn-primary btn-md me-1", title: "View Tickets", data: { bs_toggle: "tooltip" } do
               %i.bi.bi-eye
 
-            - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
-            - if developer_task || current_user.is_mis?
-              - case ticket.status
-              - when "open"
-                = button_tag class: "btn btn-primary update-status me-1", data: { ticket_number: ticket.ticket_number, status: "processing" }, title: "Process Ticket" do
-                  %i.bi.bi-gear
-              - when "processing"
-                = button_tag class: "btn btn-warning update-status me-1", data: { ticket_number: ticket.ticket_number, status: "verification" }, title: "Move for Verification" do
-                  %i.bi.bi-arrow-right-circle
+            -# - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
+            -# - if developer_task || current_user.is_mis?
+            -#   - case ticket.status
+            -#   - when "open"
+            -#     = button_tag class: "btn btn-primary update-status me-1", data: { ticket_number: ticket.ticket_number, status: "processing" }, title: "Process Ticket" do
+            -#       %i.bi.bi-gear
+            -#   - when "processing"
+            -#     = button_tag class: "btn btn-warning update-status me-1", data: { ticket_number: ticket.ticket_number, status: "verification" }, title: "Move for Verification" do
+            -#       %i.bi.bi-arrow-right-circle
 
-            - case ticket.status
-            - when "verification"
-              = button_tag class: "btn btn-danger update-status", data: { ticket_number: ticket.ticket_number, status: "closed" }, title: "Close Ticket" do
-                %i.bi.bi-x-circle
+            -# - case ticket.status
+            -# - when "verification"
+            -#   = button_tag class: "btn btn-danger update-status", data: { ticket_number: ticket.ticket_number, status: "closed" }, title: "Close Ticket" do
+            -#     %i.bi.bi-x-circle
 
     - else
       %tr
