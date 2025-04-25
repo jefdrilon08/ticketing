@@ -763,6 +763,7 @@ Rails.application.routes.draw do
   post "system_tickets/delete_member",      to: "system_tickets#delete_member" 
   post "system_tickets/set_maindev",        to: "system_tickets#set_maindev"
   post "system_tickets/add_attachment",     to: "system_tickets#add_attachment"
+  post "system_tickets/edit_attachment",    to: "system_tickets#edit_attachment"
   post "system_tickets/edit_member_status", to: "system_tickets#edit_member_status"
   post "system_tickets/add_member_st",      to: "system_tickets#add_member_st"
   post "system_tickets/join_st",            to: "system_tickets#join_st"

@@ -181,9 +181,9 @@
                     %th{:style=>"width:25%"}
                         %p
                             Attached File(s):
+                    -if !@ticket.data["file"].empty? && current_user.id==@ticket.requested_by
+                        %td{:style=>"width:5%"}
                 -if !@ticket.file.attached?
-                    
-                        
                     -if current_user.id==@ticket.requested_by
                         %td
                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
@@ -193,12 +193,17 @@
                             No attachment found.     
                 -else 
                     -file_count=0
-                    -@ticket.file.each do |x|
+                    -while file_count!=@ticket.data["file"].count
                         %tr
                             %td
-                                %a{:href=>url_for(x),:download=>"download"}
+                                %a{:href=>url_for(@ticket.file[@ticket.file.count-@ticket.data["file"].count]),:download=>"download"}
                                     #{@ticket.data["file"][file_count]["original_filename"]}
                                 -file_count=file_count+1
+                                -if file_count==1 && current_user.id==@ticket.requested_by
+                                    %td{:style=>"width:5%"}
+                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-add-attachment" },id:'btn-new-milestone' do
+                                            Edit
+                                -else
 
         %div.col-9
             %table.table.table-bordered.table-sm{:style=>"margin-top:15px;margin-bottom:0px"}  
@@ -395,18 +400,25 @@
                             #{x[2]}
                 %p{:style=>"font-size:15px;margin-bottom:10px"}
                     This marks the beginning of the chat.
-                    
-        = form_tag "chat", method: 'POST' do
+        -if @role>0            
+            = form_tag "chat", method: 'POST' do
+                %div.row
+                    .form-group
+                        =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                    %div.col-11
+                        .form-group
+                            =text_field_tag :msg,params[:msg],class:'form-control',style:"width:100%;",placeholder:"Type a message..."
+                    %div.col-1  
+                        .form-group
+                            =button_tag type: 'submit', class: 'btn btn-primary',style:"width:100px" do
+                                Send
+        -else
             %div.row
-                .form-group
-                    =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
                 %div.col-11
-                    .form-group
-                        =text_field_tag :msg,params[:msg],class:'form-control',style:"width:100%;",placeholder:"Type a message..."
+                    =text_field_tag :msg,params[:msg],class:'form-control',style:"width:100%;",placeholder:"Only members can send messages.",disabled:"disabled"
                 %div.col-1  
-                    .form-group
-                        =button_tag type: 'submit', class: 'btn btn-primary',style:"width:100px" do
-                            Send
+                    =button_tag type: 'button', class: 'btn btn-primary',style:"width:100px",disabled:"disabled" do
+                        Send
 %hr{:style=>"height:15px;color:white"}
 
 :css
@@ -440,3 +452,4 @@
 = render partial: "system_tickets/modals/set_start_date"
 = render partial: "system_tickets/modals/edit_target_date"
 = render partial: "system_tickets/modals/add_attachment"
+= render partial: "system_tickets/modals/edit_attachment"

@@ -320,8 +320,8 @@ class SystemTicketsController < ApplicationController
         @mem_list.each do |x|
             if current_user.id==SystemTicketsUser.find(x[2]).user_id && SystemTicketsUser.find(x[2]).system_ticket_id==SystemTicketDesc.find(params[:id]).system_ticket_id
                 case SystemTicketsUser.find(x[2]).role
-                when "Member" || "Viewer"
-                    @role=0
+                when "Viewer"
+                    @role=4
                 when "Approver"
                     @role=1
                 when "Developer"
@@ -332,6 +332,9 @@ class SystemTicketsController < ApplicationController
                 then @mem_list_dev.push(x)
             end
         end
+
+        puts "popopopopo"
+        puts @role
 
         if current_user.id==SystemTicketsUser.find(@maindev[1]).user_id then @role=3 end
 
@@ -583,6 +586,32 @@ class SystemTicketsController < ApplicationController
             render :edit, status: :unprocessable_entity
         end
     end
+
+    def edit_attachment
+        add_att=SystemTicketDesc.find(params[:id])
+        add_att_data=add_att[:data]
+        file_arr=[]
+
+        if !SystemTicketDesc.find(params[:id]).file.empty? then
+            add_att_data["file"]=[]
+            add_att.file=nil
+        end
+
+        puts file_arr
+
+        params[:file].each do |x|
+            file_arr.push(x)
+        end
+
+        add_att_data["file"]=file_arr
+        
+        if add_att.update(data:add_att_data)
+            redirect_to "/system_tickets/#{params[:id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
 
     def edit_member_status
         member=SystemTicketsUser.find(params[:mem_id])
