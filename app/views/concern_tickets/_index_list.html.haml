@@ -12,7 +12,10 @@
       - @records.each do |a|
         - user_concern_ticket = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: a.id)
         %tr
-          %td.text-center= a.name
+          %td.text-center
+            = a.name
+            -# - if a.is_private
+            -#   %i.bi.bi-shield-lock{ title: "Private", data: { bs_toggle: "tooltip" } }
           %td.text-center= a.computer_system&.name || "N/A"
           %td.text-center= a.user ? "#{a.user.first_name.titleize} #{a.user.last_name.titleize}" : "Unassigned"
           %td.text-center= a.created_at.strftime("%b %d, %Y")
