@@ -62,6 +62,13 @@ class SystemTicketsController < ApplicationController
         @system_name=ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name
         @system_tix_desc=[]
         @milestones=[]
+        @admin=false
+
+        if !SystemTicketsUser.where(system_ticket_id:params[:id],user_id:current_user.id).empty? then
+            if SystemTicketsUser.where(system_ticket_id:params[:id],user_id:current_user.id)[0].status=="admin"
+                then @admin=true
+            end
+        end
 
         pending=[]
         approved=[]
@@ -70,20 +77,37 @@ class SystemTicketsController < ApplicationController
         done=[]
 
         # Filter
-        @f_date        = params[:f_date].to_s
+        @f_sdate       = params[:f_sdate].to_s
+        @f_edate       = params[:f_edate].to_s
+        @f_type         = params[:f_type]
         @f_status      = params[:f_status]
+
+        if @f_sdate.present?
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                if x[:start_date].to_s==@f_sdate
+                    system_tix.push(x)
+                end
+            end
+        end
+
+        if @f_edate.present?
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                if x[:end_date].to_s==@f_edate
+                    system_tix.push(x)
+                end
+            end
+        end
             
         if @f_status.present?
             system_tix= system_tix.where(status:@f_status)
         end
-        if @f_date.present?
-            temp= system_tix
-            system_tix=[]
-            temp.each do |x|
-                if x[:date_received].to_s==@f_date
-                    system_tix.push(x)
-                end
-            end
+
+        if @f_type.present?
+            system_tix= system_tix.where(request_type:@f_type)
         end
 
         if system_tix!=nil then
@@ -344,8 +368,9 @@ class SystemTicketsController < ApplicationController
         puts "mem"
         puts @mem_list
 
-        if SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id)[0].status=="admin" then @role=5 end
-
+        if !SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id).empty? then
+            if SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id)[0].status=="admin" then @role=5 end
+            end
         @subheader_side_actions ||= []
 
         if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket.start_date!=nil

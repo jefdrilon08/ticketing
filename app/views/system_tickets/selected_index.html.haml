@@ -5,9 +5,19 @@
             %tr
                 %td{:style=>"width:20%"}
                     %label
-                        Date Received
+                        Start Date
                     .form-group
-                        =text_field_tag :f_date,params[:f_date],class:'form-control',type: :date
+                        =text_field_tag :f_sdate,params[:f_sdate],class:'form-control',type: :date
+                %td{:style=>"width:20%"}
+                    %label
+                        End Date
+                    .form-group
+                        =text_field_tag :f_edate,params[:f_edate],class:'form-control',type: :date
+                %td{:style=>"width:20%"}
+                    %label
+                        Request Type
+                    .form-group
+                        =select_tag :f_type,options_for_select(SystemTicket.find(params[:id]).data["options_for_select"], params[:f_type]),class:'form-control select-select2',prompt:"-- SELECT --"
                 %td{:style=>"width:20%"}
                     %label
                         Status
@@ -120,7 +130,7 @@
                                     %a.button{class:"btn btn-primary",:style=>"margin:7% 7px 0 0;padding:0.5% 5% 0.5% 5%",:href => "/system_tickets/#{x[0]}"}
                                         %i.bi.bi-eye
                                 %div-col-12
-                                    -if current_user.id==SystemTicketsUser.find(x[7][0]).user_id || current_user.id==x[6][0]
+                                    -if current_user.id==SystemTicketsUser.find(x[7][0]).user_id || current_user.id==x[6][0] || @admin
                                         -if !x[9]
                                             -if x[8]!='done'
                                                 = form_tag "system_tickets/hold_ticket/#{x[0]}", method: 'POST' do
