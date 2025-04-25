@@ -330,7 +330,7 @@ class SystemTicketsController < ApplicationController
             end
             if SystemTicketsUser.find(x[2]).role=="Developer"||SystemTicketsUser.find(x[2]).role=="Admin"
                 then @mem_list_dev.push(x)
-            end
+            end 
         end
 
         puts "popopopopo"
@@ -344,19 +344,23 @@ class SystemTicketsController < ApplicationController
         puts "mem"
         puts @mem_list
 
+        if SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id)[0].status=="admin" then @role=5 end
+
         @subheader_side_actions ||= []
 
-        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1 && @ticket.start_date!=nil
-            @subheader_side_actions << {
-              id: "btn-status",
-              link: "edit_ticket_status/#{params[:id]}",
-              class: "fa fa-check",
-              data: { id: @ticket.id },
-              text: "Approve"
-            } end
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket.start_date!=nil
+            if @role==1 || @role==5
+                @subheader_side_actions << {
+                id: "btn-status",
+                link: "edit_ticket_status/#{params[:id]}",
+                class: "fa fa-check",
+                data: { id: @ticket.id },
+                text: "Approve"
+                } end
+        end
 
         if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] 
-            if @role==2 || @role==3
+            if @role==2 || @role==3 || @role==5
                 @subheader_side_actions << {
                 id: "btn-status",
                 link: "edit_ticket_status/#{params[:id]}",
@@ -367,7 +371,7 @@ class SystemTicketsController < ApplicationController
         end
 
         if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"]
-            if @role==2 || @role==3
+            if @role==2 || @role==3 || @role==5
             @subheader_side_actions << {
               id: "btn-status",
               link: "edit_ticket_status/#{params[:id]}",
@@ -377,14 +381,16 @@ class SystemTicketsController < ApplicationController
             } end
               end
 
-        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @role==1 && @ticket[:start_date]!=nil && @all_done==0
-            @subheader_side_actions << {
-              id: "btn-status",
-              link: "edit_ticket_status/#{params[:id]}",
-              class: "fa fa-check",
-              data: { id: @ticket.id },
-              text: "Verify"
-            } end
+        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
+            if @role==1 || @role==5
+                @subheader_side_actions << {
+                id: "btn-status",
+                link: "edit_ticket_status/#{params[:id]}",
+                class: "fa fa-check",
+                data: { id: @ticket.id },
+                text: "Verify"
+                } end
+        end
   
 
     end

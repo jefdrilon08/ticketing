@@ -94,7 +94,7 @@
                     %td
                         - case @ticket.start_date
                         - when nil
-                            -if @role==3
+                            -if @role==3 || @role==5
                                 =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date" },id:'btn-new-milestone' do
                                     %p
                                         Set start date
@@ -118,10 +118,11 @@
                     %td
                         %p
                             #{@ticket.target_date}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                            -if !@ticket.data["on_hold"] && @ticket.status=="pending" && @role==3
-                                %span
-                                    =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-target-date" },id:'btn-new-milestone' do
-                                        Edit
+                            -if !@ticket.data["on_hold"] && @ticket.status=="pending"
+                                -if @role==3 || @role==5
+                                    %span
+                                        =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-target-date" },id:'btn-new-milestone' do
+                                            Edit
             %hr{:style=>"width:100%"}
             %table.table.table-bordered.table-sm
                 %tr
@@ -137,7 +138,7 @@
                                     #{@maindev[0]}
                     %td{:style=>"width:20%"}
                         -if @ticket.status!="done"
-                            -if @role==3
+                            -if @role==3 || @role==5
                                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-main-dev" },id:"btn-milestone" do
                                     Change
                 -i_show=0
@@ -156,7 +157,7 @@
                         %td
                             -if i_show==0
                                 -if @ticket.status!="done"
-                                    -if @role==3
+                                    -if @role==3 || @role==5
                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                                             Edit
                             -else
@@ -171,7 +172,7 @@
                                 No members
                         %td
                             -if @ticket.status!="done"
-                                -if @role==3
+                                -if @role==3 || @role==5
                                     = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                                         Edit
 
@@ -224,7 +225,7 @@
                         %td{:style=>"padding-top:12px"}
                             -if !@ticket.data["on_hold"]
                                 -if @ticket.status!="done"
-                                    -if @role==3
+                                    -if @role==3 || @role==5
                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
                                             Add milestone    
                     
@@ -280,7 +281,7 @@
                                                 %center
                                                     #{x.target_date}
                                         %td
-                                            -if @role==3 || @role==2
+                                            -if @role==3 || @role==2 || @role==5
                                                 %p
                                                     %center
                                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestone1})" do
@@ -354,7 +355,7 @@
                                                             - when 'pending'
                                                                 -if !@ticket.data["on_hold"]
                                                                     -if @ticket.status!="done"
-                                                                        -if @role==3
+                                                                        -if @role==3 || @role==5
                                                                             = button_tag type: 'submit',class:'btt-linkto' do
                                                                                 Update
                                     -@milestone1=@milestone1+1   
