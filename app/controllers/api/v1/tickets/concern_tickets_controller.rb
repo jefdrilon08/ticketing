@@ -77,35 +77,51 @@ module Api
 
         def create_ticket
           concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
-          ticket_count = ConcernTicketDetail.where(concern_ticket_id: concern_ticket.id).count
-          ticket_number = "#{concern_ticket.ticket_name} - #{(ticket_count + 1).to_s.rjust(4, '0')}"
-
-          @concern_ticket_record = ConcernTicketDetail.new(
-            ticket_number: ticket_number,
-            concern_ticket_id: params[:concern_ticket_id],
-            description: params[:description],
-            status: "open",
-            name_for_id: params[:name_for_id],
-            concern_type_id: params[:concern_type_id],
-            branch_id: params[:branch_id],
-            requested_user_id: current_user.id,
-            assigned_user_id: concern_ticket.user_id
-          )
-
-          if params[:attachments].present?
-            attachments = Array(params[:attachments]) # para maging array
-            Rails.logger.debug "Processed attachments array: #{attachments.map(&:original_filename)}"
         
-            attachments.each do |attachment|
-              @concern_ticket_record.attachments.attach(attachment)
+          max_retries = 5
+          retries = 0
+        
+          begin
+            ticket_count = ConcernTicketDetail.where(concern_ticket_id: concern_ticket.id).count
+            ticket_number = "#{concern_ticket.ticket_name} - #{(ticket_count + 1).to_s.rjust(4, '0')}"
+        
+            @concern_ticket_record = ConcernTicketDetail.new(
+              ticket_number: ticket_number,
+              concern_ticket_id: params[:concern_ticket_id],
+              description: params[:description],
+              status: "open",
+              name_for_id: params[:name_for_id],
+              concern_type_id: params[:concern_type_id],
+              branch_id: params[:branch_id],
+              requested_user_id: current_user.id,
+              assigned_user_id: concern_ticket.user_id
+            )
+        
+            if params[:attachments].present?
+              attachments = Array(params[:attachments])
+              Rails.logger.debug "Processed attachments array: #{attachments.map(&:original_filename)}"
+        
+              attachments.each do |attachment|
+                @concern_ticket_record.attachments.attach(attachment)
+              end
             end
-          end
         
-          if @concern_ticket_record.save
-            redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
-          else
-            flash[:error] = "Failed to create ticket: #{@concern_ticket_record.errors.full_messages.join(', ')}"
-            redirect_back(fallback_location: request.referer || root_path)
+            if @concern_ticket_record.save
+              redirect_to "/concern_tickets/#{@concern_ticket_record[:concern_ticket_id]}"
+            else
+              flash[:error] = "Failed to create ticket: #{@concern_ticket_record.errors.full_messages.join(', ')}"
+              redirect_back(fallback_location: request.referer || root_path)
+            end
+          rescue ActiveRecord::RecordNotUnique => e
+            retries += 1
+            if retries <= max_retries
+              Rails.logger.warn "Duplicate ticket number detected. Retrying... (Attempt #{retries})"
+              retry
+            else
+              Rails.logger.error "Failed to create ticket after #{max_retries} attempts: #{e.message}"
+              flash[:error] = "Failed to create ticket due to a system error. Please try again."
+              redirect_back(fallback_location: request.referer || root_path)
+            end
           end
         end
 

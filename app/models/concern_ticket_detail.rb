@@ -7,5 +7,5 @@ class ConcernTicketDetail < ApplicationRecord
   belongs_to :assigned_user, class_name: "User", foreign_key: "assigned_user_id", optional: true
 
   has_many_attached :attachments
-  
+  validates :ticket_number, presence: true, uniqueness: true
 end

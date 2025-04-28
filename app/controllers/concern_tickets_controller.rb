@@ -14,13 +14,11 @@ class ConcernTicketsController < ApplicationController
     end  
   
     if current_user.is_mis?
-      # MIS users can see all concern tickets, including private ones
       @records = ConcernTicket.includes(:user, :computer_system)
                                .order(:name)
                                .page(params[:page])
                                .per(15)
     else
-      # Non-MIS users can only see non-private tickets or tickets they are associated with
       @records = ConcernTicket.includes(:user, :computer_system)
                                .where("is_private = ? OR id IN (?)", false, current_user.concern_ticket_users.pluck(:concern_ticket_id))
                                .order(:name)
@@ -47,12 +45,15 @@ class ConcernTicketsController < ApplicationController
     # Filters
     @details_records = @concern_ticket.concern_ticket_details
   
-
     user_concern_ticket = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: @concern_ticket.id)
     if user_concern_ticket&.task == "requester"
       @details_records = @details_records.where(requested_user_id: current_user.id)
     end
-  
+    
+    @open_count = @details_records.where(status: "open").count
+    @processing_count = @details_records.where(status: "processing").count
+    @closed_count = @details_records.where(status: "closed").count
+    
     if params[:branch_id].present?
       @details_records = @details_records.where(branch_id: params[:branch_id])
     end
@@ -79,7 +80,10 @@ class ConcernTicketsController < ApplicationController
       @details_records = @details_records.where(status: params[:ticket_status])
     end
   
-    @details_records = @details_records.order(status: :desc, created_at: :asc).page(params[:page]).per(20)
+    @details_records = @details_records.order(
+    Arel.sql("CASE WHEN status = 'open' THEN 0 WHEN status = 'processing' THEN 1 WHEN status = 'verification' THEN 2 ELSE 3 END"),
+    created_at: :desc
+    ).page(params[:page]).per(30)
   end
 
   def new_concern
