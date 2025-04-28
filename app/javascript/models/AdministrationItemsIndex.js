@@ -13,8 +13,6 @@ let $message;
 let $itemId;
 let _authenticityToken;
 let $isParentCheckbox;
-let $parentItemDropdown;
-let $inputParentItem;
 let templateErrorList;
 let modalInstance;
 
@@ -29,21 +27,12 @@ const _cacheDom = () => {
   $itemId = $("#item-id");
   $message = $(".message");
   $isParentCheckbox = $("#input-is-parent");
-  $parentItemDropdown = $("#parent-item-dropdown-container");
-  $inputParentItem = $("#input-parent-item");
   templateErrorList = $("#template-error-list").html() || "<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>";
 
   const modalElement = document.getElementById("myModal");
   if (modalElement) {
     modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
   }
-};
-
-const _toggleParentDropdown = () => {
-  const isChecked = $isParentCheckbox.is(":checked");
-  $parentItemDropdown.toggle(isChecked);
-  $inputParentItem.prop("required", isChecked);
-  if (!isChecked) $inputParentItem.val("");
 };
 
 const _bindEvents = () => {
@@ -54,15 +43,11 @@ const _bindEvents = () => {
     $inputItemsCategory.val("");
     $inputStatus.val("Active");
     $itemId.val("");
-    $inputParentItem.val("");
     $isParentCheckbox.prop("checked", false);
-    _toggleParentDropdown();
     $message.html("").removeClass("text-danger");
 
     if (modalInstance) modalInstance.show();
   });
-
-  $isParentCheckbox.off("change").on("change", _toggleParentDropdown);
 
   $(document).off("click", ".update-button").on("click", ".update-button", function () {
     const itemId = $(this).data("id");
@@ -100,15 +85,9 @@ const _bindEvents = () => {
     const category = $inputItemsCategory.val();
     const status = $inputStatus.val();
     const isParent = $isParentCheckbox.is(":checked");
-    const parentId = $inputParentItem.val();
 
     if (!name || !unit || !category || !status) {
       alert("Please fill in all required fields (Name, Unit, Category, Status).");
-      return;
-    }
-
-    if (isParent && !parentId) {
-      alert("Please select a Parent Item when 'Is Parent?' is checked.");
       return;
     }
 
@@ -119,8 +98,7 @@ const _bindEvents = () => {
       unit,
       items_category_id: category,
       status,
-      is_parent: isParent,
-      parent_id: isParent ? parentId : null
+      is_parent: isParent
     };
 
     const data = {
@@ -162,7 +140,6 @@ const init = (options) => {
   _authenticityToken = options.authenticityToken;
   _cacheDom();
   _bindEvents();
-  _toggleParentDropdown();
 };
 
 $(document).ready(function () {

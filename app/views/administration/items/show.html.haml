@@ -51,13 +51,6 @@
       %p.form-control-plaintext= @item&.is_parent ? "Yes" : "No"
 
     .form-group
-      %label Parent Item
-      - if @item&.parent_id.present?
-        %p.form-control-plaintext= Item.find_by(id: @item.parent_id)&.name || "N/A"
-      - else
-        %p.form-control-plaintext N/A
-
-    .form-group
       %label Status
       %p.form-control-plaintext
         - case @item&.status.to_s.downcase
