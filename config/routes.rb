@@ -692,6 +692,14 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :api do
+    namespace :v1 do
+      namespace :administration do
+        resources :sub_categories, only: [:index, :create, :update, :destroy]
+      end
+    end
+  end  
+  
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
   get "/stocks/new", to: "stocks#new", as: :new_inventory

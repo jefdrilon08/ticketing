@@ -33,6 +33,7 @@ import AdministrationComputerSystemIndex from '../models/AdministrationComputerS
 import AdministrationBrandsIndex from '../models/AdministrationBrandsIndex.js';
 import AdministrationItemsIndex from '../models/AdministrationItemsIndex.js';
 import AdministrationItemsCategoryIndex from '../models/AdministrationItemsCategoryIndex.js';
+import AdministrationSubCategoriesIndex from '../models/AdministrationSubCategoriesIndex.js';
 import AdministrationSuppliersIndex from '../models/AdministrationSuppliersIndex.js';
 import ItemRequestIndex from '../models/ItemRequestIndex.js';
 import BorrowTransactionsIndex from '../models/BorrowTransactionsIndex.js';
@@ -64,6 +65,7 @@ const hooks = {
   "administration/computer_system/index":             [AdministrationComputerSystemIndex],
   "administration/items/index":                       [AdministrationItemsIndex],
   "administration/items_category/index":              [AdministrationItemsCategoryIndex],
+  "administration/sub_categories/index":              [AdministrationSubCategoriesIndex],
   "administration/suppliers/index":                   [AdministrationSuppliersIndex],
   "administration/brands/index":                      [AdministrationBrandsIndex],
 
