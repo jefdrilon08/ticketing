@@ -729,7 +729,7 @@ Rails.application.routes.draw do
     end
   end
 
-  # INVENTORY REQUEST
+ # INVENTORY REQUEST
   # batman
   get "/inventory_requests", to: "inventory_requests#index"
   get "/inventory_requests/new", to: "inventory_requests#new", as: "new_inventory_request"
@@ -739,7 +739,7 @@ Rails.application.routes.draw do
   patch "/inventory_requests/:inventory_request_id/inventory_request_details/:id", to: "inventory_request_details#update", as: "update_inventory_request_detail"
   delete "/inventory_requests/:inventory_request_id/inventory_request_details/:id", to: "inventory_request_details#destroy", as: "destroy_inventory_request_detail"
 
-  resources :inventory_requests do
+  resources :inventory_requests, only: [:show, :update, :destroy] do
     resources :inventory_request_details, only: [:create, :update, :destroy]
   end
 
