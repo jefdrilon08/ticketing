@@ -1,4 +1,7 @@
 -@milestone1=0
+=link_to "/system_tickets_#{@ticket.system_ticket_id}" do
+    Back
+%p
 .card.some{:style=>"padding:1%",:onclick=>"scrollUp()"}
     %div.row{:style=>"width:100%"}
         %div
@@ -78,8 +81,39 @@
                                         %p{:style=>"width:104px"}
                                             .badge.bg-danger
                                                 on hold
-                 
-
+                %tr
+                    %td
+                        %p{:style=>"margin-top:10%;margin-bottom:-1%;font-weight:bold"}
+                            Category:&nbsp&nbsp
+                            -if @ticket.status!="done"
+                                -if @role==3 || @role==5
+                                    %span{:style=>"font-weight:normal"}
+                                        =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-change-category" },id:'btn-new-milestone' do
+                                            Edit
+                    %td
+                        %p
+                            - if @ticket.data.include? "category"
+                                - case @ticket.data["category"]
+                                - when "high"
+                                    %center
+                                        %p{:style=>";width:104px"}
+                                            .badge.bg-danger
+                                                high
+                                - when "medium"
+                                    %center
+                                        %p{:style=>";width:104px"}
+                                            .badge.bg-warning
+                                                medium
+                                - when "low" 
+                                    %center
+                                        %p{:style=>";width:104px"}
+                                            .badge.bg-success
+                                                low
+                            - else
+                                %center
+                                    %p{:style=>";width:104px"}
+                                        .badge.bg-secondary
+                                            uncatergorized
                 %tr
                     %th
                         %p
@@ -452,5 +486,6 @@
 = render partial: "system_tickets/modals/members"
 = render partial: "system_tickets/modals/set_start_date"
 = render partial: "system_tickets/modals/edit_target_date"
+= render partial: "system_tickets/modals/change_category"
 = render partial: "system_tickets/modals/add_attachment"
 = render partial: "system_tickets/modals/edit_attachment"

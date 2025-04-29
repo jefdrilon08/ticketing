@@ -1,0 +1,18 @@
+#modal-change-category.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Change Category
+            .modal-body
+                %hr{style:"height:25px;color:white"}
+                %center
+                    = form_tag "change_category", method: 'POST' do
+                        .form-group
+                            =select_tag :category,options_for_select(["low","medium","high"], @ticket.data["category"]),class:'form-control select-select2',required:true,prompt:"-- SELECT --",style:"width:60%"
+                        .form-group
+                            =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'  
+                        %hr{style:"height:30px;color:white"}
+                        .form-group
+                            =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
+                                Save

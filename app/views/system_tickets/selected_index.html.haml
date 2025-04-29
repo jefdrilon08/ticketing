@@ -61,6 +61,9 @@
                 Status
         %th.some{:style=>"width:5%"}
             %h
+                Category
+        %th.some{:style=>"width:5%"}
+            %h
                 Actions
             - @system_tix_desc.each do |x|
                 %tr
@@ -123,6 +126,22 @@
                                 -else
                                     .badge.bg-danger
                                         on hold
+                    %td
+                        %center
+                            %p
+                                - case x[11]
+                                - when 'high'
+                                    .badge.bg-danger
+                                        #{x[11]}
+                                - when 'low'
+                                    .badge.bg-success
+                                        #{x[11]}
+                                - when 'medium'
+                                    .badge.bg-warning
+                                        #{x[11]} 
+                                - when 'uncategorized'
+                                    .badge.bg-secondary
+                                        #{x[11]} 
                     %td
                         %center
                             %div-row

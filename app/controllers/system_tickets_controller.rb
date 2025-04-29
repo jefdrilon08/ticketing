@@ -76,6 +76,11 @@ class SystemTicketsController < ApplicationController
         for_verification=[]
         done=[]
 
+        high=[]
+        medium=[]
+        low=[]
+        uncategorized=[]
+
         # Filter
         @f_sdate       = params[:f_sdate].to_s
         @f_edate       = params[:f_edate].to_s
@@ -123,13 +128,15 @@ class SystemTicketsController < ApplicationController
                 md      = "Not yet set."
                 stat    = x[:status]
                 hold    = x[:data]["on_hold"]
-                
+                cat     = "uncategorized"
 
                 if x[:data]["save_details"]!=nil
                     if x[:data]["save_details"].length==4
                         then edate=x[:data]["save_details"][3]["date"].to_s[0,10]
                     end
                 end
+
+                if x[:data].include? "category" then cat=x[:data]["category"] end
 
                 x[:data]["team_members"].each do |x|
                   if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md=[x[0],"#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"]
@@ -139,21 +146,54 @@ class SystemTicketsController < ApplicationController
                 if sdate==nil 
                     then sdate="Not yet set." 
                 end
-    
-                case stat
-                when "pending"
-                    pending.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
-                when "approved"
-                    approved.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
-                when "processing"
-                    processing.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
-                when "for verification"
-                    for_verification.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
-                when "done"
-                    done.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate])
+                
+                case cat
+                when "high"
+                    high.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
+                when "medium"
+                    medium.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
+                when "low"
+                    low.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
+                when "uncategorized"
+                    uncategorized.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
                 end
+
             end
         end
+
+        temp_sorted=[]
+        
+        high.each do |x|
+            temp_sorted.push(x)
+        end
+
+        medium.each do |x|
+            temp_sorted.push(x)
+        end
+
+        low.each do |x|
+            temp_sorted.push(x)
+        end
+
+        uncategorized.each do |x|
+            temp_sorted.push(x)
+        end
+
+        temp_sorted.each do |x|
+            case x[8]
+            when "pending"
+                pending.push(x)
+            when "approved"
+                approved.push(x)
+            when "processing"
+                processing.push(x)
+            when "for verification"
+                for_verification.push(x)
+            when "done"
+                done.push(x)
+            end
+        end
+
 
         pending.each do |x|
             @system_tix_desc.push(x)
@@ -491,6 +531,16 @@ class SystemTicketsController < ApplicationController
         else
             render :edit, status: :unprocessable_entity
         end
+    end
+
+    def change_category
+        change_category=SystemTicketDesc.find(params[:id])
+        change_category_data=change_category.data
+
+        change_category_data["category"]=params[:category]
+
+        change_category.update!(data:change_category.data)
+            redirect_to "/system_tickets/#{params[:id]}"
     end
 
     # def set_expected_goal

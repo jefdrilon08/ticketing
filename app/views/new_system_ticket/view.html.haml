@@ -14,6 +14,12 @@
       %tr
         %td
           %label
+            Category
+          .form-group
+            =select_tag :category,options_for_select(["low","medium","high"], params[:request_type]),class:'form-control select-select2',required:true,prompt:"-- SELECT --",style:"width:10%"
+      %tr
+        %td
+          %label
             Description
           .form-group
             =text_area_tag :description,params[:description],class:'form-control',required:true            
