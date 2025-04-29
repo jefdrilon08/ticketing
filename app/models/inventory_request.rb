@@ -6,8 +6,9 @@ class InventoryRequest < ApplicationRecord
   accepts_nested_attributes_for :inventory_request_details 
 
   before_validation :generate_request_number, on: :create
-
   before_create :set_default_date_request
+
+  enum status: { pending: 'pending', approved: 'approved', on_process: 'on process', for_deliver: 'for deliver', received: 'received', for_checking: 'for checking' }
 
   private
 

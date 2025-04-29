@@ -24,7 +24,7 @@ class InventoryRequestsController < ApplicationController
 
   def create
     @inventory_request = current_user.inventory_requests.build(inventory_request_params)
-    @inventory_request.status = "Pending"
+    @inventory_request.status = :pending
     
     if @inventory_request.save
       respond_to do |format|
@@ -84,14 +84,37 @@ end
   end
 
   def update
-    if @inventory_request.update(inventory_request_params)
-      redirect_to inventory_request_path(@inventory_request), notice: 'Inventory request was successfully updated.'
+    Rails.logger.debug "Received params: #{params.inspect}"
+    
+    @inventory_request = InventoryRequest.find_by(id: params[:id])
+    return redirect_to inventory_requests_path, alert: 'Inventory request not found.' if @inventory_request.nil?
+    
+    @detail = @inventory_request.inventory_request_details.find_by(id: params[:inventory_request_detail_id])
+    return redirect_to @inventory_request, alert: 'Inventory request detail not found.' if @detail.nil?
+    
+    status = params.dig(:inventory_request, :status)&.strip
+    Rails.logger.debug "Status received: #{status}"
+    
+    valid_statuses = ['pending', 'for checking', 'approved', 'on process', 'for deliver', 'received']
+  
+    if valid_statuses.include?(status)
+      if @detail.update(status: status)
+        # After detail update, check if parent inventory request should also update
+        update_inventory_request_status(@inventory_request)
+        redirect_to @inventory_request, notice: "Inventory request detail status updated to #{status}."
+      else
+        Rails.logger.debug "Failed to update status. Errors: #{@detail.errors.full_messages.join(', ')}"
+        redirect_to @inventory_request, alert: 'Failed to update inventory request detail status.'
+      end
     else
-      flash.now[:alert] = 'There was an error updating the request.'
-      render :edit
+      Rails.logger.debug "Invalid status: #{status}"
+      redirect_to @inventory_request, alert: 'Invalid status.'
     end
   end
+  
+  
 
+  
   def destroy
     @inventory_request = InventoryRequest.find_by(id: params[:id])
     if @inventory_request
@@ -115,5 +138,16 @@ end
 
   def inventory_request_detail_params
     params.require(:inventory_request_detail).permit(:item_id, :description, :unit, :quantity_requested, :approve_quantity, :remarks, :status)
+  end
+end
+
+def update_inventory_request_status(inventory_request)
+  # Example logic: if ALL details are approved, mark the request approved.
+  if inventory_request.inventory_request_details.all? { |detail| detail.status == 'approved' }
+    inventory_request.update(status: 'approved')
+  elsif inventory_request.inventory_request_details.any? { |detail| detail.status == 'for checking' }
+    inventory_request.update(status: 'for checking')
+  else
+    inventory_request.update(status: 'pending')
   end
 end
