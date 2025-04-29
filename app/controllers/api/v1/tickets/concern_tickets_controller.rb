@@ -89,6 +89,9 @@ module Api
               ticket_number: ticket_number,
               concern_ticket_id: params[:concern_ticket_id],
               description: params[:description],
+              data: {
+                category: "low"
+              },
               status: "open",
               name_for_id: params[:name_for_id],
               concern_type_id: params[:concern_type_id],

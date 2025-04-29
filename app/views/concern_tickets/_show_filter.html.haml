@@ -15,8 +15,8 @@
     .col-md-2.col-12
       .form-group
         %label
-          Concern Type
-        = select_tag :concern_type_id, options_from_collection_for_select(@concern_types, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "concern-type-select", prompt: "-- SELECT --"
+          Assigned Person
+        = select_tag :assigned_user_id, options_from_collection_for_select(@developer_members, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "assigned-person-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
       .form-group

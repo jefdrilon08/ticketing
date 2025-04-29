@@ -41,6 +41,10 @@ class ConcernTicketsController < ApplicationController
     @branches = Branch.select(:id, :name)
     @concern_types = ConcernType.where(concern_id: @concern_ticket.id)
     @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
+    @developer_members = ConcernTicketUser
+                           .joins(:user)
+                           .where(concern_ticket_id: @concern_ticket.id, task: "developer")
+                           .select("users.id, CONCAT(users.first_name, ' ', users.last_name) AS name")
   
     # Filters
     @details_records = @concern_ticket.concern_ticket_details
@@ -72,8 +76,8 @@ class ConcernTicketsController < ApplicationController
       @details_records = @details_records.where(name_for_id: params[:concern_for_id])
     end
   
-    if params[:concern_type_id].present?
-      @details_records = @details_records.where(concern_type_id: params[:concern_type_id])
+    if params[:assigned_user_id].present?
+      @details_records = @details_records.where(assigned_user_id: params[:assigned_user_id])
     end
   
     if params[:ticket_status].present?
@@ -81,8 +85,8 @@ class ConcernTicketsController < ApplicationController
     end
   
     @details_records = @details_records.order(
-    Arel.sql("CASE WHEN status = 'open' THEN 0 WHEN status = 'processing' THEN 1 WHEN status = 'verification' THEN 2 ELSE 3 END"),
-    created_at: :desc
+      Arel.sql("CASE WHEN status = 'open' THEN 0 WHEN status = 'processing' THEN 1 WHEN status = 'verification' THEN 2 ELSE 3 END"),
+      created_at: :desc
     ).page(params[:page]).per(30)
   end
 
