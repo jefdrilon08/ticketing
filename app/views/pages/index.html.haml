@@ -13,7 +13,7 @@
                 SYSTEM TICKETS
               %hr{:style=>"color:white"}
               -@total_tix=0
-              -temp=[]
+              -temp=[] 
               -SystemTicket.all.each do |x|
                 -if ComputerSystem.where(id:x.computer_system_id).count>0
                   -temp.push(x)
