@@ -1,0 +1,35 @@
+#modal-new.modal.fade{ tabindex: "-1", role: "dialog", "aria-labelledby" => "modal-new-label", "aria-hidden" => "true" }
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title{ id: "modal-new-label" }
+          New Sub Category
+      .modal-body
+        .modal-body-content
+          .bs-callout.bs-callout-info
+            .row
+              .col
+                .form-group
+                  %label Name
+                  = text_field_tag :name, "", id: "input-name", class: "form-control"
+                .form-group
+                  %label Code
+                  = text_field_tag :code, "", id: "input-code", class: "form-control"
+                .form-group.mt-3
+                  %label{ for: "input-category-id" } Select Category
+                  - if @item_categories.any?
+                    = select_tag "category_id",
+                        options_for_select([["-- SELECT CATEGORY --", ""]] + @item_categories.map { |c| ["#{c.name}", c.id] }),
+                        id: "input-category-id", class: "form-control"
+                  - else
+                    %p No categories available.
+                = hidden_field_tag :id, "", id: "item-id"  # Hidden field for sub-category ID
+          .message{ style: "display:none;" }  <!-- Message container (initially hidden) -->
+      .modal-footer
+        .controls
+          %button#btn-confirm-new.btn.btn-primary
+            .fa.fa-check
+            Confirm
+          %button.btn{ "data-bs-dismiss" => "modal", type: "button" }
+            .fa.fa-times
+            Cancel
