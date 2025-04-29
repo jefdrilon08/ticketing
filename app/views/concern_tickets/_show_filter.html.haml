@@ -4,7 +4,7 @@
       .form-group
         %label
           SATO
-        = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "branch-select", prompt: "-- SELECT --"
+        = select_tag :branch_id, options_from_collection_for_select(@branches, :id, ->(branch) { branch.name.upcase }, nil), class: "form-control select-select2 form-control-sm", id: "branch-select", prompt: "-- SELECT --"
     
     .col-md-2.col-12
       .form-group
@@ -16,7 +16,7 @@
       .form-group
         %label
           Assigned Person
-        = select_tag :assigned_user_id, options_from_collection_for_select(@developer_members, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "assigned-person-select", prompt: "-- SELECT --"
+        = select_tag :assigned_user_id, options_for_select(@developer_members.map { |member| [member[:name], member[:id]] }, nil), class: "form-control select-select2 form-control-sm", id: "assigned-person-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
       .form-group
