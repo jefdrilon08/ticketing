@@ -44,8 +44,8 @@ class ConcernTicketsController < ApplicationController
     @developer_members = ConcernTicketUser
                            .joins(:user)
                            .where(concern_ticket_id: @concern_ticket.id, task: "developer")
-                           .select("users.id, CONCAT(users.first_name, ' ', users.last_name) AS name")
-  
+                           .map { |tu| { id: tu.user.id, name: "#{tu.user.first_name.titleize} #{tu.user.last_name.titleize}" } }
+    Rails.logger.debug "Developer members: #{@developer_members.inspect}"
     # Filters
     @details_records = @concern_ticket.concern_ticket_details
   
