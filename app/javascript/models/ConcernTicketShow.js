@@ -45,6 +45,34 @@ var _bindEvents = function() {
         $message.html("");
     });
 
+    $(document).on("click", ".toggle-hold", function() {
+        const $button = $(this);
+        const ticketId = $button.data("ticket-id");
+        const isHeld = $button.data("held") === "true";
+
+        $.ajax({
+            url: `/api/v1/tickets/concern_tickets/${ticketId}/toggle_hold`,
+            method: "POST",
+            contentType: "application/json",
+            headers: {
+                "X-CSRF-Token": _authenticityToken
+            },
+            success: function(response) {
+                if (response.success) {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100);
+                } else {
+                    alert("Failed to toggle hold: " + response.error);
+                }
+            },
+            error: function(xhr) {
+                console.error("Error:", xhr.responseText);
+                alert("Server error while toggling hold.");
+            }
+        });
+    });
+
     $(document).on("click", ".update-status", function() {
         console.log("Button clicked!");
 

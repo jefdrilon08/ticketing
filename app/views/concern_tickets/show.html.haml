@@ -35,21 +35,33 @@
           %td.text-center= ticket.assigned_user ? "#{ticket.assigned_user.first_name.capitalize} #{ticket.assigned_user.last_name.capitalize}" : "Unassigned"
           %td.text-center.small-text= ticket.created_at.strftime("%b %d, %Y %I:%M %p")
           %td.text-center
-            - case ticket.status
-            - when "open"
-              .badge.bg-success Open
-            - when "processing"
-              .badge.bg-primary Processing
-            - when "verification"
-              .badge.bg-warning For Verification
-            - when "closed"
-              .badge.bg-danger Closed
+            - if ticket.data["is_held"] == "true"
+              .badge.bg-dark Hold
             - else
-              .badge.bg-secondary Pending
+              - case ticket.status
+              - when "open"
+                .badge.bg-success Open
+              - when "processing"
+                .badge.bg-primary Processing
+              - when "verification"
+                .badge.bg-warning For Verification
+              - when "closed"
+                .badge.bg-danger Closed
+              - else
+                .badge.bg-secondary Pending
+
           %td.text-center
             = link_to view_tix_concern_ticket_path(ticket), class: "btn btn-primary btn-md me-1", title: "View Tickets", data: { bs_toggle: "tooltip" } do
               %i.bi.bi-eye
-
+            - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
+            - if developer_task || current_user.is_mis?
+              - held = ticket.data && ticket.data["is_held"] == "true"
+              = button_tag class: "btn #{held ? 'btn-success' : 'btn-danger'} btn-md toggle-hold", data: { ticket_id: ticket.id, held: held.to_s }, title: (held ? "Resume Ticket" : "Put on Hold") do
+                - if held #true
+                  %i.bi.bi-play
+                - else
+                  %i.bi.bi-pause
+ 
     - else
       %tr
         %td{ colspan: 9, class: "text-center" } No ticket details found
