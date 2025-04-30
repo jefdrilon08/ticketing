@@ -91,7 +91,7 @@ module Api
               description: params[:description],
               data: {
                 category: "low",
-                is_held: "true"
+                is_held: "false"
               },
               status: "open",
               name_for_id: params[:name_for_id],

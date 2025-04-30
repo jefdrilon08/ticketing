@@ -56,11 +56,12 @@
             - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
             - if developer_task || current_user.is_mis?
               - held = ticket.data && ticket.data["is_held"] == "true"
-              = button_tag class: "btn #{held ? 'btn-success' : 'btn-danger'} btn-md toggle-hold", data: { ticket_id: ticket.id, held: held.to_s }, title: (held ? "Resume Ticket" : "Put on Hold") do
-                - if held #true
-                  %i.bi.bi-play
-                - else
-                  %i.bi.bi-pause
+              - if ticket.status != "closed"
+                = button_tag class: "btn #{held ? 'btn-success' : 'btn-danger'} btn-md toggle-hold", data: { ticket_id: ticket.id, held: held.to_s }, title: (held ? "Resume Ticket" : "Put on Hold") do
+                  - if held #true
+                    %i.bi.bi-play
+                  - else
+                    %i.bi.bi-pause
  
     - else
       %tr
