@@ -747,6 +747,8 @@ Rails.application.routes.draw do
   patch "/inventory_requests/:inventory_request_id/inventory_request_details/:id", to: "inventory_request_details#update", as: "update_inventory_request_detail"
   delete "/inventory_requests/:inventory_request_id/inventory_request_details/:id", to: "inventory_request_details#destroy", as: "destroy_inventory_request_detail"
   patch "/inventory_requests/:id/", to: "inventory_requests#update_status", as: "update_inventory_request_status"
+  patch "/inventory_requests/:id/update_request_from", to: "inventory_requests#update_request_from", as: "update_request_from_inventory_request"
+  patch "/inventory_requests/:id/update_request_to", to: "inventory_requests#update_request_to", as: "update_request_to_inventory_request"
 
   resources :inventory_requests, only: [:show, :update, :destroy] do
     resources :inventory_request_details, only: [:create, :update, :destroy]
