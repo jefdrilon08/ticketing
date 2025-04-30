@@ -23,6 +23,11 @@
                         Status
                     .form-group
                         =select_tag :f_status,options_for_select([["pending","pending"],["approved","approved"],["processing","processing"],["for verification","for verification"],["done","done"]], params[:f_status]),class:'form-control select-select2',prompt:"-- SELECT --"
+                %td{:style=>"width:10%"}
+                    %label
+                        Progress
+                    .form-group
+                        =select_tag :f_hold,options_for_select([["on hold","true"],["in progress","false"]], params[:f_hold]),class:'form-control select-select2',prompt:"-- SELECT --"
                 %td
                     %label
                     .form-group2

@@ -85,8 +85,9 @@ class SystemTicketsController < ApplicationController
         # Filter
         @f_sdate       = params[:f_sdate].to_s
         @f_edate       = params[:f_edate].to_s
-        @f_type         = params[:f_type]
+        @f_type        = params[:f_type]
         @f_status      = params[:f_status]
+        @f_hold        = params[:f_hold]
 
         if @f_sdate.present?
             temp= system_tix
@@ -110,6 +111,16 @@ class SystemTicketsController < ApplicationController
             
         if @f_status.present?
             system_tix= system_tix.where(status:@f_status)
+        end
+
+        if @f_hold.present?
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                if x.data["on_hold"].to_s==@f_hold
+                    system_tix.push(x)
+                end
+            end
         end
 
         if @f_type.present?
@@ -144,23 +155,33 @@ class SystemTicketsController < ApplicationController
                 x[:data]["team_members"].each do |x|
                   if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md=[x[0],"#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"]
                   end
-                  if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id && x[2]==true then read=true
-                  end
-                  if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id then is_a_m+=1
+                  if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id 
+                    is_a_m+=1
+                    if x[2]
+                        then read=true
+                    end
                   end
                 end
 
                 puts read
-                puts "wawawawawa"
+                puts "wawawawawa1"
 
                 if x[:data]["chat"].present?
                     if current_user.id==x[:data]["chat"].last()[0] then read=true
                     end
                 end
                 
-                if current_user.id==x.requested_by then is_a_m=1 end
+                puts read
+                puts "wawawawawa2"
 
-                if x.data["read_by_req"] then read=true end
+                if current_user.id==x.requested_by
+                    is_a_m=1 
+                    if x.data["read_by_req"] then read=true end
+                end
+
+                
+
+                    puts "wawawawawa3"
 
                 if sdate==nil 
                     then sdate="Not yet set." 
@@ -817,7 +838,11 @@ class SystemTicketsController < ApplicationController
             end
         end
 
-        if current_user.id==add_msg.requested_by then add_msg_data["read_by_req"]=true 
+        if current_user.id==add_msg.requested_by
+            add_msg_data["read_by_req"]=true 
+            add_msg_data["team_members"].each do |x|
+                x[2]=false
+            end
         else add_msg_data["read_by_req"]=false
         end
 
