@@ -63,7 +63,7 @@ class SystemTicketsController < ApplicationController
         @system_tix_desc=[]
         @milestones=[]
         @admin=false
-        @is_a_member=0
+        
 
         if !SystemTicketsUser.where(system_ticket_id:params[:id],user_id:current_user.id).empty? then
             if SystemTicketsUser.where(system_ticket_id:params[:id],user_id:current_user.id)[0].status=="admin"
@@ -131,6 +131,7 @@ class SystemTicketsController < ApplicationController
                 hold    = x[:data]["on_hold"]
                 cat     = "uncategorized"
                 read    = false
+                is_a_m  = 0
 
                 if x[:data]["save_details"]!=nil
                     if x[:data]["save_details"].length==4
@@ -145,7 +146,7 @@ class SystemTicketsController < ApplicationController
                   end
                   if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id && x[2]==true then read=true
                   end
-                  if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id then @is_a_member+=1
+                  if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id then is_a_m+=1
                   end
                 end
 
@@ -156,6 +157,10 @@ class SystemTicketsController < ApplicationController
                     if current_user.id==x[:data]["chat"].last()[0] then read=true
                     end
                 end
+                
+                if current_user.id==x.requested_by then is_a_m=1 end
+
+                if x.data["read_by_req"] then read=true end
 
                 if sdate==nil 
                     then sdate="Not yet set." 
@@ -163,13 +168,13 @@ class SystemTicketsController < ApplicationController
                 
                 case cat
                 when "high"
-                    high.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
+                    high.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read,is_a_m])
                 when "medium"
-                    medium.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
+                    medium.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read,is_a_m])
                 when "low"
-                    low.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
+                    low.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read,is_a_m])
                 when "uncategorized"
-                    uncategorized.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
+                    uncategorized.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read,is_a_m])
                 end
 
             end
@@ -321,6 +326,8 @@ class SystemTicketsController < ApplicationController
         read_chat_data["team_members"].each do |x|
             if SystemTicketsUser.find(x[0]).user_id==current_user.id then x[2]=true end
         end
+
+        if current_user.id==read_chat.requested_by then read_chat_data["read_by_req"]=true end
 
         read_chat.update!(data:read_chat_data)
             redirect_to "/system_tickets/#{params[:id]}"
@@ -808,6 +815,10 @@ class SystemTicketsController < ApplicationController
                 else x.push(false)
                 end
             end
+        end
+
+        if current_user.id==add_msg.requested_by then add_msg_data["read_by_req"]=true 
+        else add_msg_data["read_by_req"]=false
         end
 
         puts add_msg_data["chat"]

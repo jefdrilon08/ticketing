@@ -447,7 +447,7 @@
                             #{x[2]}
                 %p{:style=>"font-size:15px;margin-bottom:10px"}
                     This marks the beginning of the chat.
-        -if @role>0            
+        -if @role>0 || current_user.id==@ticket.requested_by           
             = form_tag "chat", method: 'POST' do
                 %div.row
                     .form-group
