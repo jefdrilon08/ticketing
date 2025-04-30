@@ -63,6 +63,7 @@ class SystemTicketsController < ApplicationController
         @system_tix_desc=[]
         @milestones=[]
         @admin=false
+        @is_a_member=0
 
         if !SystemTicketsUser.where(system_ticket_id:params[:id],user_id:current_user.id).empty? then
             if SystemTicketsUser.where(system_ticket_id:params[:id],user_id:current_user.id)[0].status=="admin"
@@ -143,6 +144,8 @@ class SystemTicketsController < ApplicationController
                   if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md=[x[0],"#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"]
                   end
                   if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id && x[2]==true then read=true
+                  end
+                  if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id then @is_a_member+=1
                   end
                 end
 

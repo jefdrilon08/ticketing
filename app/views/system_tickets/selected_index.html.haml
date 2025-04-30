@@ -72,7 +72,7 @@
                         %p
                             #{x[1]}
                             %span
-                            -if SystemTicketDesc.find(x[0]).data["chat"].present?
+                            -if SystemTicketDesc.find(x[0]).data["chat"].present? && @is_a_member>0
                                 -if !x[12]
                                     %i.bi.bi-envelope{:style=>"color:red",:title=>"New message from #{User.find(SystemTicketDesc.find(x[0]).data["chat"].last()[0])}"}
                                 - else
