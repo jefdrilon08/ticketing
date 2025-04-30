@@ -4,13 +4,13 @@
       .form-group
         %label
           SATO
-        = select_tag :branch_id, options_from_collection_for_select(@branches, :id, ->(branch) { branch.name.upcase }, nil), class: "form-control select-select2 form-control-sm", id: "branch-select", prompt: "-- SELECT --"
-    
+        = select_tag :branch_id, options_from_collection_for_select(@branches.order(:name), :id, ->(branch) { branch.name.upcase }, nil), class: "form-control select-select2 form-control-sm", id: "branch-select", prompt: "-- SELECT --"
+
     .col-md-2.col-12
       .form-group
         %label
           Concern From
-        = select_tag :concern_for_id, options_from_collection_for_select(@concern_fors, :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "concern-for-select", prompt: "-- SELECT --"
+        = select_tag :concern_for_id, options_from_collection_for_select(@concern_fors.order(:name), :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "concern-for-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
       .form-group
