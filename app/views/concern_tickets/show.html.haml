@@ -7,7 +7,10 @@
       Processing: #{@processing_count}
     .badge.bg-danger{ style: "font-size: 0.75rem; padding: 0.1rem 0.2rem; margin-left: 0.2rem;" }
       Closed: #{@closed_count}
+    .badge.bg-dark{ style: "font-size: 0.75rem; padding: 0.1rem 0.2rem; margin-left: 0.2rem;" }
+      Hold: #{@hold_count}
 = render partial: "show_filter"
+
 %table.table.table-sm.table-hover.table-bordered
   %thead
     %tr
@@ -30,9 +33,9 @@
               %i.bi.bi-envelope-check.text-primary{ style: "font-size: 0.7rem; vertical-align: middle; margin-left: 0.3rem;", title: "There's a message", data: { bs_toggle: "tooltip" } }
           %td.text-center= ticket.concern_for&.name || "N/A"
           %td.text-center= ticket.concern_type&.name || "N/A"
-          %td.text-center= ticket.requested_user ? "#{ticket.requested_user.first_name.capitalize} #{ticket.requested_user.last_name.capitalize}" : "N/A"
+          %td.text-center= ticket.requested_user ? "#{ticket.requested_user.first_name.titleize} #{ticket.requested_user.last_name.titleize}" : "N/A"
           %td.text-center= ticket.branch&.name&.upcase || "Unassigned"
-          %td.text-center= ticket.assigned_user ? "#{ticket.assigned_user.first_name.capitalize} #{ticket.assigned_user.last_name.capitalize}" : "Unassigned"
+          %td.text-center= ticket.assigned_user ? "#{ticket.assigned_user.first_name.titleize} #{ticket.assigned_user.last_name.titleize}" : "Unassigned"
           %td.text-center.small-text= ticket.created_at.strftime("%b %d, %Y %I:%M %p")
           %td.text-center
             - if ticket.data&.[]("is_held") == "true"
@@ -62,7 +65,6 @@
                     %i.bi.bi-play
                   - else
                     %i.bi.bi-pause
- 
     - else
       %tr
         %td{ colspan: 9, class: "text-center" } No ticket details found

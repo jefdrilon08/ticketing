@@ -51,13 +51,18 @@
 
                 .row.mb-3
                     .col-12
+                        %strong.h6 Category:
+                        = @concern_ticket_details.data["category"].try(:capitalize) || "N/A"
+
+                .row.mb-3
+                    .col-12
                         %strong.h6 Requested By:
-                        = @concern_ticket_details.requested_user ? "#{@concern_ticket_details.requested_user.first_name.capitalize} #{@concern_ticket_details.requested_user.last_name.capitalize}" : "User not found :<"
+                        = @concern_ticket_details.requested_user ? "#{@concern_ticket_details.requested_user.first_name.titleize} #{@concern_ticket_details.requested_user.last_name.titleize}" : "User not found :<"
 
                 .row.mb-3
                     .col-12
                         %strong.h6 Assigned Person:
-                        = @concern_ticket_details.assigned_user ? "#{@concern_ticket_details.assigned_user.first_name.capitalize} #{@concern_ticket_details.assigned_user.last_name.capitalize}" : "Unassigned"
+                        = @concern_ticket_details.assigned_user ? "#{@concern_ticket_details.assigned_user.first_name.titleize} #{@concern_ticket_details.assigned_user.last_name.titleize}" : "Unassigned"
                         
                         - if current_user.is_mis? && !@concern_ticket_details.status.in?(["closed", "verification"]) && @concern_ticket_details.assigned_user
                             = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-assigned-person", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}

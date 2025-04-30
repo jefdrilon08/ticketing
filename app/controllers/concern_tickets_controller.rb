@@ -36,54 +36,61 @@ class ConcernTicketsController < ApplicationController
         text: "Create Ticket"
       }
     ]
-  
+
     @concern_ticket = ConcernTicket.includes(concern_ticket_details: [:branch, :requested_user, :assigned_user]).find(params[:id])
     @branches = Branch.select(:id, :name)
     @concern_types = ConcernType.where(concern_id: @concern_ticket.id)
     @concern_fors = ConcernFor.where(concern_id: @concern_ticket.id)
     @developer_members = ConcernTicketUser
-                           .joins(:user)
-                           .where(concern_ticket_id: @concern_ticket.id, task: "developer")
-                           .map { |tu| { id: tu.user.id, name: "#{tu.user.first_name.titleize} #{tu.user.last_name.titleize}" } }
-    Rails.logger.debug "Developer members: #{@developer_members.inspect}"
-    # Filters
-    @details_records = @concern_ticket.concern_ticket_details
-  
+                          .joins(:user)
+                          .where(concern_ticket_id: @concern_ticket.id, task: "developer")
+                          .order('users.first_name ASC')
+                          .map { |tu| { id: tu.user.id, name: "#{tu.user.first_name.titleize} #{tu.user.last_name.titleize}" } }
+
+    initial_details_records = @concern_ticket.concern_ticket_details
+
     user_concern_ticket = ConcernTicketUser.find_by(user_id: current_user.id, concern_ticket_id: @concern_ticket.id)
     if user_concern_ticket&.task == "requester"
-      @details_records = @details_records.where(requested_user_id: current_user.id)
+      initial_details_records = initial_details_records.where(requested_user_id: current_user.id)
     end
-    
-    @open_count = @details_records.where(status: "open").count
-    @processing_count = @details_records.where(status: "processing").count
-    @closed_count = @details_records.where(status: "closed").count
-    
+
+    @open_count = initial_details_records.where(status: "open").count
+    @processing_count = initial_details_records.where(status: "processing").count
+    @closed_count = initial_details_records.where(status: "closed").count
+    @hold_count = initial_details_records.where("data->>'is_held' = ?", 'true').count
+
+    @details_records = initial_details_records.dup 
     if params[:branch_id].present?
       @details_records = @details_records.where(branch_id: params[:branch_id])
     end
-  
+
     if params[:start_date].present?
       start_date = Date.parse(params[:start_date]) rescue nil
       @details_records = @details_records.where("DATE(created_at) >= ?", start_date) if start_date
     end
-  
+
     if params[:end_date].present?
       end_date = Date.parse(params[:end_date]) rescue nil
       @details_records = @details_records.where("DATE(created_at) <= ?", end_date) if end_date
     end
-  
+
     if params[:concern_for_id].present?
       @details_records = @details_records.where(name_for_id: params[:concern_for_id])
     end
-  
+
     if params[:assigned_user_id].present?
       @details_records = @details_records.where(assigned_user_id: params[:assigned_user_id])
     end
-  
+
     if params[:ticket_status].present?
-      @details_records = @details_records.where(status: params[:ticket_status])
+      if params[:ticket_status] == 'hold'
+        @details_records = @details_records.where("data->>'is_held' = ?", 'true')
+      else
+        @details_records = @details_records.where(status: params[:ticket_status])
+                                          .where("data->>'is_held' != ? OR data->>'is_held' IS NULL", 'true')
+      end
     end
-  
+
     @details_records = @details_records.order(
       Arel.sql("CASE WHEN status = 'open' THEN 0 WHEN status = 'processing' THEN 1 WHEN status = 'verification' THEN 2 ELSE 3 END"),
       created_at: :desc
@@ -177,12 +184,11 @@ class ConcernTicketsController < ApplicationController
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
     @concern_types = ConcernType.where(concern_id: @concern_ticket_details.concern_ticket_id)
     @ticket_users = ConcernTicketUser
-                    .where(concern_ticket_id: @concern_ticket.id, task: "Developer")
+                    .where(concern_ticket_id: @concern_ticket.id, task: "developer")
                     .includes(:user)
-                    .sort_by { |tu| tu.user.full_name.downcase }
-    Rails.logger.debug "ticket users: #{@ticket_users.inspect}"
+                    .sort_by { |tu| tu.user.first_name.downcase }
   end
-  
+
   def chat_message
     ticket_detail = ConcernTicketDetail.find(params[:id])
   
