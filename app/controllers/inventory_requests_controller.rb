@@ -154,6 +154,30 @@ end
       redirect_to @inventory_request, alert: 'Invalid status.'
     end
   end
+
+  def update_request_from
+    @inventory_request = InventoryRequest.find(params[:id])
+  
+    if @inventory_request.update(branch_id: params[:branch_id])
+      redirect_to @inventory_request, notice: "Request From updated."
+    else
+      redirect_to @inventory_request, alert: "Failed to update Request From."
+    end
+  end
+  
+  
+  def update_request_to
+    @inventory_request = InventoryRequest.find(params[:id])
+  
+    if @inventory_request.update(request_to_id: params[:request_to_id])
+      redirect_to @inventory_request, notice: "Request To updated."
+    else
+      redirect_to @inventory_request, alert: "Failed to update Request To."
+    end
+  end
+  
+  
+  
   
   
   
