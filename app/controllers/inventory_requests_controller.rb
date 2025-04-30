@@ -4,6 +4,7 @@ class InventoryRequestsController < ApplicationController
 
   def index
     @inventory_requests = current_user.inventory_requests.order(created_at: :desc).page(params[:page])
+    @inventory_requests = InventoryRequest.includes(:branch, :request_to, :user).all
     @inventory_request = InventoryRequest.new
     @subheader_side_actions = [
       {
@@ -133,7 +134,7 @@ end
   end
 
   def inventory_request_params
-    params.require(:inventory_request).permit(:date_request, :branch_id, :status)
+    params.require(:inventory_request).permit(:date_request, :branch_id, :status, :request_to_id)
   end
 
   def inventory_request_detail_params
@@ -142,7 +143,6 @@ end
 end
 
 def update_inventory_request_status(inventory_request)
-  # Example logic: if ALL details are approved, mark the request approved.
   if inventory_request.inventory_request_details.all? { |detail| detail.status == 'approved' }
     inventory_request.update(status: 'approved')
   elsif inventory_request.inventory_request_details.any? { |detail| detail.status == 'for checking' }

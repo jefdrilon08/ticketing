@@ -4,7 +4,8 @@
       %th.px-3.py-2 Date
       %th.px-3.py-2 ID
       %th.px-3.py-2 Request No.
-      %th.px-3.py-2 Branch
+      %th.px-3.py-2 Request From
+      %th.px-3.py-2 Request To
       %th.px-3.py-2 User
       %th.px-3.py-2 Status
       %th.px-3.py-2 Actions
@@ -16,6 +17,7 @@
         %td.px-3.py-2= request.id
         %td.px-3.py-2= request.request_number
         %td.px-3.py-2= request.branch.name
+        %td.px-3.py-2= request.request_to&.name || "N/A"
         %td.px-3.py-2= request.user.full_name
         %td.px-3.py-2.text-capitalize
           %span.badge.bg-secondary= request.status.to_s.titleize
