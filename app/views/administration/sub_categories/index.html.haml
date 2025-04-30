@@ -1,0 +1,13 @@
+= title
+.row
+  .col
+    .card
+      .card-body
+        - if @sub_categories_list.any?
+          = render partial: "index_list"
+        - else
+          %p
+            No Categories found
+            
+= render partial: "administration/sub_categories/modals/new"
+

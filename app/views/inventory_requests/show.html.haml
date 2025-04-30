@@ -1,10 +1,11 @@
-.container.mt-1
+.container-fluid.mt-1
   .card.shadow-sm.p-4.mb-5
     %h4.text-primary.mb-3 Add New Inventory Detail
 
     = form_tag inventory_request_details_path(@inventory_request), method: 'post', id: 'addDetailsForm' do
       = hidden_field_tag "inventory_request_detail[inventory_request_id]", @inventory_request.id
       = hidden_field_tag "inventory_request_detail[id]", nil, id: 'inventory_request_detail_id'
+      = hidden_field_tag "inventory_request_detail[status]", "pending", id: "inventory_request_detail_status"
 
       .row
         .col-md-6
@@ -51,6 +52,7 @@
           %i.bi.bi-plus-lg.me-2
           Add Details
 
+
 %h4.text-primary.mt-5.mb-3 Inventory Request Details
 
 .table-responsive
@@ -75,15 +77,32 @@
           %td.px-3.py-2= detail.quantity_requested
           %td.px-3.py-2= detail.approve_quantity
           %td.px-3.py-2= detail.remarks
-          %td.px-3.py-2= @inventory_request.status.titleize
+          %td.px-3.py-2= detail.status.titleize
           %td.px-3.py-2
-            .d-flex.justify-content-center.gap-2
+            .d-flex.flex-wrap.justify-content-center.gap-2
               = link_to '#', class: 'btn btn-sm btn-warning shadow-sm edit-detail-btn', title: 'Edit', data: { detail: detail.to_json } do
                 %i.bi.bi-pencil-fill
+
               = button_to 'Delete', inventory_request_inventory_request_detail_path(@inventory_request, detail),
                 method: :delete,
                 data: { confirm: 'Are you sure?' },
                 class: 'btn btn-sm btn-danger shadow-sm'
+
+              = form_tag inventory_request_path(@inventory_request), method: :patch, class: 'd-inline' do
+                = hidden_field_tag "inventory_request_detail_id", detail.id
+                = hidden_field_tag "inventory_request[status]", "pending"
+                = button_tag type: 'submit', class: 'btn btn-sm btn-success shadow-sm', title: 'Pending', data: { bs_toggle: 'tooltip' } do
+                  %i.bi.bi-save2
+
+              = form_tag inventory_request_path(@inventory_request), method: :patch, class: 'd-inline' do
+                = hidden_field_tag "inventory_request_detail_id", detail.id
+                = hidden_field_tag "inventory_request[status]", "for checking"
+                = button_tag type: 'submit', class: 'btn btn-sm btn-primary shadow-sm', title: 'For Checking', data: { bs_toggle: 'tooltip' } do
+                  %i.bi.bi-send-check
+
+
+
+
 
 :javascript
   document.addEventListener('DOMContentLoaded', () => {
@@ -150,6 +169,38 @@
         submitBtn.classList.add('btn-warning')
 
         form.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
+
+    // Save and For Checking buttons logic
+    document.querySelectorAll('.save-status-btn, .checking-status-btn').forEach(button => {
+      button.addEventListener('click', async (e) => {
+        e.preventDefault()
+
+        const inventoryRequestId = button.dataset.requestId
+        const newStatus = button.dataset.status
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content
+
+        const response = await fetch(`/inventory_requests/${inventoryRequestId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({
+            inventory_request: {
+              status: newStatus
+            }
+          })
+        })
+
+        if (response.ok) {
+          alert(`Status updated to "${newStatus}"`)
+          window.location.reload()
+        } else {
+          alert('Failed to update status.')
+        }
       })
     })
   })

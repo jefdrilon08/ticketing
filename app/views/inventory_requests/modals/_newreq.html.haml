@@ -10,8 +10,15 @@
       .modal-body
         = form_for @inventory_request do |f|
           .form-group.mb-4
-            %label.fw-semibold.mb-2{ for: "inventory_request_branch_id" } Branch
+            %label.fw-semibold.mb-2{ for: "inventory_request_branch_id" } Request from
             = f.select :branch_id,
+              Branch.order(:name).collect { |b| [b.name, b.id] },
+              { prompt: "Select Branch" },
+              class: "form-select bg-secondary-subtle text-dark shadow-sm"
+
+          .form-group.mb-4
+            %label.fw-semibold.mb-2{ for: "inventory_request_request_to_id" } Request to
+            = f.select :request_to_id,
               Branch.order(:name).collect { |b| [b.name, b.id] },
               { prompt: "Select Branch" },
               class: "form-select bg-secondary-subtle text-dark shadow-sm"

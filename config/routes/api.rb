@@ -119,7 +119,7 @@ namespace :api do
       post "/concern_tickets/add_member_concern_ticket", to: "concern_tickets#add_member_ct"
       post "/concern_tickets/update_assigned_person", to: "concern_tickets#update_assigned_person"
       post "/concern_tickets/edit_concern_type", to: "concern_tickets#edit_concern_type"
-      
+      post "concern_tickets/:id/toggle_hold", to: "concern_tickets#toggle_hold"
       # for member status
       patch "/concern_ticket_users/:id/update_member_status", to: "concern_tickets#update_member_status"
       # for javascript
@@ -634,48 +634,46 @@ namespace :api do
     post "/centers/assign_officer", to: "centers#assign_officer"
 
     namespace :administration do
-
+      #Computer System
       post "/computer_system/create", to: "computer_system#create"
       put "/computer_system/update", to: "computer_system#update"
       post "/computer_system/delete", to: "computer_system#delete"
-
+      #Items
       post "items/create", to: "items#create"
       put "/items/update", to: "items#update"
       post "/items/delete", to: "items#delete"
-
+      #Items Category
       post "items_category/create", to: "items_category#create"
       put "items_category/update",  to: "items_category#update"
       post "items_category/delete", to: "items_category#delete"
-      
+      #Sub-Category
+      post "sub_categories/create", to: "sub_categories#create"
+      put "sub_categories/update",  to: "sub_categories#update"
+      post "sub_categories/delete", to: "sub_categories#delete"
+      #Suppliers
       post "suppliers/create", to: "suppliers#create"
       put "/suppliers/update", to: "suppliers#update"
       post "/suppliers/delete", to: "suppliers#delete"
-
+      #Brands
       post "brands/create", to: "brands#create"
       put "brands/update",  to: "brands#update"
       post "brands/delete", to: "brands#delete"
-     
-    
+     #User
       post "/user_demerits/approve", to: "user_demerits#approve"
-
       get "/user_branches", to: "user_branches#index"
       post "/user_branches/toggle", to: "user_branches#toggle"
-      
       # Surveys
       post "/surveys/save", to: "surveys#save"
       post "/surveys/delete", to: "surveys#delete"
       get "/surveys/fetch", to: "surveys#fetch"
-
       # Survey Question
       get "/survey_questions/fetch", to: "survey_questions#fetch"
       post "/survey_questions/save", to: "survey_questions#save"
       post "/survey_questions/delete", to: "survey_questions#delete"
-
       # Loan Product
       post "/loan_products/delete", to: "loan_products#delete"
       post "/loan_products/modify_prerequisite", to: "loan_products#modify_prerequisite"
       post "/loan_products/modify_maintaining_balance", to: "loan_products#modify_maintaining_balance"
-
       # Membership Arrangement
       post "/membership_arrangements/update_data", to: "membership_arrangements#update_data"
     end

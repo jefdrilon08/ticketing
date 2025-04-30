@@ -90,7 +90,8 @@ module Api
               concern_ticket_id: params[:concern_ticket_id],
               description: params[:description],
               data: {
-                category: "low"
+                category: "low",
+                is_held: "false"
               },
               status: "open",
               name_for_id: params[:name_for_id],
@@ -219,6 +220,26 @@ module Api
             redirect_back(fallback_location: request.referer || root_path)
           end
         end
+
+        def toggle_hold
+          ticket = ConcernTicketDetail.find_by(id: params[:id])
+        
+          if ticket.nil?
+            render json: { success: false, error: "Ticket not found" }, status: :not_found
+            return
+          end
+        
+          current_data = ticket.data || {}
+          is_held = current_data["is_held"] == "true"
+          current_data["is_held"] = (!is_held).to_s
+        
+          if ticket.update(data: current_data)
+            render json: { success: true, held: current_data["is_held"] }
+          else
+            render json: { success: false, error: "Unable to update ticket" }, status: :unprocessable_entity
+          end
+        end
+        
 
       end
     end

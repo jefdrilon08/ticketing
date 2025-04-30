@@ -112,19 +112,20 @@
 
     .card-footer.d-flex.justify-content-end.bg-light
         - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
-        - if @concern_ticket_details.status == "open" && (developer_task || current_user.is_mis?)
-            = button_tag "Process Ticket", 
-                { class: "btn btn-success fs-6 me-2 update-status", 
-                  data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing" } }
+        - unless @concern_ticket_details.data&.[]("is_held") == "true"
+            - if @concern_ticket_details.status == "open" && (developer_task || current_user.is_mis?)
+                = button_tag "Process Ticket",
+                    { class: "btn btn-success fs-6 me-2 update-status",
+                      data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing" } }
 
-        - elsif @concern_ticket_details.status == "processing" && (developer_task || current_user.is_mis?)
-            = button_tag "Move for Verification", 
-                { class: "btn btn-warning fs-6 me-2 update-status", 
-                  data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }
+            - elsif @concern_ticket_details.status == "processing" && (developer_task || current_user.is_mis?)
+                = button_tag "Move for Verification",
+                    { class: "btn btn-warning fs-6 me-2 update-status",
+                      data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }
 
-        - elsif @concern_ticket_details.status == "verification"
-            = button_tag "Close Ticket", 
-                { class: "btn btn-danger fs-6 me-2 update-status", 
+        - if @concern_ticket_details.status == "verification"
+            = button_tag "Close Ticket",
+                { class: "btn btn-danger fs-6 me-2 update-status",
                   data: { ticket_number: @concern_ticket_details.ticket_number, status: "closed" } }
 
         = link_to "Back", concern_ticket_path(@concern_ticket), class: "btn btn-secondary fs-6"
