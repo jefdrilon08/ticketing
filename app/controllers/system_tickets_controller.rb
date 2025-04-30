@@ -129,6 +129,7 @@ class SystemTicketsController < ApplicationController
                 stat    = x[:status]
                 hold    = x[:data]["on_hold"]
                 cat     = "uncategorized"
+                read    = false
 
                 if x[:data]["save_details"]!=nil
                     if x[:data]["save_details"].length==4
@@ -141,6 +142,16 @@ class SystemTicketsController < ApplicationController
                 x[:data]["team_members"].each do |x|
                   if x[1]=="Main Dev"&&(SystemTicketsUser.find(x[0]).status!="inactive") then md=[x[0],"#{User.find(SystemTicketsUser.find(x[0]).user_id).last_name}, #{User.find(SystemTicketsUser.find(x[0]).user_id).first_name}"]
                   end
+                  if User.find(SystemTicketsUser.find(x[0]).user_id).id==current_user.id && x[2]==true then read=true
+                  end
+                end
+
+                puts read
+                puts "wawawawawa"
+
+                if x[:data]["chat"].present?
+                    if current_user.id==x[:data]["chat"].last()[0] then read=true
+                    end
                 end
 
                 if sdate==nil 
@@ -149,13 +160,13 @@ class SystemTicketsController < ApplicationController
                 
                 case cat
                 when "high"
-                    high.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
+                    high.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
                 when "medium"
-                    medium.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
+                    medium.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
                 when "low"
-                    low.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
+                    low.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
                 when "uncategorized"
-                    uncategorized.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat])
+                    uncategorized.push([id,tixno,date,sdate,edate,reqt,reqn,md,stat,hold,tdate,cat,read])
                 end
 
             end
@@ -298,6 +309,19 @@ class SystemTicketsController < ApplicationController
             render :edit, status: :unprocessable_entity
         end
     end
+
+    def read_chat
+        puts params
+        read_chat=SystemTicketDesc.find(params[:id])
+        read_chat_data=read_chat.data
+
+        read_chat_data["team_members"].each do |x|
+            if SystemTicketsUser.find(x[0]).user_id==current_user.id then x[2]=true end
+        end
+
+        read_chat.update!(data:read_chat_data)
+            redirect_to "/system_tickets/#{params[:id]}"
+    end
     
     def create_milestone
         puts params[:id]
@@ -305,6 +329,7 @@ class SystemTicketsController < ApplicationController
                         system_ticket_desc_id:params[:id],
                         milestone_details:params[:details],
                         status:'pending',
+                        assigned_person:params[:dev],
                         target_date:params[:date]
                       )
         if @record.save
@@ -767,6 +792,20 @@ class SystemTicketsController < ApplicationController
         add_msg_data=add_msg.data
 
         add_msg_data["chat"].push([current_user.id,Time.new.strftime("%A %B %d, %Y %I:%M %p"),params[:msg]])
+
+        add_msg_data["team_members"].each do |x|
+            if x.count==3       
+                then if SystemTicketsUser.find(x[0]).user_id==current_user.id
+                    then x[2]=true
+                else x[2]=false
+                end
+            else
+                if SystemTicketsUser.find(x[0]).user_id==current_user.id
+                    then x.push(true)
+                else x.push(false)
+                end
+            end
+        end
 
         puts add_msg_data["chat"]
 

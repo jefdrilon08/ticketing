@@ -286,6 +286,10 @@
                                 %p
                                     %center
                                         End Date
+                            %th{:style=>"width:10%"}
+                                %p
+                                    %center
+                                        Assigned Dev
                             %th{:style=>"width:5%"}
                                 %p
                                     %center
@@ -328,6 +332,10 @@
                                             %p
                                                 %center
                                                     #{"--"}
+                                        %td
+                                            %p
+                                                %center
+                                                    #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
                                         %td
                                             %p
                                     #modal-set-start-date-milestone.modal.fade
@@ -382,6 +390,10 @@
                                                             #{"--"}
                                                         -else
                                                             #{x.end_date}
+                                            %td
+                                                %p
+                                                    %center
+                                                        #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
                                             %td
                                                 %p
                                                     %center

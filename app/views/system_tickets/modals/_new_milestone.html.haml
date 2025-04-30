@@ -12,11 +12,22 @@
                                 Details
                             .form-group
                                 =text_area_tag :details,params[:details],class:'form-control',required:true
+                        %tr 
+                            %p
+                        %tr 
+                            %label
+                                Assign to
+                            .form-group
+                                =select_tag :dev,options_for_select(@mem_list_dev, params[:dev]),class:'form-control select-select2',prompt:"-- SELECT --",required:true
+                        %tr 
+                            %p
                         %tr            
                             %label
                                 Target Date
                             .form-group
                                 =text_field_tag :date,params[:date],class:'form-control',type: :date,required:true
+                        %tr 
+                            %p
                         %tr   
                             %td
                                 .form-group
