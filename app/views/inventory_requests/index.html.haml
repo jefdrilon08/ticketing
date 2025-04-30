@@ -2,7 +2,7 @@
   %thead.table-light.text-center.align-middle
     %tr
       %th.px-3.py-2 Date
-      %th.px-3.py-2 ID
+      //%th.px-3.py-2 ID
       %th.px-3.py-2 Request No.
       %th.px-3.py-2 Request From
       %th.px-3.py-2 Request To
@@ -14,7 +14,7 @@
     - @inventory_requests.each do |request|
       %tr.text-center.align-middle
         %td.px-3.py-2= request.date_request
-        %td.px-3.py-2= request.id
+        //%td.px-3.py-2= request.id
         %td.px-3.py-2= request.request_number
         %td.px-3.py-2= request.branch.name
         %td.px-3.py-2= request.request_to&.name || "N/A"

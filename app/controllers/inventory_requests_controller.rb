@@ -1,6 +1,5 @@
 class InventoryRequestsController < ApplicationController
   before_action :authenticate_user!
-  # before_action :set_inventory_request, only: [:show, :edit, :update, :destroy]
 
   def index
     @inventory_requests = current_user.inventory_requests.order(created_at: :desc).page(params[:page])
@@ -40,7 +39,6 @@ class InventoryRequestsController < ApplicationController
     end
   end
   
-  
 
   def destroy
     @inventory_request.destroy
@@ -71,7 +69,6 @@ class InventoryRequestsController < ApplicationController
     end
   end
 
-  
 
 # inventory_requests_controller.rb
 def show
@@ -79,10 +76,57 @@ def show
   @inventory_request = InventoryRequest.find(params[:id])
   @inventory_request.inventory_request_details
 
+  @subheader_side_actions = []
+
+  unless @inventory_request.status == "received"
+    @subheader_side_actions << {
+      id: "btn-change-status",
+      link: "#",
+      class: "btn btn-sm shadow-sm",
+      text: status_button_text(@inventory_request.status),
+      data: { 
+        method: "patch", 
+        url: update_inventory_request_status_path(@inventory_request.id)
+      }
+    }
+  end
 end
+
+
+def update_status
+  @inventory_request = InventoryRequest.find(params[:id])
+
+  Rails.logger.debug "Current status: #{@inventory_request.status}"
+
+  new_status = case @inventory_request.status
+               when "pending" then "for_checking"
+               when "for_checking" then "checked"
+               when "checked" then "approve"
+               when "approve" then "on process"
+               when "on_process" then "for_delivery"
+               when "for_delivery" then "received"
+               else @inventory_request.status
+               end
+
+  Rails.logger.debug "New status: #{new_status}"
+
+  if @inventory_request.update(status: new_status)
+    redirect_to @inventory_request, notice: "Status updated to #{new_status.titleize}."
+  else
+    redirect_to @inventory_request, alert: "Failed to update status."
+  end
+end
+
+
+
+
+
+
+
 
   def edit
   end
+  
 
   def update
     Rails.logger.debug "Received params: #{params.inspect}"
@@ -90,22 +134,20 @@ end
     @inventory_request = InventoryRequest.find_by(id: params[:id])
     return redirect_to inventory_requests_path, alert: 'Inventory request not found.' if @inventory_request.nil?
     
-    @detail = @inventory_request.inventory_request_details.find_by(id: params[:inventory_request_detail_id])
-    return redirect_to @inventory_request, alert: 'Inventory request detail not found.' if @detail.nil?
-    
+    # Only updating the inventory request status, no need for details
     status = params.dig(:inventory_request, :status)&.strip
     Rails.logger.debug "Status received: #{status}"
-    
-    valid_statuses = ['pending', 'for checking', 'approved', 'on process', 'for deliver', 'received']
+  
+    valid_statuses = ['pending', 'for checking', 'approve', 'on process', 'for delivery', 'done']
   
     if valid_statuses.include?(status)
-      if @detail.update(status: status)
-        # After detail update, check if parent inventory request should also update
+      if @inventory_request.update(status: status)
+        # After updating the request status, you might want to trigger status update for details if necessary
         update_inventory_request_status(@inventory_request)
-        redirect_to @inventory_request, notice: "Inventory request detail status updated to #{status}."
+        redirect_to @inventory_request, notice: "Inventory request status updated to #{status.titleize}."
       else
-        Rails.logger.debug "Failed to update status. Errors: #{@detail.errors.full_messages.join(', ')}"
-        redirect_to @inventory_request, alert: 'Failed to update inventory request detail status.'
+        Rails.logger.debug "Failed to update status. Errors: #{@inventory_request.errors.full_messages.join(', ')}"
+        redirect_to @inventory_request, alert: 'Failed to update inventory request status.'
       end
     else
       Rails.logger.debug "Invalid status: #{status}"
@@ -114,7 +156,6 @@ end
   end
   
   
-
   
   def destroy
     @inventory_request = InventoryRequest.find_by(id: params[:id])
@@ -151,3 +192,25 @@ def update_inventory_request_status(inventory_request)
     inventory_request.update(status: 'pending')
   end
 end
+
+def status_button_text(status)
+  case status
+  when "pending"
+    "For Checking"
+  when "for_checking"
+    "Checked"
+  when "checked"
+    "Approve"
+  when "approve"
+    "On Process"
+  when "on_process"
+    "For Delivery"
+  when "for_delivery"
+    "Received"
+  else
+    "Unknown Status"
+  end
+end
+
+
+
