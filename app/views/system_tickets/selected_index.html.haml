@@ -79,7 +79,7 @@
                             %span
                             -if SystemTicketDesc.find(x[0]).data["chat"].present? && x[13]!=0
                                 -if !x[12]
-                                    %i.bi.bi-envelope{:style=>"color:red",:title=>"New message from #{User.find(SystemTicketDesc.find(x[0]).data["chat"].last()[0])}"}
+                                    %i.bi.bi-envelope-check{:style=>"color:red",:title=>"New message from #{User.find(SystemTicketDesc.find(x[0]).data["chat"].last()[0])}"}
                                 - else
                                     %i.bi.bi-envelope{:title=>"Last message by #{User.find(SystemTicketDesc.find(x[0]).data["chat"].last()[0])} on #{SystemTicketDesc.find(x[0]).data["chat"].last()[1]}"}
                     %td
