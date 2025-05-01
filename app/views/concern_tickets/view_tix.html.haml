@@ -20,7 +20,7 @@
                             .chat-message.mb-2
                                 %small.text-muted= message["timestamp"]
                                 %br
-                                %strong= message["user"]
+                                %strong= message["user"].try(:titleize)
                                 %p= message["comment"]
                     - else
                         %p.text-muted No messages yet.
@@ -116,7 +116,7 @@
                             %p.text-muted No files attached.        
 
     .card-footer.d-flex.justify-content-end.bg-light
-        - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
+        - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "developer")
         - unless @concern_ticket_details.data&.[]("is_held") == "true"
             - if @concern_ticket_details.status == "open" && (developer_task || current_user.is_mis?)
                 = button_tag "Process Ticket",
