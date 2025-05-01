@@ -10,8 +10,17 @@ class InventoryRequest < ApplicationRecord
   before_validation :generate_request_number, on: :create
   before_create :set_default_date_request
 
-  enum status: { pending: 'pending', approved: 'approved', on_process: 'on process', for_deliver: 'for deliver', received: 'received', for_checking: 'for checking' }
-
+  enum status: {
+    pending: 'pending',
+    for_checking: 'for checking',
+    checked: 'checked',
+    approve: 'approve',
+    on_process: 'on process',
+    for_delivery: 'for delivery',
+    received: 'received'
+  }
+  
+  
   private
 
   def generate_request_number

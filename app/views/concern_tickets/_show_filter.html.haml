@@ -4,37 +4,37 @@
       .form-group
         %label
           SATO
-        = select_tag :branch_id, options_from_collection_for_select(@branches.order(:name), :id, ->(branch) { branch.name.upcase }, nil), class: "form-control select-select2 form-control-sm", id: "branch-select", prompt: "-- SELECT --"
+        = select_tag :branch_id, options_from_collection_for_select(@branches.order(:name), :id, ->(branch) { branch.name.upcase }, params[:branch_id]), class: "form-control select-select2 form-control-sm", id: "branch-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
       .form-group
         %label
           Concern From
-        = select_tag :concern_for_id, options_from_collection_for_select(@concern_fors.order(:name), :id, :name, nil), class: "form-control select-select2 form-control-sm", id: "concern-for-select", prompt: "-- SELECT --"
+        = select_tag :concern_for_id, options_from_collection_for_select(@concern_fors.order(:name), :id, :name, params[:concern_for_id]), class: "form-control select-select2 form-control-sm", id: "concern-for-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
       .form-group
         %label
           Assigned Person
-        = select_tag :assigned_user_id, options_for_select(@developer_members.map { |member| [member[:name], member[:id]] }, nil), class: "form-control select-select2 form-control-sm", id: "assigned-person-select", prompt: "-- SELECT --"
+        = select_tag :assigned_user_id, options_for_select(@developer_members.map { |member| [member[:name], member[:id]] }, params[:assigned_user_id]), class: "form-control select-select2 form-control-sm", id: "assigned-person-select", prompt: "-- SELECT --"
 
     .col-md-2.col-12
       .form-group
         %label
           Start Date
-        = text_field_tag :start_date, nil, class: 'form-control form-control-sm', type: :date, id: "start-date"
+        = text_field_tag :start_date, params[:start_date], class: 'form-control form-control-sm', type: :date, id: "start-date"
 
     .col-md-2.col-12
       .form-group
         %label
           End Date
-        = text_field_tag :end_date, nil, class: 'form-control form-control-sm', type: :date, id: "end-date"
+        = text_field_tag :end_date, params[:end_date], class: 'form-control form-control-sm', type: :date, id: "end-date"
 
     .col-md-1.col-12
       .form-group
         %label
           Status
-        = select_tag :ticket_status, options_for_select([['Open', 'open'], ['Processing', 'processing'], ['For Verification', 'verification'], ['Closed', 'closed']], nil), class: "form-control select-select2 form-control-sm", id: "ticket-status-select", prompt: "-- SELECT --"
+        = select_tag :ticket_status, options_for_select([['Open', 'open'], ['Hold', 'hold'], ['Processing', 'processing'], ['For Verification', 'verification'], ['Closed', 'closed']], params[:ticket_status]), class: "form-control select-select2 form-control-sm", id: "ticket-status-select", prompt: "-- SELECT --"
 
     .col-auto
       .form-group
