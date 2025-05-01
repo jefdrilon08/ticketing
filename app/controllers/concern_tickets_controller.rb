@@ -5,7 +5,7 @@ class ConcernTicketsController < ApplicationController
     if current_user.is_mis?
       @subheader_side_actions = [
         {
-          id: "btn-new",
+          id: "btn-new-concern",
           link: new_concern_ticket_path,
           class: "fa fa-plus",
           text: "New"

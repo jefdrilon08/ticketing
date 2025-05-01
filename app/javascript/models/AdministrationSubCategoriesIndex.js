@@ -2,19 +2,19 @@ import Mustache from "mustache";
 import $ from "jquery";
 import * as bootstrap from "bootstrap";
 
-let $btnNew, $btnConfirmNew, $inputName, $inputCode, $inputCategoryId, $itemId, $modalNew, $message;
-let _authenticityToken, templateErrorList;
+let $btnNew, $btnConfirmNew, $inputName, $inputCode, $inputCategoryId, $itemId, $message;
+let _authenticityToken, templateErrorList, $modalEl, $modalNew;
 
 const _cacheDom = () => {
-  $btnNew          = $("#btn-new");
-  $btnConfirmNew   = $("#btn-confirm-new");
-  $inputName       = $("#input-name");
-  $inputCode       = $("#input-code");
+  $btnNew = $("#btn-new");
+  $btnConfirmNew = $("#btn-confirm-new");
+  $inputName = $("#input-name");
+  $inputCode = $("#input-code");
   $inputCategoryId = $("#input-category-id");
-  $itemId          = $("#item-id");
+  $itemId = $("#item-id");
 
-  const modalEl = document.getElementById("modal-new");
-  if (modalEl) $modalNew = new bootstrap.Modal(modalEl);
+  $modalEl = document.getElementById("modal-new");
+  if ($modalEl) $modalNew = new bootstrap.Modal($modalEl);
 
   $message = $(".message");
   templateErrorList = $("#template-error-list").html() ||
@@ -92,7 +92,6 @@ const _clearMessage = () => {
 };
 
 const _bindEvents = () => {
-  // — New —
   $btnNew.off().on("click", e => {
     e.preventDefault();
     $itemId.val("");
@@ -103,29 +102,26 @@ const _bindEvents = () => {
     $modalNew.show();
   });
 
-  // — Edit —
   $(document).off("click", ".update-button").on("click", ".update-button", function(e) {
     e.preventDefault();
     const $row = $(this).closest("tr");
-    $itemId.val(        $row.data("id"));
-    $inputCode.val(     $(this).data("code"));
-    $inputName.val(     $(this).data("name"));
+    $itemId.val($row.data("id"));
+    $inputCode.val($(this).data("code"));
+    $inputName.val($(this).data("name"));
     $inputCategoryId.val($(this).data("category-id"));
     _clearMessage();
     $modalNew.show();
-    $inputName.focus();
   });
 
-  // — Create / Update —
   $btnConfirmNew.off().on("click", e => {
     e.preventDefault();
     if ($btnConfirmNew.prop("disabled")) return;
     $btnConfirmNew.prop("disabled", true);
     _clearMessage();
 
-    const id         = $itemId.val();
-    const name       = $inputName.val().trim();
-    const code       = $inputCode.val().trim();
+    const id = $itemId.val();
+    const name = $inputName.val().trim();
+    const code = $inputCode.val().trim();
     const categoryId = $inputCategoryId.val();
 
     if (!name) {
@@ -145,10 +141,10 @@ const _bindEvents = () => {
     }
 
     const isUpdate = Boolean(id);
-    const url      = isUpdate
+    const url = isUpdate
       ? `/api/v1/administration/sub_categories/${id}`
       : "/api/v1/administration/sub_categories";
-    const method   = isUpdate ? "PUT" : "POST";
+    const method = isUpdate ? "PUT" : "POST";
 
     $.ajax({
       url,
@@ -164,21 +160,31 @@ const _bindEvents = () => {
       },
       success() {
         $modalNew.hide();
-        reloadTable(); 
 
-        const modalEl = document.getElementById("modal-new");
-        if (modalEl) {
-          const onHidden = () => {
-            alert(isUpdate ? "Successfully Updated" : "Successfully Created");
-            modalEl.removeEventListener('hidden.bs.modal', onHidden);
-          };
-          modalEl.addEventListener('hidden.bs.modal', onHidden);
+        if (isUpdate) {
+          const $row = $(`#data-table tbody tr[data-id="${id}"]`);
+          $row.find("td:nth-child(1)").text(code.toUpperCase());
+          $row.find("td:nth-child(2)").text(name.toUpperCase());
+          $row.find(".update-button").data("code", code);
+          $row.find(".update-button").data("name", name);
+          $row.find(".update-button").data("category-id", categoryId);
+        } else {
+          reloadTable(); 
         }
+
+        const onHidden = () => {
+          alert(isUpdate ? "Successfully Updated" : "Successfully Created");
+          $modalEl.removeEventListener('hidden.bs.modal', onHidden);
+        };
+        $modalEl.addEventListener('hidden.bs.modal', onHidden);
       },
       error(xhr) {
         let errs = [];
-        try { errs = JSON.parse(xhr.responseText).messages; }
-        catch { errs = ["Something went wrong"]; }
+        try {
+          errs = JSON.parse(xhr.responseText).messages;
+        } catch {
+          errs = ["Something went wrong"];
+        }
         $message
           .addClass("alert alert-danger")
           .html(Mustache.render(templateErrorList, { errors: errs }))
@@ -190,7 +196,6 @@ const _bindEvents = () => {
     });
   });
 
-  // — Delete —
   $(document).off("click", ".delete-button").on("click", ".delete-button", function(e) {
     e.preventDefault();
     const $btn = $(this);
@@ -202,7 +207,7 @@ const _bindEvents = () => {
     _clearMessage();
 
     const confirmDelete = confirm("Delete this subcategory?");
-    
+
     if (!confirmDelete) {
       $btn.removeClass("processing");
       _clearMessage();
@@ -228,8 +233,11 @@ const _bindEvents = () => {
       },
       error(xhr) {
         let errs = [];
-        try { errs = JSON.parse(xhr.responseText).messages; }
-        catch { errs = ["Something went wrong"]; }
+        try {
+          errs = JSON.parse(xhr.responseText).messages;
+        } catch {
+          errs = ["Something went wrong"];
+        }
         $message
           .addClass("alert alert-danger")
           .html(Mustache.render(templateErrorList, { errors: errs }))
@@ -250,7 +258,9 @@ const init = options => {
 };
 
 $(document).ready(() => {
-  init({ authenticityToken: $("meta[name='csrf-token']").attr("content") });
+  if ($("#data-table").length > 0 && $("#data-table").hasClass("sub-categories")) {
+    init({ authenticityToken: $("meta[name='csrf-token']").attr("content") });
+  }
 });
 
 export default { init };

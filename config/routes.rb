@@ -709,7 +709,6 @@ Rails.application.routes.draw do
   delete "/stocks/:id", to: "stocks#destroy", as: :destroy_inventory
   get "/stocks/:id/view", to: "stocks#view", as: :view_inventory
 
-
   # DISTRIBUTE 
   get '/distribute', to: 'distribute#index', as: 'distribute'
   get '/distribute/new', to: 'distribute#new', as: 'new_distribute'
