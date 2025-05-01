@@ -23,6 +23,31 @@
       .d-flex.align-items-center.gap-2
         %div.text-dark{ style: "font-size: 1.2rem; font-weight: 600;" }= @inventory_request.status.titleize
 
+
+
+/ Status Update Logs 
+- if @inventory_request.data && @inventory_request.data["status_logs"]
+  %h5.mt-3.text-primary.mb-2 Status Update Logs:
+  .list-group
+    - @inventory_request.data["status_logs"].each do |log|
+      - user = User.find_by(id: log["updated_by"])
+      .list-group-item.border-0.bg-light.mb-3.p-2.shadow-sm
+        .row
+          .col-8
+            .d-flex.justify-content-between.align-items-center
+              %span.font-weight-bold.text-dark Updated to: #{log["status"].titleize}
+              %span.text-info.text-dark.ml-2
+                - if user
+                  = "By #{user.full_name}"
+                - else
+                  = "By unknown user"
+          .col-4.text-end
+            %span.font-weight-bold.text-dark{ style: "font-size: 0.9rem;" }
+              = "#{log["updated_at"].to_datetime.strftime('%b %d, %Y at %I:%M %p')}"
+
+
+
+
 / Edit Request From Modal
 .modal.fade#editRequestFromModal{ tabindex: "-1", aria: { labelledby: "editRequestFromModalLabel", hidden: "true" } }
   .modal-dialog
