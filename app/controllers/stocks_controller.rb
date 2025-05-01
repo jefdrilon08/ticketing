@@ -36,7 +36,7 @@ class StocksController < ApplicationController
   end
 
   def create
-    @inventory = Inventory.new(inventory_params.except(:data))
+    @inventory = Inventory.new(inventory_params_without_virtual_fields)
     @inventory.data = build_inventory_data(params)
 
     assign_unit_from_item!
@@ -56,7 +56,7 @@ class StocksController < ApplicationController
   end
 
   def update
-    @inventory.assign_attributes(inventory_params.except(:data))
+    @inventory.assign_attributes(inventory_params_without_virtual_fields)
     @inventory.data = build_inventory_data(params)
 
     assign_unit_from_item!
@@ -84,9 +84,15 @@ class StocksController < ApplicationController
   end
 
   def load_collections
-    @items     = Item.all
-    @suppliers = Supplier.all
-    @brands    = Brand.all
+    @items           = Item.all
+    @suppliers       = Supplier.all
+    @brands          = Brand.all
+    @item_categories = ItemsCategory.all
+    @sub_categories  = SubCategory.all
+  end
+
+  def inventory_params_without_virtual_fields
+    inventory_params.except(:data, :item_category_id, :sub_category_id)
   end
 
   def inventory_params
@@ -99,12 +105,19 @@ class StocksController < ApplicationController
       :quantity,
       :purchase_date,
       :status,
+      :item_category_id,
+      :sub_category_id,
       data: {
-        child_item: [
+        child_items_attributes: [
+          :child_id,
           :child_name,
           :child_brand,
           :child_serial_number,
-          :child_quantity
+          :child_quantity,
+          :child_item_category_id,
+          :child_item_category_name,
+          :child_sub_category_id,
+          :child_sub_category_name
         ]
       }
     )
@@ -114,7 +127,7 @@ class StocksController < ApplicationController
     if params[:inventory][:item_id].present?
       selected = Item.find(params[:inventory][:item_id])
       if selected.item_type.to_s.downcase == 'supply'
-        @inventory.unit          = selected.unit
+        @inventory.unit = selected.unit
         @inventory.serial_number = nil
       else
         @inventory.unit = params[:inventory][:unit]
@@ -138,28 +151,50 @@ class StocksController < ApplicationController
                     []
                   end
 
-    formatted_children = []
-    child_items.each do |child|
+    formatted_children = child_items.map do |child|
       child = child.to_unsafe_h if child.is_a?(ActionController::Parameters)
-      formatted_children << {
-        "child_name" => child[:child_name],
-        "child_brand" => child[:child_brand],
-        "child_serial_number" => child[:child_serial_number],
-        "child_quantity" => child[:child_quantity]
+
+      # Lookup the item by child_name
+      item = Item.find_by(name: child[:child_name])  # Find the item by child_name
+      item_category = ItemsCategory.find_by(id: child[:child_item_category_id])
+      sub_category  = SubCategory.find_by(id: child[:child_sub_category_id])
+
+      # If item is found, assign the item's ID to child_item_id
+      child_item_id = item ? item.id : nil
+
+      {
+        "child_item_id"            => child_item_id,  # Use item ID based on child_name lookup
+        "child_name"               => child[:child_name],
+        "child_brand"              => child[:child_brand],
+        "child_serial_number"      => child[:child_serial_number],
+        "child_quantity"           => child[:child_quantity],
+        "child_item_category_id"   => item_category&.id,
+        "child_item_category_name" => item_category&.name,
+        "child_sub_category_id"    => sub_category&.id,
+        "child_sub_category_name"  => sub_category&.name
       }
     end
 
+    brand         = Brand.find_by(id: params[:inventory][:brand_id])
+    item_category = ItemsCategory.find_by(id: params[:inventory][:item_category_id])
+    sub_category  = SubCategory.find_by(id: params[:inventory][:sub_category_id])
+
     inventory_data_hash = {
-      "title"             => params[:inventory][:title],
-      "brand_id"          => params[:inventory][:brand_id],
-      "model"             => params[:inventory][:model],
-      "threshhold_alerts" => params[:inventory][:threshhold_alerts],
-      "reorder_points"    => params[:inventory][:reorder_points]
+      "title"              => params[:inventory][:title],
+      "brand_id"           => params[:inventory][:brand_id],
+      "brand_name"         => brand&.name,
+      "model"              => params[:inventory][:model],
+      "threshhold_alerts"  => params[:inventory][:threshhold_alerts],
+      "reorder_points"     => params[:inventory][:reorder_points],
+      "item_category_id"   => params[:inventory][:item_category_id],
+      "item_category_name" => item_category&.name,
+      "sub_category_id"    => params[:inventory][:sub_category_id],
+      "sub_category_name"  => sub_category&.name,
     }
 
     {
       "inventory_data" => [inventory_data_hash],
-      "child_item" => formatted_children
+      "child_item"     => formatted_children
     }
   end
 end

@@ -11,4 +11,6 @@ class Inventory < ApplicationRecord
   end
   
   self.inheritance_column = :_type_disabled
+
+  
 end
