@@ -17,6 +17,10 @@ Rails.application.routes.draw do
     resources :sub_categories, only: [:index, :create, :update, :destroy]
     resources :sub_categories, only: [:index]
 
+    resources :items_category
+    resources :items_category, only: [:index, :create, :update, :destroy]
+    resources :items_category, only: [:index]
+
     resources :suppliers, only: [:index] do
       get "suppliers", to: 'suppliers#index'
     end
