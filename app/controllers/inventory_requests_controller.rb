@@ -96,32 +96,36 @@ end
 def update_status
   @inventory_request = InventoryRequest.find(params[:id])
 
-  Rails.logger.debug "Current status: #{@inventory_request.status}"
-
   new_status = case @inventory_request.status
-               when "pending" then "for_checking"
+               when "pending" then "for checking"
                when "for_checking" then "checked"
                when "checked" then "approve"
                when "approve" then "on process"
-               when "on_process" then "for_delivery"
+               when "on_process" then "for delivery"
                when "for_delivery" then "received"
                else @inventory_request.status
                end
 
-  Rails.logger.debug "New status: #{new_status}"
+  # Track status change
+  log_entry = {
+    status: new_status,
+    updated_by: current_user.id,
+    updated_at: Time.current
+  }
 
-  if @inventory_request.update(status: new_status)
+  # Append to data['status_logs'] array
+  logs = @inventory_request.data&.dig("status_logs") || []
+  logs << log_entry
+
+  new_data = @inventory_request.data || {}
+  new_data["status_logs"] = logs
+
+  if @inventory_request.update(status: new_status, data: new_data)
     redirect_to @inventory_request, notice: "Status updated to #{new_status.titleize}."
   else
     redirect_to @inventory_request, alert: "Failed to update status."
   end
 end
-
-
-
-
-
-
 
 
   def edit
