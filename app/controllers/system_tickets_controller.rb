@@ -24,22 +24,16 @@ class SystemTicketsController < ApplicationController
 
         @final_tix_list = []
 
-        @tickets.each do |x|
-            puts "kkkk"
+        @tickets_all.each do |x|
             puts SystemTicket.where(computer_system_id:x.id).empty?
             if SystemTicket.where(computer_system_id:x.id).empty? then @tickets-=[x]
             else 
                 is_member=0
-                if SystemTicket.where(computer_system_id:x.id)[0].is_private   
-                    SystemTicket.where(computer_system_id:x.id)[0].data["team_members"].each do |y|
-                        if y==current_user.id.to_s then is_member=is_member+1
-                        end
+                SystemTicket.where(computer_system_id:x.id)[0].data["team_members"].each do |y|
+                    if y==current_user.id.to_s then is_member=is_member+1
                     end
-                    puts "pumasok"
-                    if is_member!=0 then @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0]) end
-                else
-                    @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0])
                 end
+                    @final_tix_list.push([SystemTicket.where(computer_system_id:x.id)[0],is_member,SystemTicket.where(computer_system_id:x.id)[0].is_private])
             end
         end
 
@@ -375,6 +369,7 @@ class SystemTicketsController < ApplicationController
         @all_done=0
         @not_a_mem=[]
         @mem_list_dev=[]
+        @all_dev=[]
         @milestones=[]
         @chat=SystemTicketDesc.find(params[:id])[:data]["chat"]
         @ticket   = SystemTicketDesc.find(params[:id])
@@ -454,9 +449,10 @@ class SystemTicketsController < ApplicationController
             end 
         end
 
-        puts "popopopopo"
-        puts @role
+        @mem_list_dev.push(["#{User.find(SystemTicketsUser.find(@maindev[1]).user_id).last_name}, #{User.find(SystemTicketsUser.find(@maindev[1]).user_id).first_name}","",@maindev[1]])
 
+        puts "memdevlist"
+        puts @mem_list_dev
         if current_user.id==SystemTicketsUser.find(@maindev[1]).user_id then @role=3 end
 
         puts "nonmem"
@@ -550,7 +546,8 @@ class SystemTicketsController < ApplicationController
     end 
 
     def edit_milestone
-        edit_milestone=Milestone.find(params[:id])
+        puts params
+        edit_milestone=Milestone.find(params[:temp])
 
         if edit_milestone.update(status:"done",end_date:DateTime.now())
             redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
@@ -560,9 +557,19 @@ class SystemTicketsController < ApplicationController
     end
 
     def set_date_milestone
-        edit_milestone=Milestone.find(params[:id])
+        edit_milestone=Milestone.find(params[:ms_id])
 
         if edit_milestone.update(start_date:params[:date])
+            redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def edit_milestone_details
+        edit_milestone=Milestone.find(params[:ms_id])
+
+        if edit_milestone.update(milestone_details:params[:details])
             redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
         else
             render :edit, status: :unprocessable_entity

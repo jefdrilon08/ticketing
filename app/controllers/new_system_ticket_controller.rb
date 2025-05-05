@@ -53,7 +53,7 @@ class NewSystemTicketController < ApplicationController
 
         main_dev=SystemTicketsUser.where(status:"admin",system_ticket_id:params[:id])[0].id
 
-        tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).length+1}"
+        tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).count}"
 
         file_arr=[]
 

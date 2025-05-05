@@ -31,7 +31,6 @@ class PagesController < ApplicationController
         if current_user.id==y && status then @systemtix.push(x) end
       end
     end
-
   end
 
   def change_password

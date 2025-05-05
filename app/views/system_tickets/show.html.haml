@@ -129,9 +129,10 @@
                         - case @ticket.start_date
                         - when nil
                             -if @role==3 || @role==5
-                                =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date" },id:'btn-new-milestone' do
-                                    %p
-                                        Set start date
+                                -if !@ticket.data["on_hold"]
+                                    =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date" },id:'btn-new-milestone' do
+                                        %p
+                                            Set start date
                             -else
                                 %p
                                     Not yet set. 
@@ -302,8 +303,17 @@
                                             %p
                                                 %center
                                                     .form-group
-                                                        =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestone1}",style:'display:none'
-                                                    #{x.milestone_details}
+                                                        =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                    %p{:id=>"d-#{@milestones.index(x)}"}
+                                                        #{x.milestone_details}&nbsp
+                                                    - case x.status
+                                                        - when 'pending'
+                                                            -if !@ticket.data["on_hold"]
+                                                                -if @ticket.status!="done"
+                                                                    -if @role==3 || @role==5
+                                                                        %p{:style=>"margin-top:-15px"}
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                Edit
                                         %td
                                             %p
                                                 %center
@@ -322,7 +332,7 @@
                                             -if @role==3 || @role==2 || @role==5
                                                 %p
                                                     %center
-                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestone1})" do
+                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
                                                             Set date
                                             -else
                                                 %p 
@@ -338,24 +348,6 @@
                                                     #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
                                         %td
                                             %p
-                                    #modal-set-start-date-milestone.modal.fade
-                                        .modal-dialog
-                                            .modal-content
-                                                .modal-header
-                                                    %h3.modal-title 
-                                                        Set Start Date for Milestone
-                                                .modal-body
-                                                    %hr{style:"height:25px;color:white"}
-                                                    %center
-                                                        = form_tag "set_date_milestone", method: 'POST' do
-                                                            .form-group
-                                                                =text_field_tag :date,params[:date],class:'form-control',style:"width:60%",required:true,type: :date
-                                                            .form-group
-                                                                =text_field_tag :id,params[:id],class:'form-control',id:'ms_id',style:'display:none'
-                                                            %hr{style:"height:30px;color:white"}
-                                                            .form-group
-                                                                =button_tag type: 'submit', class: 'btn btn-primary',id:"set-date2" do
-                                                                    Set Date
                                 -else
                                     %tr
                                         = form_tag "edit_milestone", method: 'POST' do
@@ -363,8 +355,19 @@
                                                 %p
                                                     %center
                                                         .form-group
-                                                            =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
-                                                        #{x.milestone_details}
+                                                            =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                        .form-group
+                                                            =text_field_tag :temp,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
+                                                        %p{:id=>"d-#{@milestones.index(x)}"}
+                                                            #{x.milestone_details}&nbsp
+                                                        - case x.status
+                                                            - when 'pending'
+                                                                -if !@ticket.data["on_hold"]
+                                                                    -if @ticket.status!="done"
+                                                                        -if @role==3 || @role==5
+                                                                            %p{:style=>"margin-top:-15px"}
+                                                                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                    Edit
                                             %td
                                                 %p
                                                     %center
@@ -402,9 +405,8 @@
                                                                 -if !@ticket.data["on_hold"]
                                                                     -if @ticket.status!="done"
                                                                         -if @role==3 || @role==5
-                                                                            = button_tag type: 'submit',class:'btt-linkto' do
+                                                                            = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
                                                                                 Update
-                                    -@milestone1=@milestone1+1   
                     -if @empty
                         %center
                             %hr{:style=>"height:30px;color:white"}
@@ -468,6 +470,52 @@
                         Send
 %hr{:style=>"height:15px;color:white"}
 
+#modal-set-start-date-milestone.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Set Start Date for Milestone
+            .modal-body
+                %label
+                    Milestone Details
+                %div{id:"deets"}
+                %hr{style:"height:10px;color:white"} 
+                %label
+                    Start Date
+                = form_tag "set_date_milestone", method: 'POST' do
+                    .form-group
+                        =text_field_tag :date,params[:date],class:'form-control',style:"width:60%",required:true,type: :date
+                    .form-group
+                        =text_field_tag :ms_id,params[:ms_id],class:'form-control',id:"ms_id",style:"display:none"
+                    %hr{style:"height:5px;color:white"}
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-primary',id:"" do
+                            Save
+
+#modal-edit-milestone-details.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Edit Details
+            .modal-body
+                %label
+                    Old Details
+                %div{id:"deets2"}
+                %hr{style:"height:10px;color:white"} 
+                %label
+                    New Details
+                = form_tag "edit_milestone_details", method: 'POST' do
+                    .form-group
+                        =text_area_tag :details,params[:details],class:'form-control',required:true
+                    .form-group
+                        =text_field_tag :ms_id,params[:ms_id],class:'form-control',id:"ms_id2",style:"display:none"
+                    %hr{style:"height:5px;color:white"}
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
+                            Save
+
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
     .btt-linkto:hover{color:#0A58CA;}
@@ -475,11 +523,25 @@
 :javascript
     function putMSId(n)
     {
-        var returnId = document.getElementById("ms_id")
-        console.log(returnId.value)
-        var passId   = document.getElementById("m-"+n)
-        returnId.value = passId.value
-        console.log(passId.value)
+        var returnId = document.getElementById('ms_id')
+        var passId   = document.getElementById("m-"+n).value
+        document.getElementById("deets").innerHTML = document.getElementById('d-'+n).innerHTML
+        returnId.value = passId
+    }    
+
+    function putMSId2(n)
+    {
+        var returnId = document.getElementById('ms_id2')
+        var passId   = document.getElementById("m-"+n).value
+        document.getElementById("deets2").innerHTML = document.getElementById('d-'+n).innerHTML
+        returnId.value = passId
+    }    
+
+    function updateStatus(n)
+    {
+        var returnId = document.getElementById('editDetails')
+        var passId   = document.getElementById("u-"+n).value
+        returnId.value = passId
     }    
 
     function scrollBot()

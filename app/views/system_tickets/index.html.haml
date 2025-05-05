@@ -22,44 +22,60 @@
             -@final_tix_list.each do |x|
                 -join_stat=0
                 .col-3{:style=>"padding:20px"}
-                    %div
-                        = link_to "/system_tickets_#{x.id}", class: "btn-nav-square-md" do
-                            %h5
-                                #{ComputerSystem.where(id:x.computer_system_id)[0].name}
+                    -if x[1]<=0 && x[2]
+                        %div
+                            = link_to "#", class: "btn-nav-square-md", style:"background-color:gray;border-color:gray" do
+                                %h5
+                                    #{ComputerSystem.where(id:x[0].computer_system_id)[0].name}
+                    -else
+                        %div
+                            = link_to "/system_tickets_#{x[0].id}", class: "btn-nav-square-md" do
+                                %h5
+                                    #{ComputerSystem.where(id:x[0].computer_system_id)[0].name}
                     %div{:style=>"margin:20px"}
                         %center
-                            -if current_user.id==x.user_id.to_s
-                                =link_to "/system_tickets_#{x.id}/edit" do
+                            -if x[2] && x[1]>0
+                                Private
+                            -if !x[2]
+                                %p
+                                Public
+                                %br
+                            -if current_user.id==x[0].user_id.to_s
+                                =link_to "/system_tickets_#{x[0].id}/edit" do
                                     %p
                                         Edit
                             -else
-                                -SystemTicket.find(x.id).data["team_members"].each do |y|
-                                    -if current_user.id==y
-                                        -if !SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id).empty?
-                                            -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=="pending"
-                                                -join_stat=1
-                                            -else
-                                                -join_stat=2
-                                -if join_stat==2
-                                    -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=='active'
-                                        %p{:style=>"color:green"}
-                                            Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status})
-                                    -elsif SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status=='inactive'
-                                        %p{:style=>"color:red"}
-                                            Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x.id)[0].status})
-                                -if join_stat==1
-                                    %p{:style=>"color:OrangeRed"}
-                                        Pending request
-                                -if join_stat==0
-                                    = form_tag "/system_tickets/join_st", method: 'POST' do
-                                        .form-group
-                                        =text_field_tag :mem_id,params[:mem_id]=current_user.id,class:'form-control',style:'display:none'
-                                        .form-group
-                                            =text_field_tag :id,params[:id]=x.id,class:'form-control',style:'display:none'
-                                        .form-group
-                                            = button_tag type: 'submit',class:'btt-linkto' do
-                                                %p
-                                                    Join
+                                -if x[1]<=0 && x[2]
+                                    %p
+                                        Private. Ask the admin to be added.
+                                -else
+                                    -SystemTicket.find(x[0].id).data["team_members"].each do |y|
+                                        -if current_user.id==y
+                                            -if !SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[0].id).empty?
+                                                -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[0].id)[0].status=="pending"
+                                                    -join_stat=1
+                                                -else
+                                                    -join_stat=2
+                                    -if join_stat==2
+                                        -if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[0].id)[0].status=='active'
+                                            %p{:style=>"color:green"}
+                                                Member (#{SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[0].id)[0].status})
+                                        -elsif SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:x[0].id)[0].status=='inactive'
+                                            %p{:style=>"color:red"}
+                                                Member (#{SystemTicketsUser.where(user_id:current_user[0].id,system_ticket_id:x[0].id)[0].status})
+                                    -if join_stat==1
+                                        %p{:style=>"color:OrangeRed"}
+                                            Pending request
+                                    -if join_stat==0
+                                        = form_tag "/system_tickets/join_st", method: 'POST' do
+                                            .form-group
+                                            =text_field_tag :mem_id,params[:mem_id]=current_user.id,class:'form-control',style:'display:none'
+                                            .form-group
+                                                =text_field_tag :id,params[:id]=x[0].id,class:'form-control',style:'display:none'
+                                            .form-group
+                                                = button_tag type: 'submit',class:'btt-linkto' do
+                                                    %p
+                                                        Join
 :css
     form {display: inline;}
     .form-group {display: inline;}
