@@ -1,4 +1,3 @@
-# File: app/controllers/api/v1/tickets/concern_tickets_controller.rb
 module Api
   module V1
     module Tickets
