@@ -76,6 +76,7 @@ class NewSystemTicketController < ApplicationController
                             on_hold:false,
                             hold_details:nil,
                             file:file_arr,
+                            category:params[:category],
                             chat:[]
                         },
                 date_received:DateTime.now(),

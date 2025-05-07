@@ -24,16 +24,22 @@ class SystemTicketsController < ApplicationController
 
         @final_tix_list = []
 
-        @tickets_all.each do |x|
+        @tickets.each do |x|
+            puts "kkkk"
             puts SystemTicket.where(computer_system_id:x.id).empty?
             if SystemTicket.where(computer_system_id:x.id).empty? then @tickets-=[x]
             else 
                 is_member=0
-                SystemTicket.where(computer_system_id:x.id)[0].data["team_members"].each do |y|
-                    if y==current_user.id.to_s then is_member=is_member+1
+                if SystemTicket.where(computer_system_id:x.id)[0].is_private   
+                    SystemTicket.where(computer_system_id:x.id)[0].data["team_members"].each do |y|
+                        if y==current_user.id.to_s then is_member=is_member+1
+                        end
                     end
+                    puts "pumasok"
+                    if is_member!=0 then @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0]) end
+                else
+                    @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0])
                 end
-                    @final_tix_list.push([SystemTicket.where(computer_system_id:x.id)[0],is_member,SystemTicket.where(computer_system_id:x.id)[0].is_private])
             end
         end
 
@@ -49,6 +55,7 @@ class SystemTicketsController < ApplicationController
             }
           ]
     end
+
 
     def selected_index
 
