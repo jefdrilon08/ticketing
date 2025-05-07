@@ -53,7 +53,15 @@ class NewSystemTicketController < ApplicationController
 
         main_dev=SystemTicketsUser.where(status:"admin",system_ticket_id:params[:id])[0].id
 
-        tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{SystemTicketDesc.where(system_ticket_id:params[:id]).count}"
+        if SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")[0].data["ticket_count"].present?
+            tktno=SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")[0].data["ticket_count"]
+            tktno+=1
+            tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{tktno}"
+        else 
+            tktno=SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC").count
+            tktno+=1
+            tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{tktno}"
+        end
 
         file_arr=[]
 
@@ -77,7 +85,8 @@ class NewSystemTicketController < ApplicationController
                             hold_details:nil,
                             file:file_arr,
                             category:params[:category],
-                            chat:[]
+                            chat:[],
+                            ticket_count:tktno
                         },
                 date_received:DateTime.now(),
                 start_date:nil,
@@ -101,7 +110,8 @@ class NewSystemTicketController < ApplicationController
                             hold_details:nil,
                             file:file_arr,
                             category:params[:category],
-                            chat:[]
+                            chat:[],
+                            ticket_count:tktno
                         },
                 date_received:DateTime.now(),
                 start_date:nil,

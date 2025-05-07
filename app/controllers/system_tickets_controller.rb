@@ -866,4 +866,13 @@ class SystemTicketsController < ApplicationController
 
         redirect_to "/system_tickets/#{params[:id]}"
     end
+
+    def delete_ticket
+        ticket=SystemTicketDesc.find(params[:tix_id])
+        sticket=ticket.system_ticket_id
+
+        ticket.destroy!
+
+        redirect_to "/system_tickets_#{sticket}"
+    end
 end

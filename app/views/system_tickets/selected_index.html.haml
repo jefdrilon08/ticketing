@@ -156,7 +156,7 @@
                     %td
                         %center
                             %div-row
-                                %div-col-6
+                                %div-col-4
                                     -if SystemTicketDesc.find(x[0]).data["chat"].present?
                                         = form_tag "system_tickets/read_chat/#{x[0]}", method: 'POST' do
                                             .form-group
@@ -165,26 +165,65 @@
                                     -else
                                         %a.button{class:"btn btn-primary",:style=>"margin:7% 7px 0 0;padding:0.5% 5% 0.5% 5%",:href => "/system_tickets/#{x[0]}"}
                                             %i.bi.bi-eye
-                                %div-col-12
+                                %div-col-8
                                     -if current_user.id==SystemTicketsUser.find(x[7][0]).user_id || current_user.id==x[6][0] || @admin
                                         -if !x[9]
                                             -if x[8]!='done'
                                                 = form_tag "system_tickets/hold_ticket/#{x[0]}", method: 'POST' do
                                                     .form-group
-                                                        =button_tag type: 'submit', class: 'btn btn-danger',style:"margin:7% 0 0 7px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn",title:"Hold ticket" do
+                                                        =button_tag type: 'submit', class: 'btn btn-danger',style:"margin:7% 0 0 4px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn",title:"Hold ticket" do
                                                             %i.bi.bi-pause
                                         -else
                                             = form_tag "system_tickets/hold_ticket/#{x[0]}", method: 'POST' do
                                                 .form-group
-                                                    =button_tag type: 'submit', class: 'btn btn-success',style:"margin:7% 0 0 7px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn",title:"Resume ticket" do
+                                                    =button_tag type: 'submit', class: 'btn btn-success',style:"margin:7% 0 0 4px;padding:0.5% 5% 0.5% 5%",onclick:"submitArray()",id:"sub-btn",title:"Resume ticket" do
                                                         %i.bi.bi-play
+                                %div-col-12
+                                    -if x[8]=="pending" && x[6][0]==current_user.id
+                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-delete-ticket"},onclick:"submitId('#{x[0]}','#{x[1]}');return false" do
+                                            =button_tag type: 'submit', class: 'btn btn-dark',style:"margin:7% 0 0 10px;padding:0.5% 5% 0.5% 5%",id:"sub-btn",title:"Delete ticket" do
+                                                %i.bi.bi-trash
 
     -if @system_tix_desc.empty?
         %center
             %h4{:style=>"margin:50px"}
                 No records found.
 
+#modal-delete-ticket.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Confirm Deletion
+            .modal-body
+                %hr{:style=>"height:15px;color:white"}
+                %div{:id=>"tix_no"}
+                %hr{:style=>"height:30px;color:white"}
+                %div{:id=>"confirmed",:style=>"display:none;color:green"}
+                    Success! Deleting ticket...
+                = form_tag "system_tickets/delete_ticket", multipart:true, method: 'POST' do
+                    .form-group
+                        =text_field_tag :tix_id,params[:tix_id],class:'form-control',id:"tix_id",style:"display:none"
+                    %hr{style:"height:5px;color:white"}
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-danger',id:"editDetails",onclick:'confirmDelete()' do
+                            Confirm
+                    
+
 :css
     form {display: inline;}
     .form-group {display: inline;}
+
+:javascript
+    function submitId(id,name)
+    {
+        console.log(id)
+        document.getElementById("tix_no").innerHTML="Are you sure you want to delete "+name+"?"
+        document.getElementById("tix_id").value=id
+    }
+
+    function confirmDelete()
+    {
+        document.getElementById("confirmed").style.display="block";
+    }
 
