@@ -14,7 +14,8 @@
     = render partial: "shared/sidebar_tickets"
     - if current_user.is_mis?
       = render partial: "shared/sidebar_inventory"
-      = render partial: "shared/sidebar_item_distributions"
+      //= render partial: "shared/sidebar_item_distributions"
+      = render partial: "shared/sidebar_reports"
       = render partial: "shared/sidebar_config"
 
     %li
@@ -45,4 +46,5 @@
 = render partial: "shared/modals/inventory_transaction"
 = render partial: "shared/modals/system_tools"
 = render partial: "shared/modals/visualize"
+= render partial: "shared/modals/inventory_modal"
 
