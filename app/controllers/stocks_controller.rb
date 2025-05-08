@@ -27,6 +27,7 @@ class StocksController < ApplicationController
         text: "Distribute"
       }
     ]
+
   end
 
   def new
@@ -154,16 +155,16 @@ class StocksController < ApplicationController
     formatted_children = child_items.map do |child|
       child = child.to_unsafe_h if child.is_a?(ActionController::Parameters)
 
-      # Lookup the item by child_name
-      item = Item.find_by(name: child[:child_name])  # Find the item by child_name
+
+      item = Item.find_by(name: child[:child_name])
       item_category = ItemsCategory.find_by(id: child[:child_item_category_id])
       sub_category  = SubCategory.find_by(id: child[:child_sub_category_id])
 
-      # If item is found, assign the item's ID to child_item_id
+
       child_item_id = item ? item.id : nil
 
       {
-        "child_item_id"            => child_item_id,  # Use item ID based on child_name lookup
+        "child_item_id"            => child_item_id,  
         "child_name"               => child[:child_name],
         "child_brand"              => child[:child_brand],
         "child_serial_number"      => child[:child_serial_number],
