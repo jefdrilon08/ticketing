@@ -84,34 +84,19 @@ class SystemTicketsController < ApplicationController
         uncategorized=[]
 
         # Filter
-        @f_sdate       = params[:f_sdate].to_s
-        @f_edate       = params[:f_edate].to_s
+        @f_category    = params[:f_category]
         @f_type        = params[:f_type]
         @f_status      = params[:f_status]
         @f_hold        = params[:f_hold]
-
-        if @f_sdate.present?
-            temp= system_tix
-            system_tix=[]
-            temp.each do |x|
-                if x[:start_date].to_s==@f_sdate
-                    system_tix.push(x)
-                end
-            end
-        end
-
-        if @f_edate.present?
-            temp= system_tix
-            system_tix=[]
-            temp.each do |x|
-                if x[:end_date].to_s==@f_edate
-                    system_tix.push(x)
-                end
-            end
-        end
             
         if @f_status.present?
-            system_tix= system_tix.where(status:@f_status)
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                if x.status==@f_status
+                    system_tix.push(x)
+                end
+            end
         end
 
         if @f_hold.present?
@@ -124,8 +109,24 @@ class SystemTicketsController < ApplicationController
             end
         end
 
+        if @f_category.present?
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                if x.data["category"].to_s==@f_category
+                    system_tix.push(x)
+                end
+            end
+        end
+
         if @f_type.present?
-            system_tix= system_tix.where(request_type:@f_type)
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                if x.request_type.to_s==@f_type
+                    system_tix.push(x)
+                end
+            end
         end
 
         if system_tix!=nil then

@@ -5,14 +5,9 @@
             %tr
                 %td{:style=>"width:20%"}
                     %label
-                        Start Date
+                        Category
                     .form-group
-                        =text_field_tag :f_sdate,params[:f_sdate],class:'form-control',type: :date
-                %td{:style=>"width:20%"}
-                    %label
-                        End Date
-                    .form-group
-                        =text_field_tag :f_edate,params[:f_edate],class:'form-control',type: :date
+                        =select_tag :f_category,options_for_select(["low","medium","high"], params[:f_category]),class:'form-control select-select2',prompt:"-- SELECT --"
                 %td{:style=>"width:20%"}
                     %label
                         Request Type
