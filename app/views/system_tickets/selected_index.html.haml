@@ -201,7 +201,7 @@
                 %hr{:style=>"height:30px;color:white"}
                 %div{:id=>"confirmed",:style=>"display:none;color:green"}
                     Success! Deleting ticket...
-                = form_tag "delete_ticket", multipart:true, method: 'POST' do
+                = form_tag "system_tickets_#{params[:id]}/delete_ticket", method: 'delete' do
                     .form-group
                         =text_field_tag :tix_id,params[:tix_id],class:'form-control',id:"tix_id",style:"display:none"
                     %hr{style:"height:5px;color:white"}

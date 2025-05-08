@@ -786,6 +786,8 @@ Rails.application.routes.draw do
   post "system_tickets/chat",               to: "system_tickets#chat"
   post "system_tickets/make_private",       to: "system_tickets#make_private"
 
+  delete "system_tickets_:id/delete_ticket",    to: "system_tickets#delete_ticket"
+
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"
 

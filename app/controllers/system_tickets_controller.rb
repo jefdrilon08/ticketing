@@ -873,6 +873,10 @@ class SystemTicketsController < ApplicationController
 
         ticket.destroy!
 
+        Milestone.all.each do |x|
+            if x.system_ticket_desc_id==params[:tix_id] then x.destroy! end
+        end
+
         redirect_to "/system_tickets_#{sticket}"
     end
 end
