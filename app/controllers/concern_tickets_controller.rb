@@ -64,14 +64,18 @@ class ConcernTicketsController < ApplicationController
       @details_records = @details_records.where(branch_id: params[:branch_id])
     end
 
-    if params[:start_date].present?
-      start_date = Date.parse(params[:start_date]) rescue nil
-      @details_records = @details_records.where("DATE(created_at) >= ?", start_date) if start_date
-    end
+    # if params[:start_date].present?
+    #   start_date = Date.parse(params[:start_date]) rescue nil
+    #   @details_records = @details_records.where("DATE(created_at) >= ?", start_date) if start_date
+    # end
 
-    if params[:end_date].present?
-      end_date = Date.parse(params[:end_date]) rescue nil
-      @details_records = @details_records.where("DATE(created_at) <= ?", end_date) if end_date
+    # if params[:end_date].present?
+    #   end_date = Date.parse(params[:end_date]) rescue nil
+    #   @details_records = @details_records.where("DATE(created_at) <= ?", end_date) if end_date
+    # end
+
+    if params[:concern_category].present?
+      @details_records = @details_records.where("data->>'category' = ?", params[:concern_category])
     end
 
     if params[:concern_for_id].present?

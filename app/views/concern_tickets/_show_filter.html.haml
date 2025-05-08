@@ -1,6 +1,6 @@
 = form_tag "", method: 'GET', id: "filter-form" do
   .row.g-2{ style: "row-gap: 0rem;" }
-    .col-md-2.col-12
+    .col-md-3.col-12
       .form-group
         %label
           SATO
@@ -12,23 +12,29 @@
           Concern From
         = select_tag :concern_for_id, options_from_collection_for_select(@concern_fors.order(:name), :id, :name, params[:concern_for_id]), class: "form-control select-select2 form-control-sm", id: "concern-for-select", prompt: "-- SELECT --"
 
-    .col-md-2.col-12
+    .col-md-3.col-12
       .form-group
         %label
           Assigned Person
         = select_tag :assigned_user_id, options_for_select(@developer_members.map { |member| [member[:name], member[:id]] }, params[:assigned_user_id]), class: "form-control select-select2 form-control-sm", id: "assigned-person-select", prompt: "-- SELECT --"
-
-    .col-md-2.col-12
+    
+    .col-md-1.col-12
       .form-group
         %label
-          Start Date
-        = text_field_tag :start_date, params[:start_date], class: 'form-control form-control-sm', type: :date, id: "start-date"
+          Category
+        = select_tag :concern_category, options_for_select([['Low', 'low'], ['Medium', 'medium'], ['High', 'high']], params[:concern_category]), class: "form-control select-select2 form-control-sm", id: "concern-category-select", prompt: "-- SELECT --"
 
-    .col-md-2.col-12
-      .form-group
-        %label
-          End Date
-        = text_field_tag :end_date, params[:end_date], class: 'form-control form-control-sm', type: :date, id: "end-date"
+    -# .col-md-2.col-12
+    -#   .form-group
+    -#     %label
+    -#       Start Date
+    -#     = text_field_tag :start_date, params[:start_date], class: 'form-control form-control-sm', type: :date, id: "start-date"
+
+    -# .col-md-2.col-12
+    -#   .form-group
+    -#     %label
+    -#       End Date
+    -#     = text_field_tag :end_date, params[:end_date], class: 'form-control form-control-sm', type: :date, id: "end-date"
 
     .col-md-1.col-12
       .form-group
