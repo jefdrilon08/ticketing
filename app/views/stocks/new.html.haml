@@ -14,97 +14,103 @@
         = hidden_field_tag :_method, "patch"
 
       .row
-        .col-md-4.form-group
-          %label{ for: "title" } Title
-          %input.form-control{ type: "text", id: "title", name: "inventory[title]", required: true, value: inventory_data["title"].to_s }
-        .col-md-4.form-group
-          %label{ for: "brand_name" } Brand Name
-          - if @brands.present?
-            %select.form-control{ id: "brand_name", name: "inventory[brand_id]", required: true }
-              %option{ value: "" } -- SELECT --
-              - @brands.each do |brand|
-                %option{ value: brand.id, selected: (inventory_data["brand_id"].to_s == brand.id.to_s) }= brand.name
-          - else
-            %p.text-muted No brand available.
-        .col-md-4.form-group
-          %label{ for: "model" } Model
-          %input.form-control{ type: "text", id: "model", name: "inventory[model]", required: true, value: inventory_data["model"].to_s }
 
-      .row
-        .col-md-4.form-group
-          %label{ for: "threshhold_alerts" } Threshold Alerts
-          %input.form-control{ type: "text", id: "threshhold_alerts", name: "inventory[threshhold_alerts]", required: true, value: (inventory_data["threshhold_alerts"].presence || "0.0") }
-        .col-md-4.form-group
-          %label{ for: "reorder_points" } Re-order Points
-          %input.form-control{ type: "text", id: "reorder_points", name: "inventory[reorder_points]", required: true, value: (inventory_data["reorder_points"].presence || "0.0") }
-        .col-md-4.form-group
-          %label{ for: "item_category" } Item Category
-          - if @item_categories.present?
-            %select.form-control{ id: "item_category", name: "inventory[item_category_id]", required: true }
-              %option{ value: "" } -- SELECT --
-              - @item_categories.each do |cat|
-                %option{ value: cat.id, selected: (inventory_data["item_category_id"].to_s == cat.id.to_s) }= cat.name
-          - else
-            %p.text-muted No item categories available.
+        .col-md-4
+          .form-group
+            %label{ for: "title" } Title
+            %input.form-control{ type: "text", id: "title", name: "inventory[title]", required: true, value: inventory_data["title"].to_s }
 
-      .row
-        .col-md-4.form-group
-          %label{ for: "sub_category" } Sub Category
-          - if @sub_categories.present?
+          .form-group
+            %label{ for: "item_category" } Item Category
+            - if @item_categories.present?
+              %select.form-control{ id: "item_category", name: "inventory[item_category_id]", required: true }
+                %option{ value: "" } -- SELECT --
+                - @item_categories.each do |cat|
+                  %option{ value: cat.id, selected: (inventory_data["item_category_id"].to_s == cat.id.to_s), "data-subcategories": @sub_categories.select { |s| s.category_id == cat.id }.to_json }= cat.name
+            - else
+              %p.text-muted No item categories available.
+
+          .form-group
+            %label{ for: "sub_category" } Sub Category
             %select.form-control{ id: "sub_category", name: "inventory[sub_category_id]", required: true }
               %option{ value: "" } -- SELECT --
-              - @sub_categories.each do |sub|
-                %option{ value: sub.id, selected: (inventory_data["sub_category_id"].to_s == sub.id.to_s) }= sub.name
-          - else
-            %p.text-muted No sub categories available.
-        .col-md-4.form-group
-          %label{ for: "item_name" } Item Name
-          - if @items.present?
-            %select.form-control{ id: "item_name", name: "inventory[item_id]", required: true }
+              - if inventory_data["item_category_id"].present?
+                - @sub_categories.select { |s| s.category_id.to_s == inventory_data["item_category_id"].to_s }.each do |sub|
+                  %option{ value: sub.id, selected: (inventory_data["sub_category_id"].to_s == sub.id.to_s) }= sub.name
+
+          .form-group
+            %label{ for: "item_name" } Item Name
+            - if @items.present?
+              %select.form-control{ id: "item_name", name: "inventory[item_id]", required: true }
+                %option{ value: "" } -- SELECT --
+                - @items.each do |item|
+                  %option{ value: item.id, selected: (@inventory.item_id.to_s == item.id.to_s) }= item.name
+            - else
+              %p.text-muted No items available.
+
+          .form-group
+            %label{ for: "serial_number" } Serial Number
+            %input.form-control{ type: "text", id: "serial_number", name: "inventory[serial_number]", value: @inventory.serial_number }
+
+        .col-md-4
+          .form-group
+            %label{ for: "brand_name" } Brand Name
+            - if @brands.present?
+              %select.form-control{ id: "brand_name", name: "inventory[brand_id]", required: true }
+                %option{ value: "" } -- SELECT --
+                - @brands.each do |brand|
+                  %option{ value: brand.id, selected: (inventory_data["brand_id"].to_s == brand.id.to_s) }= brand.name
+            - else
+              %p.text-muted No brand available.
+
+          .form-group
+            %label{ for: "model" } Model
+            %input.form-control{ type: "text", id: "model", name: "inventory[model]", required: true, value: inventory_data["model"].to_s }
+
+          .form-group
+            %label{ for: "quantity" } Quantity
+            %input.form-control{ type: "number", id: "quantity", name: "inventory[quantity]", min: 0, required: true, value: (@inventory.new_record? ? 0 : @inventory.quantity) }
+
+          .form-group
+            %label{ for: "threshhold_alerts" } Threshold Alerts
+            %input.form-control{ type: "text", id: "threshhold_alerts", name: "inventory[threshhold_alerts]", required: true, value: (inventory_data["threshhold_alerts"].presence || "0.0") }
+
+          .form-group
+            %label{ for: "reorder_points" } Re-order Points
+            %input.form-control{ type: "text", id: "reorder_points", name: "inventory[reorder_points]", required: true, value: (inventory_data["reorder_points"].presence || "0.0") }
+
+        .col-md-4
+          .form-group
+            %label{ for: "unit" } Unit
+            %input.form-control{ type: "text", id: "unit_input", name: "inventory[unit]", value: @inventory.unit }
+            = hidden_field_tag "inventory[unit]", "", id: "unit_hidden", disabled: true
+            %div#unit_display.card.form-control{ style: "display: none; margin-top: 5px;" }
+              = @inventory.unit
+
+          .form-group
+            %label{ for: "supplier_name" } Supplier Name
+            %select.form-control{ id: "supplier_name", name: "inventory[supplier_id]", required: true }
               %option{ value: "" } -- SELECT --
-              - @items.each do |item|
-                %option{ value: item.id, selected: (@inventory.item_id.to_s == item.id.to_s) }= item.name
-          - else
-            %p.text-muted No items available.
-        .col-md-4.form-group
-          %label{ for: "inventory_type" } Type
-          %select.form-control{ id: "inventory_type", name: "inventory[type]", required: true }
-            %option{ value: "" } -- SELECT --
-            %option{ value: "regular", selected: (@inventory.type == 'regular') } Regular
-            %option{ value: "service", selected: (@inventory.type == 'service') } Service
-            %option{ value: "distribute", selected: (@inventory.type.blank? || @inventory.type == 'distribute') } Distribute
 
+          .form-group
+            %label{ for: "purchase_date" } Purchase Date
+            %input.form-control{ type: "date", id: "purchase_date", name: "inventory[purchase_date]", required: true, value: @inventory.purchase_date }
 
-      .row
-        .col-md-4.form-group
-          %label{ for: "serial_number" } Serial Number
-          %input.form-control{ type: "text", id: "serial_number", name: "inventory[serial_number]", value: @inventory.serial_number }
-        .col-md-4.form-group
-          %label{ for: "unit" } Unit
-          %input.form-control{ type: "text", id: "unit_input", name: "inventory[unit]", value: @inventory.unit }
-          = hidden_field_tag "inventory[unit]", "", id: "unit_hidden", disabled: true
-          %div#unit_display.card.form-control{ style: "display: none; margin-top: 5px;" }
-            = @inventory.unit
-        .col-md-4.form-group
-          %label{ for: "quantity" } Quantity
-          %input.form-control{ type: "number", id: "quantity", name: "inventory[quantity]", min: 0, required: true, value: (@inventory.new_record? ? 0 : @inventory.quantity) }
+          .form-group
+            %label{ for: "inventory_type" } Type
+            %select.form-control{ id: "inventory_type", name: "inventory[type]", required: true }
+              %option{ value: "" } -- SELECT --
+              %option{ value: "regular", selected: (@inventory.type == 'regular') } Regular
+              %option{ value: "service", selected: (@inventory.type == 'service') } Service
+              %option{ value: "distribute", selected: (@inventory.type.blank? || @inventory.type == 'distribute') } Distribute
 
-      .row
-        .col-md-4.form-group
-          %label{ for: "supplier_name" } Supplier Name
-          %select.form-control{ id: "supplier_name", name: "inventory[supplier_id]", required: true }
-            %option{ value: "" } -- SELECT --
-        .col-md-4.form-group
-          %label{ for: "purchase_date" } Purchase Date
-          %input.form-control{ type: "date", id: "purchase_date", name: "inventory[purchase_date]", required: true, value: @inventory.purchase_date }
-        .col-md-4.form-group
-          %label{ for: "status" } Status
-          %select.form-control{ id: "status", name: "inventory[status]", required: true }
-            %option{ value: "" } -- SELECT --
-            %option{ value: "Active", selected: (@inventory.status == 'Active') } Active
-            %option{ value: "Dispose", selected: (@inventory.status == 'Dispose') } Dispose
+          .form-group
+            %label{ for: "status" } Status
+            %select.form-control{ id: "status", name: "inventory[status]", required: true }
+              %option{ value: "" } -- SELECT --
+              %option{ value: "Active", selected: (@inventory.status == 'Active') } Active
+              %option{ value: "Dispose", selected: (@inventory.status == 'Dispose') } Dispose
 
-      /–– Child Item Section ––
       .mt-4
       %div.card
         %div.card-header
@@ -114,7 +120,6 @@
               + Add Child
         %div.card-body
 
-          
           .row
             .col-md-6.form-group
               %label{ for: "child_name" } Item Name
@@ -127,14 +132,14 @@
               %select.form-control{ id: "child_item_category" }
                 %option{ value: "" } -- SELECT --
                 - @item_categories.each do |cat|
-                  %option{ value: cat.id }= cat.name
+                  %option{ value: cat.id, "data-subcategories": @sub_categories.select { |s| s.category_id == cat.id }.to_json }= cat.name
           .row        
             .col-md-6.form-group
               %label{ for: "child_sub_category" } Sub Category
               %select.form-control{ id: "child_sub_category" }
                 %option{ value: "" } -- SELECT --
                 - @sub_categories.each do |sub|
-                  %option{ value: sub.id }= sub.name    
+                  %option{ value: sub.id, "data-category-id": sub.category_id, style: "display: none;" }= sub.name    
 
             .col-md-6.form-group
               %label{ for: "child_brand" } Brand
@@ -150,8 +155,6 @@
             .col-md-6.form-group
               %label{ for: "child_quantity" } Quantity
               %input.form-control{ type: "number", id: "child_quantity", placeholder: "Quantity" }
-
-          
 
           %table.table.table-bordered#child-items-table
             %thead
@@ -190,6 +193,8 @@
     const childSubCat     = document.getElementById("child_sub_category");
     const childTableBody  = document.querySelector("#child-items-table tbody");
     const hiddenContainer = document.getElementById("child-items-hidden");
+    const itemCategory    = document.getElementById("item_category");
+    const subCategory     = document.getElementById("sub_category");
 
     const inventorySupplierId = "#{@inventory.supplier_id}";
 
@@ -290,11 +295,46 @@
       }
     }
 
+    function updateSubCategories(categoryId, subCategorySelect, selectedSubCategoryId = null) {
+      subCategorySelect.innerHTML = '<option value="">-- SELECT --</option>';
+      if (!categoryId) return;
+
+      const category = document.querySelector(`#item_category option[value="${categoryId}"]`);
+      if (!category) return;
+
+      const subCategories = JSON.parse(category.dataset.subcategories || '[]');
+      subCategories.forEach(sub => {
+        const option = document.createElement('option');
+        option.value = sub.id;
+        option.textContent = sub.name;
+        if (selectedSubCategoryId && sub.id === selectedSubCategoryId) {
+          option.selected = true;
+        }
+        subCategorySelect.appendChild(option);
+      });
+    }
+
+    function updateChildSubCategories(categoryId) {
+      const options = childSubCat.querySelectorAll('option');
+      options.forEach(opt => {
+        if (opt.value === "") {
+          opt.style.display = 'block';
+        } else {
+          const show = opt.dataset.categoryId === categoryId;
+          opt.style.display = show ? 'block' : 'none';
+          if (!show && opt.selected) {
+            opt.selected = false;
+            childSubCat.querySelector('option[value=""]').selected = true;
+          }
+        }
+      });
+    }
+
     addChildBtn.addEventListener('click', () => {
       if (!childName.value || !childBrand.value || !childSerial.value || !childQuantity.value || !childCategory.value || !childSubCat.value) {
         return alert('Please fill ALL child fields');
       }
-      // Ensure child_item_id and child_name come from child_name dropdown
+
       childItems.push({
         child_item_id: childName.value,
         child_name: childName.options[childName.selectedIndex].text,
@@ -311,11 +351,23 @@
       renderChildItems();
     });
 
+    itemCategory.addEventListener('change', () => {
+      updateSubCategories(itemCategory.value, subCategory);
+    });
+
+    childCategory.addEventListener('change', () => {
+      updateChildSubCategories(childCategory.value);
+    });
+
     mainItemSelect.addEventListener('change', () => {
       toggleAddChild();
       updateSupplierDropdown(mainItemSelect.value);
       updateUnitAndSerial(mainItemSelect.value);
     });
+
+    if (itemCategory.value) {
+      updateSubCategories(itemCategory.value, subCategory, "#{inventory_data['sub_category_id']}");
+    }
 
     toggleAddChild();
     if (mainItemSelect.value) {
