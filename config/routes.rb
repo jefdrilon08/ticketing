@@ -699,6 +699,16 @@ Rails.application.routes.draw do
       end
     end
   end  
+
+  namespace :api do
+    namespace :v1 do
+      namespace :administration do
+        post   'brands/create',  to: 'brands#create'
+        post   'brands/update',  to: 'brands#update' 
+        delete 'brands/:id',     to: 'brands#destroy' 
+      end
+    end
+  end
   
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
