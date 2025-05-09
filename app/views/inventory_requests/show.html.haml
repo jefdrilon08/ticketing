@@ -12,17 +12,20 @@
       %strong.text-muted{ style: "font-size: 1.1rem; font-weight: 500;" } Request From:
       .d-flex.align-items-center.gap-2
         %div.text-dark{ style: "font-size: 1.2rem; font-weight: 600;" }= @inventory_request.branch&.name || 'N/A'
-        %button.btn.btn-sm.btn-outline-primary{ data: { bs_toggle: "modal", bs_target: "#editRequestFromModal" } } Edit
+        %button.btn.btn-sm.btn-primary{ data: { bs_toggle: "modal", bs_target: "#editRequestFromModal" } } Edit
     .col
       %strong.text-muted{ style: "font-size: 1.1rem; font-weight: 500;" } Request To:
       .d-flex.align-items-center.gap-2
         %div.text-dark{ style: "font-size: 1.2rem; font-weight: 600;" }= @inventory_request.request_to&.name || 'N/A'
-        %button.btn.btn-sm.btn-outline-primary{ data: { bs_toggle: "modal", bs_target: "#editRequestToModal" } } Edit
+        %button.btn.btn-sm.btn-primary{ data: { bs_toggle: "modal", bs_target: "#editRequestToModal" } } Edit
     .col
       %strong.text-muted{ style: "font-size: 1.1rem; font-weight: 500;" } Status:
       .d-flex.align-items-center.gap-2
         %div.text-dark{ style: "font-size: 1.2rem; font-weight: 600;" }= @inventory_request.status.titleize
 
+
+// Create Request Modal
+.modal.fade#createRequestModal{ tabindex: "-1", aria: { labelledby: "createRequestModalLabel", hidden: "true" } }
 
 
 / Status Update Logs 
