@@ -84,10 +84,20 @@ class SystemTicketsController < ApplicationController
         uncategorized=[]
 
         # Filter
+        @q             = params[:q]
         @f_category    = params[:f_category]
         @f_type        = params[:f_type]
         @f_status      = params[:f_status]
         @f_hold        = params[:f_hold]
+        @f_deadline    = params[:f_deadline]
+
+        if @q.present?
+            system_tix = system_tix.where(
+              "upper(title) LIKE :q",
+              q: "%#{@q.upcase}%"
+            )
+          end
+
             
         if @f_status.present?
             temp= system_tix
@@ -129,6 +139,35 @@ class SystemTicketsController < ApplicationController
             end
         end
 
+        if @f_deadline.present?
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                case @f_deadline
+                when 'on time'
+                    if x.status=='done'&&x.target_date>=x.data["save_details"][3]["date"].to_date
+                        system_tix.push(x)
+                    end
+                when 'due today'
+                    if x.status!='done'&&x.target_date==DateTime.current.to_date
+                        system_tix.push(x)
+                    end
+                when 'upcoming'
+                    if x.status!='done'&&x.target_date>DateTime.current.to_date
+                        system_tix.push(x)
+                    end
+                when 'overdue'
+                    if x.status!='done'&&x.target_date<DateTime.current.to_date
+                        system_tix.push(x)
+                    end
+                when 'late'
+                    if x.status=='done'&&x.target_date<x.data["save_details"][3]["date"].to_date
+                        system_tix.push(x)
+                    end
+                end
+            end
+        end
+
         if system_tix!=nil then
             system_tix.each do |x|  
                 id      =x[:id]
@@ -148,7 +187,7 @@ class SystemTicketsController < ApplicationController
 
                 if x[:data]["save_details"]!=nil
                     if x[:data]["save_details"].length==4
-                        then edate=x[:data]["save_details"][3]["date"].to_s[0,10]
+                        then edate=x[:data]["save_details"][3]["date"].to_date
                     end
                 end
 

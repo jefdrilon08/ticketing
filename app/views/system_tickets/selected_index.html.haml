@@ -5,15 +5,20 @@
             %tr
                 %td{:style=>"width:20%"}
                     %label
+                        Title
+                    .form-group
+                        = text_field_tag :q, params[:q], class: "form-control", placeholder: "Search ticket"
+                %td{:style=>"width:10%"}
+                    %label
                         Category
                     .form-group
                         =select_tag :f_category,options_for_select(["low","medium","high"], params[:f_category]),class:'form-control select-select2',prompt:"-- SELECT --"
                 %td{:style=>"width:20%"}
                     %label
-                        Request Type
+                        Request type
                     .form-group
                         =select_tag :f_type,options_for_select(SystemTicket.find(params[:id]).data["options_for_select"], params[:f_type]),class:'form-control select-select2',prompt:"-- SELECT --"
-                %td{:style=>"width:20%"}
+                %td{:style=>"width:10%"}
                     %label
                         Status
                     .form-group
@@ -23,6 +28,11 @@
                         Progress
                     .form-group
                         =select_tag :f_hold,options_for_select([["on hold","true"],["in progress","false"]], params[:f_hold]),class:'form-control select-select2',prompt:"-- SELECT --"
+                %td{:style=>"width:10%"}
+                    %label
+                        Deadline status
+                    .form-group
+                        =select_tag :f_deadline,options_for_select(["on time","due today","upcoming","overdue","late"], params[:f_deadline]),class:'form-control select-select2',prompt:"-- SELECT --"
                 %td
                     %label
                     .form-group2
@@ -88,7 +98,22 @@
                     %td
                         %p
                         %p
-                            #{x[10]}    
+                            #{x[10]}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                            -if x[10]>DateTime.current.to_date&&x[4]=='--'
+                                %span{:style=>"color:green;font-weight:bold"}
+                                    Upcoming  
+                            -if x[10]==DateTime.current.to_date&&x[4]=='--'
+                                %span{:style=>"color:green;font-weight:900"}
+                                    Due today   
+                            -if x[10]<DateTime.current.to_date&&x[4]=='--'
+                                %span{:style=>"color:red;font-weight:900"}
+                                    Overdue
+                            -if x[4]!='--'&&x[10]<x[4]
+                                %span{:style=>"color:red;font-weight:bold"}
+                                    Late
+                            -if x[4]!='--'&&x[10]>=x[4]
+                                %span{:style=>"color:green;font-weight:bold"}
+                                    On time
                     %td
                         %p
                         %p
