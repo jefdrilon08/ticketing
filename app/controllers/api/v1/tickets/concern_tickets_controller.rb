@@ -204,6 +204,28 @@ module Api
           end
         end
 
+        def edit_concern_from
+          @ticket_details = ConcernTicketDetail.find_by(id: params[:ctd_id])
+          if @ticket_details
+            if params[:concern_from_id].present?
+              @ticket_details.name_for_id = params[:concern_from_id]
+
+              if @ticket_details.save
+                redirect_to view_tix_concern_ticket_path(@ticket_details), notice: "Concern from updated successfully!"
+              else
+                flash[:error] = "Failed to update concern from: #{@ticket_details.errors.full_messages.join(', ')}"
+                redirect_to view_tix_concern_ticket_path(@ticket_details)
+              end
+            else
+              flash[:error] = "Concern from cannot be blank."
+              redirect_to view_tix_concern_ticket_path(@ticket_details)
+            end
+          else
+            flash[:error] = "Ticket not found."
+            redirect_back(fallback_location: request.referer || root_path)
+          end
+        end
+
         def edit_concern_type
           @ticket_details = ConcernTicketDetail.find_by(id: params[:ctd_id])
           if @ticket_details

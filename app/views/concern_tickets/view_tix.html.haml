@@ -41,6 +41,9 @@
                         %strong.h6 Concern From:
                         = @concern_ticket_details.concern_for&.name || "N/A"
 
+                        - if current_user.is_mis? && @concern_ticket_details.status != "closed" && @concern_ticket_details.assigned_user
+                            = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-concern-from", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
+
                 .row.mb-3
                     .col-12
                         %strong.h6 Concern Type:
@@ -137,5 +140,6 @@
         = link_to "Back", concern_ticket_path(@concern_ticket), class: "btn btn-secondary fs-6"
 
 = render "concern_tickets/modals/edit_assigned_person"
+= render "concern_tickets/modals/edit_concern_from"
 = render "concern_tickets/modals/edit_concern_type"
 = render "concern_tickets/modals/edit_concern_category"
