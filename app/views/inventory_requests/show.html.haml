@@ -87,14 +87,22 @@
       = hidden_field_tag "inventory_request_detail[inventory_request_id]", @inventory_request.id
       = hidden_field_tag "inventory_request_detail[id]", nil, id: 'inventory_request_detail_id'
       = hidden_field_tag "inventory_request_detail[status]", "pending", id: "inventory_request_detail_status"
+      
+      = hidden_field_tag "inventory_request[data][user_id]", nil, id: "inventory_request_data_user_id"
+      = hidden_field_tag "inventory_request[data][cluster_id]", nil, id: "inventory_request_data_cluster_id"
+      = hidden_field_tag "inventory_request[data][branch_id]", nil, id: "inventory_request_data_branch_id"
+      = hidden_field_tag "inventory_request[data][item_category_id]", nil, id: "inventory_request_data_item_category_id"
 
       .row
         .col-md-6
           .form-group.mb-3
             %label.font-weight-bold{ for: "inventory_request_detail_item_id" } Item
-            = select_tag "inventory_request_detail[item_id]",
-              options_from_collection_for_select(@items, :id, :name),
-              class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "inventory_request_detail_item_id"
+            - if @items.present?
+              = select_tag "inventory_request_detail[item_id]",
+                options_from_collection_for_select(@items, :id, :name),
+                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "inventory_request_detail_item_id"
+            - else
+              %p No items available
 
         .col-md-6
           .form-group.mb-3
@@ -115,10 +123,54 @@
             = text_field_tag "inventory_request_detail[remarks]", "",
               class: "form-control bg-light text-dark shadow-sm", id: "inventory_request_detail_remarks"
 
+      .row
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "data_user_id" } User
+            - if @users.present?
+              = select_tag "inventory_request[data][user_id]",
+                options_from_collection_for_select(@users, :id, :full_name),
+                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_user_id"
+            - else
+              %p No users available
+
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "data_branch_id" } Branch
+            - if @branches.present?
+              = select_tag "inventory_request[data][branch_id]",
+                options_from_collection_for_select(@branches, :id, :name),
+                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_branch_id"
+            - else
+              %p No branches available
+
+      .row
+        .col-md-6
+          .form-group.mb-3
+            %label.font-weight-bold{ for: "data_item_category" } Item Category
+            - if @item_categories.present?
+              = select_tag "inventory_request[data][item_category_id]",
+                options_from_collection_for_select(@item_categories, :id, :name),
+                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_item_category"
+            - else
+              %p No item categories available
+
+        .col-md-6
+          .form-group.mb-4
+            %label.font-weight-bold{ for: "data_cluster" } Cluster
+            - if @clusters.present?
+              = select_tag "inventory_request[data][cluster_id]",
+                options_from_collection_for_select(@clusters, :id, :name),
+                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_cluster"
+            - else
+              %p No clusters available
+
       .text-end
         = button_tag type: 'submit', class: 'btn btn-success shadow-sm px-4 py-2 rounded', form: 'addDetailsForm', id: 'submitDetailBtn' do
           %i.bi.bi-plus-lg.me-2
           Add Details
+
+
 
 %h4.text-primary.mt-4.mb-3 Inventory Request Details
 
@@ -126,28 +178,44 @@
   %table.table.table-hover.table-bordered.text-center.shadow-sm
     %thead.table-light
       %tr
-        %th.px-3.py-2 Item ID
+        %th.px-3.py-2 Item
         %th.px-3.py-2 Unit
         %th.px-3.py-2 Quantity Requested
         %th.px-3.py-2 Remarks
+        %th.px-3.py-2 Category
+        %th.px-3.py-2 Cluster
+        %th.px-3.py-2 User
+        %th.px-3.py-2 Branch
         %th.px-3.py-2 Actions
 
     %tbody
-      - @inventory_request.inventory_request_details.each_with_index do |detail, index|
-        %tr{ class: index.even? ? 'bg-white' : 'bg-gray-100' }
-          %td.px-3.py-2= detail.item.name
-          %td.px-3.py-2= detail.unit
-          %td.px-3.py-2= detail.quantity_requested
-          %td.px-3.py-2= detail.remarks
-          %td.px-3.py-2
-            .d-flex.flex-wrap.justify-content-center.gap-2
-              = link_to '#', class: 'btn btn-sm btn-warning shadow-sm edit-detail-btn', title: 'Edit', data: { detail: detail.to_json } do
-                Edit
+      - if @inventory_request.data&.dig('inventory_details').present?
+        - @inventory_request.data['inventory_details'].each_with_index do |detail, index|
+          %tr{ class: index.even? ? 'bg-white' : 'bg-gray-100' }
+            - item = Item.find_by(id: detail['item_id'])
+            %td.px-3.py-2= item&.name || "N/A"
+            %td.px-3.py-2= detail['unit']
+            %td.px-3.py-2= detail['quantity_requested']
+            %td.px-3.py-2= detail['remarks']
+            %td.px-3.py-2= detail['category_name']
+            %td.px-3.py-2= detail['cluster_name']
+            %td.px-3.py-2= detail['user_full_name']
+            %td.px-3.py-2= detail['branch_name']
+            %td.px-3.py-2
+              .d-flex.flex-wrap.justify-content-center.gap-2
+                = button_to destroy_inventory_request_json_detail_path(index: index, inventory_request_id: @inventory_request.id), method: :delete,
+                  class: 'btn btn-sm btn-danger shadow-sm',
+                  form: { data: { turbo: false } },
+                  data: { confirm: 'Are you sure you want to delete this detail?' } do
+                  Delete
+                  
+      - else
+        %tr
+          %td{ colspan: 9 } No details available.
 
-              = button_to 'Remove', inventory_request_inventory_request_detail_path(@inventory_request, detail),
-                method: :delete,
-                data: { confirm: 'Are you sure?' },
-                class: 'btn btn-sm btn-danger shadow-sm'
+
+
+
 
 
 :javascript
@@ -188,35 +256,7 @@
       }
     })
 
-    document.querySelectorAll('.edit-detail-btn').forEach(button => {
-      button.addEventListener('click', e => {
-        e.preventDefault()
-
-        if (editingRow) {
-          editingRow.classList.remove('d-none')
-          editingRow.classList.remove('editing')
-        }
-
-        const detail = JSON.parse(button.dataset.detail)
-        document.getElementById('inventory_request_detail_id').value = detail.id
-        document.getElementById('inventory_request_detail_item_id').value = detail.item_id
-        //document.getElementById('inventory_request_detail_description').value = detail.description
-        //document.getElementById('inventory_request_detail_unit').value = detail.unit
-        document.getElementById('inventory_request_detail_quantity_requested').value = detail.quantity_requested
-        //document.getElementById('inventory_request_detail_approve_quantity').value = detail.approve_quantity
-        document.getElementById('inventory_request_detail_remarks').value = detail.remarks
-
-        editingRow = button.closest('tr')
-        editingRow.classList.add('editing')
-        editingRow.classList.add('d-none')
-
-        submitBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Update Details'
-        submitBtn.classList.remove('btn-success')
-        submitBtn.classList.add('btn-warning')
-
-        form.scrollIntoView({ behavior: 'smooth' })
-      })
-    })
+    // Edit button logic
 
     // Save and For Checking buttons logic
     document.querySelectorAll('.save-status-btn, .checking-status-btn').forEach(button => {
