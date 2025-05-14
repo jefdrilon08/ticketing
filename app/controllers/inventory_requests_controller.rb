@@ -72,7 +72,11 @@ class InventoryRequestsController < ApplicationController
 
 # inventory_requests_controller.rb
 def show
-  @items = Item.all 
+  @items = Item.all
+  @users = User.all
+  @branches = Branch.all
+  @item_categories = ItemsCategory.all
+  @clusters = Cluster.all
   @inventory_request = InventoryRequest.find(params[:id])
   @inventory_request.inventory_request_details
 
@@ -91,6 +95,7 @@ def show
     }
   end
 end
+
 
 
 def update_status
@@ -180,7 +185,13 @@ end
     end
   end
   
-  
+  def destroy
+    if @inventory_request_detail.destroy
+      redirect_to inventory_request_path(@inventory_request_detail.inventory_request), notice: 'Detail was successfully removed.'
+    else
+      redirect_to inventory_request_path(@inventory_request_detail.inventory_request), alert: 'Failed to remove detail.'
+    end
+  end
   
   
   
@@ -206,9 +217,25 @@ end
     params.require(:inventory_request).permit(:date_request, :branch_id, :status, :request_to_id)
   end
 
-  def inventory_request_detail_params
-    params.require(:inventory_request_detail).permit(:item_id, :description, :unit, :quantity_requested, :approve_quantity, :remarks, :status)
+
+  def set_inventory_request_detail
+    @inventory_request_detail = InventoryRequestDetail.find(params[:id])
   end
+
+  def inventory_request_detail_params
+    params.require(:inventory_request_detail).permit(
+      :item_id,
+      :description,
+      :unit,
+      :quantity_requested,
+      :approve_quantity,
+      :remarks,
+      :status,
+      :inventory_request_id,
+      data: [:user_id, :branch_id, :item_category, :cluster]
+    )
+  end
+  
 end
 
 def update_inventory_request_status(inventory_request)
