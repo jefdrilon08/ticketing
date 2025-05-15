@@ -2,8 +2,19 @@ class InventoryRequestDetailsController < ApplicationController
   
   def show
     @inventory_request = InventoryRequest.find(params[:id])
-    @inventory_request_details = @inventory_request.inventory_request_details
+    @item_categories = ItemsCategory.all
+    @clusters = Cluster.all
+    @users = User.all
+    @branches = Branch.all
+  
+    category_id = params.dig(:inventory_request, :data, :items_category_id)
+    if category_id.present?
+      @items = Item.where(items_category_id: category_id)
+    else
+      @items = Item.none
+    end
   end
+  
 
   def create
     @inventory_request = InventoryRequest.find(params[:inventory_request_id])
@@ -13,7 +24,7 @@ class InventoryRequestDetailsController < ApplicationController
       user_id: params[:inventory_request][:data][:user_id],
       cluster_id: params[:inventory_request][:data][:cluster_id],
       branch_id: params[:inventory_request][:data][:branch_id],
-      item_category_id: params[:inventory_request][:data][:item_category_id]
+      items_category_id: params[:inventory_request][:data][:items_category_id]
     }
 
     # Ensure the data field exists (initialize if nil)
@@ -28,11 +39,11 @@ class InventoryRequestDetailsController < ApplicationController
       unit: params[:inventory_request_detail][:unit],
       quantity_requested: params[:inventory_request_detail][:quantity_requested],
       remarks: params[:inventory_request_detail][:remarks],
-      category_name: ItemsCategory.find(params[:inventory_request][:data][:item_category_id]).try(:name),
+      category_name: ItemsCategory.find(params[:inventory_request][:data][:items_category_id]).try(:name),
       cluster_name: Cluster.find(params[:inventory_request][:data][:cluster_id]).try(:name),
       user_full_name: User.find(params[:inventory_request][:data][:user_id]).try(:full_name),
       branch_name: Branch.find(params[:inventory_request][:data][:branch_id]).try(:name),
-      item_category_id: params[:inventory_request][:data][:item_category_id],
+      items_category_id: params[:inventory_request][:data][:items_category_id],
       cluster_id: params[:inventory_request][:data][:cluster_id],
       user_id: params[:inventory_request][:data][:user_id],
       branch_id: params[:inventory_request][:data][:branch_id]
@@ -120,7 +131,7 @@ class InventoryRequestDetailsController < ApplicationController
       :approve_quantity,
       :remarks,
       :status,
-      :item_category_id,
+      :items_category_id,
       :cluster_id,
       :user_id,    # Add user_id to permit the new field
       :branch_id   # Add branch_id to permit the new field

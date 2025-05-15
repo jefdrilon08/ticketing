@@ -8,21 +8,23 @@
       %hr.my-2
 
       .modal-body
-        = form_for @inventory_request do |f|
+        %p#form-error.text-danger.fw-semibold.mb-3{ style: "display: none;" }
+
+        = form_for @inventory_request, html: { id: "newInventoryRequestForm" } do |f|
           .form-group.mb-4
             %label.fw-semibold.mb-2{ for: "inventory_request_branch_id" } Request from
             = f.select :branch_id,
               Branch.order(:name).collect { |b| [b.name, b.id] },
               { prompt: "Select Branch" },
-              class: "form-select bg-secondary-subtle text-dark shadow-sm"
+              class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "inventory_request_branch_id"
 
           .form-group.mb-4
             %label.fw-semibold.mb-2{ for: "inventory_request_request_to_id" } Request to
             = f.select :request_to_id,
               Branch.order(:name).collect { |b| [b.name, b.id] },
               { prompt: "Select Branch" },
-              class: "form-select bg-secondary-subtle text-dark shadow-sm"
+              class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "inventory_request_request_to_id"
 
           .d-flex.justify-content-end.gap-2.mt-3
+            = f.submit "Submit Request", class: "btn btn-primary px-4 py-2 rounded shadow-sm", data: { disable_with: false }
 
-            = f.submit "Submit Request", class: "btn btn-primary px-4 py-2 rounded shadow-sm"
