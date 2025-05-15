@@ -29,3 +29,44 @@
             %i.bi.bi-trash
 
 = render 'inventory_requests/modals/newreq', inventory_request: @inventory_request
+
+
+:javascript
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("newInventoryRequestForm");
+    const errorMessage = document.getElementById("form-error");
+
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        const from = document.getElementById("inventory_request_branch_id").value;
+        const to = document.getElementById("inventory_request_request_to_id").value;
+
+        if (!from || !to) {
+          e.preventDefault();
+
+          if (errorMessage) {
+            errorMessage.textContent = "Please select both 'Request from' and 'Request to' branches.";
+            errorMessage.style.display = "block";
+          }
+
+          // Delay needed to override Rails UJS after it disables the button
+          setTimeout(() => {
+            const submitBtn = form.querySelector("input[type='submit'], button[type='submit']");
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.removeAttribute('data-disable-with');
+            }
+          }, 0);
+
+        } else {
+          if (errorMessage) {
+            errorMessage.style.display = "none";
+          }
+        }
+      });
+    }
+  });
+
+
+
+
