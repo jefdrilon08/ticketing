@@ -40,7 +40,7 @@ import BorrowTransactionsIndex from '../models/BorrowTransactionsIndex.js';
 import ConcernTicketIndex from '../models/ConcernTicketIndex.js';
 import ConcernTicketShow from '../models/ConcernTicketShow.js';
 import InventoryRequest from '../models/InventoryRequestShow.js';
-
+import SystemTicketShow from '../models/SystemTicketShow.js';
 
 const hooks = {
   "pages/index":                                      [DashboardMainUI, Dashboard],
@@ -70,7 +70,8 @@ const hooks = {
   "administration/brands/index":                      [AdministrationBrandsIndex],
 
   "inventory_requests/show":                          [InventoryRequest],
-
+  
+  "system_tickets/show":                              [SystemTicketShow],
 
 }
 

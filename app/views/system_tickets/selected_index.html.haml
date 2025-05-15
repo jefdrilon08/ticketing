@@ -35,9 +35,14 @@
                         =select_tag :f_deadline,options_for_select(["on time","due today","upcoming","overdue","late"], params[:f_deadline]),class:'form-control select-select2',prompt:"-- SELECT --"
                 %td
                     %label
-                    .form-group2
-                        =button_tag type: 'submit', class: 'btn btn-info btn-block' do
+                    .form-group2{style: "display: flex; gap: 5px;"}
+                        = button_tag type: 'submit', class: 'btn btn-info btn-block', style: "flex: 1" do
                             .bi.bi-search
+                            
+                        = button_tag type: 'button', class: 'btn btn-secondary btn-block', id: "print-btn", style: "flex: 1" do
+                            .bi.bi-printer
+
+#printable-table
     %table.table.table-bordered.table-sm
         %th.some{:style=>"width:5%"}
             %h
@@ -72,9 +77,9 @@
         %th.some{:style=>"width:5%"}
             %h
                 Category
-        %th.some{:style=>"width:5%"}
-            %h
-                Actions
+        %th.some.no-print{:style=>"width:5%"} 
+            %h Actions 
+
             - @system_tix_desc.each do |x|
                 %tr
                     %td
@@ -173,7 +178,7 @@
                                 - when 'uncategorized'
                                     .badge.bg-secondary
                                         #{x[11]} 
-                    %td
+                    %td.no-print
                         %center
                             %div-row
                                 %div-col-4
