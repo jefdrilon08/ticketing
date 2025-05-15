@@ -117,7 +117,7 @@
       .row
         .col-md-6
           .form-group.mb-3
-            %label.font-weight-bold{ for: "inventory_request_detail_item_id" } Item
+            %label.font-weight-bold{ for: "inventory_request_detail_item_id" } Item Sub Category
             - if @items.present?
               %select.form-select.bg-secondary-subtle.text-dark.shadow-sm#inventory_request_detail_item_id{name: "inventory_request_detail[item_id]", required: true}
                 %option{ value: "" } Select
