@@ -105,19 +105,19 @@
                         %p
                             #{x[10]}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                             -if x[10]>DateTime.current.to_date&&x[4]=='--'
-                                %span{:style=>"color:green;font-weight:bold"}
+                                %p{:style=>"color:green;font-weight:bold;margin-top:-10px"}
                                     Upcoming  
                             -if x[10]==DateTime.current.to_date&&x[4]=='--'
-                                %span{:style=>"color:green;font-weight:900"}
+                                %p{:style=>"color:green;font-weight:900;margin-top:-10px"}
                                     Due today   
                             -if x[10]<DateTime.current.to_date&&x[4]=='--'
-                                %span{:style=>"color:red;font-weight:900"}
+                                %p{:style=>"color:red;font-weight:900;margin-top:-10px"}
                                     Overdue
                             -if x[4]!='--'&&x[10]<x[4]
-                                %span{:style=>"color:red;font-weight:bold"}
+                                %p{:style=>"color:red;font-weight:bold;margin-top:-10px"}
                                     Late
                             -if x[4]!='--'&&x[10]>=x[4]
-                                %span{:style=>"color:green;font-weight:bold"}
+                                %p{:style=>"color:green;font-weight:bold;margin-top:-10px"}
                                     On time
                     %td
                         %p

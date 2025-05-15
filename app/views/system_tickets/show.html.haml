@@ -347,8 +347,9 @@
                                                                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
                                                                                 Edit
                                                                     -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
-                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
-                                                                            Edit
+                                                                        %p{:style=>"margin-top:-15px"}
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                Edit
                                         %td
                                             -if @role==3 || @role==5
                                                 %p
