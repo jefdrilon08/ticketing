@@ -100,7 +100,7 @@
             - if @items.present?
               = select_tag "inventory_request_detail[item_id]",
                 options_from_collection_for_select(@items, :id, :name),
-                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "inventory_request_detail_item_id"
+                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "inventory_request_detail_item_id", prompt: "Select" }
             - else
               %p No items available
 
@@ -130,7 +130,7 @@
             - if @users.present?
               = select_tag "inventory_request[data][user_id]",
                 options_from_collection_for_select(@users, :id, :full_name),
-                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_user_id"
+                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_user_id", prompt: "Select" }
             - else
               %p No users available
 
@@ -140,7 +140,7 @@
             - if @branches.present?
               = select_tag "inventory_request[data][branch_id]",
                 options_from_collection_for_select(@branches, :id, :name),
-                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_branch_id"
+                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_branch_id", prompt: "Select" }
             - else
               %p No branches available
 
@@ -151,7 +151,7 @@
             - if @item_categories.present?
               = select_tag "inventory_request[data][item_category_id]",
                 options_from_collection_for_select(@item_categories, :id, :name),
-                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_item_category"
+                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_item_category", prompt: "Select" }
             - else
               %p No item categories available
 
@@ -161,7 +161,7 @@
             - if @clusters.present?
               = select_tag "inventory_request[data][cluster_id]",
                 options_from_collection_for_select(@clusters, :id, :name),
-                class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_cluster"
+                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_cluster", prompt: "Select" }
             - else
               %p No clusters available
 
@@ -169,6 +169,7 @@
         = button_tag type: 'submit', class: 'btn btn-success shadow-sm px-4 py-2 rounded', form: 'addDetailsForm', id: 'submitDetailBtn' do
           %i.bi.bi-plus-lg.me-2
           Add Details
+
 
 
 
