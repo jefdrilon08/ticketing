@@ -3,6 +3,7 @@
     Back to #{ComputerSystem.find(SystemTicket.find(@ticket.system_ticket_id).computer_system_id).name} tickets
 %p
 .card.some{:style=>"padding:1%"}
+    #react-root
     %div.row{:style=>"width:100%"}
         %div
             %table.table.table-bordered{:style=>"font-size:115%;margin-bottom:0px"}
@@ -611,4 +612,3 @@
 = render partial: "system_tickets/modals/change_category"
 = render partial: "system_tickets/modals/add_attachment"
 = render partial: "system_tickets/modals/edit_attachment"
-= render partial: "shared/sidebar"
