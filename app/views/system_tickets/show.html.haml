@@ -1,8 +1,9 @@
+#react-root
 -@milestone1=0
 =link_to "/system_tickets_#{@ticket.system_ticket_id}" do
     Back to #{ComputerSystem.find(SystemTicket.find(@ticket.system_ticket_id).computer_system_id).name} tickets
 %p
-.card.some{:style=>"padding:1%",:onclick=>"scrollUp()"}
+.card.some{:style=>"padding:1%"}
     %div.row{:style=>"width:100%"}
         %div
             %table.table.table-bordered{:style=>"font-size:115%;margin-bottom:0px"}
@@ -441,7 +442,7 @@
                                 No milestone found
                             %hr{:style=>"height:30px;color:white"}
 .card.some{:style=>"padding:1%;"}
-    %div{:style=>"height:650px;padding:0px 50px",:id=>"chat-div",:onclick=>"scrollBot()"}
+    %div{:style=>"height:650px;padding:0px 50px",:id=>"chat-div"}
         %div
             %center
                 %h2{:style=>"margin-bottom:-2px"}
@@ -601,16 +602,6 @@
         var passId   = document.getElementById("u-"+n).value
         returnId.value = passId
     }    
-
-    function scrollBot()
-    {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-    function scrollUp()
-    {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
 
 
 = render partial: "system_tickets/modals/new_milestone"
