@@ -801,7 +801,7 @@ Rails.application.routes.draw do
 
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"
-
+ 
   post "new_system_ticket/create_systemtix",    to: "new_system_ticket#create_systemtix"
   post "new_system_ticket/create_systemtix2",   to: "new_system_ticket#create_systemtix2"
 
