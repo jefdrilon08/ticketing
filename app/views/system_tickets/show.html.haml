@@ -1,6 +1,6 @@
 -@milestone1=0
 =link_to "/system_tickets_#{@ticket.system_ticket_id}" do
-    Back
+    Back to #{ComputerSystem.find(SystemTicket.find(@ticket.system_ticket_id).computer_system_id).name} tickets
 %p
 .card.some{:style=>"padding:1%",:onclick=>"scrollUp()"}
     %div.row{:style=>"width:100%"}
@@ -328,6 +328,20 @@
                                             %p
                                                 %center
                                                     #{x.target_date}
+                                            %p 
+                                                %center
+                                                    .form-group
+                                                        =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                    .form-group
+                                                        =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                    - case x.status
+                                                        - when 'pending'
+                                                            -if !@ticket.data["on_hold"]
+                                                                -if @ticket.status!="done"
+                                                                    -if @role==3 || @role==5
+                                                                        %p{:style=>"margin-top:-15px"}
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                Edit
                                         %td
                                             -if @role==3 || @role==2 || @role==5
                                                 %p
@@ -515,6 +529,29 @@
                     .form-group
                         =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
                             Save
+                
+#modal-edit-milestone-target-date.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Edit Target Date
+            .modal-body
+                %label
+                    Old Target Date
+                %div{id:"date1"}
+                %hr{style:"height:10px;color:white"} 
+                %label
+                    New Target Date
+                = form_tag "edit_milestone_target_date", method: 'POST' do
+                    .form-group
+                        =text_field_tag :date,params[:date],class:'form-control',style:"width:60%",required:true,type: :date
+                    .form-group
+                        =text_field_tag :ms_id,params[:ms_id],class:'form-control',id:"ms_id3",style:"display:none"
+                    %hr{style:"height:5px;color:white"}
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
+                            Save
 
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
@@ -534,6 +571,14 @@
         var returnId = document.getElementById('ms_id2')
         var passId   = document.getElementById("m-"+n).value
         document.getElementById("deets2").innerHTML = document.getElementById('d-'+n).innerHTML
+        returnId.value = passId
+    }    
+
+    function putMSId3(n)
+    {
+        var returnId = document.getElementById('ms_id3')
+        var passId   = document.getElementById("m-"+n).value
+        document.getElementById("date1").innerHTML = document.getElementById('date-'+n).value
         returnId.value = passId
     }    
 

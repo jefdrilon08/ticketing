@@ -623,6 +623,16 @@ class SystemTicketsController < ApplicationController
         end
     end
 
+    def edit_milestone_target_date
+        edit_milestone=Milestone.find(params[:ms_id])
+
+        if edit_milestone.update(target_date:params[:date])
+            redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
     def set_start_date
         edit_date=SystemTicketDesc.find(params[:id])
 

@@ -53,14 +53,19 @@ class NewSystemTicketController < ApplicationController
 
         main_dev=SystemTicketsUser.where(status:"admin",system_ticket_id:params[:id])[0].id
 
-        if SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")[0].data["ticket_count"].present?
-            tktno=SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")[0].data["ticket_count"]
-            tktno+=1
+        if SystemTicketDesc.where(system_ticket_id:params[:id]).count==0 
+            tktno=1
             tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{tktno}"
-        else 
-            tktno=SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC").count
-            tktno+=1
-            tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{tktno}"
+        else
+            if SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")[0].data["ticket_count"].present?
+                tktno=SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")[0].data["ticket_count"]
+                tktno+=1
+                tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{tktno}"
+            else 
+                tktno=SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC").count
+                tktno+=1
+                tn_fin="ST#{SystemTicket.find(params[:id]).system_number}-#{tktno}"
+            end
         end
 
         file_arr=[]
