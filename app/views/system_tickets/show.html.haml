@@ -260,7 +260,7 @@
                         %td{:style=>"padding-top:12px"}
                             -if !@ticket.data["on_hold"]
                                 -if @ticket.status!="done"
-                                    -if @role==3 || @role==5
+                                    -if @role==3 || @role==5|| @role==2
                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
                                             Add milestone    
                     
@@ -310,7 +310,11 @@
                                                         - when 'pending'
                                                             -if !@ticket.data["on_hold"]
                                                                 -if @ticket.status!="done"
-                                                                    -if @role==3 || @role==5
+                                                                    -if @role==3 || @role==5 
+                                                                        %p{:style=>"margin-top:-15px"}
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                Edit
+                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
                                                                         %p{:style=>"margin-top:-15px"}
                                                                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
                                                                                 Edit
@@ -342,8 +346,16 @@
                                                                         %p{:style=>"margin-top:-15px"}
                                                                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
                                                                                 Edit
+                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                            Edit
                                         %td
-                                            -if @role==3 || @role==2 || @role==5
+                                            -if @role==3 || @role==5
+                                                %p
+                                                    %center
+                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
+                                                            Set date
+                                            -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
                                                 %p
                                                     %center
                                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do

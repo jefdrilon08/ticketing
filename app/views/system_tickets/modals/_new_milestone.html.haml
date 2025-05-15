@@ -15,10 +15,18 @@
                         %tr 
                             %p
                         %tr 
-                            %label
-                                Assign to
-                            .form-group
-                                =select_tag :dev,options_for_select(@mem_list_dev, params[:dev]),class:'form-control select-select2',prompt:"-- SELECT --",required:true
+                            -if @role==2
+                                %label
+                                    Assigned to: 
+                                %p
+                                    #{User.find(current_user.id).last_name}, #{User.find(current_user.id).first_name}
+                                .form-group
+                                    =text_field_tag :dev,params[:dev],class:'form-control',value:SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id,style:"display:none"
+                            -else
+                                %label
+                                    Assign to
+                                .form-group
+                                    =select_tag :dev,options_for_select(@mem_list_dev, params[:dev]),class:'form-control select-select2',prompt:"-- SELECT --",required:true
                         %tr 
                             %p
                         %tr            
