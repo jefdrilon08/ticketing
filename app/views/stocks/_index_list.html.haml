@@ -6,27 +6,31 @@
     %tr
       %th
       %th Item Name
-      %th Supplier Name
-      %th(style="text-align: center;") Status
-      %th(style="text-align: center;") Actions  
+      %th Model
+      %th Supplier
+      %th Brand
+      %th{ style: "text-align: center;" } Quantity
+      %th{ style: "text-align: center;" } Purchase Date
+      %th{ style: "text-align: center;" } Actions
+
   %tbody
-    - if @inventories.present?
-      - @inventories.each do |inventory|
+    - if @inventories_grouped.present?
+      - @inventories_grouped.each do |(item_name, model), inventories|
         %tr
           %td{ style: "text-align: center;" }
-            = link_to view_inventory_path(inventory), title: "View Stock" do
+            = link_to view_inventory_path(inventories.first[:inventory]), title: "View Stock" do
               %i.fa-solid.fa-magnifying-glass.fa-lg
-          %td= inventory.item.try(:name) || "N/A"
-          %td= inventory.supplier.try(:name) || "N/A"
-          %td(style="text-align: center;")
-            - if inventory.status == "Active"
-              %span.badge.bg-success= inventory.status
-            - elsif inventory.status == "Dispose"
-              %span.badge.bg-danger= inventory.status
-            - else
-              %span.badge.bg-secondary= "N/A"
-          %td(style="text-align: center;")
-            = link_to 'Update', edit_inventory_path(inventory), class: 'btn btn-primary btn-sm'
-            = link_to 'Delete', destroy_inventory_path(inventory), method: :delete, data: { confirm: 'Are you sure you want to delete this stock item?' }, class: 'btn btn-danger btn-sm ml-2'
+
+          %td= item_name.presence || "N/A"
+          %td= model.presence || "N/A"
+          %td= inventories.first[:inventory].supplier&.name.presence || "N/A"
+          %td= Brand.find_by(id: inventories.first[:inventory].data["inventory_data"].first["brand_id"])&.name.presence || "N/A"
+          %td{ style: "text-align: right;" }= inventories.count
+          %td{ style: "text-align: center;" }= inventories.first[:inventory].purchase_date&.strftime('%Y-%m-%d') || "N/A"
+          %td{ style: "text-align: center;" }
+            = link_to 'Update', edit_inventory_path(inventories.first[:inventory]), class: 'btn btn-primary btn-sm'
+            = link_to 'Delete', destroy_inventory_path(inventories.first[:inventory]), method: :delete, data: { confirm: 'Are you sure you want to delete this stock item?' }, class: 'btn btn-danger btn-sm ml-2'
     - else
-      .alert.alert-warning.text-center No records found
+      %tr
+        %td{ colspan: "9", class: "text-center text-warning" }
+          No records found.

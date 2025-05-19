@@ -1,7 +1,6 @@
 class StocksController < ApplicationController
   before_action :set_inventory, only: [:edit, :update, :destroy]
   before_action :load_collections, only: [:new, :create, :edit, :update]
-
   def index
     @subheader_side_actions = [
       {
@@ -11,25 +10,87 @@ class StocksController < ApplicationController
         text: "New"
       }
     ]
-    @inventories = Inventory.all
-  end
-
-  def view
-    @inventory = Inventory.find_by(id: params[:id])
-    return redirect_to(stocks_path, alert: "Inventory not found") if @inventory.nil?
-
-    @brands = Brand.all
-    @subheader_side_actions = [
+  
+    @inventories = Inventory.includes(:item, :supplier)
+                            .where('LOWER(type) = ? AND LOWER(status) = ?', 'regular', 'active')
+  
+    grouped = @inventories.map do |inventory|
+      data = inventory.data&.fetch("inventory_data", []).first || {}
+  
       {
-        id: "btn-distribute",
-        link: new_distribute_path(inventory_id: @inventory.id),
-        class: "fa fa-share",
-        text: "Distribute"
+        inventory: inventory,
+        item_name: inventory.item&.name,
+        model: data["model"],
+        purchase_date: inventory.purchase_date&.strftime('%Y-%m-%d'),
+        supplier_name: inventory.supplier&.name
       }
-    ]
+    end
+  
+    
+    @inventories_grouped = grouped.group_by do |entry|
+      [
+        entry[:item_name],
+        entry[:model],
+        entry[:purchase_date],
+        entry[:supplier_name]
+      ]
+    end
+  
+    @inventories_grouped = @inventories_grouped.sort_by do |(item_name, _model, _purchase_date, _supplier_name), _|
+      item_name.to_s.strip.downcase
+    end
+  end
+  
+  
+def view
 
+  @inventory = Inventory.find_by(id: params[:id])
+  return redirect_to(stocks_path, alert: "Inventory not found") if @inventory.nil?
+
+
+  @brands = Brand.all
+  @subheader_side_actions = [
+    {
+      id: "btn-distribute",
+      link: new_distribute_path(inventory_id: @inventory.id),
+      class: "fa fa-share",
+      text: "Distribute"
+    }
+  ]
+
+
+  @inventories = Inventory.includes(:item, :supplier)
+                           .where('LOWER(type) = ? AND LOWER(status) = ?', 'regular', 'active')
+                           .where(item: @inventory.item, supplier: @inventory.supplier) 
+
+
+  grouped = @inventories.map do |inventory|
+    data = inventory.data&.fetch("inventory_data", []).first || {}
+
+    {
+      inventory: inventory,
+      item_name: inventory.item&.name,
+      model: data["model"],
+      purchase_date: inventory.purchase_date&.strftime('%Y-%m-%d'),
+      supplier_name: inventory.supplier&.name
+    }
   end
 
+  @inventories_grouped = grouped.group_by do |entry|
+    [
+      entry[:item_name],
+      entry[:model],
+      entry[:purchase_date],
+      entry[:supplier_name]
+    ]
+  end
+
+  @inventories_grouped = @inventories_grouped.sort_by do |(item_name, _model, _purchase_date, _supplier_name), _|
+    item_name.to_s.strip.downcase
+  end
+end
+
+  
   def new
     @inventory = Inventory.new
     @inventory.data ||= {}
