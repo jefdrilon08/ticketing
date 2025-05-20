@@ -105,19 +105,19 @@
                         %p
                             #{x[10]}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                             -if x[10]>DateTime.current.to_date&&x[4]=='--'
-                                %span{:style=>"color:green;font-weight:bold"}
+                                %p{:style=>"color:green;font-weight:bold;margin-top:-10px"}
                                     Upcoming  
                             -if x[10]==DateTime.current.to_date&&x[4]=='--'
-                                %span{:style=>"color:green;font-weight:900"}
+                                %p{:style=>"color:green;font-weight:900;margin-top:-10px"}
                                     Due today   
                             -if x[10]<DateTime.current.to_date&&x[4]=='--'
-                                %span{:style=>"color:red;font-weight:900"}
+                                %p{:style=>"color:red;font-weight:900;margin-top:-10px"}
                                     Overdue
                             -if x[4]!='--'&&x[10]<x[4]
-                                %span{:style=>"color:red;font-weight:bold"}
+                                %p{:style=>"color:red;font-weight:bold;margin-top:-10px"}
                                     Late
                             -if x[4]!='--'&&x[10]>=x[4]
-                                %span{:style=>"color:green;font-weight:bold"}
+                                %p{:style=>"color:green;font-weight:bold;margin-top:-10px"}
                                     On time
                     %td
                         %p
@@ -188,7 +188,7 @@
                                                 =button_tag type: 'submit', class: 'btn btn-primary',id:"",style:"margin:7% 7px 0 0;padding:0.5% 5% 0.5% 5%",title:"View ticket" do    
                                                     %i.bi.bi-eye
                                     -else
-                                        %a.button{class:"btn btn-primary",:style=>"margin:7% 7px 0 0;padding:0.5% 5% 0.5% 5%",:href => "/system_tickets/#{x[0]}"}
+                                        %a.button{class:"btn btn-primary",:style=>"margin:7% 7px 0 0;padding:0.5% 5% 0.5% 5%",:href => "/system_tickets/#{x[0]}",:title=>"View ticket"}
                                             %i.bi.bi-eye
                                 %div-col-8
                                     -if current_user.id==SystemTicketsUser.find(x[7][0]).user_id || current_user.id==x[6][0] || @admin

@@ -99,7 +99,8 @@
 :javascript
     
     var arr=[]
-    onload=deleteMember()
+
+    if(#{@mem_list.count}>0) onload=deleteMember()
   
     function addMember() {
         var x=document.getElementById("member-sel").value
@@ -201,6 +202,8 @@
     function deleteMember()
     {
         var arr_id=[]
+        console.log(document.getElementById("count").value)
+        
         for(i=0;i<=document.getElementById("count").value-1;i++)
         {
             document.getElementById("d1-"+i).name="d1-"+document.getElementById("d1-"+i).value
