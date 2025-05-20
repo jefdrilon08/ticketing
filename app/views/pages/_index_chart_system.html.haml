@@ -1,0 +1,133 @@
+= form_tag "", method: 'GET' do
+    %table.table{:style=>"border-color:white;font-size:110%"}
+        %tr
+            %td{:style=>"width:5%"}
+                %label
+                    Start Date
+                .form-group
+                    =text_field_tag :sdate,params[:f_sdate],class:'form-control',type: :date,id:"start-date"
+            %td{:style=>"width:5%"}
+                %label
+                    End Date
+                .form-group
+                    =text_field_tag :edate,params[:f_edate],class:'form-control',type: :date,id:"end-date"
+            %td
+                %label
+                    Legend
+                %div{:id=>"legend"}
+
+%script{:src => "https://cdn.jsdelivr.net/npm/chart.js"}
+
+%canvas#stackedChartID{:style=>"margin-top:-20px"}
+
+:javascript
+
+    var color=["#1CBA88","#19BEB5","#159CC1","#126EC4","#0F3DC7","#0F0CCA","#4009CE","#BB1B90","#BF1865","#C21436",
+         "#C51B11","#C84A0E","#CB7C0B","#CFB207","#BC521A","#C07E16","#C3AD13","#ACC610","#7CC90D","#48CD0A"]
+    var data1=#{@chart_data}
+    var dataLength=data1.length
+    var data2=[]
+
+    onload=showLegend()
+
+    for(x=0;x<dataLength;x++)
+    {
+        data2.push({
+            label:data1[x][0][0]+' (open tickets)',
+            data:data1[x][1],
+            backgroundColor:color[x],
+            stack:"Stack 0"
+        })
+        data2.push({
+            label:data1[x][0][0]+' (closed tickets)',
+            data:data1[x][2],
+            backgroundColor:color[x],
+            stack:"Stack 1"
+        })
+    }
+
+    var myContext = document.getElementById(
+            "stackedChartID").getContext('2d');
+    var myChart = new Chart(myContext, {
+        type: 'bar',
+        data: {
+            labels: #{@labels},
+            datasets: data2
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display:false,
+                    font:{
+                    }
+                },
+                title: {
+                    display:false,
+                    text: 'Tickets Received'
+                },
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    ticks: {
+                        color: 'black',
+                        font: {
+                            size: 16 }
+                            }
+                },
+                y: {
+                    stacked: true,
+                    ticks:
+                    {
+                        color: 'black',
+                        stepSize:1,
+                        font: {
+                            size: 16 }
+                    }
+                }
+            }
+        }
+    });
+
+    function showLegend()
+    {
+        var legendContainer = document.getElementById('legend')
+
+        for(x=0,y=0;x<dataLength;x++)
+        {
+            
+            var legendCol = document.createElement('div')
+            legendCol.id="col-"+x
+            legendCol.classList.add('col')
+            var legendColor = document.createElement('span')
+            var legendLabel = document.createElement('span')
+            if(x%4==0||y==0)
+            {
+                var legendRow = document.createElement('div')
+                y++
+                legendRow.id="row-"+y
+                legendRow.classList.add('row')
+                legendContainer.appendChild(legendRow)
+            }
+            document.getElementById('row-'+y).append(legendCol)
+
+            legendColor.classList.add('bi','bi-square-fill')
+            legendColor.setAttribute('style', 'color:'+color[x])
+            legendColor.setAttribute('title', data1[x][0][0])
+
+            legendLabel.innerHTML='&nbsp&nbsp'+data1[x][0][0]
+
+            document.getElementById('col-'+x).append(legendColor)
+            document.getElementById('col-'+x).append(legendLabel)
+            
+        }
+    }
+
+    function dateRange(start,end)
+    {
+        
+    }
+
+    
+
+
