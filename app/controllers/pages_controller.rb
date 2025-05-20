@@ -8,6 +8,33 @@ class PagesController < ApplicationController
   end
 
   def index
+    @concern_tickets = ConcernTicket.includes(:concern_types, :concern_ticket_details).map do |ct|
+      eligible_users = ConcernTicketUser.where(
+        concern_ticket_id: ct.id,
+        task: "developer",
+        status: "active"
+      ).map do |ctu|
+        user = User.find_by(id: ctu.user_id)
+        {
+          id: ctu.user_id,
+          first_name: user&.first_name || "Unknown"
+        }
+      end
+
+      ct.attributes.merge(
+        concern_types: ct.concern_types.map { |ctype| ctype.attributes },
+        concern_ticket_details: ct.concern_ticket_details.map(&:attributes),
+        eligible_users: eligible_users
+      )
+    end
+    @ctd = ConcernTicketDetail.all
+    @open_tickets = @ctd.select { |ticket| ticket.status == "open" }
+    @progress_tickets = @ctd.select { |ticket| ticket.status == "processing" }
+    @forverification_tickets = @ctd.select { |ticket| ticket.status == "verification" }
+    @closed_tickets = @ctd.select { |ticket| ticket.status == "closed" }
+
+    all_concern_types = ConcernType.all.map { |ct| { id: ct.id, name: ct.name, concern_id: ct.concern_id } }
+
     @payload = {
       token: current_user.generate_jwt,
       username: current_user.username,
@@ -16,7 +43,10 @@ class PagesController < ApplicationController
       urlGenerateDailyReport: "#{ENV['BACKEND_API_URL']}/api/v2/dashboard/generate_daily_report",
       urlGenerateAccountingReport: "#{ENV['BACKEND_API_URL']}/api/v2/dashboard/generate_accounting_report",
       userId: current_user.id,
-      xKoinsAppAuthSecret: ENV['KOINS_APP_AUTH_SECRET']
+      xKoinsAppAuthSecret: ENV['KOINS_APP_AUTH_SECRET'],
+      concernTickets: @concern_tickets,
+      concernTypes: all_concern_types,
+      concernTicketCounts: ConcernTicketDetail.all.group_by(&:concern_type_id).map { |ct_id, ct_details| [ConcernType.find_by(id: ct_id)&.name, ct_details.count] }
     }
 
     @subheader_items = [

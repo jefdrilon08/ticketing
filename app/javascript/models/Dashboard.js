@@ -1,199 +1,192 @@
 import Mustache from "mustache";
 import $ from "jquery";
 import * as bootstrap from "bootstrap";
+import Chart from 'chart.js/auto';
 
-var $btnGenerateAccountingReport;
-var $btnGenerateDailyReport;
-var $btnConfirmGenerateDailyReport;
-var $btnConfirmGenerateAccountingReport;
-var $modalGenerateDailyReport;
-var $modalGenerateAccountingReport;
-var $selectBranch;
-var $inputAsOf;
-var $selectAccReportBranch;
-var $selectAccReportAccountingFund;
-var $inputAccReportStartDate;
-var $inputAccReportEndDate;
-var $xFormControl;
+console.log("Dashboard.js loaded");
 
-var $message;
-var templateErrorList;
-var templateSuccessMessage;
+let chartInstances = {};
 
-var _urlGenerateDailyReport;
-var _urlGenerateAccountingReport;
-var _userId;
-var _xKoinsAppAuthSecret;
+function createPieChart(concernTicket, concernTypes) {
+  const concernTicketId = concernTicket.id;
+  const concernTicketDetails = concernTicket.concern_ticket_details || [];
+  const ticketConcernTypes = concernTypes.filter(ct => ct.concern_id === concernTicketId);
 
-var _cacheDom = function() {
-  $modalGenerateDailyReport = new bootstrap.Modal(
-    document.getElementById("modal-generate-daily-report")
-  );
-
-  $modalGenerateAccountingReport = new bootstrap.Modal(
-    document.getElementById("modal-generate-accounting-report")
-  );
-
-  $btnGenerateDailyReport             = $("#btn-generate-daily-report");
-  $btnGenerateAccountingReport        = $("#btn-generate-accounting-report");
-  $btnConfirmGenerateDailyReport      = $("#btn-confirm-generate-daily-report");
-  $btnConfirmGenerateAccountingReport = $("#btn-confirm-generate-accounting-report");
-
-  $selectBranch                       = $("#select-branch");
-  $inputAsOf                          = $("#input-as-of");
-  $selectAccReportBranch              = $("#select-acc-report-branch");
-  $selectAccReportAccountingFund      = $("#select-acc-report-accounting-fund");
-  $inputAccReportStartDate            = $("#input-acc-report-start-date");
-  $inputAccReportEndDate              = $("#input-acc-report-end-date");
-  $xFormControl                       = $(".x-form-control");
-
-  $message                = $(".message");
-  templateErrorList       = $("#template-error-list").html();
-  templateSuccessMessage  = $("#template-success-message").html();
-};
-
-var _bindEvents = function() {
-  $btnGenerateAccountingReport.on("click", function() {
-    $message.html("");
-    $modalGenerateAccountingReport.show();
+  const concernTypeCounts = {};
+  concernTicketDetails.forEach((detail) => {
+    const concernTypeId = detail.concern_type_id;
+    concernTypeCounts[concernTypeId] = (concernTypeCounts[concernTypeId] || 0) + 1;
   });
 
-  $btnConfirmGenerateAccountingReport.on("click", function() {
-    var accountingFundId  = $selectAccReportAccountingFund.val();
-    var branchId          = $selectAccReportBranch.val();
-    var startDate         = $inputAccReportStartDate.val();
-    var endDate           = $inputAccReportEndDate.val();
+  const concernTypeNames = Object.keys(concernTypeCounts).map((concernTypeId) => {
+    const concernType = ticketConcernTypes.find((ct) => ct.id === concernTypeId);
+    return concernType ? concernType.name : 'Unknown';
+  });
+  const counts = Object.values(concernTypeCounts);
 
-    var data = {
-      start_date: startDate,
-      end_date: endDate,
-      branch_id: branchId,
-      accounting_fund_id: accountingFundId,
-      user_id: _userId
+  const canvas = document.getElementById(`${concernTicketId}-pie-chart`);
+  if (!canvas) {
+    console.error(`Canvas element not found for concern ticket ${concernTicketId}`);
+    return;
+  }
+
+  if (chartInstances[concernTicketId]) {
+    chartInstances[concernTicketId].destroy();
+  }
+
+  const ctx = canvas.getContext('2d');
+  chartInstances[concernTicketId] = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: concernTypeNames,
+      datasets: [{
+        label: `Concern Types for Concern Ticket ${concernTicketId}`,
+        data: counts,
+        backgroundColor: [
+          'rgb(255, 99, 133)',
+          'rgb(54, 162, 235)',
+          'rgb(255, 206, 86)',
+          'rgb(75, 192, 192)',
+          'rgb(153, 102, 255)',
+          'rgb(255, 159, 64)',
+        ],
+        borderColor: [
+          'rgb(180, 0, 39)',
+          'rgb(54, 162, 235)',
+          'rgb(255, 206, 86)',
+          'rgb(75, 192, 192)',
+          'rgb(153, 102, 255)',
+          'rgb(255, 159, 64)',
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
     }
+  });
+}
 
-    $xFormControl.prop("disabled", true);
-    $message.html("Loading...");
+function createBarChart(concernTicket) {
+  const concernTicketId = concernTicket.id;
+  const concernTicketDetails = concernTicket.concern_ticket_details || [];
+  const eligibleUsers = concernTicket.eligible_users || [];
 
-    $.ajax({
-      url: _urlGenerateAccountingReport,
-      method: 'POST',
-      headers: {
-        'X-KOINS-APP-AUTH-SECRET': _xKoinsAppAuthSecret,
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true'
+  const userMap = {};
+  eligibleUsers.forEach(u => { userMap[u.id] = u.first_name; });
+
+  //user
+  const userStatusCounts = {};
+  Object.keys(userMap).forEach(userId => {
+    userStatusCounts[userId] = { open: 0, processing: 0, verification: 0, closed: 0 };
+  });
+
+  concernTicketDetails.forEach((detail) => {
+    const userId = detail.assigned_user_id;
+    if (userStatusCounts[userId]) {
+      const status = (detail.status || '').toLowerCase();
+      if (status === 'open') userStatusCounts[userId].open++;
+      else if (status === 'processing') userStatusCounts[userId].processing++;
+      else if (status === 'verification') userStatusCounts[userId].verification++;
+      else if (status === 'closed') userStatusCounts[userId].closed++;
+    }
+  });
+
+  const userIds = Object.keys(userMap);
+  const usernames = userIds.map(uid => userMap[uid]);
+  const openCounts = userIds.map(uid => userStatusCounts[uid].open);
+  const processingCounts = userIds.map(uid => userStatusCounts[uid].processing);
+  const verificationCounts = userIds.map(uid => userStatusCounts[uid].verification);
+  const closedCounts = userIds.map(uid => userStatusCounts[uid].closed);
+
+  const canvas = document.getElementById(`${concernTicketId}-bar-chart`);
+  if (!canvas) {
+    console.error(`Canvas element not found for concern ticket ${concernTicketId} (bar chart)`);
+    return;
+  }
+
+  if (chartInstances[`${concernTicketId}-bar`]) {
+    chartInstances[`${concernTicketId}-bar`].destroy();
+  }
+
+  const ctx = canvas.getContext('2d');
+  chartInstances[`${concernTicketId}-bar`] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: usernames,
+      datasets: [
+        {
+          label: 'Open',
+          data: openCounts,
+          backgroundColor: 'rgb(0, 151, 8)'
+        },
+        {
+          label: 'Processing',
+          data: processingCounts,
+          backgroundColor: 'rgb(54, 163, 235)'
+        },
+        {
+          label: 'For Verification',
+          data: verificationCounts,
+          backgroundColor: 'rgb(255, 198, 53)'
+        },
+        {
+          label: 'Closed',
+          data: closedCounts,
+          backgroundColor: 'rgb(180, 0, 39)'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' }
       },
-      data: data,
-      success: function(response) {
-        $message.html(
-          Mustache.render(
-            templateSuccessMessage,
-            { message: "Success! You may now close this window" }
-          )
-        );
-
-
-        $xFormControl.prop("disabled", false);
-        $selectAccReportBranch.val("");
-      },
-      error: function(response) {
-        console.log(response.responseText);
-        var errors  = [];
-
-        try {
-          errors  = JSON.parse(response.responseText).full_messages;
-        } catch(err) {
-          console.log(err);
-          errors  = ["Something went wrong"];
-        } finally {
-          $message.html(
-            Mustache.render(
-              templateErrorList,
-              { errors: errors }
-            )
-          );
-
-          $xFormControl.prop("disabled", false);
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            color: '#000'
+          },
+          grid: {
+            display: false
+          }
+        },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          ticks: {
+            color: '#000'
+          },
+          grid: {
+            display: false
+          }
         }
       }
-    });
-  });
-
-  $btnGenerateDailyReport.on("click", function() {
-    $message.html("");
-    $modalGenerateDailyReport.show();
-  });
-
-  $btnConfirmGenerateDailyReport.on("click", function() {
-    var asOf      = $inputAsOf.val();
-    var branchId  = $selectBranch.val();
-
-    var data = {
-      as_of: asOf,
-      branch_id: branchId,
-      user_id: _userId
     }
-
-    $xFormControl.prop("disabled", true);
-    $message.html("Loading...");
-
-    $.ajax({
-      url: _urlGenerateDailyReport,
-      method: 'POST',
-      headers: {
-        'X-KOINS-APP-AUTH-SECRET': _xKoinsAppAuthSecret,
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true'
-      },
-      data: data,
-      success: function(response) {
-        $message.html(
-          Mustache.render(
-            templateSuccessMessage,
-            { message: "Success! You may now close this window" }
-          )
-        );
-
-
-        $xFormControl.prop("disabled", false);
-        $selectBranch.val("");
-      },
-      error: function(response) {
-        console.log(response.responseText);
-        var errors  = [];
-
-        try {
-          errors  = JSON.parse(response.responseText).full_messages;
-        } catch(err) {
-          console.log(err);
-          errors  = ["Something went wrong"];
-        } finally {
-          $message.html(
-            Mustache.render(
-              templateErrorList,
-              { errors: errors }
-            )
-          );
-
-          $xFormControl.prop("disabled", false);
-        }
-      }
-    });
   });
-};
+}
+
+function renderCharts(concernTickets, concernTypes) {
+  let i = 0;
+  function renderNext() {
+    if (i >= concernTickets.length) return;
+    createPieChart(concernTickets[i], concernTypes);
+    createBarChart(concernTickets[i]);
+    i++;
+    window.requestAnimationFrame(renderNext);
+  }
+  renderNext();
+}
 
 var init = function(config) {
-  _urlGenerateDailyReport       = config.urlGenerateDailyReport;
-  _urlGenerateAccountingReport  = config.urlGenerateAccountingReport;
-  _userId                       = config.userId;
-  _xKoinsAppAuthSecret          = config.xKoinsAppAuthSecret;
-
-  _cacheDom();
-  _bindEvents();
+  $(function() {
+    const concernTickets = config.concernTickets || [];
+    const concernTypes = config.concernTypes || [];
+    renderCharts(concernTickets, concernTypes);
+  });
 };
 
 export default { init: init };

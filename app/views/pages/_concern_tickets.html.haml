@@ -1,1 +1,72 @@
-hello world
+.row
+  .col-md-3{:style=>"padding:20px"}
+    %div
+      = link_to "/concern_tickets", class: "btn-nav-square-md w-100", style: "padding:100px 10px" do
+        %center
+          %h4
+            TOTAL CONCERN TICKETS
+          %hr{:style=>"color:white"}
+          %h1
+            #{ConcernTicketDetail.count}
+
+  .col{:style=>"padding:20px"}
+    %div
+      .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px;width:100%"}
+        %h5{:style=>"color:white"}
+          Open
+        %hr{:style=>"color:white"}
+        %center
+          %h1{:style=>"color:white"}
+            #{@open_tickets.count}
+
+  .col{:style=>"padding:20px"}
+    %div
+      .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
+        %h5{:style=>"color:white"}
+          On Proccess
+        %hr{:style=>"color:white"}
+        %center
+          %h1{:style=>"color:white"}
+            #{@progress_tickets.count}
+
+  .col{:style=>"padding:20px"}
+    %div
+      .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
+        %h5{:style=>"color:white"}
+          For Verification
+        %hr{:style=>"color:white"}
+        %center
+          %h1{:style=>"color:white"}
+            #{@forverification_tickets.count}
+
+  .col{:style=>"padding:20px"}
+    %div
+      .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
+        %h5{:style=>"color:white"}
+          Closed
+        %hr{:style=>"color:white"}
+        %center
+          %h1{:style=>"color:white"}
+            #{@closed_tickets.count}
+
+.card{:style=>"padding:20px 20px;height:100%"}
+  - @concern_tickets.each do |concern_ticket|
+    %h4= concern_ticket['name']
+
+    .row
+      .col-md-6{:style=>"padding:20px"}
+        .d-flex.flex-row
+          .pie-chart-container{:style => "height:300px; width:100%; position:relative;"}
+            %canvas{:id=>"#{concern_ticket['id']}-pie-chart", :width=>"400", :height=>"300", :style=>"max-width:100%; max-height:100%;"}
+
+      .col-md-6{:style=>"padding:20px"}
+        .d-flex.flex-row
+          .bar-chart-container{:style => "height:300px; width:100%; position:relative;"}
+            %canvas{:id=>"#{concern_ticket['id']}-bar-chart", :width=>"400", :height=>"300", :style=>"max-width:100%; max-height:100%;"}
+
+    %br
+    %br 
+    %br
+
+= render partial: "templates/error_list"
+= render partial: "templates/success_message"
