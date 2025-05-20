@@ -84,12 +84,14 @@ class SystemTicketsController < ApplicationController
         uncategorized=[]
 
         # Filter
+        
         @q             = params[:q]
         @f_category    = params[:f_category]
         @f_type        = params[:f_type]
         @f_status      = params[:f_status]
         @f_hold        = params[:f_hold]
         @f_deadline    = params[:f_deadline]
+        @f_my_tickets  = params[:f_my_tickets]
 
         if @q.present?
             system_tix = system_tix.where(
@@ -163,6 +165,20 @@ class SystemTicketsController < ApplicationController
                 when 'late'
                     if x.status=='done'&&x.target_date<x.data["save_details"][3]["date"].to_date
                         system_tix.push(x)
+                    end
+                end
+            end
+        end
+
+        if @f_my_tickets
+            temp= system_tix
+            system_tix=[]
+            temp.each do |x|
+                x.data["team_members"].each do |y|
+                    if SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:params[:id]).count>0
+                        if y[0]==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:params[:id])[0].id
+                            system_tix.push(x)
+                        end
                     end
                 end
             end
