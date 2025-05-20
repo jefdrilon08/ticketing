@@ -23,7 +23,7 @@
     %div
       .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
         %h5{:style=>"color:white"}
-          On Proccess
+          Proccessing
         %hr{:style=>"color:white"}
         %center
           %h1{:style=>"color:white"}
@@ -33,7 +33,7 @@
     %div
       .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
         %h5{:style=>"color:white"}
-          For Verification
+          Verification
         %hr{:style=>"color:white"}
         %center
           %h1{:style=>"color:white"}
@@ -48,6 +48,8 @@
         %center
           %h1{:style=>"color:white"}
             #{@closed_tickets.count}
+
+%hr{:style=>"height:10px;color:white"}
 
 .card{:style=>"padding:20px 20px;height:100%"}
   - @concern_tickets.each do |concern_ticket|
