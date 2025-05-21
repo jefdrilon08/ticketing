@@ -7,9 +7,10 @@
           %li.nav-item
             %a.nav-link.active.show{"aria-controls" => "concern_tickets", "aria-selected" => "true", "data-bs-toggle" => "tab", :href => "#home", :role => "tab"} 
               Concern Tickets
-          %li.nav-item
-            %a.nav-link{"aria-controls" => "system_tickets", "aria-selected" => "false", "data-bs-toggle" => "tab", :href => "#system_tickets", :role => "tab"} 
-              System Tickets
+          -if current_user.is_mis?
+            %li.nav-item
+              %a.nav-link{"aria-controls" => "system_tickets", "aria-selected" => "false", "data-bs-toggle" => "tab", :href => "#system_tickets", :role => "tab"} 
+                System Tickets
         
         .tab-content.border-start.border-bottom.border-end
           #home.p-3.tab-pane.active.show{:role => "tabpanel"}
