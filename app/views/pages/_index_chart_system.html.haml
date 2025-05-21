@@ -36,8 +36,6 @@
     var dataLength=data1.length
     var data2=[]
 
-    console.log(data1)
-
     onload=showLegend(), defaultData()
 
     function defaultData()
@@ -55,7 +53,7 @@
                 {
                     for(z=0;z<data1[x][1][y].length;z++)
                     {
-                        console.log(data1[x][1][y][z][1])
+
                         if(data1[x][1][y][z][1]==='open')
                             temp1+=1
                         else
@@ -167,8 +165,6 @@
             open_=[]
             closed_=[]
 
-            console.log(date1+" to "+date2)
-
             for(y=0;y<data1[x][1].length;y++)
             {
                 temp1=0
@@ -214,8 +210,6 @@
             })
         }
 
-        console.log(data2)
-
         myChart.data = {
                 labels: #{@labels},
                 datasets: data2
@@ -229,24 +223,21 @@
         var startDate=document.getElementById('start-date').value
         var endDate=document.getElementById('end-date').value
 
-        console.log("pumasok")
-        console.log(currentDate)
-        console.log("end")
-
-        if(startDate!=''&&endDate!='')
-            document.getElementById('default-range').style.display="none"
-        else
-            document.getElementById('default-range').style.display="block"        
-
-        if(startDate>endDate||startDate>currentDate||endDate>currentDate)
-            document.getElementById('invalid').style.display="block"
+        if(startDate==''&&endDate=='')
+            document.getElementById('default-range').style.display="block"   
         else
         {
-            document.getElementById('invalid').style.display="none"
-            console.log(startDate+" - "+endDate)
+            document.getElementById('default-range').style.display="none"
+            if(startDate>endDate||startDate>currentDate||endDate>currentDate)
+                document.getElementById('invalid').style.display="block"
+            else
+            {
+                document.getElementById('invalid').style.display="none"
 
-            updateData(startDate,endDate)
+                updateData(startDate,endDate)
+            }
         }
+                            
     }
 
     
