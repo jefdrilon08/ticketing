@@ -610,7 +610,7 @@ class SystemTicketsController < ApplicationController
 
     def edit_milestone
         puts params
-        edit_milestone=Milestone.find(params[:temp])
+        edit_milestone=Milestone.find(params[:ms_id])
 
         if edit_milestone.update(status:"done",end_date:DateTime.now())
             redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"

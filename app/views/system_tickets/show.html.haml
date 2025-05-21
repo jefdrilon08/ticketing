@@ -304,7 +304,7 @@
                                             %p
                                                 %center
                                                     .form-group
-                                                        =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                        =text_field_tag :ms_id,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
                                                     %p{:id=>"d-#{@milestones.index(x)}"}
                                                         #{x.milestone_details}&nbsp
                                                     - case x.status
@@ -452,6 +452,8 @@
                                                     %center
                                                         - case x.status
                                                             - when 'pending'
+                                                                .form-group
+                                                                    =text_field_tag :ms_id,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
                                                                 -if !@ticket.data["on_hold"]
                                                                     -if @ticket.status!="done"
                                                                         -if @role==3 || @role==5
