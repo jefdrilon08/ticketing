@@ -176,12 +176,14 @@
                         if(date2!='')
                         {
                             if(data1[x][1][y][z][0]<=date1||date1=='')
+                            {
                                 if(data1[x][1][y][z][1]=='open')
                                     temp1+=1
                                 if(data1[x][1][y][z][1]!='open'&&data1[x][1][y][z][1]>date2)
                                     temp1+=1
                                 if(data1[x][1][y][z][1]!='open'&&data1[x][1][y][z][1]<=date2)
                                     temp2+=1
+                            }
                         }
                         else
                         {
