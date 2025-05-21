@@ -5,16 +5,24 @@
                 %label
                     Start Date
                 .form-group
-                    =text_field_tag :sdate,params[:f_sdate],class:'form-control',type: :date,id:"start-date"
+                    =text_field_tag :sdate,params[:f_sdate],class:'form-control',type: :date,id:"start-date", onchange:"dateRange()"
             %td{:style=>"width:5%"}
                 %label
                     End Date
                 .form-group
-                    =text_field_tag :edate,params[:f_edate],class:'form-control',type: :date,id:"end-date"
+                    =text_field_tag :edate,params[:f_edate],class:'form-control',type: :date,id:"end-date", onchange:"dateRange()"
+                .form-group{:style=>"display:none"}
+                    =text_field_tag :cdate,params[:f_cdate],class:'form-control',type: :date,id:"current-date", value:DateTime.current.to_date
             %td
                 %label
                     Legend
                 %div{:id=>"legend"}
+    %div{:style=>"display:block",:id=>'default-range'}
+        %h5{:style=>"margin:-25px 0px 35px 10px;font-weight:900"}
+            #{SystemTicketDesc.all[0].created_at.to_date} - present
+    %div{:style=>"display:none",:id=>'invalid'}
+        %h5{:style=>"margin:-25px 0px 35px 10px;color:red"}
+            Range invalid.
 
 %script{:src => "https://cdn.jsdelivr.net/npm/chart.js"}
 
@@ -24,26 +32,53 @@
 
     var color=["#1CBA88","#19BEB5","#159CC1","#126EC4","#0F3DC7","#0F0CCA","#4009CE","#BB1B90","#BF1865","#C21436",
          "#C51B11","#C84A0E","#CB7C0B","#CFB207","#BC521A","#C07E16","#C3AD13","#ACC610","#7CC90D","#48CD0A"]
-    var data1=#{@chart_data}
+    var data1=#{@tix_list}
     var dataLength=data1.length
     var data2=[]
 
-    onload=showLegend()
+    console.log(data1)
 
-    for(x=0;x<dataLength;x++)
+    onload=showLegend(), defaultData()
+
+    function defaultData()
     {
-        data2.push({
-            label:data1[x][0][0]+' (open tickets)',
-            data:data1[x][1],
-            backgroundColor:color[x],
-            stack:"Stack 0"
-        })
-        data2.push({
-            label:data1[x][0][0]+' (closed tickets)',
-            data:data1[x][2],
-            backgroundColor:color[x],
-            stack:"Stack 1"
-        })
+            for(x=0;x<dataLength;x++)
+        {
+            open_=[]
+            closed_=[]
+
+            for(y=0;y<data1[x][1].length;y++)
+            {
+                temp1=0
+                temp2=0
+                if(data1[x][1][y].length>0)
+                {
+                    for(z=0;z<data1[x][1][y].length;z++)
+                    {
+                        console.log(data1[x][1][y][z][1])
+                        if(data1[x][1][y][z][1]==='open')
+                            temp1+=1
+                        else
+                            temp2+=1
+                    }
+                }
+                open_.push(temp1)
+                closed_.push(temp2)
+            }
+
+            data2.push({
+                label:data1[x][0]+' (open tickets)',
+                data:open_,
+                backgroundColor:color[x],
+                stack:"Stack 0"
+            })
+            data2.push({
+                label:data1[x][0]+' (closed tickets)',
+                data:closed_,
+                backgroundColor:color[x],
+                stack:"Stack 1"
+            })
+        }
     }
 
     var myContext = document.getElementById(
@@ -113,9 +148,9 @@
 
             legendColor.classList.add('bi','bi-square-fill')
             legendColor.setAttribute('style', 'color:'+color[x])
-            legendColor.setAttribute('title', data1[x][0][0])
+            legendColor.setAttribute('title', data1[x][0])
 
-            legendLabel.innerHTML='&nbsp&nbsp'+data1[x][0][0]
+            legendLabel.innerHTML='&nbsp&nbsp'+data1[x][0]
 
             document.getElementById('col-'+x).append(legendColor)
             document.getElementById('col-'+x).append(legendLabel)
@@ -123,10 +158,98 @@
         }
     }
 
-    function dateRange(start,end)
+    function updateData(date1,date2)
     {
-        
+        data2=[]
+
+        for(x=0;x<dataLength;x++)
+        {
+            open_=[]
+            closed_=[]
+
+            console.log(date1+" to "+date2)
+
+            for(y=0;y<data1[x][1].length;y++)
+            {
+                temp1=0
+                temp2=0
+                if(data1[x][1][y].length>0)
+                {
+                    for(z=0;z<data1[x][1][y].length;z++)
+                    {
+                        if(date2!='')
+                        {
+                            if(data1[x][1][y][z][0]<=date1||date1=='')
+                                if(data1[x][1][y][z][1]=='open')
+                                    temp1+=1
+                                if(data1[x][1][y][z][1]!='open'&&data1[x][1][y][z][1]>date2)
+                                    temp1+=1
+                                if(data1[x][1][y][z][1]!='open'&&data1[x][1][y][z][1]<=date2)
+                                    temp2+=1
+                        }
+                        else
+                        {
+                            if(data1[x][1][y][z][1]==='open')
+                                temp1+=1
+                            else
+                                temp2+=1
+                        }
+                    }
+                }
+                open_.push(temp1)
+                closed_.push(temp2)
+            }
+
+            data2.push({
+                label:data1[x][0]+' (open tickets)',
+                data:open_,
+                backgroundColor:color[x],
+                stack:"Stack 0"
+            })
+            data2.push({
+                label:data1[x][0]+' (closed tickets)',
+                data:closed_,
+                backgroundColor:color[x],
+                stack:"Stack 1"
+            })
+        }
+
+        console.log(data2)
+
+        myChart.data = {
+                labels: #{@labels},
+                datasets: data2
+        };
+        myChart.update();
     }
+
+    function dateRange()
+    {
+        var currentDate=document.getElementById('current-date').value
+        var startDate=document.getElementById('start-date').value
+        var endDate=document.getElementById('end-date').value
+
+        console.log("pumasok")
+        console.log(currentDate)
+        console.log("end")
+
+        if(startDate!=''&&endDate!='')
+            document.getElementById('default-range').style.display="none"
+        else
+            document.getElementById('default-range').style.display="block"        
+
+        if(startDate>endDate||startDate>currentDate||endDate>currentDate)
+            document.getElementById('invalid').style.display="block"
+        else
+        {
+            document.getElementById('invalid').style.display="none"
+            console.log(startDate+" - "+endDate)
+
+            updateData(startDate,endDate)
+        }
+    }
+
+    
 
     
 

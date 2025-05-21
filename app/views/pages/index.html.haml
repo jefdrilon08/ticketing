@@ -14,7 +14,7 @@
         .tab-content.border-start.border-bottom.border-end
           #home.p-3.tab-pane.active.show{:role => "tabpanel"}
             = render partial: "concern_tickets"
-          #system_tickets.p-3.tab-pane.active.show{:role => "tabpanel"}
+          #system_tickets.p-3.tab-pane.active{:role => "tabpanel"}
             = render partial: "system_tickets"
 
 = render partial: "dashboard/modals/generate_daily_report"
