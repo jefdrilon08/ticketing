@@ -134,39 +134,51 @@ class PagesController < ApplicationController
       @labels.push("#{User.find(x[0].user_id).last_name}, #{User.find(x[0].user_id).first_name}")
     end
 
+    @tix_list=[]
+
     SystemTicket.all.each do |x|
-      if ComputerSystem.where(id:x.computer_system_id).exists?
-        temp=[]
-        temp2=[]
-        temp3=[]
-        temp.push(ComputerSystem.find(x.computer_system_id).name)
-        dev_grp.each do |y|
-          opent=0
-          closedt=0
+      temp=[]
+      temp2=[]
+      temp3=[]
+      dev_grp.each do |y|
+          is_member=false
           y.each do |z|
-            SystemTicketDesc.where(system_ticket_id:x.id).each do |a|
-              ismem=false
-              a.data["team_members"].each do |b|
-                if b[0]==z.id
-                  then ismem=true
-                end 
+              if x.data["team_members"].include? z.user_id
+                  is_member=true
+                  SystemTicketDesc.where(system_ticket_id:x.id).each do |a|
+                    temp_tix=[]
+                    is_member2=false
+                      ticket_no=a.ticket_number
+                      start=''
+                      end_='open'
+                      a.data["team_members"].each do |b|
+                        if b[0]==z.id
+                          is_member2=true
+                              start=a.created_at.to_s[0..9]
+                              if a.status=='done'
+                                  end_=a.data["save_details"][3]["date"].to_s[0..9]
+                              end 
+                        end
+                      end
+                      if is_member2
+                        temp.push([start,end_])
+                      end
+                  end
               end
-              if ismem
-                if a.status=='done'
-                  then closedt+=1
-                else opent+=1
-                end
-              end
-            end
           end
-          temp2.push(opent)
-          temp3.push(closedt)
-        end
-        @chart_data.push([temp,temp2,temp3])
+          if is_member
+              temp2.push(temp)
+          else
+              temp2.push([])
+          end
+          temp=[]
+      end
+      if ComputerSystem.where(id:x.computer_system_id).exists?
+        then @tix_list.push([ComputerSystem.find(x.computer_system_id).name,temp2])
       end
     end
 
-   
+    # render json: {message:@tix_list}
 
     @list_due_today=SystemTicketDesc.where(target_date:DateTime.current.to_date)
 
