@@ -15,9 +15,9 @@
         .tab-content.border-start.border-bottom.border-end
           #home.p-3.tab-pane.active.show{:role => "tabpanel"}
             = render partial: "concern_tickets"
-        -if current_user.is_mis?
-          #system_tickets.p-3.tab-pane.active{:role => "tabpanel"}
-            = render partial: "system_tickets"
+          -if current_user.is_mis?
+            #system_tickets.p-3.tab-pane{:role => "tabpanel"}
+              = render partial: "system_tickets"
 
-= render partial: "templates/error_list"
-= render partial: "templates/success_message"
+= render partial: "dashboard/modals/generate_daily_report"
+= render partial: "dashboard/modals/generate_accounting_report"
