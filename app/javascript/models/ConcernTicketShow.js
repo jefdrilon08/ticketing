@@ -165,5 +165,52 @@ $(document).ready(function() {
     init();
 });
 
+//pang print sa table
+var printTable = function () {
+    const tableContent = document.getElementById('printable-table');
+    if (!tableContent) {
+      console.warn("No printable table found!");
+      return;
+    }
+
+    const printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Concern Ticket</title>');
+    printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
+
+    printWindow.document.write(`
+      <style>
+        @media print {
+          .no-print { display: none !important; }
+        }
+
+        table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+        }
+
+        th, td {
+          border: 1px solid black !important;
+          padding: 8px !important;
+          text-align: center !important;
+        }
+
+        tr {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important; /* for better browser support */
+        }
+      </style>
+    `);
+
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<h4>Concern Ticket List</h4>');
+    printWindow.document.write(tableContent.outerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
+  window.printTable = printTable;
+
 
 export default { init: init };

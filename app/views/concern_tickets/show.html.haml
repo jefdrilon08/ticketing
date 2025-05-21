@@ -11,65 +11,67 @@
       Hold: #{@hold_count}
 = render partial: "show_filter"
 
-%table.table.table-sm.table-hover.table-bordered
-  %thead
-    %tr
-      %th.text-center Ticket Number
-      %th.text-center Concern From
-      %th.text-center Concern Type
-      %th.text-center Requested By
-      %th.text-center SATO
-      %th.text-center Assigned Person
-      %th.text-center Category
-      %th.text-center Posted Date
-      %th.text-center Status
-      %th.text-center Actions
-  %tbody
-    - if @details_records.present?
-      - @details_records.each do |ticket|
-        %tr
-          %td.text
-            = ticket.ticket_number || "N/A"
-            - if ticket.data.present? && ticket.data["chat_history"].present?
-              %i.bi.bi-envelope-check.text-primary{ style: "font-size: 0.7rem; vertical-align: middle; margin-left: 0.3rem;", title: "There's a message", data: { bs_toggle: "tooltip" } }
-          %td.text= ticket.concern_for&.name || "N/A"
-          %td.text= ticket.concern_type&.name || "N/A"
-          %td.text= ticket.requested_user ? "#{ticket.requested_user.first_name.titleize} #{ticket.requested_user.last_name.titleize}" : "N/A"
-          %td.text= ticket.branch&.name&.upcase || "Unassigned"
-          %td.text= ticket.assigned_user ? "#{ticket.assigned_user.first_name.titleize} #{ticket.assigned_user.last_name.titleize}" : "Unassigned"
-          %td.text= ticket.data.present? ? ticket.data["category"].try(:capitalize) : "Low"
-          %td.text-center.small-text= ticket.created_at.strftime("%b %d, %Y %I:%M %p")
-          %td.text-center
-            - if ticket.data&.[]("is_held") == "true"
-              .badge.bg-dark Hold
-            - else
-              - case ticket.status
-              - when "open"
-                .badge.bg-success Open
-              - when "processing"
-                .badge.bg-primary Processing
-              - when "verification"
-                .badge.bg-warning For Verification
-              - when "closed"
-                .badge.bg-danger Closed
-              - else
-                .badge.bg-secondary Pending
-
-          %td.text-center
-            = link_to view_tix_concern_ticket_path(ticket), class: "btn btn-primary btn-md me-1", title: "View Tickets", data: { bs_toggle: "tooltip" } do
-              %i.bi.bi-eye
-            - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
-            - if developer_task || current_user.is_mis?
-              - held = ticket.data && ticket.data["is_held"] == "true"
-              - if ticket.status != "closed"
-                = button_tag class: "btn #{held ? 'btn-success' : 'btn-danger'} btn-md toggle-hold", data: { ticket_id: ticket.id, held: held.to_s }, title: (held ? "Resume Ticket" : "Put on Hold") do
-                  - if held #true
-                    %i.bi.bi-play
-                  - else
-                    %i.bi.bi-pause
-    - else
+#printable-table
+  %table.table.table-sm.table-hover.table-bordered
+    %thead
       %tr
-        %td{ colspan: 9, class: "text-center" } No ticket details found
+        %th.text-center Ticket Number
+        %th.text-center Concern From
+        %th.text-center Concern Type
+        %th.text-center Requested By
+        %th.text-center SATO
+        %th.text-center Assigned Person
+        %th.text-center Category
+        %th.text-center Posted Date
+        %th.text-center Status
+        %th.text-center.no-print Actions
+    %tbody
+      - if @details_records.present?
+        - @details_records.each do |ticket|
+          %tr
+            %td.text-center
+              = ticket.ticket_number || "N/A"
+              - if ticket.data.present? && ticket.data["chat_history"].present?
+                %i.bi.bi-envelope-check.text-primary{ style: "font-size: 0.7rem; vertical-align: middle; margin-left: 0.3rem;", title: "There's a message", data: { bs_toggle: "tooltip" } }
+            %td.text-center= ticket.concern_for&.name || "N/A"
+            %td.text-center= ticket.concern_type&.name || "N/A"
+            %td.text-center= ticket.requested_user ? "#{ticket.requested_user.first_name.capitalize} #{ticket.requested_user.last_name.capitalize}" : "N/A"
+            %td.text-center= ticket.branch&.name&.upcase || "Unassigned"
+            %td.text= ticket.assigned_user ? "#{ticket.assigned_user.first_name.titleize} #{ticket.assigned_user.last_name.titleize}" : "Unassigned"
+            %td.text= ticket.data.present? ? ticket.data["category"].try(:capitalize) : "Low"
+            %td.text-center.small-text= ticket.created_at.strftime("%b %d, %Y %I:%M %p")
+            %td.text-center
+              - if ticket.data&.[]("is_held") == "true"
+                .badge.bg-dark Hold
+              - else
+                - case ticket.status
+                - when "open"
+                  .badge.bg-success Open
+                - when "processing"
+                  .badge.bg-primary Processing
+                - when "verification"
+                  .badge.bg-warning For Verification
+                - when "closed"
+                  .badge.bg-danger Closed
+                - else
+                  .badge.bg-secondary Pending
+
+            %td.text-center.no-print
+              = link_to view_tix_concern_ticket_path(ticket), class: "btn btn-primary btn-md me-1", title: "View Tickets", data: { bs_toggle: "tooltip" } do
+                %i.bi.bi-eye
+              - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "Developer")
+              - if developer_task || current_user.is_mis?
+                - held = ticket.data && ticket.data["is_held"] == "true"
+                - if ticket.status != "closed"
+                  = button_tag class: "btn #{held ? 'btn-success' : 'btn-danger'} btn-md toggle-hold", data: { ticket_id: ticket.id, held: held.to_s }, title: (held ? "Resume Ticket" : "Put on Hold") do
+                    - if held
+                      %i.bi.bi-play
+                    - else
+                      %i.bi.bi-pause
+      - else
+        %tr
+          %td{ colspan: 9, class: "text-center" } No ticket details found
+
 .pagination-container.mt-3.d-flex.justify-content-center
   = paginate @details_records 
 = render "concern_tickets/modals/create_ticket"
