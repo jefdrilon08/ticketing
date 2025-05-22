@@ -9,9 +9,9 @@ module Administration
           link: new_administration_item_path,
           class: "fa fa-plus",
           text: "New"
-        },
+        }
       ]
-      @items_list = Item.all.sort_by(&:name)
+      @items_list = Item.includes(:items_category, :sub_category).all.sort_by(&:name)
     end
 
     def new
@@ -27,18 +27,14 @@ module Administration
     end
 
     def show
-      @item = Item.find(params[:id])
+      @item = Item.includes(:items_category, :sub_category).find(params[:id])
     end
 
     def create
       @item = Item.new(item_params)
 
-      if params[:item][:supplier_ids].present?
-        @item.data ||= {}
-        @item.data["supplier_ids"] = params[:item][:supplier_ids]
-        suppliers = Supplier.where(id: @item.data["supplier_ids"])
-        @item.data["supplier_names"] = suppliers.map(&:name)
-      end
+      assign_sub_category_name(@item)
+      process_suppliers(@item)
 
       logger.debug("Creating new item with params: #{item_params.inspect}")
 
@@ -52,16 +48,12 @@ module Administration
 
     def update
       @item = Item.find(params[:id])
+      @item.assign_attributes(item_params)
 
-      if params[:item][:supplier_ids].present?
-        @item.data ||= {}
-        @item.data["supplier_ids"] = params[:item][:supplier_ids]
-        suppliers = Supplier.where(id: @item.data["supplier_ids"])
-        @item.data["supplier_names"] = suppliers.map(&:name)
-      end
+      assign_sub_category_name(@item)
+      process_suppliers(@item)
 
-      if @item.update(item_params)
-        @item.save if @item.data_changed?
+      if @item.save
         redirect_to administration_items_path, notice: 'Item updated successfully.'
       else
         @items_list = Item.all.sort_by(&:name)
@@ -89,12 +81,33 @@ module Administration
       params.require(:item).permit(
         :item_type,
         :items_category_id,
+        :sub_category_id,
+        :sub_category_name,
         :name,
         :status,
         :unit,
         :description,
         :is_parent,
+        :parent_id
       )
+    end
+
+    def process_suppliers(item)
+      if params[:item][:supplier_ids].present?
+        item.data ||= {}
+        supplier_ids = Array(params[:item][:supplier_ids])
+        item.data["supplier_ids"] = supplier_ids
+        item.data["supplier_names"] = Supplier.where(id: supplier_ids).pluck(:name)
+      end
+    end
+
+    def assign_sub_category_name(item)
+      if item.sub_category_id.present?
+        sub_cat = SubCategory.find_by(id: item.sub_category_id)
+        item.sub_category_name = sub_cat&.name
+      else
+        item.sub_category_name = nil
+      end
     end
   end
 end

@@ -5,21 +5,18 @@ module Api
         before_action :set_item, only: [:show, :update, :destroy]
 
         def index
-          items = Item.all.order(:name)
-          render json: items
+          items = Item.includes(:sub_category).order(:name)
+          render json: items.as_json(include: { sub_category: { only: [:id, :name] } })
         end
 
         def show
-          @item = Item.find(params[:id])
+          render json: @item.as_json(include: { sub_category: { only: [:id, :name] } })
         end
-        
+
         def create
           @item = Item.new(item_params)
 
-          if @item.is_parent && @item.parent_id.blank?
-            render json: { messages: ["Parent Item must be selected when 'Is Parent?' is checked"] }, status: :unprocessable_entity
-            return
-          end
+          assign_sub_category_name(@item)
 
           if @item.save
             render json: @item, status: :created
@@ -29,12 +26,11 @@ module Api
         end
 
         def update
-          if @item.is_parent && @item.parent_id.blank?
-            render json: { messages: ["Parent Item must be selected when 'Is Parent?' is checked"] }, status: :unprocessable_entity
-            return
-          end
+          @item.assign_attributes(item_params)
 
-          if @item.update(item_params)
+          assign_sub_category_name(@item)
+
+          if @item.save
             render json: @item
           else
             render json: { messages: @item.errors.full_messages }, status: :unprocessable_entity
@@ -54,7 +50,7 @@ module Api
         def set_item
           @item = Item.find_by(id: params[:id])
           unless @item
-            render json: { messages: ['Item not found'] }, status: :not_found
+            render json: { messages: ['Item not found.'] }, status: :not_found
           end
         end
 
@@ -62,6 +58,8 @@ module Api
           params.require(:item).permit(
             :item_type,
             :items_category_id,
+            :sub_category_id,
+            :sub_category_name,
             :name,
             :status,
             :unit,
@@ -69,6 +67,15 @@ module Api
             :is_parent,
             :parent_id
           )
+        end
+
+        def assign_sub_category_name(item)
+          if item.sub_category_id.present?
+            sub_cat = SubCategory.find_by(id: item.sub_category_id)
+            item.sub_category_name = sub_cat&.name
+          else
+            item.sub_category_name = nil
+          end
         end
       end
     end
