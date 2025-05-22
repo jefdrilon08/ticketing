@@ -9,6 +9,7 @@ module Administration
         @status               = @config[:status].presence || "Active"
         @unit                 = @config[:unit]
         @items_category_id    = @config[:items_category_id].presence
+        @sub_category_id      = @config[:sub_category_id].presence  
       end
 
       def execute!
@@ -24,7 +25,7 @@ module Administration
           status:               @status,
           unit:                 @unit,
           items_category_id:    @items_category_id,
-          data:                 {}  # Defaults to empty JSONB
+          sub_category_id:      @sub_category_id,        
         )
         item.save!
         item

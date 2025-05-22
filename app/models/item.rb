@@ -5,6 +5,8 @@ class Item < ApplicationRecord
   has_many :children, class_name: 'Item', foreign_key: 'parent_id', dependent: :restrict_with_error
   belongs_to :parent, class_name: 'Item', optional: true
 
-  belongs_to :item_category
+  belongs_to :items_category, class_name: 'ItemsCategory', foreign_key: 'items_category_id', optional: true
+  belongs_to :sub_category, optional: true
+
   has_many :inventories
 end

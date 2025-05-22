@@ -25,6 +25,12 @@
         .row.mt-3
           .col-md-12
             .form-group
+              %label(for="input-sub-category") Sub Category
+              = f.select :sub_category_id, options_for_select(::SubCategory.all.pluck(:name, :id), @item.sub_category_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-sub-category" }
+
+        .row.mt-3
+          .col-md-12
+            .form-group
               %label(for="input-name") Name
               = f.text_field :name, class: "form-control", id: "input-name", required: true
 
@@ -83,7 +89,7 @@
       const form = $('#item-form');
 
       form.submit(function(event) {
-        if ($('#input-supplier-id').val().length === 0) {
+        if ($('#input-supplier-id').val() == null || $('#input-supplier-id').val().length === 0) {
           alert("Please select at least one Supplier.");
           event.preventDefault();
           return;
