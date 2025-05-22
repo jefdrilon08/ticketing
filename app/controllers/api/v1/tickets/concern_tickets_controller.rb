@@ -137,6 +137,17 @@ module Api
             update_params = { status: params[:status] }
             update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
 
+
+            data = @ctd_status.data || {}
+            status_history = data["status_history"] || {}
+
+            unless status_history[params[:status]]
+              status_history[params[:status]] = Time.current.iso8601
+            end
+
+            data["status_history"] = status_history
+            update_params[:data] = data
+
             if @ctd_status.update(update_params)
               render json: { success: true, status: @ctd_status.status, ticket_number: @ctd_status.ticket_number }
             else

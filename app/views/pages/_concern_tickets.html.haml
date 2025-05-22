@@ -51,21 +51,23 @@
 
 %hr{:style=>"height:10px;color:white"}
 
-.card{:style=>"padding:20px 20px;height:100%"}
-  - @concern_tickets.each do |concern_ticket|
-    %h4= concern_ticket['name']
+%div{:style => "margin-bottom: 20px;"}
+  %label{:for => "concern-ticket-select", :style => "font-weight:bold; margin-right:10px;"} Select Concern Ticket:
+  %select#concern-ticket-select.form-select{:style => "width:auto; display:inline-block;"}
+    - @concern_tickets.each do |concern_ticket|
+      %option{:value => concern_ticket['id']}= concern_ticket['name']
 
+.card{:style=>"padding:20px 20px;height:100%"}
+  %div#concern-ticket-charts
     .row
       .col-md-6{:style=>"padding:20px"}
         .d-flex.flex-row
           .pie-chart-container{:style => "height:300px; width:100%; position:relative;"}
-            %canvas{:id=>"#{concern_ticket['id']}-pie-chart", :width=>"400", :height=>"300", :style=>"max-width:100%; max-height:100%;"}
-
+            %canvas#dynamic-pie-chart{:width=>"400", :height=>"300", :style=>"max-width:100%; max-height:100%;"}
       .col-md-6{:style=>"padding:20px"}
         .d-flex.flex-row
           .bar-chart-container{:style => "height:300px; width:100%; position:relative;"}
-            %canvas{:id=>"#{concern_ticket['id']}-bar-chart", :width=>"400", :height=>"300", :style=>"max-width:100%; max-height:100%;"}
-
+            %canvas#dynamic-bar-chart{:width=>"400", :height=>"300", :style=>"max-width:100%; max-height:100%;"}
     %br
     %br 
     %br

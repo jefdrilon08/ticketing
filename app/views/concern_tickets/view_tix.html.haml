@@ -1,143 +1,141 @@
 .card
-    .card-header.d-flex.justify-content-between.align-items-center{ style: "background-color:rgb(46, 46, 46); color: white;" }
-        %h4.mb-0.text-white.h5{ style: "font-weight: bold;" }
-            Ticket Number: #{@concern_ticket_details.ticket_number}
-        %h6.mb-0.text-white.h5
-            #{@concern_ticket&.name}
+  .card-header.d-flex.justify-content-between.align-items-center{ style: "background-color:rgb(46, 46, 46); color: white;" }
+    %h4.mb-0.text-white.h5{ style: "font-weight: bold;" }
+      Ticket Number: #{@concern_ticket_details.ticket_number}
+    %h6.mb-0.text-white.h5
+      #{@concern_ticket&.name}
 
-    .card-body.p-4
-        .row
-            .col-md-8
-                %strong.h4 Description:
-                .p-3.border.rounded.bg-light.min-vh-50.fs-10
-                    = @concern_ticket_details.description.presence
+  .card-body.p-4
+    .row
+      .col-md-8
+        %strong.h4 Description:
+        .p-3.border.rounded.bg-light.min-vh-50.fs-10
+          = @concern_ticket_details.description.presence
+        %br
+        %br
+        %strong.h6.mt-4 Chat:
+        .chat-box.border.rounded.bg-light.p-3.min-vh-50.fs-7
+          - if @concern_ticket_details.data.present? && @concern_ticket_details.data["chat_history"].present?
+            - @concern_ticket_details.data["chat_history"].each do |message|
+              .chat-message.mb-2
+                %small.text-muted= message["timestamp"]
                 %br
-                %br
-                %strong.h6.mt-4 Chat:
-                .chat-box.border.rounded.bg-light.p-3.min-vh-50.fs-7
-                    - if @concern_ticket_details.data.present? && @concern_ticket_details.data["chat_history"].present?
-                        - @concern_ticket_details.data["chat_history"].each do |message|
-                            .chat-message.mb-2
-                                %small.text-muted= message["timestamp"]
-                                %br
-                                %strong= message["user"].try(:titleize)
-                                %p= message["comment"]
-                    - else
-                        %p.text-muted No messages yet.
+                %strong= message["user"].try(:titleize)
+                %p= message["comment"]
+          - else
+            %p.text-muted No messages yet.
 
-                = form_with url: chat_message_concern_ticket_path(@concern_ticket_details.id), method: :post, local: true do |f|
-                    .d-flex.align-items-center.gap-2
-                        = f.text_area :content, class: "form-control", placeholder: "Type your message here...", rows: 1, style: "resize: none; width: 85%;"
-                        = f.submit "Send", class: "btn btn-primary btn-sm", style: "height: 38px;"
+        = form_with url: chat_message_concern_ticket_path(@concern_ticket_details.id), method: :post, local: true do |f|
+          .d-flex.align-items-center.gap-2
+            = f.text_area :content, class: "form-control", placeholder: "Type your message here...", rows: 1, style: "resize: none; width: 85%;"
+            = f.submit "Send", class: "btn btn-primary btn-sm", style: "height: 38px;"
 
-            .col-md-4
-                .row.mb-3
-                    .col-12
-                        %strong.h5 SATO: &nbsp;
-                        %span.h5= @concern_ticket_details.branch&.name&.upcase
+      .col-md-4
+        .row.mb-3
+          .col-12
+            %strong.h5 SATO: &nbsp;
+            %span.h5= @concern_ticket_details.branch&.name&.upcase
 
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Concern From:
-                        = @concern_ticket_details.concern_for&.name || "N/A"
+        .row.mb-3
+          .col-12
+            %strong.h6 Concern From:
+            = @concern_ticket_details.concern_for&.name || "N/A"
+            - if current_user.is_mis? && @concern_ticket_details.status != "closed" && @concern_ticket_details.assigned_user
+              = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-concern-from", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
 
-                        - if current_user.is_mis? && @concern_ticket_details.status != "closed" && @concern_ticket_details.assigned_user
-                            = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-concern-from", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
+        .row.mb-3
+          .col-12
+            %strong.h6 Concern Type:
+            = @concern_ticket_details.concern_type&.name || "N/A"
+            - if current_user.is_mis? && @concern_ticket_details.status != "closed" && @concern_ticket_details.assigned_user
+              = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-concern-type", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
 
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Concern Type:
-                        = @concern_ticket_details.concern_type&.name || "N/A"
+        .row.mb-3
+          .col-12
+            %strong.h6 Category:
+            = @concern_ticket_details.data.present? ? @concern_ticket_details.data["category"].try(:capitalize) : "Low"
+            - if current_user.is_mis? && @concern_ticket_details.status != "closed" && @concern_ticket_details.assigned_user
+              = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-concern-category", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
 
-                        - if current_user.is_mis? && @concern_ticket_details.status != "closed" && @concern_ticket_details.assigned_user
-                            = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-concern-type", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
+        .row.mb-3
+          .col-12
+            %strong.h6 Requested By:
+            = @concern_ticket_details.requested_user ? "#{@concern_ticket_details.requested_user.first_name.titleize} #{@concern_ticket_details.requested_user.last_name.titleize}" : "User not found :<"
 
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Category:
-                        = @concern_ticket_details.data.present? ? @concern_ticket_details.data["category"].try(:capitalize) : "Low"
-                        - if current_user.is_mis? && @concern_ticket_details.status != "closed" && @concern_ticket_details.assigned_user
-                            = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-concern-category", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Requested By:
-                        = @concern_ticket_details.requested_user ? "#{@concern_ticket_details.requested_user.first_name.titleize} #{@concern_ticket_details.requested_user.last_name.titleize}" : "User not found :<"
+        .row.mb-3
+          .col-12
+            %strong.h6 Assigned Person:
+            = @concern_ticket_details.assigned_user ? "#{@concern_ticket_details.assigned_user.first_name.titleize} #{@concern_ticket_details.assigned_user.last_name.titleize}" : "Unassigned"
+            - if current_user.is_mis? && !@concern_ticket_details.status.in?(["closed", "verification"]) && @concern_ticket_details.assigned_user
+              = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-assigned-person", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
 
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Assigned Person:
-                        = @concern_ticket_details.assigned_user ? "#{@concern_ticket_details.assigned_user.first_name.titleize} #{@concern_ticket_details.assigned_user.last_name.titleize}" : "Unassigned"
-                        
-                        - if current_user.is_mis? && !@concern_ticket_details.status.in?(["closed", "verification"]) && @concern_ticket_details.assigned_user
-                            = button_tag "Edit", { class: "btn btn-info btn-sm", "data-bs-toggle": "modal", "data-bs-target": "#modal-edit-assigned-person", data: { ticket_number: @concern_ticket_details.ticket_number, action: "edit" }}
+        .row.mb-3
+          .col-12
+            %strong.h6 Status:
+            - case @concern_ticket_details.status
+              - when "open"
+                .badge.bg-success.fs-7 Open
+              - when "processing"
+                .badge.bg-primary.fs-7 Processing
+              - when "verification"
+                .badge.bg-warning.text-dark.fs-7 For Verification
+              - when "closed"
+                .badge.bg-danger.fs-7 Closed
+              - else
+                .badge.bg-secondary.fs-7 Unknown
 
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Status:
-                        - case @concern_ticket_details.status
-                            - when "open"
-                                .badge.bg-success.fs-7 Open
-                            - when "processing"
-                                .badge.bg-primary.fs-7 Processing
-                            - when "verification"
-                                .badge.bg-warning.text-dark.fs-7 For Verification
-                            - when "closed"
-                                .badge.bg-danger.fs-7 Closed
-                            - else
-                                .badge.bg-secondary.fs-7 Unknown
+        .row.mb-3
+          .col-12
+            %strong.h6 Date Posted:
+            = @concern_ticket_details.created_at.strftime("%b %d, %Y %I:%M %p")
 
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Date Posted:
-                        = @concern_ticket_details.created_at.strftime("%b %d, %Y %I:%M %p")
+        - status_history = @concern_ticket_details.data && @concern_ticket_details.data["status_history"] || {}
 
-                - if @concern_ticket_details.status.in?(["processing", "verification", "closed"])
-                    .row.mb-3
-                        .col-12
-                            %strong.h6 Date Processed:
-                            = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
+        - if @concern_ticket_details.status.in?(["processing", "verification", "closed"])
+          .row.mb-3
+            .col-12
+              %strong.h6 Date Processed:
+              = status_history["processing"] ? Time.parse(status_history["processing"]).strftime("%b %d, %Y %I:%M %p") : "N/A"
 
-                - if @concern_ticket_details.status.in?(["verification", "closed"])
-                    .row.mb-3
-                        .col-12
-                            %strong.h6 Date Verified:
-                            = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
+        - if @concern_ticket_details.status.in?(["verification", "closed"])
+          .row.mb-3
+            .col-12
+              %strong.h6 Date Verified:
+              = status_history["verification"] ? Time.parse(status_history["verification"]).strftime("%b %d, %Y %I:%M %p") : "N/A"
 
-                - if @concern_ticket_details.status == "closed"
-                    .row.mb-3
-                        .col-12
-                            %strong.h6 Date Closed:
-                            = @concern_ticket_details.updated_at.strftime("%b %d, %Y %I:%M %p")
-                .row.mb-3
-                    .col-12
-                        %strong.h6 Files Attached:
-                        - if @concern_ticket_details.attachments.attached?
-                            %ul.fs-7
-                                - @concern_ticket_details.attachments.each do |file|
-                                    %li
-                                        = link_to file.filename.to_s, url_for(file), target: "_blank"
-                        - else
-                            %p.text-muted No files attached.        
+        - if @concern_ticket_details.status == "closed"
+          .row.mb-3
+            .col-12
+              %strong.h6 Date Closed:
+              = status_history["closed"] ? Time.parse(status_history["closed"]).strftime("%b %d, %Y %I:%M %p") : "N/A"
 
-    .card-footer.d-flex.justify-content-end.bg-light
-        - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "developer")
-        - unless @concern_ticket_details.data&.[]("is_held") == "true"
-            - if @concern_ticket_details.status == "open" && (developer_task || current_user.is_mis?)
-                = button_tag "Process Ticket",
-                    { class: "btn btn-success fs-6 me-2 update-status",
-                      data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing" } }
+        .row.mb-3
+          .col-12
+            %strong.h6 Files Attached:
+            - if @concern_ticket_details.attachments.attached?
+              %ul.fs-7
+                - @concern_ticket_details.attachments.each do |file|
+                  %li
+                    = link_to file.filename.to_s, url_for(file), target: "_blank"
+            - else
+              %p.text-muted No files attached.
 
-            - elsif @concern_ticket_details.status == "processing" && (developer_task || current_user.is_mis?)
-                = button_tag "Move for Verification",
-                    { class: "btn btn-warning fs-6 me-2 update-status",
-                      data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }
-
-        - if @concern_ticket_details.status == "verification"
-            = button_tag "Close Ticket",
-                { class: "btn btn-danger fs-6 me-2 update-status",
-                  data: { ticket_number: @concern_ticket_details.ticket_number, status: "closed" } }
-
-        = link_to "Back", concern_ticket_path(@concern_ticket), class: "btn btn-secondary fs-6"
+  .card-footer.d-flex.justify-content-end.bg-light
+    - developer_task = ConcernTicketUser.find_by(concern_ticket_id: @concern_ticket.id, user_id: current_user.id, task: "developer")
+    - unless @concern_ticket_details.data&.[]("is_held") == "true"
+      - if @concern_ticket_details.status == "open" && (developer_task || current_user.is_mis?)
+        = button_tag "Process Ticket",
+          { class: "btn btn-success fs-6 me-2 update-status",
+            data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing" } }
+      - elsif @concern_ticket_details.status == "processing" && (developer_task || current_user.is_mis?)
+        = button_tag "Move for Verification",
+          { class: "btn btn-warning fs-6 me-2 update-status",
+            data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }
+    - if @concern_ticket_details.status == "verification"
+      = button_tag "Close Ticket",
+        { class: "btn btn-danger fs-6 me-2 update-status",
+          data: { ticket_number: @concern_ticket_details.ticket_number, status: "closed" } }
+    = link_to "Back", concern_ticket_path(@concern_ticket), class: "btn btn-secondary fs-6"
 
 = render "concern_tickets/modals/edit_assigned_person"
 = render "concern_tickets/modals/edit_concern_from"

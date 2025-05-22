@@ -8,9 +8,8 @@ console.log("Dashboard.js loaded");
 let chartInstances = {};
 
 function createPieChart(concernTicket, concernTypes) {
-  const concernTicketId = concernTicket.id;
   const concernTicketDetails = concernTicket.concern_ticket_details || [];
-  const ticketConcernTypes = concernTypes.filter(ct => ct.concern_id === concernTicketId);
+  const ticketConcernTypes = concernTypes.filter(ct => ct.concern_id === concernTicket.id);
 
   const concernTypeCounts = {};
   concernTicketDetails.forEach((detail) => {
@@ -24,23 +23,23 @@ function createPieChart(concernTicket, concernTypes) {
   });
   const counts = Object.values(concernTypeCounts);
 
-  const canvas = document.getElementById(`${concernTicketId}-pie-chart`);
+  const canvas = document.getElementById('dynamic-pie-chart');
   if (!canvas) {
-    console.error(`Canvas element not found for concern ticket ${concernTicketId}`);
+    console.error(`Pie chart canvas not found`);
     return;
   }
 
-  if (chartInstances[concernTicketId]) {
-    chartInstances[concernTicketId].destroy();
+  if (chartInstances['pie']) {
+    chartInstances['pie'].destroy();
   }
 
   const ctx = canvas.getContext('2d');
-  chartInstances[concernTicketId] = new Chart(ctx, {
+  chartInstances['pie'] = new Chart(ctx, {
     type: 'pie',
     data: {
       labels: concernTypeNames,
       datasets: [{
-        label: `Concern Types for Concern Ticket ${concernTicketId}`,
+        label: `Concern Types`,
         data: counts,
         backgroundColor: [
           'rgb(255, 99, 133)',
@@ -69,14 +68,12 @@ function createPieChart(concernTicket, concernTypes) {
 }
 
 function createBarChart(concernTicket) {
-  const concernTicketId = concernTicket.id;
   const concernTicketDetails = concernTicket.concern_ticket_details || [];
   const eligibleUsers = concernTicket.eligible_users || [];
 
   const userMap = {};
   eligibleUsers.forEach(u => { userMap[u.id] = u.first_name; });
 
-  //user
   const userStatusCounts = {};
   Object.keys(userMap).forEach(userId => {
     userStatusCounts[userId] = { open: 0, processing: 0, verification: 0, closed: 0 };
@@ -100,18 +97,18 @@ function createBarChart(concernTicket) {
   const verificationCounts = userIds.map(uid => userStatusCounts[uid].verification);
   const closedCounts = userIds.map(uid => userStatusCounts[uid].closed);
 
-  const canvas = document.getElementById(`${concernTicketId}-bar-chart`);
+  const canvas = document.getElementById('dynamic-bar-chart');
   if (!canvas) {
-    console.error(`Canvas element not found for concern ticket ${concernTicketId} (bar chart)`);
+    console.error(`Bar chart canvas not found`);
     return;
   }
 
-  if (chartInstances[`${concernTicketId}-bar`]) {
-    chartInstances[`${concernTicketId}-bar`].destroy();
+  if (chartInstances['bar']) {
+    chartInstances['bar'].destroy();
   }
 
   const ctx = canvas.getContext('2d');
-  chartInstances[`${concernTicketId}-bar`] = new Chart(ctx, {
+  chartInstances['bar'] = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: usernames,
@@ -169,23 +166,27 @@ function createBarChart(concernTicket) {
   });
 }
 
-function renderCharts(concernTickets, concernTypes) {
-  let i = 0;
-  function renderNext() {
-    if (i >= concernTickets.length) return;
-    createPieChart(concernTickets[i], concernTypes);
-    createBarChart(concernTickets[i]);
-    i++;
-    window.requestAnimationFrame(renderNext);
-  }
-  renderNext();
+function renderChartsForTicket(concernTickets, concernTypes, ticketId) {
+  const ticket = concernTickets.find(t => t.id === ticketId);
+  if (!ticket) return;
+  createPieChart(ticket, concernTypes);
+  createBarChart(ticket);
 }
 
 var init = function(config) {
   $(function() {
     const concernTickets = config.concernTickets || [];
     const concernTypes = config.concernTypes || [];
-    renderCharts(concernTickets, concernTypes);
+    if (concernTickets.length === 0) return;
+
+    // Initial render for the first ticket
+    renderChartsForTicket(concernTickets, concernTypes, concernTickets[0].id);
+
+    // Dropdown change event
+    $('#concern-ticket-select').on('change', function() {
+      const selectedId = $(this).val();
+      renderChartsForTicket(concernTickets, concernTypes, selectedId);
+    });
   });
 };
 
