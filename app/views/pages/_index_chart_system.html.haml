@@ -13,16 +13,22 @@
                     =text_field_tag :edate,params[:f_edate],class:'form-control',type: :date,id:"end-date", onchange:"dateRange()"
                 .form-group{:style=>"display:none"}
                     =text_field_tag :cdate,params[:f_cdate],class:'form-control',type: :date,id:"current-date", value:DateTime.current.to_date
-            %td
+            %td{:rowspan=>2}
                 %label
                     Legend
                 %div{:id=>"legend"}
-    %div{:style=>"display:block",:id=>'default-range'}
-        %h5{:style=>"margin:-25px 0px 35px 10px;font-weight:900"}
-            #{SystemTicketDesc.all[0].created_at.to_date} - present
-    %div{:style=>"display:none",:id=>'invalid'}
-        %h5{:style=>"margin:-25px 0px 35px 10px;color:red"}
-            Range invalid.
+        %tr
+            %td{:colspan=>2} 
+                %div{:style=>"display:block",:id=>'default-range'}
+                    %h5{:style=>"margin:-25px 0px 35px 10px;font-weight:900"}
+                        #{SystemTicketDesc.all[0].created_at.to_date} - present
+                %div{:style=>"display:none",:id=>'invalid'}
+                    %h5{:style=>"margin:-25px 0px 35px 10px;color:red"}
+                        Range invalid.
+                %div{:style=>"display:none",:id=>'enter-date'}
+                    %h5{:style=>"margin:-25px 0px 35px 10px"}
+                        Enter start date and end date.
+            %td
 
 %script{:src => "https://cdn.jsdelivr.net/npm/chart.js"}
 
@@ -36,14 +42,17 @@
     var dataLength=data1.length
     var data2=[]
 
-    onload=showLegend(), defaultData()
+    onload=defaultData(false)
 
-    function defaultData()
+    function defaultData(a)
     {
-            for(x=0;x<dataLength;x++)
+        var arr=[]
+        for(x=0;x<dataLength;x++)
         {
             open_=[]
             closed_=[]
+            opId=[]
+            cloId=[]
 
             for(y=0;y<data1[x][1].length;y++)
             {
@@ -53,11 +62,16 @@
                 {
                     for(z=0;z<data1[x][1][y].length;z++)
                     {
-
                         if(data1[x][1][y][z][1]==='open')
+                        {
+                            opId.push(data1[x][1][y][z][2])
                             temp1+=1
+                        }
                         else
+                        {
+                            cloId.push(data1[x][1][y][z][2])
                             temp2+=1
+                        }
                     }
                 }
                 open_.push(temp1)
@@ -76,7 +90,20 @@
                 backgroundColor:color[x],
                 stack:"Stack 1"
             })
+
+            opId=new Set(opId)
+            opId=[...opId]
+
+            cloId=new Set(cloId)
+            cloId=[...cloId]
+
+            arr.push([opId.length,cloId.length])
         }
+
+        showLegend(arr)
+
+        if(a)
+            myChart.update();
     }
 
     var myContext = document.getElementById(
@@ -122,18 +149,23 @@
         }
     });
 
-    function showLegend()
+    function showLegend(arr)
     {
         var legendContainer = document.getElementById('legend')
 
+        legendContainer.innerHTML=''
+
         for(x=0,y=0;x<dataLength;x++)
         {
-            
             var legendCol = document.createElement('div')
+            var legendCount = document.createElement('div')
+            var tixCount = document.createElement('p')
+            tixCount.innerHTML="open:\t"+arr[x][0]+", closed:\t"+arr[x][1]
             legendCol.id="col-"+x
             legendCol.classList.add('col')
             var legendColor = document.createElement('span')
             var legendLabel = document.createElement('span')
+            legendLabel.style.fontWeight=900
             if(x%4==0||y==0)
             {
                 var legendRow = document.createElement('div')
@@ -152,18 +184,26 @@
 
             document.getElementById('col-'+x).append(legendColor)
             document.getElementById('col-'+x).append(legendLabel)
+
+            legendCount.append(tixCount)
+
+            document.getElementById('col-'+x).append(legendCount)
             
         }
+
     }
 
     function updateData(date1,date2)
     {
         data2=[]
+        var arr=[]
 
         for(x=0;x<dataLength;x++)
         {
             open_=[]
             closed_=[]
+            opId=[]
+            cloId=[]
 
             for(y=0;y<data1[x][1].length;y++)
             {
@@ -173,16 +213,17 @@
                 {
                     for(z=0;z<data1[x][1][y].length;z++)
                     {
-                        if(date2!='')
+                        if(data1[x][1][y][z][0]<=date2)
                         {
-                            if(data1[x][1][y][z][0]<=date2&&(data1[x][1][y][z][0]>=date1||date1==''))
+                            if(data1[x][1][y][z][1]=='open'||data1[x][1][y][z][1]>date2)
                             {
-                                if(data1[x][1][y][z][1]=='open')
-                                    temp1+=1
-                                if(data1[x][1][y][z][1]!='open'&&data1[x][1][y][z][1]>date2)
-                                    temp1+=1
-                                if(data1[x][1][y][z][1]!='open'&&data1[x][1][y][z][1]<=date2)
-                                    temp2+=1
+                                opId.push(data1[x][1][y][z][2])
+                                temp1+=1
+                            }
+                            else if(data1[x][1][y][z][1]<=date2)
+                            {
+                                temp2+=1
+                                cloId.push(data1[x][1][y][z][2])
                             }
                         }
                     }
@@ -203,12 +244,22 @@
                 backgroundColor:color[x],
                 stack:"Stack 1"
             })
+
+            opId=new Set(opId)
+            opId=[...opId]
+
+            cloId=new Set(cloId)
+            cloId=[...cloId]
+
+            arr.push([opId.length,cloId.length])
         }
 
         myChart.data = {
                 labels: #{@labels},
                 datasets: data2
         };
+
+        showLegend(arr)
         myChart.update();
     }
 
@@ -218,21 +269,32 @@
         var startDate=document.getElementById('start-date').value
         var endDate=document.getElementById('end-date').value
 
-        if(startDate==''&&endDate=='')
-            document.getElementById('default-range').style.display="block"   
-        else
+        if(startDate==''||endDate=='')
         {
-            document.getElementById('default-range').style.display="none"
-            if(startDate>endDate||startDate>currentDate||endDate>currentDate)
-                document.getElementById('invalid').style.display="block"
+            if(startDate==''&&endDate=='')
+            {
+                document.getElementById('enter-date').style.display="none"   
+                document.getElementById('default-range').style.display="block"
+                defaultData(true)
+            }
             else
             {
-                document.getElementById('invalid').style.display="none"
-
-                updateData(startDate,endDate)
-            }
+                document.getElementById('enter-date').style.display="block"  
+                document.getElementById('default-range').style.display="none"
+            } 
         }
-                            
+        else if(startDate>endDate||startDate>currentDate||endDate>currentDate)
+        {
+            document.getElementById('invalid').style.display="block"
+            document.getElementById('enter-date').style.display="none"  
+        }
+        else if(startDate==endDate||startDate<endDate)
+        {
+            document.getElementById('invalid').style.display="none"
+            document.getElementById('enter-date').style.display="none"  
+
+            updateData(startDate,endDate)
+        }           
     }
 
     

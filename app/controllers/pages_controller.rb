@@ -161,7 +161,7 @@ class PagesController < ApplicationController
                         end
                       end
                       if is_member2
-                        temp.push([start,end_])
+                        temp.push([start,end_,a.id])
                       end
                   end
               end
