@@ -29,14 +29,14 @@
       - if @details_records.present?
         - @details_records.each do |ticket|
           %tr
-            %td.text-center
+            %td.text
               = ticket.ticket_number || "N/A"
               - if ticket.data.present? && ticket.data["chat_history"].present?
                 %i.bi.bi-envelope-check.text-primary{ style: "font-size: 0.7rem; vertical-align: middle; margin-left: 0.3rem;", title: "There's a message", data: { bs_toggle: "tooltip" } }
-            %td.text-center= ticket.concern_for&.name || "N/A"
-            %td.text-center= ticket.concern_type&.name || "N/A"
-            %td.text-center= ticket.requested_user ? "#{ticket.requested_user.first_name.capitalize} #{ticket.requested_user.last_name.capitalize}" : "N/A"
-            %td.text-center= ticket.branch&.name&.upcase || "Unassigned"
+            %td.text= ticket.concern_for&.name || "N/A"
+            %td.text= ticket.concern_type&.name || "N/A"
+            %td.text= ticket.requested_user ? "#{ticket.requested_user.first_name.titleize} #{ticket.requested_user.last_name.titleize}" : "N/A"
+            %td.text= ticket.branch&.name&.upcase || "Unassigned"
             %td.text= ticket.assigned_user ? "#{ticket.assigned_user.first_name.titleize} #{ticket.assigned_user.last_name.titleize}" : "Unassigned"
             %td.text= ticket.data.present? ? ticket.data["category"].try(:capitalize) : "Low"
             %td.text-center.small-text= ticket.created_at.strftime("%b %d, %Y %I:%M %p")
