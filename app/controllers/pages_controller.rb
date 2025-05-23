@@ -131,7 +131,7 @@ class PagesController < ApplicationController
     @chart_data=[]
 
     dev_grp.each do |x|
-      @labels.push("#{User.find(x[0].user_id).last_name}")
+      @labels.push(["#{User.find(x[0].user_id).last_name}"])
     end
 
     @tix_list=[]
