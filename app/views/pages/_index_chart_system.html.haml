@@ -41,11 +41,43 @@
     var data1=#{@tix_list}
     var dataLength=data1.length
     var data2=[]
+    var labels=#{@labels}
+    var dataForAvg=[]
 
     onload=defaultData(false)
+    
+    function labelUpdate(tickets)
+    {
+        labels=#{@labels}
+        var avg=0
+        var arr=new Array(labels.length)
+
+        arr=avgCompute(dataForAvg)
+
+        console.log(arr)
+
+        for(x=0;x<labels.length;x++)
+        {
+            var totalClosed=0
+            var totalOpen=0
+            for(y=0;y<dataLength;y++)
+            {
+                if(y==0) temp=0
+                else temp=y*2
+                totalOpen+=tickets[temp].data[x]
+                totalClosed+=tickets[temp+1].data[x]
+            }
+            labels[x].push(totalClosed+" of "+(totalClosed+totalOpen)+" tickets closed.")
+            if(arr[x]!="NaN")
+                labels[x].push("Days per ticket: "+arr[x])
+        }
+    }
 
     function defaultData(a)
     {
+        dataForAvg=[]
+        data2=[]
+        labels=#{@labels}
         var arr=[]
         for(x=0;x<dataLength;x++)
         {
@@ -69,6 +101,7 @@
                         }
                         else
                         {
+                            dataForAvg.push([y,ticketDuration(data1[x][1][y][z][0],data1[x][1][y][z][1])])
                             cloId.push(data1[x][1][y][z][2])
                             temp2+=1
                         }
@@ -100,10 +133,18 @@
             arr.push([opId.length,cloId.length])
         }
 
+        labelUpdate(data2)
+
         showLegend(arr)
 
         if(a)
+        {
+            myChart.data = {
+                labels: labels,
+                datasets: data2
+            };
             myChart.update();
+        }
     }
 
     var myContext = document.getElementById(
@@ -111,7 +152,7 @@
     var myChart = new Chart(myContext, {
         type: 'bar',
         data: {
-            labels: #{@labels},
+            labels: labels,
             datasets: data2
         },
         options: {
@@ -195,6 +236,7 @@
 
     function updateData(date1,date2)
     {
+        dataForAvg=[]
         data2=[]
         var arr=[]
 
@@ -222,6 +264,7 @@
                             }
                             else if(data1[x][1][y][z][1]<=date2)
                             {
+                                dataForAvg.push([y,ticketDuration(data1[x][1][y][z][0],data1[x][1][y][z][1])])
                                 temp2+=1
                                 cloId.push(data1[x][1][y][z][2])
                             }
@@ -254,8 +297,10 @@
             arr.push([opId.length,cloId.length])
         }
 
+        labelUpdate(data2)
+
         myChart.data = {
-                labels: #{@labels},
+                labels: labels,
                 datasets: data2
         };
 
@@ -297,8 +342,77 @@
         }           
     }
 
-    
+    function ticketDuration(first,last)
+    {
+        var year1=parseInt(first.substring(0,4))
+        var year2=parseInt(last.substring(0,4))
+        var month1=parseInt(first.substring(5,7))
+        var month2=parseInt(last.substring(5,7))
+        var day1=parseInt(first.substring(8))
+        var day2=parseInt(last.substring(8))
 
-    
+        var yearDiff, monthDiff, daysDiff, total=0
+
+        yearDiff=year2-year1
+        monthDiff=Math.abs(month2-month1)
+
+        if(yearDiff>1)
+            for(x=0;x<yearDiff;x++)
+            {
+                if((year1+x)%4==0)
+                    total+=366
+                else
+                    total+=365
+            }
+            
+        if(monthDiff>1)
+            for(x=0;x<monthDiff;x++)
+            {
+                switch(month1+x)
+                {
+                    case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+                        total+=31
+                        break;
+                    case 2:
+                        if(year2%4==0)
+                            total+=29
+                        else
+                            total+=28
+                        break;
+                    default:
+                        total+=30
+                }
+            }
+        
+        if(day1<day2)
+        {
+            total+=day2-day1
+        }
+                
+        return total
+    }
+
+    function avgCompute(data)
+    {
+        console.log(data)
+        var arr=new Array(labels.length)
+        for(x=0;x<data.length;x++)
+        {
+            if(arr[data[x][0]]==null)
+                arr[data[x][0]]=[0,0]
+            arr[data[x][0]][0]+=data[x][1]
+            arr[data[x][0]][1]+=1
+        }
+
+        for(x=0;x<arr.length;x++)
+        {
+            if(arr[x]!=null)
+                arr[x]=arr[x][0]/arr[x][1]
+            if(!Number.isInteger(arr[x]))
+                arr[x]=(Math.round(arr[x] * 100) / 100).toFixed(2)
+        }
+
+        return arr
+    }
 
 
