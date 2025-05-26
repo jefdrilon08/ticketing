@@ -11,6 +11,7 @@ class Inventory < ApplicationRecord
   end
   
   self.inheritance_column = :_type_disabled
+  validates :serial_number, uniqueness: { case_sensitive: false }, allow_blank: true
 
   
 end
