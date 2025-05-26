@@ -195,12 +195,19 @@ const _bindEvents = () => {
         let errors = [];
         try {
           const errorData = JSON.parse(response.responseText);
-          errors = Array.isArray(errorData.messages)
-            ? errorData.messages.map((err) => err.message || err)
-            : [errorData.messages || "An unexpected error occurred."];
+          if (errorData.errors && typeof errorData.errors === "object") {
+            Object.keys(errorData.errors).forEach((field) => {
+              errorData.errors[field].forEach((msg) => {
+                errors.push(`${field.replace(/_/g, ' ')} ${msg}`);
+              });
+            });
+          } else {
+            errors.push("An unexpected error occurred.");
+          }
         } catch (err) {
           errors.push("Something went wrong. Please try again.");
         }
+
         $message.html(Mustache.render(templateErrorList, { errors })).addClass("text-danger");
       }
     });
