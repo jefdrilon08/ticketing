@@ -4,22 +4,19 @@
 %table.table.table-bordered.table-hover
   %thead
     %tr
-      %th
+
       %th Item Name
       %th Model
       %th Supplier
       %th Brand
       %th{ style: "text-align: center;" } Quantity
       %th{ style: "text-align: center;" } Purchase Date
-      %th{ style: "text-align: center;" } Actions
+      %th{ style: "text-align: center;" } Action
 
   %tbody
     - if @inventories_grouped.present?
       - @inventories_grouped.each do |(item_name, model), inventories|
         %tr
-          %td{ style: "text-align: center;" }
-            = link_to view_inventory_path(inventories.first[:inventory]), title: "View Stock" do
-              %i.fa-solid.fa-magnifying-glass.fa-lg
 
           %td= item_name.presence || "N/A"
           %td= model.presence || "N/A"
@@ -28,9 +25,10 @@
           %td{ style: "text-align: right;" }= inventories.count
           %td{ style: "text-align: center;" }= inventories.first[:inventory].purchase_date&.strftime('%Y-%m-%d') || "N/A"
           %td{ style: "text-align: center;" }
-            = link_to 'Update', edit_inventory_path(inventories.first[:inventory]), class: 'btn btn-primary btn-sm'
-            = link_to 'Delete', destroy_inventory_path(inventories.first[:inventory]), method: :delete, data: { confirm: 'Are you sure you want to delete this stock item?' }, class: 'btn btn-danger btn-sm ml-2'
+            = link_to view_inventory_path(inventories.first[:inventory]), title: "View Stock", class: "btn btn-primary btn-sm" do
+              %i.fa-solid.fa-magnifying-glass.fa-sm
+              View
     - else
       %tr
-        %td{ colspan: "9", class: "text-center text-warning" }
+        %td{ colspan: "8", class: "text-center text-warning" }
           No records found.

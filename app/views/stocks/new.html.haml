@@ -195,10 +195,21 @@
     const hiddenContainer = document.getElementById("child-items-hidden");
     const itemCategory    = document.getElementById("item_category");
     const subCategory     = document.getElementById("sub_category");
+    const form            = document.querySelector("form");
 
     const inventorySupplierId = "#{@inventory.supplier_id}";
 
-    let childItems = #{raw((@inventory.data['child_item'].is_a?(Hash) ? @inventory.data['child_item'].values : (@inventory.data['child_item'] || [])).map { |ci| { child_item_id: ci['child_item_id'], child_name: ci['child_name'], child_brand: ci['child_brand'], child_serial_number: ci['child_serial_number'], child_quantity: ci['child_quantity'], child_item_category_id: ci['child_item_category_id'], child_item_category_name: ci['child_item_category_name'], child_sub_category_id: ci['child_sub_category_id'], child_sub_category_name: ci['child_sub_category_name'] } }.to_json)};
+    let childItems = #{raw((@inventory.data['child_item'].is_a?(Hash) ? @inventory.data['child_item'].values : (@inventory.data['child_item'] || [])).map { |ci| {
+      child_item_id: ci['child_item_id'],
+      child_name: ci['child_name'],
+      child_brand: ci['child_brand'],
+      child_serial_number: ci['child_serial_number'],
+      child_quantity: ci['child_quantity'],
+      child_item_category_id: ci['child_item_category_id'],
+      child_item_category_name: ci['child_item_category_name'],
+      child_sub_category_id: ci['child_sub_category_id'],
+      child_sub_category_name: ci['child_sub_category_name']
+    } }.to_json)};
 
     const fieldKeys = [
       'child_item_id',
@@ -298,7 +309,6 @@
     function updateSubCategories(categoryId, subCategorySelect, selectedSubCategoryId = null) {
       subCategorySelect.innerHTML = '<option value="">-- SELECT --</option>';
       if (!categoryId) return;
-
       const category = document.querySelector(`#item_category option[value="${categoryId}"]`);
       if (!category) return;
 
@@ -335,6 +345,11 @@
         return alert('Please fill ALL child fields');
       }
 
+      const duplicate = childItems.some(ci => ci.child_serial_number === childSerial.value);
+      if (duplicate) {
+        return alert('Duplicate serial number found in child items');
+      }
+
       childItems.push({
         child_item_id: childName.value,
         child_name: childName.options[childName.selectedIndex].text,
@@ -346,9 +361,20 @@
         child_sub_category_id: childSubCat.value,
         child_sub_category_name: childSubCat.options[childSubCat.selectedIndex].text
       });
-      [childName, childBrand, childSerial, childQuantity, childCategory, childSubCat]
-        .forEach(el => el.value = '');
+
+      [childName, childBrand, childSerial, childQuantity, childCategory, childSubCat].forEach(el => el.value = '');
       renderChildItems();
+    });
+
+    form.addEventListener("submit", (e) => {
+      const mainSerial = serialInput.value.trim();
+      if (!serialInput.disabled && mainSerial) {
+        const duplicate = childItems.some(ci => ci.child_serial_number === mainSerial);
+        if (duplicate) {
+          alert("Serial number must not match any child serial number.");
+          e.preventDefault();
+        }
+      }
     });
 
     itemCategory.addEventListener('change', () => {
@@ -374,5 +400,6 @@
       updateSupplierDropdown(mainItemSelect.value);
       updateUnitAndSerial(mainItemSelect.value);
     }
+
     renderChildItems();
   });

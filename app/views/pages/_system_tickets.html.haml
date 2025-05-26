@@ -142,8 +142,9 @@
                     %hr{:style=>"color:white"}
                     %center
                     %br
-                        %h5
-                            No tickets due today.
+                        %center
+                            %h5
+                                No tickets due today.
                 -else
                     -@list_due_today.each do |x|
                         %a{:href=>"/system_tickets/#{x.id}"}
