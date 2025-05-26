@@ -80,15 +80,16 @@ function createBarChart(concernTicket) {
   concernTicketDetails.forEach((detail) => {
     const userId = detail.assigned_user_id;
     if (userStatusCounts[userId]) {
+      // If is_held is true, only increment hold and skip all other statuses
+      if (detail.data && detail.data.is_held === "true") {
+        userStatusCounts[userId].hold++;
+        return;
+      }
       const status = (detail.status || '').toLowerCase();
       if (status === 'open') userStatusCounts[userId].open++;
       else if (status === 'processing') userStatusCounts[userId].processing++;
       else if (status === 'verification') userStatusCounts[userId].verification++;
       else if (status === 'closed') userStatusCounts[userId].closed++;
-
-      if (detail.data && detail.data.is_held === "true") {
-        userStatusCounts[userId].hold++;
-      }
     }
   });
 
