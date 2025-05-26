@@ -9,4 +9,6 @@ class Item < ApplicationRecord
   belongs_to :sub_category, optional: true
 
   has_many :inventories
+
+  validates :name, presence: true, uniqueness: { case_sensitive: false, message: "has already been taken" }
 end
