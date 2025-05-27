@@ -351,7 +351,7 @@
         var day1=parseInt(first.substring(8))
         var day2=parseInt(last.substring(8))
 
-        var yearDiff, monthDiff, daysDiff, total=0
+        var yearDiff, monthDiff, monthTotal, total=0
 
         yearDiff=year2-year1
         monthDiff=Math.abs(month2-month1)
@@ -387,6 +387,26 @@
         if(day1<day2)
         {
             total+=day2-day1
+        }
+        
+        if(day1>day2)
+        {
+            switch(month1)
+                {
+                    case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+                        monthTotal=31
+                        break;
+                    case 2:
+                        if(year2%4==0)
+                            monthTotal=29
+                        else
+                            monthTotal=28
+                        break;
+                    default:
+                        monthTotal=30
+                        break;
+                }
+            total+=(monthTotal-day1)+day2
         }
                 
         return total
