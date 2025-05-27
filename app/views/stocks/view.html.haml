@@ -78,6 +78,7 @@
             %th Unit
             %th Type
             %th.text-center Status
+            %th.text-center Actions
 
         %tbody
           - @inventories_grouped.each do |(item_name, model, purchase_date), entries|
@@ -101,6 +102,10 @@
                     %span.badge.bg-danger Dispose
                   - else
                     %span.badge.bg-secondary= entry[:inventory].status.presence || "N/A"
+
+                %td.text-center
+                  = link_to 'Update', edit_inventory_path(entry[:inventory]), class: 'btn btn-primary btn-sm'
+                  = link_to 'Delete', destroy_inventory_path(entry[:inventory]), method: :delete, data: { confirm: 'Are you sure you want to delete this stock item?' }, class: 'btn btn-danger btn-sm ml-2'
 
 - else
   %p No inventory details available.

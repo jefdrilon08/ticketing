@@ -183,6 +183,7 @@ class ConcernTicketsController < ApplicationController
   end
    
   def view_tix
+    @branches = Branch.select(:id, :name).order(:name)
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user, :concern_type).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
@@ -213,7 +214,7 @@ class ConcernTicketsController < ApplicationController
     ticket_detail.data["chat_history"] = chat_history
   
     if ticket_detail.save
-      flash[:success] = "Message sent!"
+      
     else
       flash[:error] = "Failed to send message: #{ticket_detail.errors.full_messages.join(', ')}"
     end

@@ -117,6 +117,7 @@ namespace :api do
       post "/concern_tickets/create_concern", to: "concern_tickets#create_concern"
       post "/concern_tickets/create_ticket", to: "concern_tickets#create_ticket"
       post "/concern_tickets/add_member_concern_ticket", to: "concern_tickets#add_member_ct"
+      post "/concern_tickets/edit_branch", to: "concern_tickets#edit_branch"
       post "/concern_tickets/update_assigned_person", to: "concern_tickets#update_assigned_person"
       post "/concern_tickets/edit_concern_from", to: "concern_tickets#edit_concern_from"
       post "/concern_tickets/edit_concern_type", to: "concern_tickets#edit_concern_type"

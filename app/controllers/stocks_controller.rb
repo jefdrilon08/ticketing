@@ -1,68 +1,19 @@
 class StocksController < ApplicationController
   before_action :set_inventory, only: [:edit, :update, :destroy]
   before_action :load_collections, only: [:new, :create, :edit, :update]
-  def index
-    @subheader_side_actions = [
-      {
-        id: "btn-new",
-        link: new_inventory_path,
-        class: "fa fa-plus",
-        text: "New"
-      }
-    ]
-  
-    @inventories = Inventory.includes(:item, :supplier)
-                            .where('LOWER(type) = ? AND LOWER(status) = ?', 'regular', 'active')
-  
-    grouped = @inventories.map do |inventory|
-      data = inventory.data&.fetch("inventory_data", []).first || {}
-  
-      {
-        inventory: inventory,
-        item_name: inventory.item&.name,
-        model: data["model"],
-        purchase_date: inventory.purchase_date&.strftime('%Y-%m-%d'),
-        supplier_name: inventory.supplier&.name
-      }
-    end
-  
-    
-    @inventories_grouped = grouped.group_by do |entry|
-      [
-        entry[:item_name],
-        entry[:model],
-        entry[:purchase_date],
-        entry[:supplier_name]
-      ]
-    end
-  
-    @inventories_grouped = @inventories_grouped.sort_by do |(item_name, _model, _purchase_date, _supplier_name), _|
-      item_name.to_s.strip.downcase
-    end
-  end
-  
-  
-def view
 
-  @inventory = Inventory.find_by(id: params[:id])
-  return redirect_to(stocks_path, alert: "Inventory not found") if @inventory.nil?
-
-
-  @brands = Brand.all
+def index
   @subheader_side_actions = [
     {
-      id: "btn-distribute",
-      link: new_distribute_path(inventory_id: @inventory.id),
-      class: "fa fa-share",
-      text: "Distribute"
+      id: "btn-new",
+      link: new_inventory_path,
+      class: "fa fa-plus",
+      text: "New"
     }
   ]
 
-
   @inventories = Inventory.includes(:item, :supplier)
-                           .where('LOWER(type) = ? AND LOWER(status) = ?', 'regular', 'active')
-                           .where(item: @inventory.item, supplier: @inventory.supplier) 
-
+                          .where('LOWER(type) = ? AND LOWER(status) = ?', 'regular', 'active')
 
   grouped = @inventories.map do |inventory|
     data = inventory.data&.fetch("inventory_data", []).first || {}
@@ -90,7 +41,59 @@ def view
   end
 end
 
-  
+def view
+  @inventory = Inventory.find_by(id: params[:id])
+  return redirect_to(stocks_path, alert: "Inventory not found") if @inventory.nil?
+
+  @brands = Brand.all
+  @subheader_side_actions = [
+    {
+      id: "btn-distribute",
+      link: new_distribute_path(inventory_id: @inventory.id),
+      class: "fa fa-share",
+      text: "Distribute"
+    }
+  ]
+
+  current_purchase_date = @inventory.purchase_date&.strftime('%Y-%m-%d')
+  current_model = @inventory.data&.fetch("inventory_data", []).first&.[]("model")
+
+  @inventories = Inventory.includes(:item, :supplier)
+                          .where('LOWER(type) = ? AND LOWER(status) = ?', 'regular', 'active')
+                          .where(item: @inventory.item, supplier: @inventory.supplier)
+                          .select do |inv|
+                            model = inv.data&.fetch("inventory_data", []).first&.[]("model")
+                            inv.purchase_date&.strftime('%Y-%m-%d') == current_purchase_date &&
+                              model == current_model
+                          end
+
+  grouped = @inventories.map do |inventory|
+    data = inventory.data&.fetch("inventory_data", []).first || {}
+
+    {
+      inventory: inventory,
+      item_name: inventory.item&.name,
+      model: data["model"],
+      purchase_date: inventory.purchase_date&.strftime('%Y-%m-%d'),
+      supplier_name: inventory.supplier&.name
+    }
+  end
+
+  @inventories_grouped = grouped.group_by do |entry|
+    [
+      entry[:item_name],
+      entry[:model],
+      entry[:purchase_date],
+      entry[:supplier_name]
+    ]
+  end
+
+  @inventories_grouped = @inventories_grouped.sort_by do |(item_name, _model, _purchase_date, _supplier_name), _|
+    item_name.to_s.strip.downcase
+  end
+end
+
+
   def new
     @inventory = Inventory.new
     @inventory.data ||= {}
@@ -102,6 +105,13 @@ end
     @inventory.data = build_inventory_data(params)
 
     assign_unit_from_item!
+
+    if serial_duplicate?(@inventory.serial_number)
+      @inventory.errors.add(:serial_number, "has already been taken")
+      @inventories = Inventory.all
+      flash.now[:alert] = "Duplicate serial number detected. Please use a unique serial number."
+      render :new and return
+    end
 
     if @inventory.save
       redirect_to stocks_path, notice: "Inventory item added successfully."
@@ -122,6 +132,13 @@ end
     @inventory.data = build_inventory_data(params)
 
     assign_unit_from_item!
+
+    if serial_duplicate?(@inventory.serial_number, @inventory.id)
+      @inventory.errors.add(:serial_number, "has already been taken")
+      @inventories = Inventory.all
+      flash.now[:alert] = "Duplicate serial number detected. Please use a unique serial number."
+      render :edit and return
+    end
 
     if @inventory.save
       redirect_to stocks_path, notice: "Inventory item updated successfully."
@@ -216,16 +233,14 @@ end
     formatted_children = child_items.map do |child|
       child = child.to_unsafe_h if child.is_a?(ActionController::Parameters)
 
-
       item = Item.find_by(name: child[:child_name])
       item_category = ItemsCategory.find_by(id: child[:child_item_category_id])
       sub_category  = SubCategory.find_by(id: child[:child_sub_category_id])
 
-
       child_item_id = item ? item.id : nil
 
       {
-        "child_item_id"            => child_item_id,  
+        "child_item_id"            => child_item_id,
         "child_name"               => child[:child_name],
         "child_brand"              => child[:child_brand],
         "child_serial_number"      => child[:child_serial_number],
@@ -258,5 +273,24 @@ end
       "inventory_data" => [inventory_data_hash],
       "child_item"     => formatted_children
     }
+  end
+
+  def check_serial
+    serial = params[:serial_number]
+    exists = Inventory.where(serial_number: serial).exists?
+
+    respond_to do |format|
+      format.json { render json: { exists: exists } }
+    end
+  end
+
+  def serial_duplicate?(serial, current_id = nil)
+    return false if serial.blank?
+
+    if current_id
+      Inventory.where('LOWER(serial_number) = ?', serial.downcase).where.not(id: current_id).exists?
+    else
+      Inventory.where('LOWER(serial_number) = ?', serial.downcase).exists?
+    end
   end
 end

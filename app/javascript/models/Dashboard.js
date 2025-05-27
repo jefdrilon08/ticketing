@@ -3,8 +3,6 @@ import $ from "jquery";
 import * as bootstrap from "bootstrap";
 import Chart from 'chart.js/auto';
 
-console.log("Dashboard.js loaded");
-
 let chartInstances = {};
 
 function createPieChart(concernTicket, concernTypes) {
@@ -76,12 +74,17 @@ function createBarChart(concernTicket) {
 
   const userStatusCounts = {};
   Object.keys(userMap).forEach(userId => {
-    userStatusCounts[userId] = { open: 0, processing: 0, verification: 0, closed: 0 };
+    userStatusCounts[userId] = { open: 0, processing: 0, verification: 0, closed: 0, hold: 0 };
   });
 
   concernTicketDetails.forEach((detail) => {
     const userId = detail.assigned_user_id;
     if (userStatusCounts[userId]) {
+      // If is_held is true, only increment hold and skip all other statuses
+      if (detail.data && detail.data.is_held === "true") {
+        userStatusCounts[userId].hold++;
+        return;
+      }
       const status = (detail.status || '').toLowerCase();
       if (status === 'open') userStatusCounts[userId].open++;
       else if (status === 'processing') userStatusCounts[userId].processing++;
@@ -96,6 +99,7 @@ function createBarChart(concernTicket) {
   const processingCounts = userIds.map(uid => userStatusCounts[uid].processing);
   const verificationCounts = userIds.map(uid => userStatusCounts[uid].verification);
   const closedCounts = userIds.map(uid => userStatusCounts[uid].closed);
+  const holdCounts = userIds.map(uid => userStatusCounts[uid].hold);
 
   const canvas = document.getElementById('dynamic-bar-chart');
   if (!canvas) {
@@ -132,6 +136,11 @@ function createBarChart(concernTicket) {
           label: 'Closed',
           data: closedCounts,
           backgroundColor: 'rgb(180, 0, 39)'
+        },
+        {
+          label: 'Hold',
+          data: holdCounts,
+          backgroundColor: 'rgb(15, 0, 15)'
         }
       ]
     },
