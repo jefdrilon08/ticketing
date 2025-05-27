@@ -365,7 +365,7 @@
                     total+=365
             }
             
-        if(monthDiff>1)
+        if(monthDiff>=1)
             for(x=0;x<monthDiff;x++)
             {
                 switch(month1+x)
@@ -389,7 +389,7 @@
             total+=day2-day1
         }
         
-        if(day1>day2)
+        if(day1>day2&&monthDiff<=1)
         {
             switch(month1)
                 {
@@ -411,6 +411,8 @@
                 
         return total
     }
+    
+    console.log(ticketDuration('2025-04-25','2025-06-23'))
 
     function avgCompute(data)
     {
