@@ -529,7 +529,7 @@ class SystemTicketsController < ApplicationController
             end
         @subheader_side_actions ||= []
 
-        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] 
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && Milestone.where(system_ticket_desc_id:@ticket.id).count>0
             if @role==1 || @role==5
                 @subheader_side_actions << {
                 id: "btn-status",
@@ -540,7 +540,7 @@ class SystemTicketsController < ApplicationController
                 } end
         end
 
-        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] 
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"]
             if @role==2 || @role==3 || @role==5
                 @subheader_side_actions << {
                 id: "btn-status",
