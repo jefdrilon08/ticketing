@@ -563,7 +563,7 @@ class SystemTicketsController < ApplicationController
               end
 
         if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
-            if @role==1 || @role==5
+            if @role==1 || @role==5 || @ticket.requested_by==current_user.id
                 @subheader_side_actions << {
                 id: "btn-status",
                 link: "edit_ticket_status/#{params[:id]}",
