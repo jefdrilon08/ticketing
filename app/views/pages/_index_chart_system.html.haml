@@ -67,9 +67,9 @@
                 totalOpen+=tickets[temp].data[x]
                 totalClosed+=tickets[temp+1].data[x]
             }
-            labels[x].push(totalClosed+" of "+(totalClosed+totalOpen)+" tickets closed.")
+            labels[x].push(" "+totalClosed+" of "+(totalClosed+totalOpen)+" tickets closed")
             if(arr[x]!="NaN")
-                labels[x].push("Days per ticket: "+arr[x])
+                labels[x].push(" Days per ticket: "+arr[x])
         }
     }
 
