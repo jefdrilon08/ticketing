@@ -1,6 +1,6 @@
 .card.some{:style=>"padding:1%"}
     %h2
-        System Tickets
+        User Story
     = form_tag "", method: 'GET' do
         %table.table{:style=>"border-color:white;font-size:110%"}
             %tr
@@ -16,7 +16,7 @@
             %center
                 %hr{:style=>"height:30px;color:white"}
                 %h2
-                    No system tickets found.
+                    No records found.
                 %hr{:style=>"height:30px;color:white"}
         -else
             -@final_tix_list.each do |x|
