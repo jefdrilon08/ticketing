@@ -33,7 +33,6 @@ module Administration
     def create
       @item = Item.new(item_params)
 
-      assign_sub_category_name(@item)
       process_suppliers(@item)
 
       logger.debug("Creating new item with params: #{item_params.inspect}")
@@ -50,7 +49,6 @@ module Administration
       @item = Item.find(params[:id])
       @item.assign_attributes(item_params)
 
-      assign_sub_category_name(@item)
       process_suppliers(@item)
 
       if @item.save
@@ -82,13 +80,16 @@ module Administration
         :item_type,
         :items_category_id,
         :sub_category_id,
-        :sub_category_name,
         :name,
         :status,
         :unit,
         :description,
         :is_parent,
-        :parent_id
+        :parent_id,
+        :brand_id,
+        :model,
+        :date_purchased,
+        :unit_price
       )
     end
 
@@ -98,15 +99,6 @@ module Administration
         supplier_ids = Array(params[:item][:supplier_ids])
         item.data["supplier_ids"] = supplier_ids
         item.data["supplier_names"] = Supplier.where(id: supplier_ids).pluck(:name)
-      end
-    end
-
-    def assign_sub_category_name(item)
-      if item.sub_category_id.present?
-        sub_cat = SubCategory.find_by(id: item.sub_category_id)
-        item.sub_category_name = sub_cat&.name
-      else
-        item.sub_category_name = nil
       end
     end
   end
