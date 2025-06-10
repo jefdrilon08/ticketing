@@ -9,6 +9,9 @@
           .col
             = link_to administration_users_path, class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Users
+          .col
+            = link_to "/administration/computer_system", class: "btn-nav-square-md", style: "font-size: 1rem;" do
+              Computer System
         .mt-4
         .row
           .col
@@ -22,22 +25,17 @@
               Branches
         .mt-4        
         .row         
-          .col
-            = link_to "/administration/computer_system", class: "btn-nav-square-md", style: "font-size: 1rem;" do
-              Computer System
-          
-          .col
-            = link_to "/administration/items", class: "btn-nav-square-md", style: "font-size: 1rem;" do
-              Items
+
           .col
             = link_to "/administration/items_category", class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Item Categories
+          .col
+            = link_to "/administration/sub_categories", class: "btn-nav-square-md", style: "font-size: 1rem;" do
+              Sub Categories
           .col
             = link_to "/administration/suppliers", class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Suppliers
           .col
             = link_to "/administration/brands", class: "btn-nav-square-md", style: "font-size: 1rem;" do
               Brands
-          .col
-            = link_to "/administration/sub_categories", class: "btn-nav-square-md", style: "font-size: 1rem;" do
-              Sub Categories
+          
