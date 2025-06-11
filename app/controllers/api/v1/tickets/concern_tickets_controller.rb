@@ -137,6 +137,17 @@ module Api
             update_params = { status: params[:status] }
             update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
 
+
+            data = @ctd_status.data || {}
+            status_history = data["status_history"] || {}
+
+            unless status_history[params[:status]]
+              status_history[params[:status]] = Time.current.iso8601
+            end
+
+            data["status_history"] = status_history
+            update_params[:data] = data
+
             if @ctd_status.update(update_params)
               render json: { success: true, status: @ctd_status.status, ticket_number: @ctd_status.ticket_number }
             else
@@ -186,6 +197,28 @@ module Api
           end
         end
 
+        def edit_branch
+          @ticket_details = ConcernTicketDetail.find_by(id: params[:ctd_id])
+          if @ticket_details
+            if params[:branch_id].present?
+              @ticket_details.branch_id = params[:branch_id]
+
+              if @ticket_details.save
+                redirect_to view_tix_concern_ticket_path(@ticket_details), message: "Branch updated successfully!"
+              else
+                flash[:error] = "Failed to update branch: #{@ticket_details.errors.full_messages.join(', ')}"
+                redirect_to view_tix_concern_ticket_path(@ticket_details)
+              end
+            else
+              flash[:error] = "Branch cannot be blank."
+              redirect_to view_tix_concern_ticket_path(@ticket_details)
+            end
+          else
+            flash[:error] = "Ticket not found."
+            redirect_back(fallback_location: request.referer || root_path)
+          end
+        end
+
         def update_assigned_person
           @ticket_details = ConcernTicketDetail.find_by(id: params[:ctd_id])
 
@@ -193,7 +226,7 @@ module Api
             @ticket_details.assigned_user_id = params[:assigned_person_id]
 
             if @ticket_details.save
-              redirect_to view_tix_concern_ticket_path(@ticket_details), notice: "Assigned person updated successfully!"
+              redirect_to view_tix_concern_ticket_path(@ticket_details), message: "Assigned person updated successfully!"
             else
               flash[:error] = "Failed to update assigned person: #{@ticket_details.errors.full_messages.join(", ")}"
               redirect_to view_tix_concern_ticket_path(@ticket_details)
@@ -211,7 +244,7 @@ module Api
               @ticket_details.name_for_id = params[:concern_from_id]
 
               if @ticket_details.save
-                redirect_to view_tix_concern_ticket_path(@ticket_details), notice: "Concern from updated successfully!"
+                redirect_to view_tix_concern_ticket_path(@ticket_details), message: "Concern from updated successfully!"
               else
                 flash[:error] = "Failed to update concern from: #{@ticket_details.errors.full_messages.join(', ')}"
                 redirect_to view_tix_concern_ticket_path(@ticket_details)
@@ -233,7 +266,7 @@ module Api
               @ticket_details.concern_type_id = params[:concern_type_id]
 
               if @ticket_details.save
-                redirect_to view_tix_concern_ticket_path(@ticket_details), notice: "Concern type updated successfully!"
+                redirect_to view_tix_concern_ticket_path(@ticket_details), message: "Concern type updated successfully!"
               else
                 flash[:error] = "Failed to update concern type: #{@ticket_details.errors.full_messages.join(', ')}"
                 redirect_to view_tix_concern_ticket_path(@ticket_details)
@@ -255,7 +288,7 @@ module Api
               @ticket_details.data["category"] = params[:concern_category]
 
               if @ticket_details.save
-                redirect_to view_tix_concern_ticket_path(@ticket_details), notice: "Category updated successfully!"
+                redirect_to view_tix_concern_ticket_path(@ticket_details), message: "Category updated successfully!"
               else
                 flash[:error] = "Failed to update category: #{@ticket_details.errors.full_messages.join(', ')}"
                 redirect_to view_tix_concern_ticket_path(@ticket_details)

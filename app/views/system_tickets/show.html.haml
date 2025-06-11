@@ -304,7 +304,7 @@
                                             %p
                                                 %center
                                                     .form-group
-                                                        =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                        =text_field_tag :ms_id,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
                                                     %p{:id=>"d-#{@milestones.index(x)}"}
                                                         #{x.milestone_details}&nbsp
                                                     - case x.status
@@ -396,6 +396,10 @@
                                                                             %p{:style=>"margin-top:-15px"}
                                                                                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
                                                                                     Edit
+                                                                        -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                            %p{:style=>"margin-top:-15px"}
+                                                                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                    Edit
                                             %td
                                                 %p
                                                     %center
@@ -410,6 +414,24 @@
                                                 %p
                                                     %center
                                                         #{x.target_date}
+                                                %p 
+                                                %center
+                                                    .form-group
+                                                        =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                    .form-group
+                                                        =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                    - case x.status
+                                                        - when 'pending'
+                                                            -if !@ticket.data["on_hold"]
+                                                                -if @ticket.status!="done"
+                                                                    -if @role==3 || @role==5
+                                                                        %p{:style=>"margin-top:-15px"}
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                Edit
+                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                        %p{:style=>"margin-top:-15px"}
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                Edit
                                             %td
                                                 %p
                                                     %center
@@ -430,9 +452,14 @@
                                                     %center
                                                         - case x.status
                                                             - when 'pending'
+                                                                .form-group
+                                                                    =text_field_tag :ms_id,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
                                                                 -if !@ticket.data["on_hold"]
                                                                     -if @ticket.status!="done"
                                                                         -if @role==3 || @role==5
+                                                                            = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
+                                                                                Update
+                                                                        -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id        
                                                                             = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
                                                                                 Update
                     -if @empty

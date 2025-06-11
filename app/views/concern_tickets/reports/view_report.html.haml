@@ -1,0 +1,123 @@
+.border.rounded.p-3.mb-4
+  .d-flex.justify-content-between.align-items-center.mb-3
+    %h2.mb-0
+      Ticket Details Report:
+      %span.bg-warning.px-2.rounded= @concern_ticket&.name || "Unknown"
+
+  .d-flex.flex-wrap.gap-2
+    %span.badge.bg-primary.fs-6 Total: #{@total_tickets}
+    %span.badge.bg-success.text-light.fs-6 New: #{@new_tickets}
+    %span.badge.bg-danger.fs-6 Done: #{@done_tickets}
+
+#reports-results
+  - status_groups = ["Open", "Hold", "Processing", "For Verification", "Closed"]
+  - valid_details = @details.select { |d| d.is_a?(Hash) }
+  - from_summary = valid_details.group_by { |d| d["name_for_id"].to_s }
+
+.card.mb-4
+  .card-header.bg-dark.text-white.fs-5.fw-bold
+    Concern Tickets Summary
+  .card-body.p-0
+    .table-responsive
+      %table.table.table-bordered.table-striped.mb-0
+        %thead.table-light.sticky-top
+          %tr.text-center
+            %th Concern From
+            - status_groups.each do |status|
+              %th= status
+        %tbody
+          - if from_summary.present?
+            - from_summary.each do |name_for_id, items|
+              - concern_from_name = @concern_fors[name_for_id]&.name || "N/A"
+              - status_counts = {}
+              - status_groups.each do |status|
+                - status_counts[status] = items.count { |d| d["status"] == status }
+              %tr.text-center
+                %td= concern_from_name
+                - status_groups.each do |status|
+                  %td= status_counts[status]
+          - else
+            %tr
+              %td.text-center.text-muted.italic{ colspan: status_groups.size + 1 } No concern ticket details found.
+        %tfoot.table-light
+          %tr.text-center.fw-bold
+            %th Total
+            - status_groups.each do |status|
+              - total_count = from_summary.values.flatten.count { |d| d["status"] == status }
+              %th= total_count
+
+  - assigned_summary = @assigned_summary || valid_details.group_by { |d| d["assigned_user_id"].to_s }
+  - users = @users || {}
+
+.card.mb-4
+  .card-header.bg-dark.text-white.fs-5.fw-bold
+    Assigned Tickets Summary
+  .card-body.p-0
+    .table-responsive
+      %table.table.table-bordered.table-striped.mb-0
+        %thead.table-light
+          %tr.text-center
+            %th{ rowspan: 2 } Developer
+            %th{ rowspan: 2 } Number of Tickets
+            %th{ colspan: 3 } Category
+          %tr.text-center
+            %th High
+            %th Medium
+            %th Low
+        %tbody
+          - if assigned_summary.present?
+            - assigned_summary.each do |user_id, items|
+              - user = users[user_id]
+              - user_name = user ? [user.first_name, user.last_name].compact.join(" ") : "Unassigned"
+              %tr.text-center
+                %td= user_name
+                %td= items.size
+                - categories = items.map { |d| d&.dig("data", "category").to_s.strip.downcase }
+                - high_count = categories.count { |c| c == "high" }
+                - medium_count = categories.count { |c| c == "medium" }
+                - low_count = categories.count { |c| c == "low" }
+                %td= high_count
+                %td= medium_count
+                %td= low_count
+          - else
+            %tr
+              %td.text-center.text-muted.italic{ colspan: 5 } No assigned developers found.
+        %tfoot.table-light
+          - assigned_details = @assigned_summary.values.flatten
+          - all_categories = assigned_details.map { |d| d&.dig("data", "category").to_s.strip.downcase }
+          - all_high = all_categories.count { |c| c == "high" }
+          - all_medium = all_categories.count { |c| c == "medium" }
+          - all_low = all_categories.count { |c| c == "low" }
+          %tr.text-center
+            %th Total
+            %th= assigned_details.size
+            %th= all_high
+            %th= all_medium
+            %th= all_low
+
+  - branch_summary = @details.select { |d| d.is_a?(Hash) }.group_by { |d| d["branch_id"].to_s }
+
+.card.mb-4
+  .card-header.bg-dark.text-white.fs-5.fw-bold
+    SATO Tickets Summary
+  .card-body.p-0
+    .table-responsive
+      %table.table.table-bordered.table-striped.mb-0
+        %thead.table-light
+          %tr.text-center
+            %th SATO
+            %th Number of Tickets
+        %tbody
+          - if branch_summary.present?
+            - branch_summary.sort_by { |branch_id, _| @branches[branch_id]&.name.to_s.downcase }.each do |branch_id, items|
+              - branch_name = @branches[branch_id]&.name || "Unknown"
+              %tr.text-center
+                %td= branch_name
+                %td= items.size
+          - else
+            %tr.text-center
+              %td.text-center.text-muted.italic{ colspan: 2 } No concern ticket details found.
+        %tfoot.table-light
+          %tr.text-center.fw-bold
+            %th Total
+            %th= @details.size

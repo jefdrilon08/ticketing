@@ -1,9 +1,16 @@
 .card.some{:style=>"padding:1%"}
-    %h2 System Tickets - #{@system_name}
+    %h2 User Story - #{@system_name}
     = form_tag "", method: 'GET' do
         %table.table{:style=>"border-color:white;font-size:110%"}
             %tr
-                %td{:style=>"width:20%"}
+                %td{:style=>"width:10%"}
+                    &nbsp
+                    .form-group
+                        =check_box_tag :f_my_tickets, false, @f_my_tickets, style:"transform: scale(1.5)"
+                    %label 
+                        &nbsp&nbspMy tickets only
+            %tr
+                %td{:style=>"width:15%"}
                     %label
                         Title
                     .form-group
@@ -13,7 +20,7 @@
                         Category
                     .form-group
                         =select_tag :f_category,options_for_select(["low","medium","high"], params[:f_category]),class:'form-control select-select2',prompt:"-- SELECT --"
-                %td{:style=>"width:20%"}
+                %td{:style=>"width:15%"}
                     %label
                         Request type
                     .form-group
@@ -41,6 +48,7 @@
                             
                         = button_tag type: 'button', class: 'btn btn-secondary btn-block', id: "print-btn", style: "flex: 1" do
                             .bi.bi-printer
+                    
 
 #printable-table
     %table.table.table-bordered.table-sm

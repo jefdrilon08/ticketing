@@ -1,0 +1,70 @@
+.container
+  .d-flex.justify-content-between.align-items-center.mb-3.gap-3
+    %h2.mb-0 Concern Tickets Report
+    = button_tag 'New',
+                 type: 'button',
+                 class: 'btn btn-primary',
+                 data: { bs_toggle: 'modal', bs_target: '#reportsModal' }
+
+
+.modal.fade#reportsModal{ tabindex: "-1", role: "dialog", aria: { labelledby: "reportsModalLabel", hidden: "true" } }
+  .modal-dialog.modal-dialog-centered{ role: "document" }
+    .modal-content
+      .modal-header
+        %h5.modal-title#reportsModalLabel Select Concern Ticket
+        %button.btn-close{ type: "button", data: { bs_dismiss: "modal" }, aria: { label: "Close" } }
+
+      = form_with model: DataStore.new, url: create_data_store_reports_path, method: :post, local: true do |f|
+        .modal-body.p-3
+          .mb-3
+            = f.label :concern_ticket_id, "Choose a Concern Ticket", class: "form-label"
+            = f.select :concern_ticket_id,
+              options_from_collection_for_select(@concern_tickets || [], :id, :name),
+              { prompt: "Select a concern ticket" },
+              { class: "form-select" }
+
+          .mb-3
+            = f.label :start_date, "Start Date", class: "form-label"
+            = f.date_field :start_date, class: "form-control"
+
+          .mb-3
+            = f.label :end_date, "End Date", class: "form-label"
+            = f.date_field :end_date, class: "form-control"
+
+        .modal-footer
+          %button.btn.btn-danger{ type: "button", data: { bs_dismiss: "modal" } } Cancel
+          = f.submit 'Create', class: 'btn btn-primary'
+
+.card.mb-4
+  .card-header.bg-dark.text-white
+    %h5.mb-0 Concern Tickets
+
+  .card-body.p-0
+    .table-responsive
+      %table.table.table-bordered.table-striped.table-hover.mb-0
+        %thead.table-light
+          %tr.text-center
+            %th Concern Name
+            %th.text-center Start Date
+            %th.text-center End Date
+            %th.text-center Action
+        %tbody
+          - if @records.present?
+            - @records.each do |record|
+              - ticket_id = record.data&.[]("concern_ticket_id")
+              - ticket = ticket_id.present? ? @concern_tickets_map[ticket_id] : nil
+              %tr.text-center
+                %td= ticket ? ticket.name : "Unknown Concern Ticket (ID: #{ticket_id || 'N/A'})"
+                %td= record.start_date.present? ? record.start_date.strftime("%b %d, %Y") : "N/A"
+                %td= record.end_date.present? ? record.end_date.strftime("%b %d, %Y") : "N/A"
+                %td
+                  - if ticket
+                    = link_to view_report_by_data_store_path(record.id),
+                              class: 'btn btn-sm btn-primary',
+                              data: { 'bs-toggle': 'tooltip' }, title: 'View Report' do
+                      %i.bi.bi-eye
+                  - else
+                    = "N/A"
+          - else
+            %tr
+              %td.text-center.text-muted{ colspan: 4 } No records found.

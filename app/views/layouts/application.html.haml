@@ -24,13 +24,7 @@
     %section.main-section
       = render partial: "shared/top_navigation"
       .container-fluid.main-wrapper
-        - if flash.any?
-          #flash-messages
-            - flash.each do |type, message|
-              - alert_class = type.to_s == "success" ? "alert-success" : "alert-danger"
-              .alert{ class: "alert #{alert_class} alert-dismissible fade show", role: "alert" }
-                = message
-                %button.btn-close{ type: "button", "data-bs-dismiss" => "alert", "aria-label" => "Close" }
+        
 
         = yield
 

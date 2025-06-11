@@ -30,21 +30,7 @@
           - else
             %span.badge.bg-secondary= a.status.presence || "N/A"
         %td.text-center
-          %button.btn.btn-info.btn-sm.update-button{
-            data: {
-              id:                a.id,
-              name:              a.name,
-              description:       a.description,
-              unit:              a.unit,
-              status:            a.status,
-              items_category_id: a.items_category_id,
-              is_parent:         a.is_parent,
-            },
-            title: "Update Item",
-            type: "button"
-          }
-            Update
-
+          = link_to 'Update', edit_administration_item_path(a), class: "btn btn-info btn-sm", title: "Update Item"
           %button.btn.btn-sm.btn-danger.delete-button{
             data: { id: a.id },
             title: "Delete Item",
@@ -53,3 +39,5 @@
             %i.fa.fa-times
             Delete
 
+.pagination-container.mt-3.d-flex.justify-content-center
+  = paginate @items_list

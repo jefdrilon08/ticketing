@@ -684,13 +684,14 @@ Rails.application.routes.draw do
     end
   end
   
-  namespace :api do
-    namespace :v1 do
-      namespace :administration do
-        resources :items, only: [:create, :update, :destroy, :show] # Ensure :show is included here
-      end
-    end
-  end
+  # #spiderman
+  # namespace :api do
+  #   namespace :v1 do
+  #     namespace :administration do
+  #       resources :items, only: [:create, :update, :destroy, :show]
+  #     end
+  #   end
+  # end
 
   namespace :api do
     namespace :v1 do
@@ -709,6 +710,11 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # ITEMS
+  post "items/create", to: "items#create"
+  put "/items/update", to: "items#update"
+  post "/items/delete", to: "items#delete"
   
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
@@ -802,7 +808,12 @@ Rails.application.routes.draw do
 
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"
- 
+
+  get 'reports', to: 'reports#index', as: :reports
+  get 'reports/view_report/:id', to: 'reports#view_report', as: :view_report
+  get 'reports/concern_tickets', to: 'reports#concern_tickets', as: :reports_concern_tickets
+  get 'view_report_by_data_store/:id', to: 'reports#view_report_by_data_store', as: 'view_report_by_data_store'
+  post 'reports/create_data_store', to: 'reports#create_data_store', as: :create_data_store_reports
   post "new_system_ticket/create_systemtix",    to: "new_system_ticket#create_systemtix"
   post "new_system_ticket/create_systemtix2",   to: "new_system_ticket#create_systemtix2"
 

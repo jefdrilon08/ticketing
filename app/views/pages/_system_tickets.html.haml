@@ -1,0 +1,157 @@
+.row
+    .col{:style=>"padding:20px"}
+        %div
+            = link_to "/system_tickets", class: "btn-nav-square-md", style:"padding:91px 0px;height:100%;text-align:left" do
+                .card{:id=>"btn-to-st",:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px;width:100%"}
+                    %h5{:style=>"color:white"}
+                        TOTAL
+                    %hr{:style=>"color:white"}
+                    %center
+                        %h1{:style=>"color:white"}
+                            #{SystemTicketDesc.all.count}
+    .col{:style=>"padding:20px"}
+        %div
+            .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
+                %h5{:style=>"color:white"}
+                    NEW
+                %hr{:style=>"color:white"}
+                %center
+                    %h1{:style=>"color:white"}
+                        #{SystemTicketDesc.where(date_received:DateTime.current.to_date).count}
+    .col{:style=>"padding:20px"}
+        %div
+            .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
+                %h5{:style=>"color:white"}
+                    PAST DUE
+                %hr{:style=>"color:white"}
+                %center
+                    %h1{:style=>"color:white"}
+                        #{@overdue.count}
+    .col{:style=>"padding:20px"}
+        %div
+            .card{:style=>"background-color:#0D6EFD;border-color:transparent;padding:30px 20px"}
+                %h5{:style=>"color:white"}
+                    CLOSED TODAY
+                %hr{:style=>"color:white"}
+                %center
+                    %h1{:style=>"color:white"}
+                        #{@today.count}
+
+.row
+    .col-8
+        .card.some{:style=>"padding:1%"}
+            = render partial: "index_chart_system"
+    .col
+        .card.some{:style=>"padding:20px 20px;height:100%"}
+            %h5{:style=>"font-weight:bold;margin-bottom:25px"}
+                Open Tickets
+            .row
+                .col-3
+                    .card.bg-danger{:style=>"margin:auto;border-radius:50%;height:50px;width:50px;border-color:transparent"}
+                        %center
+                            %h3{:style=>"margin-top:15%;color:white"}
+                                #{@openhigh.count}
+                .col-9
+                    %center
+                        -if @openhigh.count>0
+                            %h4{:style=>"margin-top:10%;font-weight:900"}
+                                high
+                        -else
+                            %h4{:style=>"margin-top:10%;"}
+                                high
+            %hr
+            .row
+                .col-3
+                    .card.bg-warning{:style=>"margin:auto;border-radius:50%;height:50px;width:50px;border-color:transparent"}
+                        %center
+                            %h3{:style=>"margin-top:15%;color:white"}
+                                #{@openmed.count}
+                .col-9
+                    %center
+                        %h4{:style=>"margin-top:10%"}
+                            medium
+            %hr
+            .row
+                .col-3
+                    .card.bg-success{:style=>"margin:auto;border-radius:50%;height:50px;width:50px;border-color:transparent"}
+                        %center
+                            %h3{:style=>"margin-top:15%;color:white"}
+                                #{@openlow.count}
+                .col-9
+                    %center
+                        %h4{:style=>"margin-top:10%"}
+                            low
+            %hr
+    .col
+        .card.some{:style=>"padding:20px 20px;height:100%"}
+            %h5{:style=>"font-weight:bold;margin-bottom:25px"}
+                Tickets due
+            %table.table.table-bordered.table-sm{:style=>"font-size:20px"}
+                %tr 
+                    %th{:style=>"width:60%"}
+                        Due today
+                    %td
+                        %center
+                            -if @duetoday.count>0
+                                %span{:style=>"color:green;font-weight:bold"}
+                                    #{@duetoday.count}
+                            -else 
+                                %span
+                                    #{@duetoday.count}
+                %tr 
+                    %th
+                        Upcoming
+                    %td
+                        %center
+                            -if @upcoming.count>0
+                                %span{:style=>"font-weight:bold"}
+                                    #{@upcoming.count}
+                            -else 
+                                %span
+                                    #{@upcoming.count}
+                %tr 
+                    %th
+                        Overdue
+                    %td
+                        %center
+                            -if @overdue.count>0
+                                %span{:style=>"color:red;font-weight:bold"}
+                                    #{@overdue.count}
+                            -else 
+                                %span
+                                    #{@overdue.count}
+            %hr
+            %table.table.table-bordered.table-sm{:style=>"font-size:20px"}
+                %tr 
+                    %th{:style=>"width:60%"}
+                        On time
+                    %td
+                        %center
+                            #{@ontime.count}
+                %tr 
+                    %th
+                        Late
+                    %td
+                        %center
+                            #{@late.count}
+            %hr
+            %h5{:style=>"font-weight:bold;margin-bottom:25px"}
+                Tickets due today
+            %div{:style=>"max-height:200px;"}
+                -if @list_due_today==nil
+                    %hr{:style=>"color:white"}
+                    %center
+                    %br
+                        %center
+                            %h5
+                                No tickets due today.
+                -else
+                    -@list_due_today.each do |x|
+                        %a{:href=>"/system_tickets/#{x.id}"}
+                            %button{:style=>"padding:10px;width:100%;border-radius:5%;border:none;"}
+                                %h5
+                                    #{x.ticket_number}
+                        %p
+
+:css
+    #btn-to-st:hover{background-color:#0b5ed7}

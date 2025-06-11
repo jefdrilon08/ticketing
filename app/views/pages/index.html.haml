@@ -1,108 +1,23 @@
-.card
-  .card-body
-    #react-root
-    %h2
-      Dashboard
-    %hr{:style=>"height:10px;color:white"}
-    .row
-      .col-md-3{:style=>"padding:20px"}
-        %div
-          = link_to "/system_tickets", class: "btn-nav-square-md w-100", style: "padding:100px 30px" do
-            %center 
-              %h4
-                SYSTEM TICKETS
-              %hr{:style=>"color:white"}
-              -@total_tix=0
-              -temp=[] 
-              -SystemTicket.all.each do |x|
-                -if ComputerSystem.where(id:x.computer_system_id).count>0
-                  -temp.push(x)
-              -temp.each do |x|
-                -@total_tix+=SystemTicketDesc.where(system_ticket_id:x).count
-              %h1
-                #{@total_tix}
-      .col-md-3{:style=>"padding:20px"}
-        %div
-          = link_to "/concern_tickets", class: "btn-nav-square-md w-100", style: "padding:100px 30px" do
-            %center
-              %h4
-                CONCERN TICKETS
-              %hr{:style=>"color:white"}
-              %h1
-                #{ConcernTicketDetail.count}
-    %hr{:style=>"height:10px;color:white"}
-    %div
-      %table.table.table-bordered.table-sm{:style=>"font-size:20px"}
-        %tr
-          %th{:colspan=>"6"}
-            %center
-              YOUR TICKETS:
-        %tr
-          %th{:style=>"width:20%;padding-top:40px",:rowspan=>"2"}
-            %center
-              %h4
-                Computer Systems
-          %th{:colspan=>"5"}
-            %center
-              Ticket Status
-        %tr
-          %th{:style=>"width:10%"}
-            Pending
-          %th{:style=>"width:10%"}
-            Approved
-          %th{:style=>"width:10%"}
-            In process
-          %th{:style=>"width:10%"}
-            For verification
-          %th{:style=>"width:10%"}
-            Done
-        -if !@systemtix.empty?  
-          -pe=0
-          -a=0
-          -pr=0
-          -f=0
-          -d=0
-          -@systemtix.each do |x|
-            -if ComputerSystem.where(id:x.computer_system_id).count>0
-              %tr
-                %th
-                  %a{:href=>"system_tickets_#{x.id}"}
-                    #{ComputerSystem.find(x.computer_system_id).name}
-                %td 
-                  #{SystemTicketDesc.where(system_ticket_id:x.id,status:"pending").count}
-                  -pe=pe+SystemTicketDesc.where(system_ticket_id:x.id,status:"pending").count
-                %td 
-                  #{SystemTicketDesc.where(system_ticket_id:x.id,status:"approved").count}
-                  -a=a+SystemTicketDesc.where(system_ticket_id:x.id,status:"approved").count
-                %td 
-                  #{SystemTicketDesc.where(system_ticket_id:x.id,status:"processing").count}
-                  -pr=pr+SystemTicketDesc.where(system_ticket_id:x.id,status:"processing").count
-                %td 
-                  #{SystemTicketDesc.where(system_ticket_id:x.id,status:"for verification").count}
-                  -f=f+SystemTicketDesc.where(system_ticket_id:x.id,status:"for verification").count
-                %td 
-                  #{SystemTicketDesc.where(system_ticket_id:x.id,status:"done").count} 
-                  -d=d+SystemTicketDesc.where(system_ticket_id:x.id,status:"done").count
-          %tr
-            %th
-              TOTAL
-            %th
-              #{pe}
-            %th
-              #{a}
-            %th
-              #{pr}
-            %th
-              #{f}
-            %th
-              #{d}
-      -if @systemtix.empty?
-        %hr{:style=>"height:30px;color:white"}
-          %center
-            %h3
-              No system tickets found.
+.row
+  .col-md-12.col-xs-12
+    .card
+      .card-body
+        #react-root
+        %ul.nav.nav-tabs{:role => "tablist"}
+          %li.nav-item
+            %a.nav-link.active.show{"aria-controls" => "concern_tickets", "aria-selected" => "true", "data-bs-toggle" => "tab", :href => "#home", :role => "tab"} 
+              Concern Tickets
+          -if current_user.is_mis?
+            %li.nav-item
+              %a.nav-link{"aria-controls" => "system_tickets", "aria-selected" => "false", "data-bs-toggle" => "tab", :href => "#system_tickets", :role => "tab"} 
+                User Story
+        
+        .tab-content.border-start.border-bottom.border-end
+          #home.p-3.tab-pane.active.show{:role => "tabpanel"}
+            = render partial: "concern_tickets"
+          -if current_user.is_mis?
+            #system_tickets.p-3.tab-pane{:role => "tabpanel"}
+              = render partial: "system_tickets"
 
 = render partial: "dashboard/modals/generate_daily_report"
 = render partial: "dashboard/modals/generate_accounting_report"
-= render partial: "templates/error_list"
-= render partial: "templates/success_message"

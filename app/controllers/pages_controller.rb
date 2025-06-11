@@ -8,6 +8,33 @@ class PagesController < ApplicationController
   end
 
   def index
+    @concern_tickets = ConcernTicket.includes(:concern_types, :concern_ticket_details).map do |ct|
+      eligible_users = ConcernTicketUser.where(
+        concern_ticket_id: ct.id,
+        task: "developer",
+        status: "active"
+      ).map do |ctu|
+        user = User.find_by(id: ctu.user_id)
+        {
+          id: ctu.user_id,
+          first_name: user&.first_name || "Unknown"
+        }
+      end
+
+      ct.attributes.merge(
+        concern_types: ct.concern_types.map { |ctype| ctype.attributes },
+        concern_ticket_details: ct.concern_ticket_details.map(&:attributes),
+        eligible_users: eligible_users
+      )
+    end
+    @ctd = ConcernTicketDetail.all
+    @open_tickets = @ctd.select { |ticket| ticket.status == "open" }
+    @progress_tickets = @ctd.select { |ticket| ticket.status == "processing" }
+    @forverification_tickets = @ctd.select { |ticket| ticket.status == "verification" }
+    @closed_tickets = @ctd.select { |ticket| ticket.status == "closed" }
+
+    all_concern_types = ConcernType.all.map { |ct| { id: ct.id, name: ct.name, concern_id: ct.concern_id } }
+
     @payload = {
       token: current_user.generate_jwt,
       username: current_user.username,
@@ -16,7 +43,10 @@ class PagesController < ApplicationController
       urlGenerateDailyReport: "#{ENV['BACKEND_API_URL']}/api/v2/dashboard/generate_daily_report",
       urlGenerateAccountingReport: "#{ENV['BACKEND_API_URL']}/api/v2/dashboard/generate_accounting_report",
       userId: current_user.id,
-      xKoinsAppAuthSecret: ENV['KOINS_APP_AUTH_SECRET']
+      xKoinsAppAuthSecret: ENV['KOINS_APP_AUTH_SECRET'],
+      concernTickets: @concern_tickets,
+      concernTypes: all_concern_types,
+      concernTicketCounts: ConcernTicketDetail.all.group_by(&:concern_type_id).map { |ct_id, ct_details| [ConcernType.find_by(id: ct_id)&.name, ct_details.count] }
     }
 
     @subheader_items = [
@@ -24,6 +54,18 @@ class PagesController < ApplicationController
     ]
 
     @systemtix=[]
+    @openhigh=[]
+    @openmed=[]
+    @openlow=[]
+
+    @duetoday=[]
+    @overdue=[]
+    @upcoming=[]
+
+    @ontime=[]
+    @late=[]
+
+    @today=[]
 
     SystemTicket.all.each do |x|
       x.data["team_members"].each do |y|
@@ -31,6 +73,146 @@ class PagesController < ApplicationController
         if current_user.id==y && status then @systemtix.push(x) end
       end
     end
+
+    SystemTicketDesc.all.each do |x|
+      if x.status!='done'
+        if x.data["category"]=='high' && x.status!='done'
+          then @openhigh.push(x)
+        elsif x.data["category"]=='medium' && x.status!='done'
+          then @openmed.push(x)
+        elsif x.data["category"]=='low' && x.status!='done'
+          then @openlow.push(x)
+        end
+        if DateTime.current.to_date==x.target_date
+          then @duetoday.push(x)
+        elsif DateTime.current.to_date<x.target_date
+          then @upcoming.push(x)
+        elsif DateTime.current.to_date>x.target_date
+          then @overdue.push(x)
+        end
+      else
+        if x.data["save_details"][3]["date"].to_date<=x.target_date
+          then @ontime.push(x)
+        elsif x.data["save_details"][3]["date"].to_date>x.target_date
+          then @late.push(x)
+        end
+
+        if x.status=='done'
+          if x.data["save_details"][3]["date"].to_date==DateTime.current.to_date then @today.push(x)
+          end
+        end
+      end
+    end
+
+    developers = []
+    dev_grp = []
+
+    SystemTicketsUser.all.each do |x|
+      if x.role=="Developer" && x.status=="active" then developers.push(x)
+      end
+    end
+
+    developers.each do |x|
+      if dev_grp.empty? then dev_grp.push([x])
+      else
+        temp=0
+        dev_grp.each do |y|
+          if y[0].user_id==x.user_id 
+            y.push(x)
+            temp+=1
+          end
+        end
+        if temp==0 then dev_grp.push([x])
+        end
+      end
+    end
+
+    @labels=[]
+    @chart_data=[]
+
+    dev_grp.each do |x|
+      @labels.push(["#{User.find(x[0].user_id).last_name}"])
+    end
+
+    @tix_list=[]
+
+    SystemTicket.all.each do |x|
+      temp=[]
+      temp2=[]
+      temp3=[]
+      dev_grp.each do |y|
+          is_member=false
+          y.each do |z|
+              if x.data["team_members"].include? z.user_id
+                  is_member=true
+                  SystemTicketDesc.where(system_ticket_id:x.id).each do |a|
+                    temp_tix=[]
+                    is_member2=false
+                      ticket_no=a.ticket_number
+                      start=''
+                      end_='open'
+                      a.data["team_members"].each do |b|
+                        if b[0]==z.id
+                          is_member2=true
+                              start=a.created_at.to_s[0..9]
+                              if a.status=='done'
+                                  end_=a.data["save_details"][3]["date"].to_s[0..9]
+                              end 
+                        end
+                      end
+                      if is_member2
+                        temp.push([start,end_,a.id])
+                      end
+                  end
+              end
+          end
+          if is_member
+              temp2.push(temp)
+          else
+              temp2.push([])
+          end
+          temp=[]
+      end
+      if ComputerSystem.where(id:x.computer_system_id).exists?
+        then @tix_list.push([ComputerSystem.find(x.computer_system_id).name,temp2])
+      end
+    end
+
+    # render json: {message:@tix_list}
+
+    @list_due_today=SystemTicketDesc.where(target_date:DateTime.current.to_date)
+
+    if !@list_due_today.empty? 
+      if @list_due_today.count>=3
+        then @list_due_today=@list_due_today.last(3)
+      elsif @list_due_today.count==2
+        then @list_due_today=@list_due_today.last(2)
+      elsif @list_due_today.count==1
+        then @list_due_today=[@list_due_today[0]]
+      end
+    else
+      @list_due_today=nil
+    end
+
+    # @final_data=[]
+
+    # @chart_data.each do |x|
+    #   @final_data.push(
+    #     {
+    #       'label'=>"#{x[0]} - Open",
+    #       'data'=>x[1],
+    #       'stack'=>'Stack 0'
+    #     }
+    #   )
+    #   @final_data.push(
+    #     {
+    #       'label'=>"#{x[0]} - Closed",
+    #       'data'=>x[2],
+    #       'stack'=>'Stack 1'
+    #     }
+    #   )
+    # end
+    # @final_data=@final_data.to_json
   end
 
   def change_password

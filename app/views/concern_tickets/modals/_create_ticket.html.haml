@@ -45,7 +45,7 @@
                   %label.font-weight-bold SATO
                   = select_tag :branch_id, 
                     options_from_collection_for_select(@branches&.sort_by(&:name) || [], :id, :name), 
-                    class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", id: "input-branch", prompt: "-- SELECT --"
+                    class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", required: true, id: "input-branch", prompt: "-- SELECT --"
               
               .col-md-6
                 .form-group.mt-3
