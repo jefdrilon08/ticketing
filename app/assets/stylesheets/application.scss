@@ -202,3 +202,22 @@ input.form-check-input {
   
 }
 
+.table {
+  width: 100% !important;
+}
+
+#data-table {
+  table-layout: fixed;
+  
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  td:nth-child(3) {
+    white-space: normal;
+    word-wrap: break-word;
+  }
+}
+

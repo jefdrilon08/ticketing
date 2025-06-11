@@ -16,14 +16,6 @@
                   %label Code
                   = text_field_tag :code, "", id: "input-code", class: "form-control"
 
-                .form-group.mt-3
-                  %label Select Item
-                  = select_tag "item_id",
-                    options_from_collection_for_select(@items, :id, :name),
-                    id: "input-item-id",
-                    include_blank: "-- SELECT ITEM --",
-                    class: "form-control"
-
                 = hidden_field_tag :id, "", id: "item-id"
 
           .message

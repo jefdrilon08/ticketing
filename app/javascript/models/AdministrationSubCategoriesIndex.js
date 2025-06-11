@@ -22,56 +22,33 @@ const _cacheDom = () => {
 };
 
 const reloadTable = () => {
-  $.ajax({
-    url: "/api/v1/administration/sub_categories",
-    type: "GET",
-    dataType: "json",
-    headers: {
-      Authorization: `Bearer ${_authenticityToken}`,
-      "X-CSRF-Token": $("meta[name='csrf-token']").attr("content")
-    },
-    success(res) {
-      const $tbody = $("#data-table tbody");
-      if ($tbody.length === 0) {
-        $("#data-table").append("<tbody></tbody>");
+  if ($.fn.DataTable.isDataTable('#data-table')) {
+    $('#data-table').DataTable().destroy();
+  }
+  
+  $('#data-table').DataTable({
+    pageLength: 10,
+    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+         '<"row"<"col-sm-12"tr>>' +
+         '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+    columnDefs: [
+      { targets: 0, width: '15%' }, // Code
+      { targets: 1, width: '25%' }, // Category
+      { targets: 2, width: '40%' }, // Name
+      { 
+        targets: 3,
+        width: '20%',
+        orderable: false,
+        className: 'text-center'
       }
-
-      $("#data-table tbody").empty();
-
-      if (res.sub_categories.length === 0) {
-        $("#data-table tbody").html(`
-          <tr>
-            <td colspan="3" class="text-center">No Sub Categories Found</td>
-          </tr>
-        `);
-      } else {
-        const rows = res.sub_categories.map(sc => `
-          <tr data-id="${sc.id}">
-            <td style="text-transform: uppercase;">${sc.code}</td>
-            <td style="text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;">
-              ${sc.name}
-            </td>
-            <td class="text-center">
-              <button
-                class="btn btn-info btn-sm update-button"
-                data-id="${sc.id}"
-                data-code="${sc.code}"
-                data-name="${sc.name}"
-                data-category-id="${sc.category_id}"
-              >Update</button>
-              <button class="btn btn-sm btn-danger delete-button" data-id="${sc.id}">
-                <i class="fa fa-times"></i> Delete
-              </button>
-            </td>
-          </tr>
-        `).join("");
-
-        $("#data-table tbody").html(rows);
-      }
-    },
-    error() {
-      console.error("Failed to reload table");
-    }
+    ],
+    ordering: true,
+    searching: true,
+    responsive: true,
+    autoWidth: false,
+    scrollCollapse: true,
+    scrollX: true,
+    fixedColumns: true
   });
 };
 
@@ -160,17 +137,7 @@ const _bindEvents = () => {
       },
       success() {
         $modalNew.hide();
-
-        if (isUpdate) {
-          const $row = $(`#data-table tbody tr[data-id="${id}"]`);
-          $row.find("td:nth-child(1)").text(code.toUpperCase());
-          $row.find("td:nth-child(2)").text(name.toUpperCase());
-          $row.find(".update-button").data("code", code);
-          $row.find(".update-button").data("name", name);
-          $row.find(".update-button").data("category-id", categoryId);
-        } else {
-          reloadTable(); 
-        }
+        reloadTable(); // Always reload the table after create or update
 
         const onHidden = () => {
           alert(isUpdate ? "Successfully Updated" : "Successfully Created");
@@ -259,6 +226,9 @@ const init = options => {
 
 $(document).ready(() => {
   if ($("#data-table").length > 0 && $("#data-table").hasClass("sub-categories")) {
+    if ( $.fn.DataTable.isDataTable('#data-table') ) {
+      $('#data-table').DataTable().destroy();
+    }
     init({ authenticityToken: $("meta[name='csrf-token']").attr("content") });
   }
 });
