@@ -11,7 +11,10 @@ module Administration
           text: "New"
         }
       ]
-      @items_list = Item.includes(:items_category, :sub_category).all.sort_by(&:name)
+      @items_list = Item.includes(:items_category, :sub_category)
+                    .order(:name)
+                    .page(params[:page])
+                    .per(25)
     end
 
     def new
@@ -88,6 +91,7 @@ module Administration
         :parent_id,
         :brand_id,
         :model,
+        :serial_number,
         :date_purchased,
         :unit_price
       )

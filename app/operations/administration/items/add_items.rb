@@ -11,6 +11,7 @@ module Administration
         @sub_category_id      = @config[:sub_category_id].presence
         @brand_id             = @config[:brand_id]
         @model                = @config[:model]
+        @serial_number        = @config[:serial_number]
         @unit_price           = @config[:unit_price]
         @date_purchased       = @config[:date_purchased]
         @is_parent            = @config[:is_parent]
