@@ -1,3 +1,15 @@
+-# Filter Form
+%div.mb-3
+  = form_with url: administration_suppliers_path, method: :get, local: true, class: "d-flex align-items-end w-100" do |f|
+    .flex-grow-1.me-3
+      %label{ for: "query", style: "font-weight: bold;" } Query
+      = f.text_field :query, value: params[:query], class: "form-control w-100", placeholder: "Search code or name..."
+    .flex-grow-1
+      %label{ style: "visibility:hidden;" } Search
+      = f.button type: "submit", class: "btn d-flex align-items-center justify-content-center w-100", style: "background:#19d3f7;height:38px;", title: "Search" do
+        %i.fa.fa-search.me-2
+        Search
+
 %table#data-table.display.table.table-bordered.table-hover.table-sm
   %thead
     %tr
