@@ -1,17 +1,18 @@
-%table#data-table.display.table.table-bordered.table-hover.table-sm
+%table.table.table-bordered
   %thead
     %tr
+      %th Category
+      %th Sub Category
       %th Code
-      %th Name
+
       %th.text-center Actions
   %tbody
     - if @items_category_list.present?
       - @items_category_list.each do |a|
         %tr{ data: { id: a.id } }
-          %td{ style: "text-transform: uppercase;" }
-            = a.code
-          %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }
-            = a.name
+          %td{ style: "text-transform: uppercase;" }= a.code
+          %td= a.items_category&.name
+          %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }= a.name
           %td.text-center
             %button.btn.btn-info.btn-sm.update-button{
               data: {
@@ -20,8 +21,7 @@
                 name: a.name,
                 category_id: a.category_id
               }
-            }
-              Update
+            } Update
             %button.btn.btn-sm.btn-danger.delete-button{
               data: { id: a.id }
             }
@@ -29,4 +29,4 @@
               Delete
     - else
       %tr
-        %td{ colspan: "3" } No subcategories available.
+        %td{ colspan: "4" } No subcategories available.

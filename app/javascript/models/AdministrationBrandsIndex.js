@@ -20,7 +20,7 @@ const _cacheDom = () => {
   $inputName = $("#input-name");
   $inputCode = $("#input-code");
   $inputItemId = $("#input-item-id");
-  $itemId = $("#item-id");
+  $itemId = $("#brand-id");
 
   $modalNew = new bootstrap.Modal(document.getElementById("modal-new"));
   $message = $(".message");
@@ -55,12 +55,13 @@ const _bindEvents = () => {
     $inputName.focus();
   });
 
-  $btnConfirmNew.on("click", function (e) {
+  // Use delegated event binding for the confirm button
+  $(document).on("click", "#btn-confirm-new", function (e) {
+    console.log("Confirm button clicked");
     e.preventDefault();
     const id = $itemId.val();
     const name = $inputName.val();
     const code = $inputCode.val();
-    const item_id = $inputItemId.val();
 
     if (!name) {
       alert("Name cannot be blank");
@@ -70,16 +71,11 @@ const _bindEvents = () => {
       alert("Code cannot be blank");
       return;
     }
-    if (!item_id) {
-      alert("Please select an item");
-      return;
-    }
 
+    // Build the payload with nested brand key
     const data = {
-      name: name,
-      code: code,
-      item_id: item_id,
-      id: id,
+      "brand[name]": name,
+      "brand[code]": code,
       authenticity_token: _authenticityToken,
     };
 
@@ -87,18 +83,20 @@ const _bindEvents = () => {
     let method = "POST";
 
     if (id) {
-      url = "/api/v1/administration/brands/update";
-      method = "POST";
+      data["brand[id]"] = id;
       data._method = "PUT";
+      url = "/api/v1/administration/brands/update";
     }
 
     console.log("AJAX Request:", url, method, data);
+    console.log("ACTUAL DATA SENT:", data);
+    console.log("DEBUG data keys:", Object.keys(data));
+    console.log("DEBUG data object:", data);
 
     $.ajax({
       url: url,
       type: method,
-      data: data,
-      dataType: "json",
+      data: data, // do NOT use JSON.stringify
       success: function () {
         alert(id ? "Successfully Updated!" : "Successfully Saved!");
         window.location.reload();
@@ -156,5 +154,7 @@ const init = (options) => {
   _cacheDom();
   _bindEvents();
 };
+
+console.log("jQuery version:", $.fn.jquery);
 
 export default { init };
