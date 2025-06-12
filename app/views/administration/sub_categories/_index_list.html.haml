@@ -1,10 +1,24 @@
-%table.table.table-bordered
+-# Filter Form
+%div.mb-3
+  = form_with url: administration_sub_categories_path, method: :get, local: true, class: "d-flex align-items-end w-100" do |f|
+    .flex-grow-1.me-3
+      %label{ for: "query", style: "font-weight: bold;" } Query
+      = f.text_field :query, value: params[:query], class: "form-control w-100", placeholder: "Search Sub Category"
+    .flex-grow-1.me-3
+      %label{ for: "category_id", style: "font-weight: bold;" } Category
+      = f.select :category_id, options_from_collection_for_select(@categories, :id, :name, params[:category_id]), { include_blank: "-- SELECT --" }, class: "form-control w-100"
+    .flex-grow-1
+      %label{ style: "visibility:hidden;" } Search
+      = f.button type: "submit", class: "btn d-flex align-items-center justify-content-center w-100", style: "background:#19d3f7;height:38px;", title: "Search" do
+        %i.fa.fa-search.me-2
+        Search
+
+%table.table.table-bordered.mt-3
   %thead
     %tr
       %th Category
       %th Sub Category
       %th Code
-
       %th.text-center Actions
   %tbody
     - if @items_category_list.present?
