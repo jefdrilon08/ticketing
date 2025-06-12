@@ -19,13 +19,17 @@
                 %div{:id=>"legend"}
         %tr
             %td{:colspan=>2} 
-                %div{:style=>"display:block",:id=>'default-range'}
+                %div{:style=>"display:block", :id=>'default-range'}
+                    - first_ticket = SystemTicketDesc.first
                     %h5{:style=>"margin:-25px 0px 35px 10px;font-weight:900"}
-                        #{SystemTicketDesc.all[0].created_at.to_date} - present
-                %div{:style=>"display:none",:id=>'invalid'}
+                        - if first_ticket.present?
+                            #{first_ticket.created_at.to_date} - present
+                        - else
+                            No tickets yet - present
+                %div{:style=>"display:none", :id=>'invalid'}
                     %h5{:style=>"margin:-25px 0px 35px 10px;color:red"}
                         Range invalid.
-                %div{:style=>"display:none",:id=>'enter-date'}
+                %div{:style=>"display:none", :id=>'enter-date'}
                     %h5{:style=>"margin:-25px 0px 35px 10px"}
                         Enter start date and end date.
             %td
@@ -187,8 +191,7 @@
                     }
                 }
             }
-        }
-    });
+        });
 
     function showLegend(arr)
     {
