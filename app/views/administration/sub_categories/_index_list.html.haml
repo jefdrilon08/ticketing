@@ -10,9 +10,9 @@
     - if @items_category_list.present?
       - @items_category_list.each do |a|
         %tr{ data: { id: a.id } }
-          %td{ style: "text-transform: uppercase;" }= a.code
           %td= a.items_category&.name
           %td{ style: "text-transform: uppercase; word-wrap: break-word; white-space: normal; max-width: 300px;" }= a.name
+          %td{ style: "text-transform: uppercase;" }= a.code
           %td.text-center
             %button.btn.btn-info.btn-sm.update-button{
               data: {
