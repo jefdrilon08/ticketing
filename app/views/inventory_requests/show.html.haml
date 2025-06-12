@@ -372,3 +372,35 @@
     })
   })
 
+:javascript
+  document.addEventListener('DOMContentLoaded', () => {
+    const categorySelect = document.getElementById('data_item_category')
+    const subCategorySelect = document.getElementById('inventory_request_detail_sub_category_id')
+
+    if (categorySelect && subCategorySelect) {
+      function filterSubCategories() {
+        const selectedCategoryId = categorySelect.value
+
+        Array.from(subCategorySelect.options).forEach(option => {
+          if (!option.value) {
+            option.hidden = false // always show the "Select" option
+            return
+          }
+          option.hidden = option.dataset.categoryId !== selectedCategoryId
+        })
+
+        // Reset selection if current subcategory doesn't belong to selected category
+        if (
+          subCategorySelect.selectedOptions.length > 0 &&
+          subCategorySelect.selectedOptions[0].dataset.categoryId !== selectedCategoryId
+        ) {
+          subCategorySelect.value = ""
+        }
+      }
+
+      categorySelect.addEventListener('change', filterSubCategories)
+      // Run on page load
+      filterSubCategories()
+    }
+  })
+
