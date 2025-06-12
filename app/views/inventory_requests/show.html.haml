@@ -117,14 +117,14 @@
       .row
         .col-md-6
           .form-group.mb-3
-            %label.font-weight-bold{ for: "inventory_request_detail_item_id" } Item
-            - if @items.present?
-              %select.form-select.bg-secondary-subtle.text-dark.shadow-sm#inventory_request_detail_item_id{name: "inventory_request_detail[item_id]", required: true}
+            %label.font-weight-bold{ for: "inventory_request_detail_sub_category_id" } Sub Category
+            - if @sub_categories.present?
+              %select.form-select.bg-secondary-subtle.text-dark.shadow-sm#inventory_request_detail_sub_category_id{name: "inventory_request_detail[sub_category_id]", required: true}
                 %option{ value: "" } Select
-                - @items.each do |item|
-                  %option{ value: item.id, data: { category_id: item.items_category_id } }= item.name
+                - @sub_categories.each do |sub_category|
+                  %option{ value: sub_category.id, data: { category_id: sub_category.category_id } }= sub_category.name
             - else
-              %p No items available
+              %p No sub categories available
 
         .col-md-6
           .form-group.mb-3
