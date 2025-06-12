@@ -106,13 +106,14 @@
 
         .col-md-6
           .form-group.mb-3
-            %label.font-weight-bold{ for: "data_cluster" } Cluster
-            - if @clusters.present?
-              = select_tag "inventory_request[data][cluster_id]",
-                options_from_collection_for_select(@clusters, :id, :name),
-                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_cluster", prompt: "Select", required: true }
+            %label.font-weight-bold{ for: "data_branch_id" } Branch
+            - if @branches.present?
+              %select.form-select.bg-secondary-subtle.text-dark.shadow-sm{id: "data_branch_id", name: "inventory_request[data][branch_id]", required: true}
+                %option{ value: "" } Select
+                - @branches.each do |branch|
+                  %option{ value: branch.id, data: { cluster_id: branch.cluster_id } }= branch.name
             - else
-              %p No clusters available
+              %p No branches available
 
       .row
         .col-md-6
@@ -152,13 +153,13 @@
       .row
         .col-md-6
           .form-group.mb-3
-            %label.font-weight-bold{ for: "data_branch_id" } Branch
-            - if @branches.present?
-              = select_tag "inventory_request[data][branch_id]",
-                options_from_collection_for_select(@branches, :id, :name),
-                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_branch_id", prompt: "Select", required: true }
+            %label.font-weight-bold{ for: "data_cluster" } Cluster
+            - if @clusters.present?
+              = select_tag "inventory_request[data][cluster_id]",
+                options_from_collection_for_select(@clusters, :id, :name),
+                { class: "form-select bg-secondary-subtle text-dark shadow-sm", id: "data_cluster", prompt: "Select", required: true }
             - else
-              %p No branches available
+              %p No clusters available
 
         .col-md-6
           .form-group.mb-3
@@ -374,33 +375,29 @@
 
 :javascript
   document.addEventListener('DOMContentLoaded', () => {
-    const categorySelect = document.getElementById('data_item_category')
-    const subCategorySelect = document.getElementById('inventory_request_detail_sub_category_id')
+    const clusterSelect = document.getElementById('data_cluster')
+    const branchSelect = document.getElementById('data_branch_id')
 
-    if (categorySelect && subCategorySelect) {
-      function filterSubCategories() {
-        const selectedCategoryId = categorySelect.value
-
-        Array.from(subCategorySelect.options).forEach(option => {
+    if (clusterSelect && branchSelect) {
+      function filterBranches() {
+        const selectedClusterId = clusterSelect.value
+        Array.from(branchSelect.options).forEach(option => {
           if (!option.value) {
             option.hidden = false // always show the "Select" option
             return
           }
-          option.hidden = option.dataset.categoryId !== selectedCategoryId
+          option.hidden = option.dataset.clusterId !== selectedClusterId
         })
-
-        // Reset selection if current subcategory doesn't belong to selected category
+        // Reset branch if current selection doesn't match
         if (
-          subCategorySelect.selectedOptions.length > 0 &&
-          subCategorySelect.selectedOptions[0].dataset.categoryId !== selectedCategoryId
+          branchSelect.selectedOptions.length > 0 &&
+          branchSelect.selectedOptions[0].dataset.clusterId !== selectedClusterId
         ) {
-          subCategorySelect.value = ""
+          branchSelect.value = ""
         }
       }
-
-      categorySelect.addEventListener('change', filterSubCategories)
-      // Run on page load
-      filterSubCategories()
+      clusterSelect.addEventListener('change', filterBranches)
+      filterBranches()
     }
   })
 
