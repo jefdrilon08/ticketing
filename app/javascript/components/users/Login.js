@@ -63,65 +63,70 @@ export default Login = (props) => {
               })()}
             </center>
             <hr/>
-            <div className="row">
-              <div className="col mb-4">
-                <label className="form-label">
-                  Username
-                </label>
-                <input
-                  value={username}
-                  disabled={isLoading}
-                  className={`form-control ${hasFormError(errors, 'username') ? 'is-invalid' : ''}`}
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                  }}
-                />
-                <div className="invalid-feedback">
-                  {hasFormError(errors, 'username') ? errors.username.join(', ') : ''}
-                </div>
-                <label className="form-label mt-4">
-                  Password
-                </label>
-                <input
-                  value={password}
-                  type="password"
-                  disabled={isLoading}
-                  className={`form-control ${hasFormError(errors, 'password') ? 'is-invalid' : ''}`}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-                <div className="invalid-feedback">
-                  {hasFormError(errors, 'password') ? errors.password.join(', ') : ''}
-                </div>
-              </div>
-            </div>
-            <hr/>
-            <div className="row">
-              <div className="col mb-4">
-                <center>
-                  <button
-                    className="btn btn-primary"
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+            >
+              <div className="row">
+                <div className="col mb-4">
+                  <label className="form-label">
+                    Username
+                  </label>
+                  <input
+                    value={username}
                     disabled={isLoading}
-                    onClick={() => {
-                      handleLogin();
+                    className={`form-control ${hasFormError(errors, 'username') ? 'is-invalid' : ''}`}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
                     }}
-                  >
-                    <span className="bi bi-shield-check me-2"/>
-                    Login to System
-                  </button>
-                  <hr/>
-                  <div
-                    className="clickable"
-                    onClick={() => {
-                      setIsForgotPasswordModalOpen(true);
-                    }}
-                  >
-                    Forgot Password
+                  />
+                  <div className="invalid-feedback">
+                    {hasFormError(errors, 'username') ? errors.username.join(', ') : ''}
                   </div>
-                </center>
+                  <label className="form-label mt-4">
+                    Password
+                  </label>
+                  <input
+                    value={password}
+                    type="password"
+                    disabled={isLoading}
+                    className={`form-control ${hasFormError(errors, 'password') ? 'is-invalid' : ''}`}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
+                  <div className="invalid-feedback">
+                    {hasFormError(errors, 'password') ? errors.password.join(', ') : ''}
+                  </div>
+                </div>
               </div>
-            </div>
+              <hr/>
+              <div className="row">
+                <div className="col mb-4">
+                  <center>
+                    <button
+                      className="btn btn-primary"
+                      disabled={isLoading}
+                      type="submit"
+                    >
+                      <span className="bi bi-shield-check me-2"/>
+                      Login to System
+                    </button>
+                    <hr/>
+                    <div
+                      className="clickable"
+                      onClick={() => {
+                        setIsForgotPasswordModalOpen(true);
+                      }}
+                    >
+                      Forgot Password
+                    </div>
+                  </center>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
