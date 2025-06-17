@@ -641,10 +641,7 @@ namespace :api do
       post "/computer_system/create", to: "computer_system#create"
       put "/computer_system/update", to: "computer_system#update"
       post "/computer_system/delete", to: "computer_system#delete"
-      #Items
-      post "items/create", to: "items#create"
-      put "/items/update", to: "items#update"
-      post "/items/delete", to: "items#delete"
+      
       #Items Category
       post "items_category/create", to: "items_category#create"
       put "items_category/update",  to: "items_category#update"

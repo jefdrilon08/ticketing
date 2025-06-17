@@ -12,7 +12,13 @@ module Administration
         },
        
       ]
-      @suppliers_list = ::Supplier.all.sort_by(&:name)
+      @suppliers_list = ::Supplier.all
+      if params[:query].present?
+        @suppliers_list = @suppliers_list.where(
+          "name ILIKE :q OR code ILIKE :q",
+          q: "%#{params[:query]}%"
+        )
+      end
     end
   end
 end

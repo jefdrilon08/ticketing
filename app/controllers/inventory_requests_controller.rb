@@ -77,6 +77,7 @@ def show
   @branches = Branch.all
   @item_categories = ItemsCategory.all
   @clusters = Cluster.all
+  @sub_categories = SubCategory.all
   @inventory_request = InventoryRequest.find(params[:id])
   @inventory_request.inventory_request_details
 

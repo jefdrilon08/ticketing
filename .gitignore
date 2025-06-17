@@ -89,3 +89,5 @@ yarn-debug.log*
 /config/credentials/development.key
 
 /config/credentials/test.key
+
+db/migrate/20250611004058_add_serial_number_to_items.rb

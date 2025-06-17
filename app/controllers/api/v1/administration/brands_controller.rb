@@ -41,7 +41,7 @@ module Api
         private
 
         def brands_params
-          params.permit(:id, :code, :name, :item_id, :authenticity_token)
+          params.require(:brand).permit(:name, :code)
         end
       end
     end

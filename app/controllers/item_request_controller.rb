@@ -46,6 +46,9 @@ class ItemRequestController < ApplicationController
   end
 
   def show
+    @inventory_request = InventoryRequest.find(params[:id])
+    @item_categories = ItemsCategory.all
+    @sub_categories = SubCategory.all # <-- Add this line
     @requester_name = @inventory_request.user.full_name
     @date_request = @inventory_request.date_request
     render template: "new_item_request/view_details", layout: true
