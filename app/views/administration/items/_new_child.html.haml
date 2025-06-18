@@ -1,0 +1,103 @@
+= hidden_field_tag "all_child_sub_categories", @sub_categories.to_json, id: "all-child-sub-categories-json"
+.card
+  .card-header
+    %h4 CHILD ITEM DETAILS
+  .card-body
+    .container-fluid
+      .row
+        .col-md
+          .form-group
+            %label(for="child_item_category") Item Category
+            = select_tag :child_item_category_id,
+                options_from_collection_for_select(@item_categories&.sort_by(&:name) || [], :id, :name),
+                class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm",
+                prompt: "-- SELECT --"
+        .col-md
+          .form-group
+            %label(for="child_sub_category") Sub Category
+            = select_tag :child_sub_category_id,
+                options_from_collection_for_select([], :id, :name),
+                class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm",
+                prompt: "-- SELECT --"
+
+      .row
+        .col-md-4.col-12
+          .form-group
+            %label(for="child_item_name") Item Name
+            = text_field_tag :child_item_name, "", id: "child_item_name", class: "form-control", required: false, placeholder: "Enter Item Name"
+        .col-md-8
+          .form-group
+            %label(for="child_description") Description
+            = text_area_tag :child_description, "", id: "child_description", 
+                class: "form-control bg-light text-dark border-0 shadow-sm", required: false, rows: 1
+
+      .row
+        .col-md-4.col-12
+          .form-group
+            %label(for="child_brand") Brand
+            = select_tag :child_brand_id,
+                options_from_collection_for_select(@brands&.sort_by(&:name) || [], :id, :name),
+                class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm",
+                required: false,
+                prompt: "-- SELECT --"
+        .col-md-4.col-12
+          .form-group
+            %label(for="child_model") Model
+            = text_field_tag :child_model, "", id: "child_model", class: "form-control", required: false, placeholder: "Enter Model"
+        .col-md-4.col-12
+          .form-group
+            %label(for="child_serial_number") Serial Number
+            = text_field_tag :child_serial_number, "", id: "child_serial_number", class: "form-control", required: false, placeholder: "Enter Serial Number"
+
+      .row.mt-3
+        .col-md-4.col-12
+          .form-group
+            %label(for="child_unit") Unit
+            = text_field_tag :child_unit, "", id: "child_unit", class: "form-control", required: false, placeholder: "Enter Unit"
+        .col-md-4.col-12
+          .form-group
+            %label(for="child_unit_price") Unit Price
+            = number_field_tag :child_unit_price, "", id: "child_unit_price", class: "form-control", required: false, min: 0, placeholder: "Enter Unit Price"
+
+        .col-12.text-end
+          - button_label = (defined?(child_mode) && child_mode == 'update') ? 'Update Child' : 'Add Child'
+          %button.btn.btn-primary{ type: "button", id: "add-child-button" }
+            = button_label
+
+            
+      = hidden_field_tag "item[data][child_details]", "", id: "child-details-json"
+            
+      .row.mt-3
+        .col-12
+          %table.table.table-bordered#child-items-table
+            %thead
+              %tr
+                %th Item Category
+                %th Sub Category
+                %th Item Name
+                %th Description
+                %th Brand
+                %th Model
+                %th Serial Number
+                %th Unit
+                %th Unit Price
+                %th Action
+            %tbody
+              - if inventory&.data && inventory.data["child_details"].present?
+                - inventory.data["child_details"].each_with_index do |child, child_index|
+                  %tr
+                    %td= child["item_category"] || "N/A"
+                    %td= child["sub_category"] || "N/A"
+                    %td= child["name"] || "N/A"
+                    %td= child["description"] || "N/A"
+                    %td= child["brand"] || "N/A"
+                    %td= child["model"] || "N/A"
+                    %td= child["serial_number"] || "N/A"
+                    %td= child["unit"] || "N/A"
+                    %td= child["unit_price"] || "N/A"
+                    %td
+                      %button.btn.btn-warning.btn-sm.update-child{ type: "button", data: { index: child_index } } Update
+                      %button.btn.btn-danger.btn-sm.remove-child{ type: "button" } Remove
+              - else
+                %tr
+                  %td{ colspan: 11, class: "text-center text-muted" } No child details yet.

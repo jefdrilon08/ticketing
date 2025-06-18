@@ -62,3 +62,37 @@
           %span.badge.bg-info Processing
         - else
           %span.badge.bg-secondary= @item&.status.presence || "N/A"
+
+    - if @item&.data && @item&.data["child_details"].present?
+      .mt-4
+        %h5 Child Item Details
+        %table.table.table-bordered.table-striped
+          %thead
+            %tr
+              %th Item Type
+              %th Item Category
+              %th Sub Category
+              %th Item Name
+              %th Description
+              %th Brand
+              %th Model
+              %th Serial Number
+              %th Unit
+              %th Unit Price
+          %tbody
+            - @item.data["child_details"].each do |child|
+              %tr
+                %td= child["item_type"] || "N/A"
+                %td= child["item_category"] || "N/A"
+                %td= child["sub_category"] || "N/A"
+                %td= child["name"] || "N/A"
+                %td= child["description"] || "N/A"
+                %td= child["brand"] || "N/A"
+                %td= child["model"] || "N/A"
+                %td= child["serial_number"] || "N/A"
+                %td= child["unit"] || "N/A"
+                %td= child["unit_price"] || "N/A"
+    - else
+      .mt-4
+        %h5 Child Item Details
+        %p.text-muted No child details available.
