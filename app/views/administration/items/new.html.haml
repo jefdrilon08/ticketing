@@ -3,69 +3,57 @@
     %h4 NEW ITEM
   .card-body
     = form_for [:administration, @item], url: @item.persisted? ? administration_item_path(@item) : administration_items_path, method: @item.persisted? ? :patch : :post, html: { id: "item-form" } do |f|
+      = hidden_field_tag "all_sub_categories", @sub_categories.to_json, id: "all-sub-categories-json"
       .container-fluid
         .row
           .col-md
             .form-group
               %label(for="input-item-type") Item Type
               = f.select :item_type, options_for_select([["Item", "Item"], ["Supply", "Supply"]], @item.item_type), { prompt: "--SELECT--" }, { class: "form-control", id: "input-item-type", required: true }
-
           .col-md
             .form-group
               %label(for="input-items-category") Item Category
-              = f.select :items_category_id, options_for_select(::ItemsCategory.all.pluck(:name, :id), @item.items_category_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-items-category", required: true }
-
+              = f.select :items_category_id, options_for_select(@item_categories.map { |c| [c.name, c.id] }, @item.items_category_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-items-category", required: true }
           .col-md
             .form-group
               %label(for="input-sub-category") Sub Category
-              = f.select :sub_category_id, options_for_select(::SubCategory.all.pluck(:name, :id), @item.sub_category_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-sub-category" }
-
+              = f.select :sub_category_id, [], { prompt: "--SELECT--" }, { class: "form-control", id: "input-sub-category", required: false }
         .row.mt-3
           .col
             .form-group
               %label(for="input-name") Item Name
               = f.text_field :name, class: "form-control", id: "input-name", required: true
-
         .row.mt-3
           .col-md-12
             .form-group
               %label(for="input-description") Description
               = f.text_area :description, class: "form-control", id: "input-description", rows: 2
-
         .row.mt-3
           .col-md
             .form-group
               %label(for="input-brand-id") Brand
-              = f.select :brand_id, options_for_select(::Brands.all.pluck(:name, :id), @item.brand_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-brand" }
-       
+              = f.select :brand_id, options_for_select(::Brand.all.pluck(:name, :id), @item.brand_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-brand", required: true }
           .col-md
             .form-group
               %label(for="input-model") Model
-              = f.text_field :model, class: "form-control", id: "input-model"
-
+              = f.text_field :model, class: "form-control", id: "input-model", required: true
           .col-md
             .form-group
               %label(for="input-serial-number") Serial Number
-              = f.text_field :serial_number, class: "form-control", id: "input-serial-number"
-
-
+              = f.text_field :serial_number, class: "form-control", id: "input-serial-number", required: true
         .row.mt-3
           .col
             .form-group
               %label(for="input-unit") Unit
               = f.text_field :unit, class: "form-control", id: "input-unit"
-
           .col
             .form-group
               %label(for="input-unit-price") Unit Price
               = f.number_field :unit_price, class: "form-control", id: "input-unit-price", step: "0.01", min: 0
-
           .col
             .form-group
               %label(for="input-date-purchased") Date Purchased
-              = f.date_field :date_purchased, class: "form-control", id: "input-date-purchased"
-
-
+              = f.date_field :date_purchased, class: "form-control", id: "input-date-purchased", required: true
         .row.mt-3
           .col-md-12
             .form-group
@@ -78,63 +66,56 @@
                   - elsif @item.data && @item.data["supplier_ids"]
                     - selected = @item.data["supplier_ids"].map(&:to_s).include?(supplier.id.to_s)
                   %option{ value: supplier.id, selected: selected }= supplier.name
-
         .row.mt-3
           .col
             %label(for="input-status") Status
             = f.select :status, options_for_select([["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status", required: true }
-
           .col
             .form-check
               = f.hidden_field :is_parent, value: false
               = f.check_box :is_parent, { class: "form-check-input", id: "input-is-parent" }, true, false
               %label.form-check-label{ for: "input-is-parent" } Is Parent?
+              
+        .row.mt-4
+          .col-12
+            #child-items-section{ style: "display: none;" }
+              = render 'administration/items/new_child', inventory: @item, child_mode: (@item.persisted? ? 'update' : 'add')
 
-
-        -# .row.mt-3
-        -#   .col-md-12
-        -#     .form-group
-        -#       %label(for="input-parent-id") Parent Item
-        -#       = f.select :parent_id, options_for_select(Item.where.not(id: @item.id).pluck(:name, :id), @item.parent_id), { prompt: "--SELECT--" }, { class: "form-control", id: "input-parent-id" }
-
-
-
-        = f.hidden_field :id, id: "item-id"
-
-        .form-group.mt-3
+        .form-group.mt-3.text-end
           = f.submit @item.persisted? ? "Update" : "Submit", class: "btn btn-primary"
 
   = stylesheet_link_tag 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
   = javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js'
   = javascript_include_tag 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
 
-  :javascript
-    window.itemData = #{raw(@item.to_json)};
+:javascript
+  window.itemData = #{raw(@item.to_json)};
 
-    $(document).ready(function() {
-      const form = $('#item-form');
-
-      form.submit(function(event) {
-        if ($('#input-supplier-id').val() == null || $('#input-supplier-id').val().length === 0) {
-          alert("Please select at least one Supplier.");
-          event.preventDefault();
-          return;
-        }
-      });
-
-      $('#input-supplier-id').select2({
-        placeholder: "--SELECT SUPPLIERS--",
-        width: '100%',
-        allowClear: true
-      });
-      $('#input-brand-id').select2({
-        placeholder: "--SELECT--",
-        width: '100%',
-        allowClear: true
-      });
-      $('#input-parent-id').select2({
-        placeholder: "--SELECT--",
-        width: '100%',
-        allowClear: true
-      });
+  $(document).ready(function() {
+    const allSubCategories = JSON.parse($('#all-sub-categories-json').val() || '[]');
+    $('#input-items-category').on('change', function() {
+      const selectedCategoryId = $(this).val();
+      const $subCategory = $('#input-sub-category');
+      $subCategory.empty().append($('<option>', { value: '', text: '--SELECT--' }));
+      if (!selectedCategoryId) return;
+      allSubCategories
+        .filter(sc => sc.category_id === selectedCategoryId)
+        .forEach(sc => {
+          $subCategory.append($('<option>', { value: sc.id, text: sc.name }));
+        });
     });
+
+    $('#input-supplier-id').select2({ placeholder: "--SELECT SUPPLIERS--", width: '100%', allowClear: true });
+    $('#input-brand-id').select2({ placeholder: "--SELECT--", width: '100%', allowClear: true });
+    $('#input-parent-id').select2({ placeholder: "--SELECT--", width: '100%', allowClear: true });
+
+    function toggleChildSection() {
+      if ($('#input-is-parent').is(':checked')) {
+        $('#child-items-section').show();
+      } else {
+        $('#child-items-section').hide();
+      }
+    }
+    $('#input-is-parent').on('change', toggleChildSection);
+    toggleChildSection();
+  });
