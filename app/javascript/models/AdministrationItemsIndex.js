@@ -1,7 +1,7 @@
 import Mustache from "mustache";
 import $ from "jquery";
 import * as bootstrap from "bootstrap";
-
+console.log("Loading Administration Items Index module");
 let $btnNew;
 let $btnConfirmNew;
 let $inputName;
@@ -17,8 +17,11 @@ let $isParentCheckbox;
 let _authenticityToken;
 let templateErrorList;
 let modalInstance;
+let childDetails = [];
+let editingChildIndex = null;
 
 const _cacheDom = () => {
+  console.log("Caching DOM elements for Administration Items Index");
   $btnNew = $("#btn-new");
   $btnConfirmNew = $("#btn-confirm-new");
   $inputName = $("#input-name");
@@ -39,26 +42,8 @@ const _cacheDom = () => {
   }
 };
 
-const _loadSubCategories = (categoryId, selectedId = null) => {
-  $inputSubCategory.empty().append('<option value="">--SELECT--</option>');
-  if (!categoryId) return Promise.resolve();
-
-  return $.ajax({
-    url: `/api/v1/administration/sub_categories`,
-    data: { items_category_id: categoryId },
-    success: function (subCategories) {
-      subCategories.forEach(sub => {
-        const selected = selectedId && selectedId == sub.id ? "selected" : "";
-        $inputSubCategory.append(`<option value="${sub.id}" ${selected}>${sub.name}</option>`);
-      });
-    },
-    error: function () {
-      alert("Failed to load sub categories.");
-    }
-  });
-};
-
 const _populateForm = (item) => {
+  console.log("Populating form with item data:", item);
   return new Promise((resolve) => {
     $inputName.val(item.name || "");
     $inputDesc.val(item.description || "");
@@ -69,12 +54,27 @@ const _populateForm = (item) => {
     $itemId.val(item.id || "");
     $isParentCheckbox.prop("checked", !!item.is_parent);
     $message.html("").removeClass("text-danger");
-
-    _loadSubCategories(item.items_category_id, item.sub_category_id).then(resolve).catch(resolve);
+    resolve();
   });
 };
 
+function populateSubCategories(categoryId, selectedSubCategoryId = "") {
+  const allChildSubCategories = JSON.parse($('#all-child-sub-categories-json').val() || '[]');
+  const $subCategory = $('#child_sub_category_id');
+  $subCategory.empty().append($('<option>', { value: '', text: '-- SELECT --' }));
+  if (!categoryId) return;
+  allChildSubCategories
+    .filter(sc => String(sc.category_id) === String(categoryId))
+    .forEach(sc => {
+      $subCategory.append($('<option>', { value: sc.id, text: sc.name }));
+    });
+  if (selectedSubCategoryId) {
+    $subCategory.val(selectedSubCategoryId);
+  }
+}
+
 const _bindEvents = () => {
+  console.log("Binding events for Administration Items Index");
   $btnNew.off("click").on("click", () => {
     _populateForm({
       name: "",
@@ -89,11 +89,6 @@ const _bindEvents = () => {
     }).then(() => {
       if (modalInstance) modalInstance.show();
     });
-  });
-
-  $inputItemsCategory.off("change").on("change", function () {
-    const categoryId = $(this).val();
-    _loadSubCategories(categoryId);
   });
 
   $isParentCheckbox.off("change").on("change", function () {
@@ -214,10 +209,148 @@ const _bindEvents = () => {
   });
 };
 
+const _bindChildAddEvents = () => {
+  console.log("Binding child add events for Administration Items Index");
+  function getText(selector) {
+    return $(selector + " option:selected").text();
+  }
+  function getVal(selector) {
+    return $(selector).val();
+  }
+  function toProperCase(str) {
+    return (str || '').replace(/\w\S*/g, (txt) =>
+      txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
+  }
+
+  function syncChildDetailsField() {
+    $('#child-details-json').val(JSON.stringify(childDetails));
+  }
+
+  function renderChildTable() {
+    const $tbody = $('#child-items-table tbody');
+    $tbody.empty();
+    if (childDetails.length === 0) {
+      $tbody.append('<tr><td colspan="11" class="text-center text-muted">No child details yet.</td></tr>');
+      return;
+    }
+    childDetails.forEach((child, idx) => {
+      $tbody.append(
+        `<tr>
+          <td>${child.item_category || ''}</td>
+          <td>${child.sub_category || ''}</td>
+          <td>${child.name || ''}</td>
+          <td>${child.description || ''}</td>
+          <td>${child.brand || ''}</td>
+          <td>${child.model || ''}</td>
+          <td>${child.serial_number || ''}</td>
+          <td>${child.unit || ''}</td>
+          <td>${child.unit_price || ''}</td>
+          <td>
+            <button type="button" class="btn btn-warning btn-sm update-child" data-index="${idx}">Update</button>
+            <button type="button" class="btn btn-danger btn-sm remove-child" data-index="${idx}">Remove</button>
+          </td>
+        </tr>`
+      );
+    });
+  }
+
+  $(document).off("change", "#child_item_category_id").on("change", "#child_item_category_id", function () {
+    populateSubCategories($(this).val());
+  });
+
+  $(document).off("click", "#add-child-button").on("click", "#add-child-button", function () {
+    var citemType = getText('#child_item_type');
+    var citemTypeId = getVal('#child_item_type');
+    var citemCategory = getText('#child_item_category_id');
+    var citemCategoryId = getVal('#child_item_category_id');
+    var csubCategory = getText('#child_sub_category_id');
+    var csubCategoryId = getVal('#child_sub_category_id');
+    var citemName = toProperCase(getVal('#child_item_name'));
+    var cdescription = getVal('#child_description');
+    var cbrand = getText('#child_brand_id');
+    var cbrandId = getVal('#child_brand_id');
+    var cmodel = getVal('#child_model');
+    var cserial = getVal('#child_serial_number');
+    var cunit = getVal('#child_unit');
+    var cunitPrice = getVal('#child_unit_price');
+    let cunitPriceFormatted = (parseFloat(cunitPrice) || 0).toFixed(2);
+
+    const childData = {
+      item_type: citemType,
+      item_type_id: citemTypeId,
+      item_category: citemCategory,
+      item_category_id: citemCategoryId,
+      sub_category: csubCategory,
+      sub_category_id: csubCategoryId,
+      name: citemName,
+      description: cdescription,
+      brand: cbrand,
+      brand_id: cbrandId,
+      model: cmodel,
+      serial_number: cserial,
+      unit: cunit,
+      unit_price: cunitPriceFormatted
+    };
+
+    if (editingChildIndex !== null) {
+      childDetails[editingChildIndex] = childData;
+      editingChildIndex = null;
+      $("#add-child-button").text("Add Child");
+    } else {
+      childDetails.push(childData);
+    }
+    syncChildDetailsField();
+    renderChildTable();
+
+    $('#child_item_type').val('');
+    $('#child_item_category_id').val('');
+    $('#child_sub_category_id').val('');
+    $('#child_item_name').val('');
+    $('#child_description').val('');
+    $('#child_brand_id').val('');
+    $('#child_model').val('');
+    $('#child_serial_number').val('');
+    $('#child_unit').val('');
+    $('#child_unit_price').val('');
+  });
+
+  $(document).off("click", ".remove-child").on("click", ".remove-child", function () {
+    const rowIndex = $(this).data("index");
+    childDetails.splice(rowIndex, 1);
+    syncChildDetailsField();
+    renderChildTable();
+  });
+
+  $(document).off("click", ".update-child").on("click", ".update-child", function () {
+    const index = $(this).data("index");
+    editingChildIndex = index;
+    const child = childDetails[index];
+
+    $('#child_item_type').val(child.item_type_id || "");
+    $('#child_item_category_id').val(child.item_category_id || "");
+    populateSubCategories(child.item_category_id, child.sub_category_id);
+
+    $('#child_item_name').val(child.name || "");
+    $('#child_description').val(child.description || "");
+    $('#child_brand_id').val(child.brand_id || "");
+    $('#child_model').val(child.model || "");
+    $('#child_serial_number').val(child.serial_number || "");
+    $('#child_unit').val(child.unit || "");
+    $('#child_unit_price').val(child.unit_price || "");
+
+    $("#add-child-button").text("Update Child");
+  });
+
+  renderChildTable();
+};
+
 const init = (options) => {
+  console.log("Initializing Administration Items Index");
   _authenticityToken = options.authenticityToken;
   _cacheDom();
   _bindEvents();
+  _bindChildAddEvents();
 
   if (window.itemData) {
     _populateForm(window.itemData).then(() => {

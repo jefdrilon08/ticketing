@@ -20,12 +20,17 @@ module Administration
     def new
       @item = Item.new
       @items_list = Item.all.sort_by(&:name)
-      logger.debug("Rendering new item form")
+      @item_categories = ::ItemsCategory.all
+      @sub_categories = ::SubCategory.all
+      @brands = ::Brand.all
     end
 
     def edit
       @item = Item.find(params[:id])
       @items_list = Item.all.sort_by(&:name)
+      @item_categories = ::ItemsCategory.all
+      @sub_categories = ::SubCategory.all
+      @brands = ::Brand.all
       render :new
     end
 
@@ -35,15 +40,23 @@ module Administration
 
     def create
       @item = Item.new(item_params)
-
       process_suppliers(@item)
 
-      logger.debug("Creating new item with params: #{item_params.inspect}")
+      child_details = []
+      if params[:item][:data] && params[:item][:data][:child_details].present?
+        child_details = JSON.parse(params[:item][:data][:child_details]) rescue []
+      end
+
+      @item.data ||= {}
+      @item.data["child_details"] = child_details
 
       if @item.save
         redirect_to administration_items_path, notice: 'Item created successfully.'
       else
         @items_list = Item.all.sort_by(&:name)
+        @item_categories = ::ItemsCategory.all
+        @sub_categories = ::SubCategory.all
+        @brands = ::Brand.all
         render :new
       end
     end
@@ -51,13 +64,15 @@ module Administration
     def update
       @item = Item.find(params[:id])
       @item.assign_attributes(item_params)
-
       process_suppliers(@item)
 
       if @item.save
         redirect_to administration_items_path, notice: 'Item updated successfully.'
       else
         @items_list = Item.all.sort_by(&:name)
+        @item_categories = ::ItemsCategory.all
+        @sub_categories = ::SubCategory.all
+        @brands = ::Brand.all
         render :new
       end
     end
@@ -78,24 +93,25 @@ module Administration
 
     private
 
-    def item_params
-      params.require(:item).permit(
-        :item_type,
-        :items_category_id,
-        :sub_category_id,
-        :name,
-        :status,
-        :unit,
-        :description,
-        :is_parent,
-        :parent_id,
-        :brand_id,
-        :model,
-        :serial_number,
-        :date_purchased,
-        :unit_price
-      )
-    end
+  def item_params
+    params.require(:item).permit(
+      :item_type,
+      :items_category_id,
+      :sub_category_id,
+      :name,
+      :status,
+      :unit,
+      :description,
+      :is_parent,
+      :parent_id,
+      :brand_id,
+      :model,
+      :serial_number,
+      :date_purchased,
+      :unit_price,
+      data: {}
+    )
+  end
 
     def process_suppliers(item)
       if params[:item][:supplier_ids].present?

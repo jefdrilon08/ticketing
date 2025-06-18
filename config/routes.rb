@@ -669,6 +669,7 @@ Rails.application.routes.draw do
   get "/bank_transfer", to: "bank_transfer#index"
   get "/bank_transfer/new", to: "bank_transfer#new"
 
+  # ITEM REQUEST
   get "/item_request", to: "item_request#index", as: "item_request_index"
   get "/new_item_request", to: "new_item_request#new", as: "new_item_request"
   post "/new_item_request", to: "new_item_request#create_itemrequest", as: "create_itemrequest"
