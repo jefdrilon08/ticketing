@@ -1,0 +1,37 @@
+= form_tag administration_items_path, method: 'get', id: "filter-form" do
+  .row.g-2{ style: "row-gap: 0rem;" }
+    .col-md-2.col-12
+      .form-group
+        %label Item Category
+        = select_tag :items_category_id, options_from_collection_for_select(@item_categories, :id, :name, params[:items_category_id]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
+    .col-md-2.col-12
+      .form-group
+        %label Sub Category
+        = select_tag :sub_category_id, options_from_collection_for_select(@sub_categories, :id, :name, params[:sub_category_id]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
+    .col-md-2.col-12
+      .form-group
+        %label Item Name
+        = text_field_tag :name, params[:name], class: "form-control form-control-sm"
+    -# .col-md-2.col-12
+    -#   .form-group
+    -#     %label Model
+    -#     = text_field_tag :model, params[:model], class: "form-control form-control-sm"
+    .col-md-2.col-12
+      .form-group
+        %label Serial Number
+        = text_field_tag :serial_number, params[:serial_number], class: "form-control form-control-sm"
+    .col-md-2.col-12
+      .form-group
+        %label Date Purchased
+        = text_field_tag :date_purchased, params[:date_purchased], class: "form-control form-control-sm", type: :date
+    .col-md-1.col-6
+      .form-group
+        %label Status
+        = select_tag :status, options_for_select([['Active', 'Active'], ['Pending', 'Pending'], ['Processing', 'Processing']], params[:status]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
+    .col-auto
+      .form-group
+        %label Actions
+        .form-group
+          .btn-group
+            = button_tag type: 'submit', class: 'btn btn-info btn-sm btn-block', id: "search-btn" do
+              .bi.bi-search

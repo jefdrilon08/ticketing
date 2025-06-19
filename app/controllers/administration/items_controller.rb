@@ -11,10 +11,23 @@ module Administration
           text: "New"
         }
       ]
-      @items_list = Item.includes(:items_category, :sub_category)
-                    .order(:name)
-                    .page(params[:page])
-                    .per(25)
+      @item_categories = ::ItemsCategory.order(:name)
+      @sub_categories = ::SubCategory.order(:name)
+
+      items = Item.includes(:items_category, :sub_category)
+
+      items = items.where(items_category_id: params[:items_category_id]) if params[:items_category_id].present?
+      items = items.where(sub_category_id: params[:sub_category_id]) if params[:sub_category_id].present?
+      items = items.where("LOWER(name) LIKE ?", "%#{params[:name].downcase}%") if params[:name].present?
+      # items = items.where("LOWER(model) LIKE ?", "%#{params[:model].downcase}%") if params[:model].present?
+      items = items.where("LOWER(serial_number) LIKE ?", "%#{params[:serial_number].downcase}%") if params[:serial_number].present?
+      items = items.where(date_purchased: params[:date_purchased]) if params[:date_purchased].present?
+      items = items.where(status: params[:status]) if params[:status].present?
+
+      @items_list = items
+        .order('items_category_id DESC, sub_category_id DESC, name DESC, serial_number DESC, date_purchased DESC, status DESC')
+        .page(params[:page])
+        .per(25)
     end
 
     def new
