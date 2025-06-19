@@ -69,7 +69,7 @@
         %table.table.table-bordered.table-striped
           %thead
             %tr
-              %th Item Type
+              -# %th Item Type
               %th Item Category
               %th Sub Category
               %th Item Name
@@ -82,7 +82,7 @@
           %tbody
             - @item.data["child_details"].each do |child|
               %tr
-                %td= child["item_type"] || "N/A"
+                -# %td= child["item_type"] || "N/A"
                 %td= child["item_category"] || "N/A"
                 %td= child["sub_category"] || "N/A"
                 %td= child["name"] || "N/A"

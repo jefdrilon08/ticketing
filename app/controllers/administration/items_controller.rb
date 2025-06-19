@@ -66,6 +66,17 @@ module Administration
       @item.assign_attributes(item_params)
       process_suppliers(@item)
 
+      child_details = []
+      if params[:item][:data] && params[:item][:data][:child_details].present?
+        begin
+          child_details = JSON.parse(params[:item][:data][:child_details])
+        rescue
+          child_details = []
+        end
+      end
+      @item.data ||= {}
+      @item.data["child_details"] = child_details
+
       if @item.save
         redirect_to administration_items_path, notice: 'Item updated successfully.'
       else
@@ -77,19 +88,19 @@ module Administration
       end
     end
 
-    def destroy
-      @item = Item.find(params[:id])
+  def destroy
+    @item = Item.find(params[:id])
 
-      if @item.destroy
-        render json: { message: 'Item deleted successfully.' }, status: :ok
-      else
-        render json: { messages: ['Error deleting item.'] }, status: :unprocessable_entity
-      end
-    rescue ActiveRecord::InvalidForeignKey, ActiveRecord::DeleteRestrictionError
-      render json: {
-        messages: ['Unable to delete. This item is being used as a Parent Item.']
-      }, status: :unprocessable_entity
+    if @item.destroy
+      render json: { message: 'Item deleted successfully.' }, status: :ok
+    else
+      render json: { messages: ['Error deleting item.'] }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::InvalidForeignKey, ActiveRecord::DeleteRestrictionError
+    render json: {
+      messages: ['Unable to delete. This item is being used as a Parent Item.']
+    }, status: :unprocessable_entity
+  end
 
     private
 

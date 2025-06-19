@@ -685,15 +685,6 @@ Rails.application.routes.draw do
     end
   end
   
-  # #spiderman
-  # namespace :api do
-  #   namespace :v1 do
-  #     namespace :administration do
-  #       resources :items, only: [:create, :update, :destroy, :show]
-  #     end
-  #   end
-  # end
-
   namespace :api do
     namespace :v1 do
       namespace :administration do
@@ -713,9 +704,9 @@ Rails.application.routes.draw do
   end
 
   # ITEMS
-  post "items/create", to: "items#create"
-  put "/items/update", to: "items#update"
-  post "/items/delete", to: "items#delete"
+  post "items/create", to: "administration/items#create"
+  put "items/update", to: "administration/items#update"
+  delete "items/destroy", to: "administration/items#destroy"
   
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
