@@ -2,7 +2,6 @@ class Item < ApplicationRecord
   has_many :borrow_transaction_items
   has_many :inventory_request_details
 
-  # Use child_items to match your controller and avoid confusion
   has_many :child_items, class_name: 'Item', foreign_key: 'parent_id', dependent: :restrict_with_error
   belongs_to :parent, class_name: 'Item', optional: true
 
