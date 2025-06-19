@@ -64,8 +64,7 @@
           %button.btn.btn-primary{ type: "button", id: "add-child-button" }
             = button_label
 
-            
-      = hidden_field_tag "item[data][child_details]", "", id: "child-details-json"
+      = hidden_field_tag "item[data][child_details]", inventory&.data&.dig("child_details")&.to_json || "", id: "child-details-json"
             
       .row.mt-3
         .col-12
@@ -96,7 +95,7 @@
                     %td= child["unit"] || "N/A"
                     %td= child["unit_price"] || "N/A"
                     %td
-                      %button.btn.btn-warning.btn-sm.update-child{ type: "button", data: { index: child_index } } Update
+                      %button.btn.btn-warning.btn-sm.update-child{ type: "button", data: { index: child_index } } Edit
                       %button.btn.btn-danger.btn-sm.remove-child{ type: "button" } Remove
               - else
                 %tr

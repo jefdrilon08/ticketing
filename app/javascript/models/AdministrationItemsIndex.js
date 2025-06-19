@@ -1,7 +1,6 @@
 import Mustache from "mustache";
 import $ from "jquery";
 import * as bootstrap from "bootstrap";
-console.log("Loading Administration Items Index module");
 let $btnNew;
 let $btnConfirmNew;
 let $inputName;
@@ -21,7 +20,6 @@ let childDetails = [];
 let editingChildIndex = null;
 
 const _cacheDom = () => {
-  console.log("Caching DOM elements for Administration Items Index");
   $btnNew = $("#btn-new");
   $btnConfirmNew = $("#btn-confirm-new");
   $inputName = $("#input-name");
@@ -43,7 +41,6 @@ const _cacheDom = () => {
 };
 
 const _populateForm = (item) => {
-  console.log("Populating form with item data:", item);
   return new Promise((resolve) => {
     $inputName.val(item.name || "");
     $inputDesc.val(item.description || "");
@@ -74,7 +71,6 @@ function populateSubCategories(categoryId, selectedSubCategoryId = "") {
 }
 
 const _bindEvents = () => {
-  console.log("Binding events for Administration Items Index");
   $btnNew.off("click").on("click", () => {
     _populateForm({
       name: "",
@@ -124,8 +120,9 @@ const _bindEvents = () => {
     if (!confirmed) return;
 
     $.ajax({
-      url: `/api/v1/administration/items/${itemId}`,
+      url: "/items/destroy",
       method: "DELETE",
+      data: { id: itemId },
       headers: {
         "X-CSRF-Token": _authenticityToken
       },
@@ -133,7 +130,8 @@ const _bindEvents = () => {
         alert("Item deleted successfully.");
         window.location.reload();
       },
-      error: () => {
+      error: (xhr, status, error) => {
+        console.error("Delete failed:", { xhr, status, error, response: xhr.responseText });
         alert("Unable to delete. This item is already used in another module.");
       }
     });
@@ -210,7 +208,6 @@ const _bindEvents = () => {
 };
 
 const _bindChildAddEvents = () => {
-  console.log("Binding child add events for Administration Items Index");
   function getText(selector) {
     return $(selector + " option:selected").text();
   }
@@ -260,15 +257,19 @@ const _bindChildAddEvents = () => {
   });
 
   $(document).off("click", "#add-child-button").on("click", "#add-child-button", function () {
-    var citemType = getText('#child_item_type');
+    function cleanSelect(val) {
+      return (val === "-- SELECT --" || val === "--SELECT--") ? "" : val;
+    }
+
+    var citemType = cleanSelect(getText('#child_item_type'));
     var citemTypeId = getVal('#child_item_type');
-    var citemCategory = getText('#child_item_category_id');
+    var citemCategory = cleanSelect(getText('#child_item_category_id'));
     var citemCategoryId = getVal('#child_item_category_id');
-    var csubCategory = getText('#child_sub_category_id');
+    var csubCategory = cleanSelect(getText('#child_sub_category_id'));
     var csubCategoryId = getVal('#child_sub_category_id');
     var citemName = toProperCase(getVal('#child_item_name'));
     var cdescription = getVal('#child_description');
-    var cbrand = getText('#child_brand_id');
+    var cbrand = cleanSelect(getText('#child_brand_id'));
     var cbrandId = getVal('#child_brand_id');
     var cmodel = getVal('#child_model');
     var cserial = getVal('#child_serial_number');
@@ -346,10 +347,19 @@ const _bindChildAddEvents = () => {
 };
 
 const init = (options) => {
-  console.log("Initializing Administration Items Index");
   _authenticityToken = options.authenticityToken;
   _cacheDom();
   _bindEvents();
+
+  const childDetailsJson = $('#child-details-json').val();
+  if (childDetailsJson) {
+    try {
+      childDetails = JSON.parse(childDetailsJson) || [];
+    } catch (e) {
+      childDetails = [];
+    }
+  }
+  
   _bindChildAddEvents();
 
   if (window.itemData) {
