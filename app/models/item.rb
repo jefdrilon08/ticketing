@@ -7,6 +7,7 @@ class Item < ApplicationRecord
 
   belongs_to :items_category, class_name: 'ItemsCategory', foreign_key: 'items_category_id', optional: true
   belongs_to :sub_category, optional: true
+  belongs_to :brand, optional: true
 
   has_many :inventories
 

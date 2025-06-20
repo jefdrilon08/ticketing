@@ -1,0 +1,113 @@
+.card.mb-3
+  .card-header
+    %h3.mb-0 Item Summary
+  .card-body
+    .row
+      .col-md-4
+        %strong Item Name:
+        = @item.name
+      .col-md-4
+        %strong Category:
+        = @item.items_category&.name || "N/A"
+      .col-md-4
+        %strong Status:
+        - case @item.status.to_s.downcase
+          - when "active"
+            %span.badge.bg-success Active
+          - when "pending"
+            %span.badge.bg-warning Pending
+          - when "processing"
+            %span.badge.bg-info Processing
+          - when "deffective"
+            %span.badge.bg-danger Deffective
+          - when "depreciated"
+            %span.badge.bg-secondary Depreciated
+          - else
+            %span.badge.bg-secondary= @item.status.presence || "N/A"
+    .row.mt-2
+      .col-md-4
+        %strong Brand:
+        = @item.brand&.name || "N/A"
+      .col-md-4
+        %strong Sub Category: 
+        = @item.sub_category&.name || "N/A"
+      .col-md-4
+        %strong Date Purchased:
+        = @item.date_purchased.present? ? @item.date_purchased.strftime("%Y-%m-%d") : "N/A"
+    .row.mt-2
+      .col-md-4
+        %strong Model: 
+        = @item.model.presence || "N/A"
+      .col-md-4
+        %strong Supplier: 
+        = @item.data["supplier_names"].join(", ")
+      .col-md-4
+        %strong Unit Price: 
+        = @item.unit_price.present? ? @item.unit_price : "N/A"
+    .row.mt-2
+      .col-md-4
+        %strong Serial Number: 
+        = @item.serial_number.presence || "N/A"
+    .row.mt-4
+      .col-12
+        - if @item.data && @item.data["child_details"].present?
+          %h4.mb-3 Child Item Details
+          .row
+            - @item.data["child_details"].each do |child|
+              .col-md-6.col-lg-4.mb-3
+                .card.h-100
+                  .card-body
+                    %strong Item Name:
+                    = child["name"].presence || "N/A"
+                    %br/
+                    %strong Brand:
+                    = child["brand"].presence || "N/A"
+                    %br/
+                    %strong Model:
+                    = child["model"].presence || "N/A"
+                    %br/
+                    %strong Serial Number:
+                    = child["serial_number"].presence || "N/A"
+                    -# %br/
+                    -# %strong Unit:
+                    -# = child["unit"].presence || "N/A"
+                    -# %br/
+                    -# %strong Unit Price:
+                    -# = child["unit_price"].presence || "N/A"
+        - else
+          %h6 Child Item Details
+          %p.text-muted No child details available.
+
+
+.row.mt-5
+  .col-12
+    %h4 Distribute Item
+    = form_with url: administration_item_distributions_path, method: :post, local: true do |f|
+      .row
+        .col-md-4
+          .form-group
+            %label(for="distribution_item_name") Item Name
+            = text_field_tag :item_name, @item.name, class: "form-control", readonly: true
+        .col-md-4
+          .form-group
+            %label(for="distribution_mr_number") MR Number
+            = f.text_field :mr_number, class: "form-control", id: "distribution_mr_number", required: true
+        .col-md-4
+          .form-group
+            %label(for="distribution_branch") Branch
+            = f.select :branch_id, options_from_collection_for_select(@branches, :id, :name), { prompt: "--SELECT--" }, class: "form-control", id: "distribution_branch", required: true
+      .row.mt-3
+        .col-md-4
+          .form-group
+            %label(for="distribution_received_by") Received By
+            = f.select :receive_by, options_from_collection_for_select(@employees, :id, :name), { prompt: "--SELECT--" }, class: "form-control", id: "distribution_received_by", required: true
+        .col-md-4
+          .form-group
+            %label(for="distribution_distributed_by") Distributed By
+            = f.select :distributed_by, options_from_collection_for_select(@employees, :id, :name), { prompt: "--SELECT--" }, class: "form-control", id: "distribution_distributed_by", required: true
+        .col-md-4
+          .form-group
+            %label(for="distribution_quantity") Quantity
+            = f.number_field :quantity, class: "form-control", id: "distribution_quantity", min: 1, required: true
+      .form-group.mt-3.text-end
+        = f.submit "Distribute", class: "btn btn-primary"

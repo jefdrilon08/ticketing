@@ -69,18 +69,16 @@
         .row.mt-3
           .col
             %label(for="input-status") Status
-            = f.select :status, options_for_select([["Active", "Active"], ["Pending", "Pending"], ["Processing", "Processing"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status", required: true }
+            = f.select :status, options_for_select([["Active", "Active"],["Pending", "Pending"],["Processing", "Processing"],["Deffective", "Deffective"],["Depreciated", "Depreciated"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status", required: true }
           .col
             .form-check
               = f.hidden_field :is_parent, value: false
               = f.check_box :is_parent, { class: "form-check-input", id: "input-is-parent" }, true, false
               %label.form-check-label{ for: "input-is-parent" } Is Parent?
-              
         .row.mt-4
           .col-12
             #child-items-section{ style: "display: none;" }
               = render 'administration/items/new_child', inventory: @item, child_mode: (@item.persisted? ? 'update' : 'add')
-
         .form-group.mt-3.text-end
           = f.submit @item.persisted? ? "Update" : "Submit", class: "btn btn-primary"
 

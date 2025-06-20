@@ -48,6 +48,14 @@ module Administration
     end
 
     def show
+      @subheader_side_actions = [
+        {
+          id: "btn-distribute",
+          link: distribute_administration_item_path,
+          class: "fa fa-box",
+          text: "Distribute"
+        }
+      ]
       @item = Item.includes(:items_category, :sub_category).find(params[:id])
     end
 
@@ -113,6 +121,10 @@ module Administration
     render json: {
       messages: ['Unable to delete. This item is being used as a Parent Item.']
     }, status: :unprocessable_entity
+  end
+
+  def distribute
+    @item = Item.includes(:items_category, :sub_category).find(params[:id])
   end
 
     private
