@@ -9,6 +9,7 @@
       %th.text-center Category
       %th.text-center Sub Category
       %th.text-center Item Name
+      %th.text-center Brand
       %th.text-center Model
       %th.text-center Serial Number
       %th.text-center Date Purchased
@@ -23,6 +24,7 @@
         %td{ style: "text-transform: uppercase;" }= a.items_category&.name || "N/A"
         %td{ style: "text-transform: uppercase;" }= a.sub_category&.name || "N/A"
         %td{ style: "text-transform: uppercase;" }= a.name
+        %td{ style: "text-transform: uppercase;" }= a.brand&.name.presence || "N/A"
         %td{ style: "text-transform: uppercase;" }= a.model.presence || "N/A"
         %td{ style: "text-transform: uppercase;" }= a.serial_number.presence || "N/A"
         %td{ style: "text-transform: uppercase;" }= a.date_purchased.present? ? a.date_purchased.strftime("%Y-%m-%d") : "N/A"
@@ -34,6 +36,10 @@
             %span.badge.bg-warning Pending
           - when "processing"
             %span.badge.bg-info Processing
+          - when "deffective"
+            %span.badge.bg-danger Deffective
+          - when "depreciated"
+            %span.badge.bg-secondary Depreciated
           - else
             %span.badge.bg-secondary= a.status.presence || "N/A"
         %td.text-center

@@ -707,6 +707,7 @@ Rails.application.routes.draw do
   post "items/create", to: "administration/items#create"
   put "items/update", to: "administration/items#update"
   delete "items/destroy", to: "administration/items#destroy"
+  get 'items/:id/distribute', to: 'administration/items#distribute', as: :distribute_administration_item
   
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks

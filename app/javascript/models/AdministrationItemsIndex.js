@@ -46,7 +46,7 @@ const _populateForm = (item) => {
     $inputDesc.val(item.description || "");
     $inputUnit.val(item.unit || "");
     $inputItemsCategory.val(item.items_category_id || "");
-    $inputStatus.val(item.status || "Active");
+    $inputStatus.val(item.status || "Pending");
     $inputParentId.val(item.parent_id || "");
     $itemId.val(item.id || "");
     $isParentCheckbox.prop("checked", !!item.is_parent);
@@ -78,7 +78,7 @@ const _bindEvents = () => {
       unit: "",
       items_category_id: "",
       sub_category_id: null,
-      status: "Active",
+      status: "Pending",
       id: "",
       is_parent: false,
       parent_id: ""
