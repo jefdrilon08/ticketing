@@ -331,7 +331,12 @@ class SystemTicketsController < ApplicationController
         puts ""
         @system_members=[]
         @non_system_members=[]
+        @def_milestones=[]
         members=SystemTicketsUser.where(system_ticket_id:params[:id])
+
+        if SystemTicket.find(@system_id).data["default_milestones"].present?
+            then @def_milestones=SystemTicket.find(@system_id).data["default_milestones"]
+        end
 
         User.order("last_name ASC").all.each do |x|
             @non_system_members.push(x.id)
@@ -607,6 +612,45 @@ class SystemTicketsController < ApplicationController
             end
         end
     end 
+
+    def add_default_milestone
+        puts params
+        def_ms=SystemTicket.find(params[:id])
+        def_ms_data=def_ms.data
+
+        if !def_ms_data["default_milestones"].present?
+        then def_ms_data["default_milestones"]=[]
+        end
+
+        puts def_ms_data["default_milestones"].present?
+        def_ms_data["default_milestones"].push([DateTime.now(),params[:new_d_ms],DateTime.now()])
+
+        def_ms.update!(data:def_ms_data)
+        redirect_to "/system_tickets_#{params[:id]}/edit"
+    end
+
+    def edit_default_milestone
+        puts params
+        def_ms=SystemTicket.find(params[:id])
+        def_ms_data=def_ms.data
+
+        def_ms_data["default_milestones"][params[:index_e].to_i][1]=params[:details]
+        def_ms_data["default_milestones"][params[:index_e].to_i][2]=DateTime.now()
+
+        def_ms.update!(data:def_ms_data)
+        redirect_to "/system_tickets_#{params[:id]}/edit"
+    end
+
+    def delete_default_milestone
+        puts params
+        def_ms=SystemTicket.find(params[:id])
+        def_ms_data=def_ms.data
+
+        def_ms_data["default_milestones"].delete_at(params[:index_d].to_i)
+        
+        def_ms.update!(data:def_ms_data)
+        redirect_to "/system_tickets_#{params[:id]}/edit"
+    end
 
     def edit_milestone
         puts params

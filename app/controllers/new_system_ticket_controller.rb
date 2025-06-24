@@ -69,6 +69,10 @@ class NewSystemTicketController < ApplicationController
         end
 
         file_arr=[]
+        
+        if SystemTicket.find(params[:id]).data["default_milestones"].present?
+        then milestones=SystemTicket.find(params[:id]).data["default_milestones"]
+        end
 
         if params[:file]!=nil
             params[:file].each do |x|
@@ -133,5 +137,18 @@ class NewSystemTicketController < ApplicationController
             else
                 render :new, status: :unprocessable_entity
             end
+        
+        if !milestones.empty?
+            milestones.each do |x|
+                @ms=Milestone.new(
+                            system_ticket_desc_id:@record.id,
+                            milestone_details:x[1],
+                            status:'pending',
+                            assigned_person:main_dev,
+                            target_date:params[:date]
+                        )
+                @ms.save!
+            end
+        end
     end
 end

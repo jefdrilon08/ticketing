@@ -796,6 +796,9 @@ Rails.application.routes.draw do
   post "system_tickets/join_st",            to: "system_tickets#join_st"
   post "system_tickets/chat",               to: "system_tickets#chat"
   post "system_tickets/make_private",       to: "system_tickets#make_private"
+  post "system_tickets/add_default_milestone", to: "system_tickets#add_default_milestone"
+  post "system_tickets_:id/edit_default_milestone", to: "system_tickets#edit_default_milestone"
+  post "system_tickets_:id/delete_default_milestone", to: "system_tickets#delete_default_milestone"
 
   delete "system_tickets_:id/delete_ticket",    to: "system_tickets#delete_ticket"
 

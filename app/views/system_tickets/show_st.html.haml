@@ -129,6 +129,105 @@
             .form-group
               =button_tag type: 'button', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn3" do
                 Save Members
+  %hr{:style=>"color:white"}
+  .card.some{:style=>"padding:1%"}    
+    %table.table{:style=>"border-color:white;font-size:110%"}
+      =form_tag "/system_tickets/add_default_milestone", multipart: true, method: 'POST' do
+        %tr
+          %td
+            .form-group
+              %label
+                Default Milestones
+                =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+        %tr
+          %td{:style=>"width:50%"}
+            .form-group
+              =text_field_tag :new_d_ms,params[:new_d_ms],class:'form-control',placeholder:'Add new default milestone'
+          %td
+            &nbsp&nbsp&nbsp&nbsp&nbsp
+            .form-group
+              =button_tag type: 'submit', class: 'btn btn-info' do
+                Add
+    %table.table.table-bordered.table-sm{:style=>"font-size:110%"}
+      -if @def_milestones.empty?
+        %tr
+          %td
+            %center
+              %h5{:style=>"margin:50px"}
+                No default milestone found.
+      -else
+        %tr
+          %th{:style=>"width:10%"}
+            %center
+              Date created
+          %th{:style=>"width:10%"}
+            %center
+              Date modified
+          %th{:style=>"width:70%"}
+            Milestone details
+          %th
+            Actions
+        -@def_milestones.each_with_index do |x,y|
+          %tr
+            %td{:style=>"padding:15px"}
+              %center
+                #{x[0].to_date}
+            %td{:style=>"padding:15px"}
+              %center
+                #{x[2].to_date}
+            %td{:style=>"padding:15px"}
+              #{x[1]}
+            %td{:style=>"padding:15px"}
+              %center
+                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-defaultms"},onclick:"returnIndex(#{y})" do
+                  =button_tag type: 'submit', class: 'btn btn-info' do
+                    Edit
+                %nbsp
+                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-delete-defaultms"},onclick:"returnIndex(#{y})" do
+                  =button_tag type: 'submit', class: 'btn btn-danger' do
+                    Delete
+#modal-delete-defaultms.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Confirm Deletion
+      .modal-body
+        %hr{:style=>"height:15px;color:white"}
+        %div{:id=>"toDelete"}
+        %hr{:style=>"height:30px;color:white"}
+        %div{:id=>"confirmed",:style=>"display:none;color:green"}
+          Success! Deleting milestone...
+        = form_tag "delete_default_milestone", method: 'post' do
+          .form-group
+            =text_field_tag :index_d,params[:index_d],class:'form-control',id:"forDelete",style:"display:none"
+          %hr{style:"height:5px;color:white"}
+          .form-group
+            =button_tag type: 'submit', class: 'btn btn-danger',onclick:'confirmDelete()' do
+              Confirm
+
+#modal-edit-defaultms.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h3.modal-title 
+          Edit Details
+      .modal-body
+        %label
+          Old Details
+        %div{id:"toEdit"}
+        %hr{style:"height:10px;color:white"} 
+        %label
+          New Details
+        = form_tag "edit_default_milestone", method: 'POST' do
+          .form-group
+            =text_area_tag :details,params[:details],class:'form-control',required:true
+          .form-group
+            =text_field_tag :index_e,params[:index_e],class:'form-control',id:"forEdit",style:"display:none"
+          %hr{style:"height:5px;color:white"}
+            .form-group
+              =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
+                Save
 
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
@@ -282,3 +381,16 @@
             document.getElementById(arr_id[i][1]).name="t-"+i
         }
     }
+  function returnIndex(x)
+  {
+    var milestones=#{@def_milestones}
+    document.getElementById("forEdit").value=x
+    document.getElementById("forDelete").value=x
+    document.getElementById("toDelete").innerHTML="Are you sure you want to delete "+milestones[x][1]+"?"
+    document.getElementById("toEdit").innerHTML=milestones[x][1]
+  }
+
+  function confirmDelete()
+  {
+    document.getElementById("confirmed").style.display="block";
+  }
