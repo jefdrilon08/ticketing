@@ -110,6 +110,8 @@ class PagesController < ApplicationController
     SystemTicketsUser.all.each do |x|
       if x.role=="Developer" && x.status=="active" then developers.push(x)
       end
+      if x.role=="Admin" && x.status=="admin" then developers.push(x)
+      end
     end
 
     developers.each do |x|

@@ -357,7 +357,7 @@
                                                     %center
                                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
                                                             Set date
-                                            -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                            -elsif @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
                                                 %p
                                                     %center
                                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
@@ -455,7 +455,7 @@
                                                                 .form-group
                                                                     =text_field_tag :ms_id,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
                                                                 -if !@ticket.data["on_hold"]
-                                                                    -if @ticket.status!="done"
+                                                                    -if @ticket.status!="done" && @ticket.status!="pending" && @ticket.status!="approved"
                                                                         -if @role==3 || @role==5
                                                                             = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
                                                                                 Update
