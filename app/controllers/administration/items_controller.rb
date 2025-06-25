@@ -125,6 +125,31 @@ module Administration
 
   def distribute
     @item = Item.includes(:items_category, :sub_category).find(params[:id])
+    @branches = Branch.where(active: true).order(:name)
+    @users = User.order(:first_name, :last_name)
+    @distributors = User.all.select { |u| (u.roles & ["MIS", "OAS"]).any? }
+                       .sort_by { |u| [u.first_name.to_s.downcase, u.last_name.to_s.downcase] }
+  end
+
+  def create_distribute
+    item_distribution = ItemDistribution.new(
+      item_id: params[:item_id],
+      branch_id: params[:branch_id],
+      distributed_by: params[:distributed_by],
+      receive_by: params[:receive_by],
+      mr_number: params[:mr_number],
+      distributed_at: Time.current
+    )
+
+    if item_distribution.save
+      if params[:item_id].present?
+        item = Item.find_by(id: params[:item_id])
+        item.update(status: "Processing") if item
+      end
+      redirect_back fallback_location: administration_items_path, notice: "Distribution saved!"
+    else
+      redirect_back fallback_location: administration_items_path, alert: item_distribution.errors.full_messages.join(", ")
+    end
   end
 
     private

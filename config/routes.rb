@@ -67,9 +67,6 @@ Rails.application.routes.draw do
   get "/import_insurance_accounts", to: "pages#import_insurance_accounts"
   get "/import_insurance_account_transactions", to: "pages#import_insurance_account_transactions"
   
-  #Item Distribution
-  resources :item_distributions, only: [:index, :new, :show, :create, :edit, :update, :destroy]
-  
   # upload-deposit page
   get "/upload_deposit", to: "pages#upload_deposit"
   get "/upload_insurance_withdrawal", to: "pages#upload_insurance_withdrawal"
@@ -708,7 +705,12 @@ Rails.application.routes.draw do
   put "items/update", to: "administration/items#update"
   delete "items/destroy", to: "administration/items#destroy"
   get 'items/:id/distribute', to: 'administration/items#distribute', as: :distribute_administration_item
-  
+
+  post 'items/:id/create_distribute', to: 'administration/items#create_distribute', as: :create_distribute_administration_item
+    
+  #ITEM DISTRIBUTION
+  get "/item_distribution", to: "item_distributions#index", as: :items_distribution
+
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
   get "/stocks/new", to: "stocks#new", as: :new_inventory

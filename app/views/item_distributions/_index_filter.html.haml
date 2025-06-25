@@ -1,0 +1,17 @@
+= form_tag items_distribution_path, method: 'get', id: "filter-form" do
+  .row.g-2{ style: "row-gap: 0rem;" }
+    .col-md-3.col-12
+      .form-group
+        %label MR Number
+        = text_field_tag :mr_number, params[:mr_number], class: "form-control form-control-sm"
+    .col-md-3.col-12
+      .form-group
+        %label Branch
+        = select_tag :branch_id, options_from_collection_for_select(@branches.values, :id, :name, params[:branch_id]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
+    .col-auto
+      .form-group
+        %label Actions
+        .form-group
+          .btn-group
+            = button_tag type: 'submit', class: 'btn btn-info btn-sm btn-block', id: "search-btn" do
+              .bi.bi-search
