@@ -97,9 +97,13 @@
                 = f.text_field :mr_number, id: "distribution_mr_number", class: "form-control", required: true
             .col-md-4
               .form-group
+                = f.label :inventory_number, "Inventory Number"
+                = f.text_field :inventory_number, id: "distribution_inventory_number", class: "form-control", required: true
+          .row.mt-3
+            .col-md-4
+              .form-group
                 = f.label :branch_id, "Branch"
                 = f.select :branch_id, options_for_select(@branches.map { |b| [b.name.titleize, b.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true
-          .row.mt-3
             .col-md-4
               .form-group
                 = f.label :receive_by, "Received By"

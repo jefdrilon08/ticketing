@@ -1,7 +1,7 @@
 .card
   .card-header.bg-primary.text-white
     %h4.mb-0 Item Distribution List
-    
+
   .card-body
     = render 'index_filter'
     .table-responsive
@@ -10,6 +10,7 @@
           %thead.table-primary
             %tr
               %th MR Number
+              %th Inventory Number
               %th Item Name
               %th Branch
               %th Distributed By
@@ -19,6 +20,7 @@
             - @item_distributions.each do |dist|
               %tr
                 %td= dist.mr_number
+                %td= dist.inventory_number
                 %td= dist.item_id && Item.find_by(id: dist.item_id)&.name || "N/A"
                 %td= @branches[dist.branch_id]&.name&.to_s&.titleize || "-"
                 - distributed_by_user = @users[dist.distributed_by]
