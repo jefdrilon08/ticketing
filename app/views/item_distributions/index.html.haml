@@ -13,9 +13,12 @@
               %th Inventory Number
               %th Item Name
               %th Branch
-              %th Distributed By
+              -# %th Check Voucher
               %th Received By
+              %th Distributed By
               %th Distributed At
+              %th.text-center Status
+              %th.text-center Actions
           %tbody
             - @item_distributions.each do |dist|
               %tr
@@ -23,11 +26,26 @@
                 %td= dist.inventory_number
                 %td= dist.item_id && Item.find_by(id: dist.item_id)&.name || "N/A"
                 %td= @branches[dist.branch_id]&.name&.to_s&.titleize || "-"
-                - distributed_by_user = @users[dist.distributed_by]
-                %td= distributed_by_user ? "#{distributed_by_user.first_name} #{distributed_by_user.last_name}".to_s.titleize : "-"
+                -# %td= dist.check_voucher                
                 - receive_by_user = @users[dist.receive_by]
                 %td= receive_by_user ? "#{receive_by_user.first_name} #{receive_by_user.last_name}".to_s.titleize : "-"
+                - distributed_by_user = @users[dist.distributed_by]
+                %td= distributed_by_user ? "#{distributed_by_user.first_name} #{distributed_by_user.last_name}".to_s.titleize : "-"
                 %td= dist.distributed_at&.strftime("%Y-%m-%d %H:%M") || "-"
+                %td.text-center
+                  - if dist.status.to_s.downcase == "approved"
+                    %span.badge.bg-success Approved
+                  - elsif dist.status.to_s.downcase == "pending" || dist.status.blank?
+                    %span.badge.bg-warning Pending
+                  - else
+                    %span.badge.bg-secondary= dist.status.titleize
+                %td.text-center
+                  .d-flex.gap-1
+                    - unless dist.status.to_s.downcase == "void"
+                      = button_to approve_item_distribution_path(dist), method: :post, class: "btn btn-success btn-sm flex-fill", data: { confirm: "Are you sure you want to approve this distribution?" } do
+                        %i.bi.bi-check
+                      = button_to void_item_distribution_path(dist), method: :post, class: "btn btn-danger btn-sm flex-fill", data: { confirm: "Are you sure you want to void this distribution?" } do
+                        %i.bi.bi-x
         = paginate @item_distributions
       - else
         .alert.alert-warning.text-center

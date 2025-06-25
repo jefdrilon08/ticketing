@@ -139,13 +139,14 @@ module Administration
       receive_by: params[:receive_by],
       mr_number: params[:mr_number],
       inventory_number: params[:inventory_number],
+      status: "pending",
       distributed_at: Time.current
     )
 
     if item_distribution.save
       if params[:item_id].present?
         item = Item.find_by(id: params[:item_id])
-        item.update(status: "Pending") if item
+        item.update(status: "Processing") if item
       end
       redirect_to administration_items_path, notice: "Distribution saved!"
     else

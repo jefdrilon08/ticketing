@@ -711,6 +711,13 @@ Rails.application.routes.draw do
   #ITEM DISTRIBUTION
   get "/item_distribution", to: "item_distributions#index", as: :items_distribution
 
+  resources :item_distributions, only: [:index] do
+    member do
+      post :approve
+      post :void
+    end
+  end
+
   # STOCK
   get "/stocks", to: "stocks#index", as: :stocks
   get "/stocks/new", to: "stocks#new", as: :new_inventory
