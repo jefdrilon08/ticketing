@@ -112,5 +112,11 @@
               .form-group
                 = f.label :distributed_by, "Distributed By"
                 = f.select :distributed_by, options_for_select(@distributors.map { |u| [("#{u.first_name} #{u.last_name}".strip.presence || u.username || u.email).to_s.titleize, u.id] }), { include_blank: "--SELECT--" }, class: "form-control select2", required: true
+
+            .col-md-4.offset-md-8.d-flex.align-items-center.justify-content-end
+              .form-check.mt-2
+                = f.check_box :attached_mr_sticker, { class: "form-check-input", id: "attached_mr_sticker" }, true, false
+                = f.label :attached_mr_sticker, "Attached MR Sticker?", class: "form-check-label ms-2", for: "attached_mr_sticker"
+
           .form-group.mt-3.text-end
             = f.submit "Distribute", class: "btn btn-primary"

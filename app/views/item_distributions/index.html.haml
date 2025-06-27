@@ -40,12 +40,15 @@
                   - else
                     %span.badge.bg-secondary= dist.status.titleize
                 %td.text-center
-                  .d-flex.gap-1
+                  .d-flex.justify-content-center
                     - unless dist.status.to_s.downcase == "void"
-                      = button_to approve_item_distribution_path(dist), method: :post, class: "btn btn-success btn-sm flex-fill", data: { confirm: "Are you sure you want to approve this distribution?" } do
-                        %i.bi.bi-check
-                      = button_to void_item_distribution_path(dist), method: :post, class: "btn btn-danger btn-sm flex-fill", data: { confirm: "Are you sure you want to void this distribution?" } do
-                        %i.bi.bi-x
+                      = link_to item_distribution_path(dist), class: "btn btn-info btn-sm p-1 d-flex align-items-center justify-content-center", title: "View", style: "width:40px; height:32px;" do
+                        %i.bi.bi-eye
+                      -# = button_to approve_item_distribution_path(dist), method: :post, class: "btn btn-success btn-sm flex-fill", data: { confirm: "Are you sure you want to approve this distribution?" } do
+                      -#   %i.bi.bi-check
+                      -# = button_to void_item_distribution_path(dist), method: :post, class: "btn btn-danger btn-sm flex-fill", data: { confirm: "Are you sure you want to void this distribution?" } do
+                      -#   %i.bi.bi-x
+                   
         = paginate @item_distributions
       - else
         .alert.alert-warning.text-center

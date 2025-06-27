@@ -132,12 +132,21 @@ module Administration
   end
 
   def create_distribute
+    attached_param = params.dig(:item_distribution, :attached_mr_sticker) || params[:attached_mr_sticker]
+    is_sticker_attached = attached_param.to_s == "1" || attached_param.to_s.downcase == "true"
+
+    Rails.logger.debug "Sticker attached: #{is_sticker_attached}"
+    Rails.logger.debug "params: #{attached_param.inspect}"
+  
     item_distribution = ItemDistribution.new(
       item_id: params[:item_id],
       branch_id: params[:branch_id],
       distributed_by: params[:distributed_by],
       receive_by: params[:receive_by],
       mr_number: params[:mr_number],
+      data: {
+        is_sticker_attached: is_sticker_attached
+      },
       inventory_number: params[:inventory_number],
       status: "pending",
       distributed_at: Time.current

@@ -1,35 +1,106 @@
-%h2.text-center.text-primary.mt-4 Item Distribution Details
-%hr(style="height:2px; background-color:#007bff;")
+.card
+  .card-header.bg-info.text-white
+    %h4.mb-0 Item Distribution Details
 
-.container.mt-4
-  .row
-    .col-md-8.offset-md-2
-      .card.shadow-sm
-        .card-header.bg-primary.text-white
-          %h4.mb-0.text-center Distribution Information
-        .card-body
-          %table.table.table-bordered.table-striped
-            %tbody
-              %tr
-                %th ID
-                %td.text-muted= @item_distribution.id # Display the database primary key (integer ID)
-              %tr
-                %th Item
-                %td.text-muted= @item_distribution.item_table # Display the stored item name
-              %tr
-                %th Branch
-                %td.text-muted= @item_distribution.branch_id # Display the stored branch name
-              %tr
-                %th Employee
-                %td.text-muted= @item_distribution.employee_id # Display the stored employee name
-              %tr
-                %th Quantity
-                %td.text-muted= @item_distribution.quantity
-              %tr
-                %th Distributed By
-                %td.text-muted= @item_distribution.distributed_by
-              %tr
-                %th Received By
-                %td.text-muted= @item_distribution.receive_by
-      .card-footer.text-center.mt-3
-        = link_to 'Back to Distributions', item_distributions_path, class: 'btn btn-secondary btn-sm'
+  .card-body
+    %form{ id: "itemDistForm", action: item_distribution_path(@item_distribution), method: "post" }
+      = hidden_field_tag :authenticity_token, form_authenticity_token
+      = hidden_field_tag :_method, "patch"
+      .container-fluid
+        .row
+          .col-md-6
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "item_name" } Item Name
+              .col-sm-8
+                %input.form-control{ type: "text", id: "item_name", value: @item&.name || "N/A", disabled: true }
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "mr_number" } MR Number
+              .col-sm-8
+                %input.form-control{ type: "text", id: "mr_number", name: "item_distribution[mr_number]", value: @item_distribution.mr_number, disabled: true }
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "inventory_number" } Inventory Number
+              .col-sm-8
+                %input.form-control{ type: "text", id: "inventory_number", name: "item_distribution[inventory_number]", value: @item_distribution.inventory_number, disabled: true }
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "branch_id" } Branch
+              .col-sm-8
+                %select.form-control{ id: "branch_id", name: "item_distribution[branch_id]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @branches.values.sort_by { |b| b.name.to_s.downcase }.each do |branch|
+                    %option{ value: branch.id, selected: (@item_distribution.branch_id.to_s == branch.id.to_s) }= branch.name.titleize
+
+          .col-md-6
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "receive_by" } Received By
+              .col-sm-8
+                %select.form-control{ id: "receive_by", name: "item_distribution[receive_by]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @users.values.sort_by { |u| "#{u.first_name} #{u.last_name}".to_s.downcase }.each do |user|
+                    - name = "#{user.first_name} #{user.last_name}".strip.presence || user.username || user.email
+                    %option{ value: user.id, selected: (@item_distribution.receive_by.to_s == user.id.to_s) }= name.titleize
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "distributed_by" } Distributed By
+              .col-sm-8
+                %select.form-control{ id: "distributed_by", name: "item_distribution[distributed_by]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @distributors.sort_by { |u| "#{u.first_name} #{u.last_name}".to_s.downcase }.each do |user|
+                    - name = "#{user.first_name} #{user.last_name}".strip.presence || user.username || user.email
+                    %option{ value: user.id, selected: (@item_distribution.distributed_by.to_s == user.id.to_s) }= name.titleize
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "distributed_at" } Distributed At
+              .col-sm-8
+                %input.form-control{ type: "date", id: "distributed_at", name: "item_distribution[distributed_at]", value: @item_distribution.distributed_at&.strftime("%Y-%m-%d"), disabled: true }
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "status" } Status
+              .col-sm-8
+                %input.form-control{ type: "text", id: "status", name: "item_distribution[status]", value: @item_distribution.status&.titleize || "-", disabled: true }
+
+            .row.mb-3
+              .col-sm-8
+                .form-check
+                  %input.form-check-input{
+                    type: "checkbox",
+                    id: "attached_mr_sticker",
+                    name: "item_distribution[attached_mr_sticker]",
+                    value: "true",
+                    disabled: true,
+                    checked: @item_distribution.data && @item_distribution.data["is_sticker_attached"].to_s == "true"
+                  }
+                  %label.form-check-label{ for: "attached_mr_sticker" } Attached MR Sticker?
+
+        .row.mt-3
+          .col-12.d-flex.justify-content-end.align-items-center.gap-2
+            %button.btn.btn-primary#editBtn{ type: "button", onclick: "enableEdit()" } Edit
+            %button.btn.btn-success#saveBtn{ type: "submit", style: "display:none" } Save
+            = link_to "Back", item_distributions_path, class: "btn btn-secondary"
+
+:javascript
+  function enableEdit() {
+    var form = document.getElementById('itemDistForm');
+    Array.from(form.elements).forEach(function(el) {
+      if (
+        el.type !== "hidden" &&
+        el.name !== "authenticity_token" &&
+        el.id !== "item_name" &&
+        el.id !== "status"
+      ) {
+        el.disabled = false;
+      }
+    });
+    document.getElementById('editBtn').style.display = 'none';
+    document.getElementById('saveBtn').style.display = '';
+  }

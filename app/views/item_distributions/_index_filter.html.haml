@@ -7,7 +7,10 @@
     .col-md-3.col-12
       .form-group
         %label Branch
-        = select_tag :branch_id, options_from_collection_for_select(@branches.values, :id, :name, params[:branch_id]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
+        = select_tag :branch_id,
+          options_for_select(@branches.values.sort_by { |b| b.name.to_s.downcase }.map { |b| [b.name.to_s.titleize, b.id] },params[:branch_id]),
+          class: "form-control select-select2 form-control-sm",
+          prompt: "-- SELECT --"
     .col-auto
       .form-group
         %label Actions
