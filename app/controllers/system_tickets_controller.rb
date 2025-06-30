@@ -222,7 +222,6 @@ class SystemTicketsController < ApplicationController
                 end
 
                 puts read
-                puts "wawawawawa1"
 
                 if x[:data]["chat"].present?
                     if current_user.id==x[:data]["chat"].last()[0] then read=true
@@ -230,16 +229,11 @@ class SystemTicketsController < ApplicationController
                 end
                 
                 puts read
-                puts "wawawawawa2"
 
                 if current_user.id==x.requested_by
                     is_a_m=1 
                     if x.data["read_by_req"] then read=true end
                 end
-
-                
-
-                    puts "wawawawawa3"
 
                 if sdate==nil 
                     then sdate="Not yet set." 
@@ -335,7 +329,6 @@ class SystemTicketsController < ApplicationController
     def show_st
         @system_name=ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id)[:name]
         @system_id=params[:id]
-        puts ""
         @system_members=[]
         @non_system_members=[]
         @def_milestones=[]
@@ -589,16 +582,16 @@ class SystemTicketsController < ApplicationController
 
         if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
             if @role==1 || @role==5 || @ticket.requested_by==current_user.id
-                @subheader_side_actions << {
-                        id: "btn-status",
-                        link: "edit_ticket_status/#{params[:id]}=1",
-                        class: "fa fa-check",
-                        data: { id: @ticket.id},
+                @subheader_side_actions = {
+                        id: "btn-status-enhancement",
+                        link: "#",
+                        class: "fa fa-plus",
+                        data: { id: @ticket.id,"bs-target": "#modal-for-enhancement","bs-toggle":"modal"},
                         text: "For Enhancement"
-                }
-                @subheader_side_actions << {
+                },
+                {
                         id: "btn-status",
-                        link: "edit_ticket_status/#{params[:id]}=2",
+                        link: "edit_ticket_status/#{params[:id]}",
                         class: "fa fa-check",
                         data: { id: @ticket.id},
                         text: "Verify"
@@ -609,16 +602,9 @@ class SystemTicketsController < ApplicationController
     end
 
     def edit_ticket_status
-
-        puts "lolz"
         puts params 
-
-        temp=params[:id].split( /= */ )
-
-        puts temp[1]
         
-        edit_tixdesc=SystemTicketDesc.find(temp[0])
-        edit_tix=SystemTicket.find(edit_tixdesc[:system_ticket_id])
+        edit_tixdesc=SystemTicketDesc.find(params[:id])
         new_status= ""
 
         case edit_tixdesc[:status]
@@ -631,28 +617,59 @@ class SystemTicketsController < ApplicationController
             when "processing"
                 new_status= "for verification"
             when "for verification"
-                if temp[1].to_i==1
-                    then new_status= "processing"
-                elsif temp[1].to_i==2
-                    then new_status= "done"
-                end
+                new_status= "done"
         end
 
         edit_tixdesc[:status]=new_status
-        edit_tix[:status]=new_status
 
         if edit_tixdesc[:data]["save_details"]== nil then edit_tixdesc[:data]["save_details"]=["status"=>new_status,"date"=>DateTime.now()]
             else edit_tixdesc[:data]["save_details"].push({"status"=>new_status,"date"=>DateTime.now()})
         end
 
         if edit_tixdesc.update(status:new_status)
-            if edit_tix.update(status:new_status)
                 redirect_to "/system_tickets/#{edit_tixdesc[:id]}"
             else
                 render :edit, status: :unprocessable_entity
-            end
         end
     end 
+
+    def for_enhancement
+        puts params
+
+        edit_tixdesc=SystemTicketDesc.find(params[:id])
+        edit_tix=edit_tixdesc["data"]
+
+        edit_tix["chat"].push([current_user.id,Time.new.strftime("%A %B %d, %Y %I:%M %p"),"For Enhancement: #{params[:reason]}"])
+
+        edit_tix["team_members"].each do |x|
+            if x.count==3       
+                then if SystemTicketsUser.find(x[0]).user_id==current_user.id
+                    then x[2]=true
+                else x[2]=false
+                end
+            else
+                if SystemTicketsUser.find(x[0]).user_id==current_user.id
+                    then x.push(true)
+                else x.push(false)
+                end
+            end
+        end
+
+        if current_user.id==edit_tixdesc.requested_by
+            edit_tix["read_by_req"]=true 
+            edit_tix["team_members"].each do |x|
+                x[2]=false
+            end
+        else edit_tix["read_by_req"]=false
+        end
+
+        puts edit_tix["chat"]
+
+        edit_tixdesc.update(status:"processing",data:edit_tix)
+
+        redirect_to "/system_tickets/#{params[:id]}"
+
+    end
 
     def add_default_milestone
         puts params

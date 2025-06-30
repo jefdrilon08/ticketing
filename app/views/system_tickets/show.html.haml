@@ -262,6 +262,8 @@
                     %th{:style=>"width:10%"}
                         %p 
                             Request Impact:
+                        %p{:style=>"font-weight:200"}
+                            (How will this request impact the system?)
                     %td
                         -if @ticket.data["impact"].present?
                             %p{:style=>"min-height:40px"}
@@ -611,6 +613,23 @@
                     .form-group
                         =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
                             Save
+
+#modal-for-enhancement.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    For Enhancement
+            .modal-body
+                %label
+                    Reason
+                = form_tag "for_enhancement/#{params[:id]}", method: 'POST' do
+                    .form-group
+                        =text_area_tag :reason,params[:reason],class:'form-control',required:true  
+                    %hr{style:"height:5px;color:white"}
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
+                            Move to Processing
 
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}

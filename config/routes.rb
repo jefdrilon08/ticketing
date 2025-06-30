@@ -782,6 +782,7 @@ Rails.application.routes.draw do
   get "system_tickets/:id",                 to: "system_tickets#show"
 
   get "system_tickets/edit_ticket_status/:id",to: "system_tickets#edit_ticket_status"
+  post "system_tickets/for_enhancement/:id",to: "system_tickets#for_enhancement"
   
   post "system_tickets/hold_ticket/:id",    to: "system_tickets#hold_ticket"
   post "system_tickets/read_chat/:id",      to: "system_tickets#read_chat"
