@@ -134,11 +134,8 @@ class NewSystemTicketController < ApplicationController
 
         end
 
-            if @record.save
-                redirect_to "/system_tickets/#{@record[:id]}"
-            else
-                render :new, status: :unprocessable_entity
-            end
+            @record.save
+
         
         if !milestones.empty?
             milestones.each do |x|
@@ -152,5 +149,8 @@ class NewSystemTicketController < ApplicationController
                 @ms.save!
             end
         end
+
+        redirect_to "/system_tickets/#{@record[:id]}"
+
     end
 end

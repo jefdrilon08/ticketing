@@ -26,7 +26,7 @@
       %tr
         %td
           %label
-            Request Impact
+            Request Impact (How will this request impact the system?)
           .form-group
             =text_area_tag :impact,params[:impact],class:'form-control',required:true    
       %tr
@@ -50,7 +50,7 @@
           .form-group
             %div{id:"sel-mem"}
           .form-group
-            =button_tag type: 'SUBMIT', class: 'btn btn-primary',onclick:"submitArray()" do
+            =button_tag type: 'SUBMIT', class: 'btn btn-primary' do
               Add Ticket              
 
 :css
