@@ -137,7 +137,7 @@ class NewSystemTicketController < ApplicationController
             @record.save
 
         
-        if !milestones.empty?
+        if milestones.present? && !milestones.empty?
             milestones.each do |x|
                 @ms=Milestone.new(
                             system_ticket_desc_id:@record.id,
