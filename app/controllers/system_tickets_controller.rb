@@ -445,7 +445,7 @@ class SystemTicketsController < ApplicationController
         @cs_id    = SystemTicket.find(@ticket[:system_ticket_id])[:computer_system_id]
         @empty    = Milestone.where(system_ticket_desc_id:@ticket[:id]).count==0
         @id_forchat=params[:id]
-        if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("status DESC,target_date ASC") end
+        if !@empty then @milestones=Milestone.where(system_ticket_desc_id:@ticket[:id]).order("status DESC,start_date ASC") end
         @milestones.each do |x|
             if x.status=="pending" then @all_done=@all_done+1 end
         end
@@ -534,9 +534,17 @@ class SystemTicketsController < ApplicationController
         if !SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id).empty? then
             if SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id)[0].status=="admin" then @role=5 end
             end
-        @subheader_side_actions = []
+        @subheader_side_actions = [
+            {
+                id: "btn-status",
+                link: "/system_tickets_#{@ticket.system_ticket_id}",
+                class: "fa fa-check",
+                data: { id: @ticket.id },
+                text: "Back"
+            }
+        ]
 
-        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && Milestone.where(system_ticket_desc_id:@ticket.id).count>0
+        if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"]
             if @role==6 || @role==5
                 @subheader_side_actions << {
                 id: "btn-status",
@@ -582,14 +590,14 @@ class SystemTicketsController < ApplicationController
 
         if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
             if @role==1 || @role==5 || @ticket.requested_by==current_user.id
-                @subheader_side_actions = {
+                @subheader_side_actions << {
                         id: "btn-status-enhancement",
                         link: "#",
                         class: "fa fa-plus",
                         data: { id: @ticket.id,"bs-target": "#modal-for-enhancement","bs-toggle":"modal"},
                         text: "For Enhancement"
-                },
-                {
+                }
+                @subheader_side_actions << {
                         id: "btn-status",
                         link: "edit_ticket_status/#{params[:id]}",
                         class: "fa fa-check",
