@@ -339,7 +339,6 @@
     {
         var arr_id=[]
         var sel=document.getElementsByName("task");
-        console.log("lld")
 
         for(i=0;i<=sel.length-1;i++)
         {
@@ -347,7 +346,7 @@
             var temp=id.split("/")
             arr_id.push([temp[1],id])
             
-            for(j=0;j<=2;j++)
+            for(j=0;j<=3;j++)
             {
                 var opt=document.createElement("option");
                 switch(j)
@@ -369,12 +368,17 @@
                         opt.text="Approver"
                         opt.value="Approver"
                         if(opt.value==temp[0]) opt.setAttribute('selected','selected');
+                    } break;
+                    case 3:
+                    {
+                        opt.text="Checker"
+                        opt.value="Checker"
+                        if(opt.value==temp[0]) opt.setAttribute('selected','selected');
                     }
                 }
                 document.getElementById(id).add(opt)
             }
         }
-        console.log("anthos")
         for(i=0;i<=arr_id.length-1;i++)
         {
             document.getElementById("sel/"+arr_id[i][0]).name="o-"+i

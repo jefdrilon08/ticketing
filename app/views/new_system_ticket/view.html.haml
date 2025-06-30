@@ -1,6 +1,6 @@
 .card.some{:style=>"padding:1%"}
   %h2
-    New Ticket for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
+    New User Story for #{ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name}
   =form_tag "create_systemtix", multipart: true, method: 'POST' do
     %table.table{:style=>"border-color:white;font-size:110%"}
       %tr
@@ -22,7 +22,13 @@
           %label
             Description
           .form-group
-            =text_area_tag :description,params[:description],class:'form-control',required:true            
+            =text_area_tag :description,params[:description],class:'form-control',required:true         
+      %tr
+        %td
+          %label
+            Request Impact
+          .form-group
+            =text_area_tag :impact,params[:impact],class:'form-control',required:true    
       %tr
         %td
           %label

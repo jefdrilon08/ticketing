@@ -95,7 +95,8 @@ class NewSystemTicketController < ApplicationController
                             file:file_arr,
                             category:params[:category],
                             chat:[],
-                            ticket_count:tktno
+                            ticket_count:tktno,
+                            impact:params[:impact]
                         },
                 date_received:DateTime.now(),
                 start_date:nil,
@@ -120,7 +121,8 @@ class NewSystemTicketController < ApplicationController
                             file:file_arr,
                             category:params[:category],
                             chat:[],
-                            ticket_count:tktno
+                            ticket_count:tktno,
+                            impact:params[:impact]
                         },
                 date_received:DateTime.now(),
                 start_date:nil,

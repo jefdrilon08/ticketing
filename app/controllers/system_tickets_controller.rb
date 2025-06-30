@@ -73,6 +73,7 @@ class SystemTicketsController < ApplicationController
         end
 
         pending=[]
+        checked=[]
         approved=[]
         processing=[]
         for_verification=[]
@@ -202,8 +203,8 @@ class SystemTicketsController < ApplicationController
                 is_a_m  = 0
 
                 if x[:data]["save_details"]!=nil
-                    if x[:data]["save_details"].length==4
-                        then edate=x[:data]["save_details"][3]["date"].to_date
+                    if x[:data]["save_details"].last()["status"]=='done'
+                        then edate=x[:data]["save_details"].last()["date"].to_date
                     end
                 end
 
@@ -280,6 +281,8 @@ class SystemTicketsController < ApplicationController
             case x[8]
             when "pending"
                 pending.push(x)
+            when "checked"
+                checked.push(x)
             when "approved"
                 approved.push(x)
             when "processing"
@@ -293,6 +296,10 @@ class SystemTicketsController < ApplicationController
 
 
         pending.each do |x|
+            @system_tix_desc.push(x)
+        end
+
+        checked.each do |x|
             @system_tix_desc.push(x)
         end
 
@@ -510,6 +517,8 @@ class SystemTicketsController < ApplicationController
                     @role=1
                 when "Developer"
                     @role=2
+                when "Checker"
+                    @role=6
                 end
             end
             if SystemTicketsUser.find(x[2]).role=="Developer"||SystemTicketsUser.find(x[2]).role=="Admin"
@@ -532,9 +541,20 @@ class SystemTicketsController < ApplicationController
         if !SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id).empty? then
             if SystemTicketsUser.where(system_ticket_id:@ticket[:system_ticket_id],user_id:current_user.id)[0].status=="admin" then @role=5 end
             end
-        @subheader_side_actions ||= []
+        @subheader_side_actions = []
 
         if ["pending"].include?(@ticket.status) && !@ticket.data["on_hold"] && Milestone.where(system_ticket_desc_id:@ticket.id).count>0
+            if @role==6 || @role==5
+                @subheader_side_actions << {
+                id: "btn-status",
+                link: "edit_ticket_status/#{params[:id]}",
+                class: "fa fa-check",
+                data: { id: @ticket.id },
+                text: "Check"
+                } end
+        end
+
+        if ["checked"].include?(@ticket.status) && !@ticket.data["on_hold"] && Milestone.where(system_ticket_desc_id:@ticket.id).count>0
             if @role==1 || @role==5
                 @subheader_side_actions << {
                 id: "btn-status",
@@ -570,11 +590,18 @@ class SystemTicketsController < ApplicationController
         if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
             if @role==1 || @role==5 || @ticket.requested_by==current_user.id
                 @subheader_side_actions << {
-                id: "btn-status",
-                link: "edit_ticket_status/#{params[:id]}",
-                class: "fa fa-check",
-                data: { id: @ticket.id },
-                text: "Verify"
+                        id: "btn-status",
+                        link: "edit_ticket_status/#{params[:id]}=1",
+                        class: "fa fa-check",
+                        data: { id: @ticket.id},
+                        text: "For Enhancement"
+                }
+                @subheader_side_actions << {
+                        id: "btn-status",
+                        link: "edit_ticket_status/#{params[:id]}=2",
+                        class: "fa fa-check",
+                        data: { id: @ticket.id},
+                        text: "Verify"
                 } end
         end
   
@@ -582,19 +609,33 @@ class SystemTicketsController < ApplicationController
     end
 
     def edit_ticket_status
-        edit_tixdesc=SystemTicketDesc.find(params[:id])
+
+        puts "lolz"
+        puts params 
+
+        temp=params[:id].split( /= */ )
+
+        puts temp[1]
+        
+        edit_tixdesc=SystemTicketDesc.find(temp[0])
         edit_tix=SystemTicket.find(edit_tixdesc[:system_ticket_id])
         new_status= ""
 
         case edit_tixdesc[:status]
             when "pending"
+                new_status= "checked"
+            when "checked"
                 new_status= "approved"
             when "approved"
                 new_status= "processing"
             when "processing"
                 new_status= "for verification"
             when "for verification"
-                new_status= "done"
+                if temp[1].to_i==1
+                    then new_status= "processing"
+                elsif temp[1].to_i==2
+                    then new_status= "done"
+                end
         end
 
         edit_tixdesc[:status]=new_status

@@ -52,6 +52,13 @@
                                                 .badge.bg-primary
                                                     #{@ticket.status}
                                     %td
+                                - when "checked"
+                                    %td
+                                        %center
+                                            %p{:style=>";width:104px"}
+                                                .badge.bg-success
+                                                    #{@ticket.status} 
+                                    %td
                                 - when "approved"
                                     %td
                                         %center
@@ -251,6 +258,17 @@
                     %td
                         %p{:style=>"min-height:40px"}
                             #{@ticket.description}
+                %tr
+                    %th{:style=>"width:10%"}
+                        %p 
+                            Request Impact:
+                    %td
+                        -if @ticket.data["impact"].present?
+                            %p{:style=>"min-height:40px"}
+                                #{@ticket.data["impact"]}
+                        -else
+                            %p{:style=>"min-height:40px"}
+                                No data.
             %hr
             .card.some{:style=>"padding:1%;"}
                 %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:0px"}
