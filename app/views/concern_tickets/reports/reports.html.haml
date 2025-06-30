@@ -47,6 +47,7 @@
             %th Concern Name
             %th.text-center Start Date
             %th.text-center End Date
+            %th.text-center Generated Date
             %th.text-center Action
         %tbody
           - if @records.present?
@@ -57,6 +58,7 @@
                 %td= ticket ? ticket.name : "Unknown Concern Ticket (ID: #{ticket_id || 'N/A'})"
                 %td= record.start_date.present? ? record.start_date.strftime("%b %d, %Y") : "N/A"
                 %td= record.end_date.present? ? record.end_date.strftime("%b %d, %Y") : "N/A"
+                %td= record.created_at.present? ? record.created_at.strftime("%b %d, %Y %I:%M %p") : "N/A"
                 %td
                   - if ticket
                     = link_to view_report_by_data_store_path(record.id),
