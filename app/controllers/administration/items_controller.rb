@@ -48,15 +48,20 @@ module Administration
     end
 
     def show
-      @subheader_side_actions = [
-        {
-          id: "btn-distribute",
-          link: distribute_administration_item_path,
-          class: "fa fa-box",
-          text: "Distribute"
-        }
-      ]
       @item = Item.includes(:items_category, :sub_category).find(params[:id])
+
+      if @item.status.to_s.downcase == "pending"
+        @subheader_side_actions = [
+          {
+            id: "btn-distribute",
+            link: distribute_administration_item_path(@item),
+            class: "fa fa-box",
+            text: "Distribute"
+          }
+        ]
+      else
+        @subheader_side_actions = []
+      end
     end
 
     def create
@@ -134,9 +139,6 @@ module Administration
   def create_distribute
     attached_param = params.dig(:item_distribution, :attached_mr_sticker) || params[:attached_mr_sticker]
     is_sticker_attached = attached_param.to_s == "1" || attached_param.to_s.downcase == "true"
-
-    Rails.logger.debug "Sticker attached: #{is_sticker_attached}"
-    Rails.logger.debug "params: #{attached_param.inspect}"
   
     item_distribution = ItemDistribution.new(
       item_id: params[:item_id],
@@ -149,6 +151,7 @@ module Administration
       },
       inventory_number: params[:inventory_number],
       status: "pending",
+      distribute_name: params[:distribute_name],
       distributed_at: Time.current
     )
 

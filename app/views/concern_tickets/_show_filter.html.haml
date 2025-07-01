@@ -52,4 +52,7 @@
               .bi.bi-search
             = button_tag type: 'button', class: 'btn btn-secondary btn-sm btn-block no-print', onclick: 'printTable()', id: "print-btn" do
               %i.bi.bi-printer.me-1
-  
+            - if current_user.username == "johnric"
+              = link_to view_logs_concern_ticket_path(@concern_ticket), class: 'btn btn-warning btn-sm btn-block', id: "logs-btn" do
+                %i.bi.bi-clock-history
+              

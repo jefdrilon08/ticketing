@@ -146,6 +146,12 @@ module Api
             end
 
             data["status_history"] = status_history
+
+            #logs
+            if params[:status] == "closed"
+              data["closed_by"] = current_user.id
+            end
+
             update_params[:data] = data
 
             if @ctd_status.update(update_params)

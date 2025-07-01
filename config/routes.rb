@@ -28,6 +28,14 @@ Rails.application.routes.draw do
   get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
   post "/concern_tickets/join", to: "concern_tickets#join", as: "join_concern_ticket"
   post "/concern_tickets/:id/chat", to: "concern_tickets#chat_message", as: "chat_message_concern_ticket"
+  get "/concern_tickets/:id/view_logs", to: "concern_tickets#view_logs", as: "view_logs_concern_ticket"
+
+  # Reports
+  get 'reports', to: 'reports#index', as: :reports
+  get 'reports/view_report/:id', to: 'reports#view_report', as: :view_report
+  get 'reports/concern_tickets', to: 'reports#concern_tickets', as: :reports_concern_tickets
+  get 'view_report_by_data_store/:id', to: 'reports#view_report_by_data_store', as: 'view_report_by_data_store'
+  post 'reports/create_data_store', to: 'reports#create_data_store', as: :create_data_store_reports
   
   # online applications
   resources :online_applications, only: [:index, :show]
@@ -811,15 +819,8 @@ Rails.application.routes.draw do
   post "system_tickets_:id/delete_default_milestone", to: "system_tickets#delete_default_milestone"
 
   delete "system_tickets_:id/delete_ticket",    to: "system_tickets#delete_ticket"
-
   get "new_system_ticket/",                 to: "new_system_ticket#view2"
   get "new_system_ticket/:id",              to: "new_system_ticket#view"
-
-  get 'reports', to: 'reports#index', as: :reports
-  get 'reports/view_report/:id', to: 'reports#view_report', as: :view_report
-  get 'reports/concern_tickets', to: 'reports#concern_tickets', as: :reports_concern_tickets
-  get 'view_report_by_data_store/:id', to: 'reports#view_report_by_data_store', as: 'view_report_by_data_store'
-  post 'reports/create_data_store', to: 'reports#create_data_store', as: :create_data_store_reports
   post "new_system_ticket/create_systemtix",    to: "new_system_ticket#create_systemtix"
   post "new_system_ticket/create_systemtix2",   to: "new_system_ticket#create_systemtix2"
 

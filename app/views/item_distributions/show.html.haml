@@ -1,5 +1,5 @@
 .card
-  .card-header.bg-info.text-white
+  .card-header.bg-dark.text-white
     %h4.mb-0 Item Distribution Details
 
   .card-body
@@ -14,7 +14,16 @@
                 %label{ for: "item_name" } Item Name
               .col-sm-8
                 %input.form-control{ type: "text", id: "item_name", value: @item&.name || "N/A", disabled: true }
-
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "distribute_name" } Distribute Name
+              .col-sm-8
+                %input.form-control{type: "text", id: "distribute_name", name: "item_distribution[distribute_name]", value: @item_distribution.distribute_name, disabled: true}
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "serial_number" } Serial Number
+              .col-sm-8
+                %input.form-control{type: "text",  id: "serial_number", value: @item&.serial_number || "N/A", disabled: true}
             .row.mb-3
               .col-sm-4
                 %label{ for: "mr_number" } MR Number
@@ -96,7 +105,8 @@
         el.type !== "hidden" &&
         el.name !== "authenticity_token" &&
         el.id !== "item_name" &&
-        el.id !== "status"
+        el.id !== "status" &&
+        el.id !== "serial_number"
       ) {
         el.disabled = false;
       }

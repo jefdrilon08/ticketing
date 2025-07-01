@@ -221,4 +221,13 @@ class ConcernTicketsController < ApplicationController
   
     redirect_back(fallback_location: view_tix_concern_ticket_path(ticket_detail.concern_ticket_id))
   end
+
+  def view_logs
+    @concern_ticket = ConcernTicket.find(params[:id])
+    @closed_details = @concern_ticket.concern_ticket_details
+                                    .where(status: 'closed')
+                                    .order(updated_at: :desc)
+    user_ids = @closed_details.map { |d| d.data&.[]("closed_by") }.compact.uniq
+    @users = User.where(id: user_ids).index_by(&:id)
+  end
 end

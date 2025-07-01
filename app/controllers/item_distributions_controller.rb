@@ -3,21 +3,38 @@ class ItemDistributionsController < ApplicationController
   def index
     @item_distributions = ItemDistribution.all
 
-    if params[:mr_number].present?
-      @item_distributions = @item_distributions.where("mr_number ILIKE ?", "%#{params[:mr_number]}%")
-    end
+    # if params[:mr_number].present?
+    #   @item_distributions = @item_distributions.where("mr_number ILIKE ?", "%#{params[:mr_number]}%")
+    # end
 
     if params[:branch_id].present?
       @item_distributions = @item_distributions.where(branch_id: params[:branch_id])
     end
 
+    if params[:item_id].present?
+      @item_distributions = @item_distributions.where(item_id: params[:item_id])
+    end
+
+    if params[:distributed_by].present?
+      @item_distributions = @item_distributions.where(distributed_by: params[:distributed_by])
+    end
+
     @item_distributions = @item_distributions
       .includes(:item)
-      .order(:status, :branch_id, :mr_number)
+      .joins(:item)
+      .joins('LEFT JOIN branches ON branches.id = item_distributions.branch_id')
+      .order(:status, 'items.name', 'branches.name', :distributed_by)
       .page(params[:page]).per(20)
+
     @branches = Branch.all.index_by(&:id)
+
+    item_ids = ItemDistribution.distinct.pluck(:item_id)
+    @filter_items = Item.where(id: item_ids).order(:name).group_by(&:name).map { |_, items| items.first }
+
+    distributor_ids = ItemDistribution.distinct.pluck(:distributed_by)
+    @filter_distributors = User.where(id: distributor_ids).order(:first_name, :last_name)
+
     @users = User.all.index_by(&:id)
-    
   end
 
   def show

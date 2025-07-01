@@ -1,17 +1,19 @@
 .card
-  .card-header.bg-primary.text-white
+  .card-header.bg-dark.text-white
     %h4.mb-0 Item Distribution List
 
   .card-body
     = render 'index_filter'
     .table-responsive
       - if @item_distributions.any?
-        %table.table.table-bordered.table-striped.table-hover
-          %thead.table-primary
+        %table.table.table-bordered.table-hover
+          %thead
             %tr
+              %th Distribute Name
+              %th Item Name
+              %th Serial Number
               %th MR Number
               %th Inventory Number
-              %th Item Name
               %th Branch
               -# %th Check Voucher
               %th Received By
@@ -22,9 +24,12 @@
           %tbody
             - @item_distributions.each do |dist|
               %tr
+                %td= dist.distribute_name.presence || "-"
+                %td= dist.item_id && Item.find_by(id: dist.item_id)&.name || "N/A"
+                - item = Item.find_by(id: dist.item_id)
+                %td= item&.serial_number.presence || "-"
                 %td= dist.mr_number
                 %td= dist.inventory_number
-                %td= dist.item_id && Item.find_by(id: dist.item_id)&.name || "N/A"
                 %td= @branches[dist.branch_id]&.name&.to_s&.titleize || "-"
                 -# %td= dist.check_voucher                
                 - receive_by_user = @users[dist.receive_by]

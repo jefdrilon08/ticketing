@@ -1,0 +1,18 @@
+%h3 Ticket Close History
+
+%table.table.table-hover
+  %thead
+    %tr
+      %th Ticket Number
+      %th Closed By
+      %th Closed Date
+  %tbody
+    - @closed_details.each do |detail|
+      - closed_by_id = detail.data&.[]("closed_by")
+      - next if closed_by_id.blank?
+      - user = @users[closed_by_id]
+      %tr
+        %td
+          = link_to detail.ticket_number, view_tix_concern_ticket_path(detail)
+        %td= user ? "#{user.first_name} #{user.last_name}" : closed_by_id
+        %td= detail.updated_at.strftime("%Y-%m-%d %H:%M:%S")
