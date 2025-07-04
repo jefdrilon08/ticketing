@@ -1,0 +1,35 @@
+%h4.mb-4 Monitoring History
+
+- if @details.present?
+  %table.table.table-bordered.table-hover.table-sm
+    %thead
+      %tr
+        %th Ticket Number
+        %th Concern From
+        %th Branch
+        %th Old Assigned User
+        %th New Assigned User
+        %th Date
+    %tbody
+      - @details.sort_by { |detail| detail.created_at }.reverse.each do |detail|
+        - assigns = detail.data&.dig("monitoring", "assign") || []
+        - if assigns.any?
+          - assigns.each_with_index do |entry, idx|
+            - old_user_id = idx == 0 ? nil : assigns[idx - 1]["new_assigned_user"]
+            - next if old_user_id.nil?
+            %tr
+              %td= link_to detail.ticket_number, view_tix_concern_ticket_path(detail.id)
+              %td= @concern_fors.find { |cf| cf.id == detail.name_for_id }&.name || detail.name_for_id || "N/A"
+              %td= @branches.find { |b| b.id == detail.branch_id }&.name || detail.branch_id || "N/A"
+              %td= @users[old_user_id]&.full_name || old_user_id
+              %td= @users[entry["new_assigned_user"]]&.full_name || entry["new_assigned_user"]
+              %td= entry["date"]
+        - else
+          %tr
+            %td= detail.ticket_number
+            %td= @concern_fors.find { |cf| cf.id == detail.name_for_id }&.name || detail.name_for_id || "N/A"
+            %td= @branches.find { |b| b.id == detail.branch_id }&.name || detail.branch_id || "N/A"
+            %td{:colspan => 3}
+              %span.text-muted No assignment/reassignment history found.
+- else
+  %p.text-danger No ticket details with monitoring history

@@ -230,4 +230,23 @@ class ConcernTicketsController < ApplicationController
     user_ids = @closed_details.map { |d| d.data&.[]("closed_by") }.compact.uniq
     @users = User.where(id: user_ids).index_by(&:id)
   end
+
+  def view_monitoring
+    @concern_ticket = ConcernTicket.find(params[:id])
+    @details = @concern_ticket.concern_ticket_details.select do |detail|
+      assigns = detail.data&.dig("monitoring", "assign")
+      assigns.present? && assigns.any?
+    end
+    @branches = Branch.where(id: @details.map(&:branch_id).uniq)
+    @concern_fors = ConcernFor.where(id: @details.map(&:name_for_id).uniq)
+    user_ids = []
+    @details.each do |detail|
+      assigns = detail.data&.dig("monitoring", "assign") || []
+      assigns.each do |entry|
+        user_ids << entry["reassigned_by"]
+        user_ids << entry["new_assigned_user"]
+      end
+    end
+    @users = User.where(id: user_ids.uniq).index_by(&:id)
+  end
 end

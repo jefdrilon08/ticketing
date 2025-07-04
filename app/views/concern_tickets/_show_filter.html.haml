@@ -55,4 +55,7 @@
             - if current_user.username == "johnric"
               = link_to view_logs_concern_ticket_path(@concern_ticket), class: 'btn btn-warning btn-sm btn-block', id: "logs-btn" do
                 %i.bi.bi-clock-history
+            - if current_user.is_mis?
+              = link_to view_monitoring_concern_ticket_path(@concern_ticket), class: 'btn btn-success btn-sm btn-block', id: "monitoring-btn" do
+                %i.bi.bi-people
               

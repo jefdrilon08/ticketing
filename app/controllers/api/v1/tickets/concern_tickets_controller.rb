@@ -230,6 +230,16 @@ module Api
             end
 
             if params[:assigned_person_id].present?
+              if @ticket_details.assigned_user_id != params[:assigned_person_id]
+                @ticket_details.data ||= {}
+                @ticket_details.data["monitoring"] ||= {}
+                @ticket_details.data["monitoring"]["assign"] ||= []
+                @ticket_details.data["monitoring"]["assign"] << {
+                  "reassigned_by" => current_user.id,
+                  "new_assigned_user" => params[:assigned_person_id],
+                  "date" => Time.current.strftime("%Y-%m-%d %H:%M")
+                }
+              end
               @ticket_details.assigned_user_id = params[:assigned_person_id]
               updated = true
             end
