@@ -32,7 +32,9 @@
             %td.text
               = ticket.ticket_number || "N/A"
               - if ticket.data.present? && ticket.data["chat_history"].present?
-                %i.bi.bi-envelope-check.text-primary{ style: "font-size: 0.7rem; vertical-align: middle; margin-left: 0.3rem;", title: "There's a message", data: { bs_toggle: "tooltip" } }
+                - last_msg = ticket.data["chat_history"].last
+                - last_msg_time = last_msg['timestamp']
+                %i.bi.bi-envelope-check.ticket-envelope{"data-ticket_detail_id" => ticket.id.to_s,"data-last_msg" => last_msg_time.to_s,"data-last_msg_user" => last_msg['user'].to_s,style: "font-size: 0.7rem; vertical-align: middle; margin-left: 0.3rem;",title: "Checking...", bs_toggle: "tooltip"}
             %td.text= ticket.concern_for&.name || "N/A"
             %td.text= ticket.concern_type&.name || "N/A"
             %td.text= ticket.requested_user ? "#{ticket.requested_user.first_name.titleize} #{ticket.requested_user.last_name.titleize}" : "N/A"
@@ -75,3 +77,37 @@
 .pagination-container.mt-3.d-flex.justify-content-center
   = paginate @details_records 
 = render "concern_tickets/modals/create_ticket"
+
+:javascript
+  var currentUserName = "#{current_user.first_name.capitalize} #{current_user.last_name.capitalize}";
+
+  document.querySelectorAll('.ticket-envelope').forEach(function(envelope) {
+    var ticketDetailId = envelope.dataset.ticket_detail_id;
+    var lastMsg = envelope.dataset.last_msg;
+    var lastMsgUser = envelope.dataset.last_msg_user;
+    // If the last message is from the current user, mark as read
+    if (ticketDetailId && lastMsg && lastMsgUser === currentUserName) {
+      localStorage.setItem('ticket_read_' + ticketDetailId, lastMsg);
+    }
+    var read = localStorage.getItem('ticket_read_' + ticketDetailId) == lastMsg;
+    envelope.classList.remove('text-danger', 'text-dark');
+    envelope.classList.add(read ? 'text-dark' : 'text-danger');
+    envelope.title = read ? "All messages read" : "New message";
+  });
+
+  document.querySelectorAll('a.btn.btn-primary').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var row = btn.closest('tr');
+      var envelope = row.querySelector('.ticket-envelope');
+      if (envelope) {
+        var ticketDetailId = envelope.dataset.ticket_detail_id;
+        var lastMsg = envelope.dataset.last_msg;
+        if (ticketDetailId && lastMsg) {
+          localStorage.setItem('ticket_read_' + ticketDetailId, lastMsg);
+          envelope.classList.remove('text-danger');
+          envelope.classList.add('text-dark');
+          envelope.title = "All messages read";
+        }
+      }
+    });
+  });

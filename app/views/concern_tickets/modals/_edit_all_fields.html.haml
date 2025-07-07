@@ -9,62 +9,45 @@
       .modal-body
         = form_tag "/api/v1/tickets/concern_tickets/edit_all_fields", method: 'POST', multipart: true do
           = hidden_field_tag :ctd_id, @concern_ticket_details.id
-          %ul.nav.nav-tabs.mb-3.flex-nowrap.overflow-auto{ role: "tablist", style: "white-space: nowrap;" }
-            %li.nav-item
-              %a.nav-link.active{ href: "#tab-sato", "data-bs-toggle" => "tab", role: "tab" } SATO
-            %li.nav-item
-              %a.nav-link{ href: "#tab-concern-from", "data-bs-toggle" => "tab", role: "tab" } Concern From
-            %li.nav-item
-              %a.nav-link{ href: "#tab-concern-type", "data-bs-toggle" => "tab", role: "tab" } Concern Type
-            %li.nav-item
-              %a.nav-link{ href: "#tab-category", "data-bs-toggle" => "tab", role: "tab" } Category
-            %li.nav-item
-              %a.nav-link{ href: "#tab-assigned-person", "data-bs-toggle" => "tab", role: "tab" } Assigned Person
 
-          .tab-content
-            .tab-pane.fade.show.active#tab-sato
-              .form-group.mb-3
-                %label.font-weight-bold SATO
-                = select_tag :branch_id, 
-                  options_for_select((@branches || []).sort_by { |b| b.name.to_s.downcase }.map { |b| [b.name.to_s.titleize, b.id] },
-                  @concern_ticket_details.branch_id),
-                  class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-                  id: "input-branch", prompt: "-- SELECT --"
+          .form-group.mb-3
+            %label.font-weight-bold SATO
+            = select_tag :branch_id, 
+              options_for_select((@branches || []).sort_by { |b| b.name.to_s.downcase }.map { |b| [b.name.to_s.titleize, b.id] },
+              @concern_ticket_details.branch_id),
+              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+              id: "input-branch", prompt: "-- SELECT --"
 
-            .tab-pane.fade#tab-concern-from
-              .form-group.mb-3
-                %label.font-weight-bold Concern From
-                = select_tag :concern_from_id, 
-                  options_for_select((@concern_froms || []).sort_by { |cf| cf.name.to_s.downcase }.map { |cf| [cf.name.to_s.titleize, cf.id] },
-                  @concern_ticket_details.name_for_id),
-                  class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-                  id: "input-concern-from", prompt: "-- SELECT --"
+          .form-group.mb-3
+            %label.font-weight-bold Concern From
+            = select_tag :concern_from_id, 
+              options_for_select((@concern_froms || []).sort_by { |cf| cf.name.to_s.downcase }.map { |cf| [cf.name.to_s.titleize, cf.id] },
+              @concern_ticket_details.name_for_id),
+              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+              id: "input-concern-from", prompt: "-- SELECT --"
 
-            .tab-pane.fade#tab-concern-type
-              .form-group.mb-3
-                %label.font-weight-bold Concern Type
-                = select_tag :concern_type_id, 
-                  options_for_select((@concern_types || []).sort_by { |ct| ct.name.to_s.downcase }.map { |ct| [ct.name.to_s.titleize, ct.id] },
-                  @concern_ticket_details.concern_type_id),
-                  class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-                  id: "input-concern-type", prompt: "-- SELECT --"
+          .form-group.mb-3
+            %label.font-weight-bold Concern Type
+            = select_tag :concern_type_id, 
+              options_for_select((@concern_types || []).sort_by { |ct| ct.name.to_s.downcase }.map { |ct| [ct.name.to_s.titleize, ct.id] },
+              @concern_ticket_details.concern_type_id),
+              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+              id: "input-concern-type", prompt: "-- SELECT --"
 
-            .tab-pane.fade#tab-category
-              .form-group.mb-3
-                %label.font-weight-bold Category
-                = select_tag :concern_category, 
-                  options_for_select([['Low', 'low'], ['Medium', 'medium'], ['High', 'high']], @concern_ticket_details.data["category"]),
-                  class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-                  id: "input-concern-category", prompt: "-- SELECT --"
+          .form-group.mb-3
+            %label.font-weight-bold Category
+            = select_tag :concern_category, 
+              options_for_select([['Low', 'low'], ['Medium', 'medium'], ['High', 'high']], @concern_ticket_details.data["category"]),
+              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+              id: "input-concern-category", prompt: "-- SELECT --"
 
-            .tab-pane.fade#tab-assigned-person
-              .form-group.mb-3
-                %label.font-weight-bold Assigned Person
-                = select_tag :assigned_person_id, 
-                  options_for_select((@ticket_users || []).sort_by { |tu| "#{tu.user.first_name} #{tu.user.last_name}".downcase }.map { |tu| ["#{tu.user.first_name.titleize} #{tu.user.last_name.titleize}", tu.user.id] },
-                  @concern_ticket_details.assigned_user_id),
-                  class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-                  id: "input-assigned-person", prompt: "-- SELECT --"
+          .form-group.mb-3
+            %label.font-weight-bold Assigned Person
+            = select_tag :assigned_person_id, 
+              options_for_select((@ticket_users || []).sort_by { |tu| "#{tu.user.first_name} #{tu.user.last_name}".downcase }.map { |tu| ["#{tu.user.first_name.titleize} #{tu.user.last_name.titleize}", tu.user.id] },
+              @concern_ticket_details.assigned_user_id),
+              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
+              id: "input-assigned-person", prompt: "-- SELECT --"
 
           .modal-footer.d-flex.justify-content-center
             .controls
