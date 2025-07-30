@@ -66,7 +66,9 @@ class SystemTicketsController < ApplicationController
             x_data=x.data
             if x.status=="for verification"
                 if a_system_data["autoclose"].present?
-                    x_data["autoclose_in"]=x.data["save_details"].last["date"].to_date.next_day(a_system.data["autoclose"][0].to_i)
+                    if !x_data["autoclose_in"].present?
+                        then x_data["autoclose_in"]=x.data["save_details"].last["date"].to_date.next_day(a_system.data["autoclose"][0].to_i)
+                    end
                 elsif !a_system_data["autoclose"].present?
                     a_system_data["autoclose"]=["3"]
                     a_system.update!(data:a_system_data)
