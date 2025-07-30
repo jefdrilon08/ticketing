@@ -76,32 +76,33 @@ class PagesController < ApplicationController
 
     SystemTicketDesc.all.each do |x|
       if x.status!='done'
-        if x.data["category"]=='high' && x.status!='done'
-          then @openhigh.push(x)
-        elsif x.data["category"]=='medium' && x.status!='done'
-          then @openmed.push(x)
-        elsif x.data["category"]=='low' && x.status!='done'
-          then @openlow.push(x)
-        end
-        if DateTime.current.to_date==x.target_date
-          then @duetoday.push(x)
-        elsif DateTime.current.to_date<x.target_date
-          then @upcoming.push(x)
-        elsif DateTime.current.to_date>x.target_date
-          then @overdue.push(x)
-        end
-      else
-        if x.data["save_details"][3]["date"].to_date<=x.target_date
-          then @ontime.push(x)
-        elsif x.data["save_details"][3]["date"].to_date>x.target_date
-          then @late.push(x)
-        end
-
-        if x.status=='done'
-          if x.data["save_details"][3]["date"].to_date==DateTime.current.to_date then @today.push(x)
+        if x.status!='done (auto-closed)'
+          if x.data["category"]=='high'
+            then @openhigh.push(x)
+          elsif x.data["category"]=='medium'
+            then @openmed.push(x)
+          elsif x.data["category"]=='low'
+            then @openlow.push(x)
+          end
+          if DateTime.current.to_date==x.target_date
+            then @duetoday.push(x)
+          elsif DateTime.current.to_date<x.target_date
+            then @upcoming.push(x)
+          elsif DateTime.current.to_date>x.target_date
+            then @overdue.push(x)
           end
         end
       end
+        
+        if x.status=='done'||x.status=='done (auto-closed)'
+          if x.data["save_details"].last["date"].to_date<=x.target_date
+            then @ontime.push(x)
+          elsif x.data["save_details"].last["date"].to_date>x.target_date
+            then @late.push(x)
+          end
+          if x.data["save_details"].last["date"].to_date==DateTime.current.to_date then @today.push(x)
+          end
+        end
     end
 
     developers = []
@@ -182,7 +183,22 @@ class PagesController < ApplicationController
 
     # render json: {message:@tix_list}
 
-    @list_due_today=SystemTicketDesc.where(target_date:DateTime.current.to_date)
+    @list_due_today_i=SystemTicketDesc.where(target_date:DateTime.current.to_date)
+    @list_due_today=[]
+
+    @list_due_today_i.each do |x|
+      if x.status!='done'&&x.status!='done (auto-closed)'
+        temp=0
+        SystemTicket.find(x.system_ticket_id).data["team_members"].each do |y|
+          if y==current_user.id
+            then temp+=1
+          end
+        end
+        if temp>0
+          then @list_due_today.push(x)
+        end
+      end
+    end
 
     if !@list_due_today.empty? 
       if @list_due_today.count>=3

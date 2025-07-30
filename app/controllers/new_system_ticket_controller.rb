@@ -23,6 +23,7 @@ class NewSystemTicketController < ApplicationController
                                         data:   {
                                                     team_members:members_arr,
                                                     options_for_select:options_arr,
+                                                    autoclose:params[:autoclose]
                                                 },
                                         system_number:SystemTicket.all.count+1,
                                         is_private:params[:is_private]

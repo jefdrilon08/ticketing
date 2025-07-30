@@ -91,7 +91,7 @@
                     %td
                         %p{:style=>"margin-top:10%;margin-bottom:-1%;font-weight:bold"}
                             Category:&nbsp&nbsp
-                            -if @ticket.status!="done"
+                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                 -if @role==3 || @role==5
                                     %span{:style=>"font-weight:normal"}
                                         =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-change-category" },id:'btn-new-milestone' do
@@ -178,7 +178,7 @@
                                 -else
                                     #{@maindev[0]}
                     %td{:style=>"width:20%"}
-                        -if @ticket.status!="done"
+                        -if @ticket.status!="done" && @ticket.status!="auto-closed"
                             -if @role==3 || @role==5
                                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-main-dev" },id:"btn-milestone" do
                                     Change
@@ -197,7 +197,7 @@
                                 %span{:style=>"color:gray"} - #{x[1]}
                         %td
                             -if i_show==0
-                                -if @ticket.status!="done"
+                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                     -if @role==3 || @role==5
                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                                             Edit
@@ -212,7 +212,7 @@
                             %p
                                 No members
                         %td
-                            -if @ticket.status!="done"
+                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                 -if @role==3 || @role==5
                                     = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-members" },id:"btn-milestone" do
                                         Edit
@@ -278,7 +278,7 @@
                                 Milestones
                         %td{:style=>"padding-top:12px"}
                             -if !@ticket.data["on_hold"]
-                                -if @ticket.status!="done"
+                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                     -if @role==3 || @role==5|| @role==2
                                         = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
                                             Add milestone    
@@ -328,7 +328,7 @@
                                                     - case x.status
                                                         - when 'pending'
                                                             -if !@ticket.data["on_hold"]
-                                                                -if @ticket.status!="done"
+                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                                                     -if @role==3 || @role==5 
                                                                         %p{:style=>"margin-top:-15px"}
                                                                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
@@ -345,6 +345,7 @@
                                                         .badge.bg-warning
                                                             #{x.status}
                                                     - when 'done'
+                                                    - when 'auto-closed'
                                                         .badge.bg-dark
                                                             #{x.status}
                                         %td
@@ -360,7 +361,7 @@
                                                     - case x.status
                                                         - when 'pending'
                                                             -if !@ticket.data["on_hold"]
-                                                                -if @ticket.status!="done"
+                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                                                     -if @role==3 || @role==5
                                                                         %p{:style=>"margin-top:-15px"}
                                                                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
@@ -409,7 +410,7 @@
                                                         - case x.status
                                                             - when 'pending'
                                                                 -if !@ticket.data["on_hold"]
-                                                                    -if @ticket.status!="done"
+                                                                    -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                                                         -if @role==3 || @role==5
                                                                             %p{:style=>"margin-top:-15px"}
                                                                                 = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
@@ -441,7 +442,7 @@
                                                     - case x.status
                                                         - when 'pending'
                                                             -if !@ticket.data["on_hold"]
-                                                                -if @ticket.status!="done"
+                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
                                                                     -if @role==3 || @role==5
                                                                         %p{:style=>"margin-top:-15px"}
                                                                             = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
@@ -473,7 +474,7 @@
                                                                 .form-group
                                                                     =text_field_tag :ms_id,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
                                                                 -if !@ticket.data["on_hold"]
-                                                                    -if @ticket.status!="done" && @ticket.status!="pending" && @ticket.status!="approved"
+                                                                    -if @ticket.status!="done" && @ticket.status!="pending" && @ticket.status!="approved" && @ticket.status!="done (auto-closed)"
                                                                         -if @role==3 || @role==5
                                                                             = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
                                                                                 Update

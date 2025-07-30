@@ -59,6 +59,30 @@ class SystemTicketsController < ApplicationController
 
     def selected_index
 
+        a_system=SystemTicket.find(params[:id])
+        a_system_data=a_system.data
+        a_tickets=SystemTicketDesc.where(system_ticket_id:params[:id])
+        a_tickets.each do |x|
+            x_data=x.data
+            if x.status=="for verification"
+                if a_system_data["autoclose"].present?
+                    x_data["autoclose_in"]=x.data["save_details"].last["date"].to_date.next_day(a_system.data["autoclose"][0].to_i)
+                elsif !a_system_data["autoclose"].present?
+                    a_system_data["autoclose"]=["3"]
+                    a_system.update!(data:a_system_data)
+                    x_data["autoclose_in"]=(DateTime.now).to_date.next_day(3)
+                end
+                x.update(data:x_data)
+                if x_data["autoclose_in"].to_date<=DateTime.current
+                    puts "test july30"
+                    puts x_data["autoclose_in"]
+                    puts DateTime.current
+                    x_data["save_details"].push({"status"=>"auto-closed","date"=>x_data["autoclose_in"]})
+                    x.update(data:x_data,status:"done (auto-closed)")
+                end
+            end
+        end
+
         system_tix =SystemTicketDesc.where(system_ticket_id:params[:id]).order("created_at DESC")
         @system_name=ComputerSystem.find(SystemTicket.find(params[:id]).computer_system_id).name
         @system_tix_desc=[]
@@ -148,23 +172,23 @@ class SystemTicketsController < ApplicationController
             temp.each do |x|
                 case @f_deadline
                 when 'on time'
-                    if x.status=='done'&&x.target_date>=x.data["save_details"][3]["date"].to_date
+                    if (x.status=='done'||x.status=='done (auto-closed)')&&x.target_date>=x.data["save_details"].last["date"].to_date
                         system_tix.push(x)
                     end
                 when 'due today'
-                    if x.status!='done'&&x.target_date==DateTime.current.to_date
+                    if (x.status!='done'&&x.status!='done (auto-closed)')&&x.target_date==DateTime.current.to_date
                         system_tix.push(x)
                     end
                 when 'upcoming'
-                    if x.status!='done'&&x.target_date>DateTime.current.to_date
+                    if (x.status!='done'&&x.status!='done (auto-closed)')&&x.target_date>DateTime.current.to_date
                         system_tix.push(x)
                     end
                 when 'overdue'
-                    if x.status!='done'&&x.target_date<DateTime.current.to_date
+                    if (x.status!='done'&&x.status!='done (auto-closed)')&&x.target_date<DateTime.current.to_date
                         system_tix.push(x)
                     end
                 when 'late'
-                    if x.status=='done'&&x.target_date<x.data["save_details"][3]["date"].to_date
+                    if (x.status=='done'||x.status=='done (auto-closed)')&&x.target_date<x.data["save_details"].last["date"].to_date
                         system_tix.push(x)
                     end
                 end
@@ -203,7 +227,7 @@ class SystemTicketsController < ApplicationController
                 is_a_m  = 0
 
                 if x[:data]["save_details"]!=nil
-                    if x[:data]["save_details"].last()["status"]=='done'
+                    if x[:data]["save_details"].last()["status"]=='done'||x[:data]["save_details"].last()["status"]=='auto-closed'
                         then edate=x[:data]["save_details"].last()["date"].to_date
                     end
                 end
@@ -284,6 +308,7 @@ class SystemTicketsController < ApplicationController
             when "for verification"
                 for_verification.push(x)
             when "done"
+            when "done (auto-closed)"
                 done.push(x)
             end
         end
