@@ -174,7 +174,7 @@
                             %p
                                 -if x[8]=="for verification"
                                     %p{:style=>"font-weight:900;margin-top:-10px"}
-                                        Auto-closes in #{(SystemTicketDesc.find(x[0]).data["autoclose_in"].to_date-SystemTicketDesc.find(x[0]).data["save_details"].last["date"].to_date).to_i} day/s.
+                                        Auto-closes in #{(SystemTicketDesc.find(x[0]).data["autoclose_in"].to_date-DateTime.now.to_date).to_i} day/s.
                     %td
                         %center
                             %p
