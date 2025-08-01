@@ -135,6 +135,9 @@ class SystemTicketsController < ApplicationController
                 if x.status==@f_status
                     system_tix.push(x)
                 end
+                if @f_status=="done"&&x.status=="done (auto-closed)"
+                    system_tix.push(x)
+                end
             end
         end
 
