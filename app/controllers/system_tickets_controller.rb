@@ -698,6 +698,8 @@ class SystemTicketsController < ApplicationController
         else edit_tix["read_by_req"]=false
         end
 
+        edit_tix.delete("autoclose_in")
+
         puts edit_tix["chat"]
 
         edit_tixdesc.update(status:"processing",data:edit_tix)
