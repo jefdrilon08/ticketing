@@ -312,8 +312,7 @@ class SystemTicketsController < ApplicationController
                 processing.push(x)
             when "for verification"
                 for_verification.push(x)
-            when "done"
-            when "done (auto-closed)"
+            when "done","done (auto-closed)"
                 done.push(x)
             end
         end
