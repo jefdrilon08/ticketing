@@ -606,7 +606,7 @@ class SystemTicketsController < ApplicationController
                 } end
         end
 
-        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"]
+        if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
             if @role==2 || @role==3 || @role==5
             @subheader_side_actions << {
               id: "btn-status",
