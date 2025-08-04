@@ -158,8 +158,8 @@ class PagesController < ApplicationController
                         if b[0]==z.id
                           is_member2=true
                               start=a.created_at.to_s[0..9]
-                              if a.status=='done'
-                                  end_=a.data["save_details"][3]["date"].to_s[0..9]
+                              if a.status=='done' || a.status=='done (auto-closed)'
+                                  end_=a.data["save_details"].last["date"].to_s[0..9]
                               end 
                         end
                       end
