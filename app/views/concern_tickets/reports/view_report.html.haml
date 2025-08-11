@@ -51,6 +51,31 @@
 
 .card.mb-4
   .card-header.bg-dark.text-white.fs-5.fw-bold
+    Concern Type Summary
+  .card-body.p-0
+    .table-responsive
+      %table.table.table-bordered.table-striped.mb-0
+        %thead.table-light
+          %tr.text-center
+            %th Concern Type
+            %th Number of Tickets
+        %tbody
+          - if @concern_type_summary.present?
+            - @concern_type_summary.each do |type_id, items|
+              - type_name = @concern_types[type_id]&.name || "N/A"
+              %tr.text-center
+                %td= type_name
+                %td= items.size
+          - else
+            %tr.text-center
+              %td.text-center.text-muted.italic{ colspan: 2 } No concern ticket details found.
+        %tfoot.table-light
+          %tr.text-center.fw-bold
+            %th Total
+            %th= @details.size
+
+.card.mb-4
+  .card-header.bg-dark.text-white.fs-5.fw-bold
     Assigned Tickets Summary
   .card-body.p-0
     .table-responsive
@@ -110,7 +135,7 @@
         %tbody
           - if branch_summary.present?
             - branch_summary.sort_by { |branch_id, _| @branches[branch_id]&.name.to_s.downcase }.each do |branch_id, items|
-              - branch_name = @branches[branch_id]&.name || "Unknown"
+              - branch_name = @branches[branch_id]&.name || "Unassigned"
               %tr.text-center
                 %td= branch_name
                 %td= items.size

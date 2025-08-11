@@ -214,45 +214,50 @@ class ReportsController < ApplicationController
   def build_report_data(data_store)
 
 
-  @details = Array(data_store&.data&.[]("concern_ticket_details")).select { |d| d.is_a?(Hash) }
+    @details = Array(data_store&.data&.[]("concern_ticket_details")).select { |d| d.is_a?(Hash) }
 
 
-  @details.each do |d|
-    if d["data"].is_a?(Hash) && d["data"]["is_held"] == "true"
-      d["status"] = "Hold"
-    else
-      raw_status = d["status"].to_s.strip.downcase
-      d["status"] = STATUS_MAP[raw_status] || raw_status.titleize
+    @details.each do |d|
+      if d["data"].is_a?(Hash) && d["data"]["is_held"] == "true"
+        d["status"] = "Hold"
+      else
+        raw_status = d["status"].to_s.strip.downcase
+        d["status"] = STATUS_MAP[raw_status] || raw_status.titleize
+      end
     end
-  end
 
-  puts "Unique statuses after normalization: #{@details.map { |d| d['status'] }.uniq.inspect}"
+    puts "Unique statuses after normalization: #{@details.map { |d| d['status'] }.uniq.inspect}"
 
-  valid_details = @details.select { |d| d["assigned_user_is_developer"] }
+    valid_details = @details.select { |d| d["assigned_user_is_developer"] }
 
-  assigned_user_ids = valid_details.map { |d| d["assigned_user_id"].to_s }.reject(&:blank?).uniq
-  branch_ids = @details.map { |d| d["branch_id"] }.compact.map(&:to_s).uniq
+    assigned_user_ids = valid_details.map { |d| d["assigned_user_id"].to_s }.reject(&:blank?).uniq
+    branch_ids = @details.map { |d| d["branch_id"] }.compact.map(&:to_s).uniq
 
-  @users = User.where(id: assigned_user_ids).index_by { |u| u.id.to_s }
-  @branches = Branch.where(id: branch_ids).index_by { |b| b.id.to_s }
+    @users = User.where(id: assigned_user_ids).index_by { |u| u.id.to_s }
+    @branches = Branch.where(id: branch_ids).index_by { |b| b.id.to_s }
 
-  @assigned_summary = valid_details.group_by { |d| d["assigned_user_id"].to_s }
-  @valid_details = valid_details
+    @assigned_summary = valid_details.group_by { |d| d["assigned_user_id"].to_s }
+    @valid_details = valid_details
+    
+    concern_type_ids = @details.map { |d| d["concern_type_id"] }.compact.map(&:to_s).uniq
+    @concern_types = ConcernType.where(id: concern_type_ids).index_by { |ct| ct.id.to_s }
 
-  @total_tickets = @details.size
-  @new_tickets = @details.count { |d| d["status"] == "Open" }
-  @done_tickets = @details.count { |d| d["status"] == "Closed" }
-  @hold_tickets = @details.count { |d| d["status"] == "Hold" } 
+    @concern_type_summary = @details.group_by { |d| d["concern_type_id"].to_s }
 
-  @from_summary = @details.group_by { |d| d["name_for_id"].to_s }
+    @total_tickets = @details.size
+    @new_tickets = @details.count { |d| d["status"] == "Open" }
+    @done_tickets = @details.count { |d| d["status"] == "Closed" }
+    @hold_tickets = @details.count { |d| d["status"] == "Hold" } 
 
-  @status_groups = [
-    "Open",
-    "Processing",
-    "Hold",
-    "For Verification",
-    "Closed"
-  ]
+    @from_summary = @details.group_by { |d| d["name_for_id"].to_s }
+
+    @status_groups = [
+      "Open",
+      "Processing",
+      "Hold",
+      "For Verification",
+      "Closed"
+    ]
   end
 
 
