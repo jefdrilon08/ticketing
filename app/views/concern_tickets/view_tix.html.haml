@@ -111,7 +111,12 @@
           .row.mb-3
             .col-12
               %strong.h6 Date Closed:
-              = status_history["closed"] ? Time.parse(status_history["closed"]).strftime("%b %d, %Y %I:%M %p") : "N/A"
+              - closed_time = status_history["closed"] ? Time.parse(status_history["closed"]).strftime("%b %d, %Y %I:%M %p") : "N/A"
+              - auto_closed = @concern_ticket_details.data && @concern_ticket_details.data["auto_close_deadline"]
+              - if auto_closed && status_history["closed"] && Time.parse(status_history["closed"]) >= Time.parse(auto_closed)
+                = "#{closed_time} (Auto Closed)"
+              - else
+                = closed_time
 
         .row.mb-3
           .col-12

@@ -18,6 +18,11 @@
             class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
             required: false, 
             prompt: "-- SELECT --"
+    .row
+      .col-md-3.col-12
+        .form-group
+          %label Ticket Auto Close (days)
+          = number_field_tag :auto_close_days, @concern_ticket.data && @concern_ticket.data["auto_close_days"], id: "input-auto-close-days", class: "form-control", min: 0, placeholder: "Enter days to auto close"
       .col-md-3.col-12
         .form-group
           .form-check

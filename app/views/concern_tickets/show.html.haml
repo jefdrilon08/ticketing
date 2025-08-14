@@ -85,7 +85,7 @@
     var ticketDetailId = envelope.dataset.ticket_detail_id;
     var lastMsg = envelope.dataset.last_msg;
     var lastMsgUser = envelope.dataset.last_msg_user;
-    // If the last message is from the current user, mark as read
+
     if (ticketDetailId && lastMsg && lastMsgUser === currentUserName) {
       localStorage.setItem('ticket_read_' + ticketDetailId, lastMsg);
     }

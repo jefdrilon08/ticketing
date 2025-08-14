@@ -8,4 +8,13 @@ class ConcernTicketDetail < ApplicationRecord
 
   has_many_attached :attachments
   validates :ticket_number, presence: true, uniqueness: true
+
+  def self.auto_close_overdue!
+    where(status: "verification").find_each do |detail|
+      deadline = detail.data && detail.data["auto_close_deadline"]
+      if deadline && Time.current >= Time.parse(deadline)
+        detail.update(status: "closed")
+      end
+    end
+  end
 end

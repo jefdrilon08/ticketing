@@ -25,9 +25,12 @@ class ConcernTicketsController < ApplicationController
                                .page(params[:page])
                                .per(15)
     end
+
+    auto_close_overdue_tickets
   end
   
   def show
+    auto_close_overdue_tickets
     @subheader_side_actions = [
       {
         id: "btn-create-ticket",
@@ -119,10 +122,11 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket.computer_system_id = params[:computer_system_id]
     @concern_ticket.is_private = params[:is_private] == "1"
     @concern_ticket.connect_to_item = params[:connect_to_item] == "1"
-  
+    @concern_ticket.data ||= {}
+    @concern_ticket.data["auto_close_days"] = params[:auto_close_days].present? ? params[:auto_close_days].to_i : 4
+
     ActiveRecord::Base.transaction do
       if @concern_ticket.save
-        Rails.logger.debug "Updated Concern Ticket ID: #{@concern_ticket.id}"
   
         # Update Concern For
         if params[:selected_concern_fors].present?
@@ -183,6 +187,7 @@ class ConcernTicketsController < ApplicationController
   end
    
   def view_tix
+    auto_close_overdue_tickets
     @branches = Branch.select(:id, :name).order(:name)
     @concern_ticket_details = ConcernTicketDetail.includes(:requested_user, :assigned_user, :concern_type).find(params[:id])
     @concern_ticket = ConcernTicket.find(@concern_ticket_details.concern_ticket_id)
@@ -249,4 +254,21 @@ class ConcernTicketsController < ApplicationController
     end
     @users = User.where(id: user_ids.uniq).index_by(&:id)
   end
+
+  private
+
+  def auto_close_overdue_tickets
+    ConcernTicketDetail.where(status: "verification").find_each do |detail|
+      deadline = detail.data && detail.data["auto_close_deadline"]
+      if deadline && Time.current >= Time.parse(deadline)
+        detail.data ||= {}
+        detail.data["status_history"] ||= {}
+        detail.data["status_history"]["closed"] = Time.current.iso8601
+        detail.data["closed_by"] = "System"
+        detail.update(status: "closed", data: detail.data)
+      end
+    end
+  end
+
+
 end

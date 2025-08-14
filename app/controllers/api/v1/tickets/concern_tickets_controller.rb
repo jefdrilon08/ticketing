@@ -6,18 +6,18 @@ module Api
 
         def create_concern
           Rails.logger.debug "Params received: #{params.inspect}"
+          auto_close_days = params[:auto_close_days].present? ? params[:auto_close_days].to_i : 4
           config = {
             name: params[:name],
             ticket_name: params[:ticket_name],
             description: nil,
-            status: "active",
             computer_system_id: params[:computer_system_id],
             user_id: current_user.id,
+            auto_close_days: auto_close_days,
             is_private: params[:is_private] == "1",
-            connect_to_item: params[:connect_to_item] == "1"
+            connect_to_item: params[:connect_to_item] == "1",
+            status: "active",
           }
-
-          Rails.logger.debug "Config: #{config.inspect}"
 
           errors = ::Tickets::ValidateCreate.new(config: config).execute!
 
@@ -103,8 +103,6 @@ module Api
 
             if params[:attachments].present?
               attachments = Array(params[:attachments])
-              Rails.logger.debug "Processed attachments array: #{attachments.map(&:original_filename)}"
-
               attachments.each do |attachment|
                 @concern_ticket_record.attachments.attach(attachment)
               end
@@ -129,6 +127,46 @@ module Api
           end
         end
 
+        # def update_status
+        #   Rails.logger.debug "Received update request: #{params.inspect}"
+        #   @ctd_status = ConcernTicketDetail.find_by(ticket_number: params[:ticket_number])
+
+        #   if @ctd_status
+        #     update_params = { status: params[:status] }
+        #     update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
+
+        #     data = @ctd_status.data || {}
+        #     status_history = data["status_history"] || {}
+
+        #     unless status_history[params[:status]]
+        #       status_history[params[:status]] = Time.current.iso8601
+        #     end
+
+        #     data["status_history"] = status_history
+
+        #     # logs
+        #     if params[:status] == "closed"
+        #       data["closed_by"] = current_user.id
+        #     end
+
+        #     if params[:status] == "verification"
+        #       concern_ticket = ConcernTicket.find(@ctd_status.concern_ticket_id)
+        #       auto_close_days = concern_ticket.data && concern_ticket.data["auto_close_days"].to_i > 0 ? concern_ticket.data["auto_close_days"].to_i : 4
+        #       data["auto_close_deadline"] = (Time.current + auto_close_days.days).iso8601
+        #     end
+
+        #     update_params[:data] = data
+
+        #     if @ctd_status.update(update_params)
+        #       render json: { success: true, status: @ctd_status.status, ticket_number: @ctd_status.ticket_number }
+        #     else
+        #       render json: { success: false, errors: @ctd_status.errors.full_messages }, status: :unprocessable_entity
+        #     end
+        #   else
+        #     render json: { success: false, error: "Ticket not found" }, status: :not_found
+        #   end
+        # end
+
         def update_status #para sa Ticket Status or Concern Ticket Detail
           Rails.logger.debug "Received update request: #{params.inspect}"
           @ctd_status = ConcernTicketDetail.find_by(ticket_number: params[:ticket_number])
@@ -137,19 +175,23 @@ module Api
             update_params = { status: params[:status] }
             update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
 
-
             data = @ctd_status.data || {}
             status_history = data["status_history"] || {}
 
             unless status_history[params[:status]]
-              status_history[params[:status]] = Time.current.iso8601
+              status_history[params[:status]] = Time.current.strftime("%Y-%m-%d %H:%M:%S")
             end
 
             data["status_history"] = status_history
 
-            #logs
             if params[:status] == "closed"
               data["closed_by"] = current_user.id
+            end
+
+            if params[:status] == "verification"
+              concern_ticket = ConcernTicket.find(@ctd_status.concern_ticket_id)
+              auto_close_days = concern_ticket.data && concern_ticket.data["auto_close_days"].to_i > 0 ? concern_ticket.data["auto_close_days"].to_i : 4
+              data["auto_close_deadline"] = (Time.current + auto_close_days.days).strftime("%Y-%m-%d %H:%M:%S")
             end
 
             update_params[:data] = data
