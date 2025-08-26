@@ -819,6 +819,7 @@ Rails.application.routes.draw do
   post "system_tickets/add_default_milestone", to: "system_tickets#add_default_milestone"
   post "system_tickets_:id/edit_default_milestone", to: "system_tickets#edit_default_milestone"
   post "system_tickets_:id/delete_default_milestone", to: "system_tickets#delete_default_milestone"
+  post "system_tickets/update_auto",        to: "system_tickets#update_auto"
 
   delete "system_tickets_:id/delete_ticket",    to: "system_tickets#delete_ticket"
   get "new_system_ticket/",                 to: "new_system_ticket#view2"

@@ -361,6 +361,7 @@ class SystemTicketsController < ApplicationController
         @system_members=[]
         @non_system_members=[]
         @def_milestones=[]
+        @autoclose=SystemTicket.find(@system_id).data["autoclose"][0].to_i
         members=SystemTicketsUser.where(system_ticket_id:params[:id])
 
         if SystemTicket.find(@system_id).data["default_milestones"].present?
@@ -1033,6 +1034,17 @@ class SystemTicketsController < ApplicationController
         if SystemTicket.find(params[:id]).is_private then SystemTicket.find(params[:id]).update!(is_private:false)
         else SystemTicket.find(params[:id]).update!(is_private:true)
         end
+
+        redirect_to "/system_tickets_#{params[:id]}/edit"
+    end
+
+    def update_auto 
+        puts params
+        
+        updated=SystemTicket.find(params[:id])
+        updated_data=updated.data 
+        updated_data["autoclose"]=params[:autoclose]
+        updated.update(data:updated_data)
 
         redirect_to "/system_tickets_#{params[:id]}/edit"
     end

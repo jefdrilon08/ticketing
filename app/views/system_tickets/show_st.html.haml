@@ -91,7 +91,24 @@
                 %td
       %div.col-4
   %hr{:style=>"color:white"}
-  .card.some{:style=>"padding:1%"}                  
+  .card.some{:style=>"padding:1%"}
+    %table.table{:style=>"border-color:white;font-size:110%"} 
+      %tr
+        %td
+          =form_tag "/system_tickets/update_auto", method: 'POST' do
+            %label
+              Number of days before auto-closing a ticket
+            .form-group
+              =number_field :autoclose,params[:autoclose],class:'form-control',required:true, placeholder:'Select a number.', step:1, min:1,style:'width:5%',value:@autoclose
+            %tr 
+              %td
+                .form-group
+                  =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+                .form-group
+                  =button_tag type: 'submit', class: 'btn btn-primary',id:"sub-btn" do
+                    Save     
+    %hr{:style=>"color:white"}
+  .card.some{:style=>"padding:1%"}              
     =form_tag "/system_tickets/add_member_st", multipart: true, method: 'POST' do
       .form-group
         =text_field_tag :id,params[:id]=@system_id,class:'form-control',style:'display:none'
