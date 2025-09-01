@@ -801,6 +801,7 @@ Rails.application.routes.draw do
   post "system_tickets/set_date_milestone", to: "system_tickets#set_date_milestone"
   post "system_tickets/edit_milestone_details", to: "system_tickets#edit_milestone_details" 
   post "system_tickets/edit_milestone_target_date", to: "system_tickets#edit_milestone_target_date" 
+  post "system_tickets/edit_milestone_assign",     to: "system_tickets#edit_milestone_assign"
   post "system_tickets/set_start_date",     to: "system_tickets#set_start_date"
   post "system_tickets/edit_target_date",   to: "system_tickets#edit_target_date"
   post "system_tickets/change_category",    to: "system_tickets#change_category"

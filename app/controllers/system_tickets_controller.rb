@@ -65,22 +65,24 @@ class SystemTicketsController < ApplicationController
         a_tickets.each do |x|
             x_data=x.data
             if x.status=="for verification"
-                if a_system_data["autoclose"].present?
-                    if !x_data["autoclose_in"].present?
-                        then x_data["autoclose_in"]=x.data["save_details"].last["date"].to_date.next_day(a_system.data["autoclose"][0].to_i)
+                if !x.data["on_hold"]
+                    if a_system_data["autoclose"].present?
+                        if !x_data["autoclose_in"].present?
+                            then x_data["autoclose_in"]=x.data["save_details"].last["date"].to_date.next_day(a_system.data["autoclose"][0].to_i)
+                        end
+                    elsif !a_system_data["autoclose"].present?
+                        a_system_data["autoclose"]=["3"]
+                        a_system.update!(data:a_system_data)
+                        x_data["autoclose_in"]=(DateTime.now).to_date.next_day(3)
                     end
-                elsif !a_system_data["autoclose"].present?
-                    a_system_data["autoclose"]=["3"]
-                    a_system.update!(data:a_system_data)
-                    x_data["autoclose_in"]=(DateTime.now).to_date.next_day(3)
-                end
-                x.update(data:x_data)
-                if x_data["autoclose_in"].to_date<=DateTime.current
-                    puts "test july30"
-                    puts x_data["autoclose_in"]
-                    puts DateTime.current
-                    x_data["save_details"].push({"status"=>"auto-closed","date"=>x_data["autoclose_in"]})
-                    x.update(data:x_data,status:"done (auto-closed)")
+                    x.update(data:x_data)
+                    if x_data["autoclose_in"].to_date<=DateTime.current
+                        puts "test july30"
+                        puts x_data["autoclose_in"]
+                        puts DateTime.current
+                        x_data["save_details"].push({"status"=>"auto-closed","date"=>x_data["autoclose_in"]})
+                        x.update(data:x_data,status:"done (auto-closed)")
+                    end
                 end
             end
         end
@@ -418,12 +420,14 @@ class SystemTicketsController < ApplicationController
         else holdtix[:data]["on_hold"]=true
         end
 
+        holdtix[:data]["autoclose_in"]=nil
+
         if holdtix[:data]["hold_details"]==nil then holdtix[:data]["hold_details"]=[[holdtix[:data]["on_hold"],DateTime.now()]]
         else holdtix[:data]["hold_details"].push([holdtix[:data]["on_hold"],DateTime.now()])
         end
 
         puts "new params"
-        puts holdtix
+        puts holdtix[:data]["autoclose_in"]
         if holdtix.update(data:holdtix[:data])
             redirect_to "/system_tickets_#{holdtix[:system_ticket_id]}"
         else
@@ -785,6 +789,16 @@ class SystemTicketsController < ApplicationController
         edit_milestone=Milestone.find(params[:ms_id])
 
         if edit_milestone.update(target_date:params[:date])
+            redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
+        else
+            render :edit, status: :unprocessable_entity
+        end
+    end
+
+    def edit_milestone_assign
+        edit_milestone=Milestone.find(params[:ms_id])
+
+        if edit_milestone.update(assigned_person:params[:dev1])
             redirect_to "/system_tickets/#{edit_milestone[:system_ticket_desc_id]}"
         else
             render :edit, status: :unprocessable_entity

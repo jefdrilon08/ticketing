@@ -171,7 +171,7 @@
                                     .badge.bg-danger
                                         on hold
                             %p
-                                -if x[8]=="for verification"
+                                -if x[8]=="for verification" && !SystemTicketDesc.find(x[0]).data["on_hold"] 
                                     %p{:style=>"font-weight:900;margin-top:-10px"}
                                         Auto-closes in #{(SystemTicketDesc.find(x[0]).data["autoclose_in"].to_date-DateTime.now.to_date).to_i} day/s.
                     %td

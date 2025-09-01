@@ -354,10 +354,10 @@
                                                     #{x.target_date}
                                             %p 
                                                 %center
-                                                    .form-group
-                                                        =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
-                                                    .form-group
-                                                        =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                    =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                    =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
+                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
                                                     - case x.status
                                                         - when 'pending'
                                                             -if !@ticket.data["on_hold"]
@@ -393,6 +393,10 @@
                                             %p
                                                 %center
                                                     #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
+                                                    -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                        %p
+                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
+                                                                Edit
                                         %td
                                             %p
                                 -else
@@ -435,10 +439,10 @@
                                                         #{x.target_date}
                                                 %p 
                                                 %center
-                                                    .form-group
-                                                        =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
-                                                    .form-group
-                                                        =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                    =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                    =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
+                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
                                                     - case x.status
                                                         - when 'pending'
                                                             -if !@ticket.data["on_hold"]
@@ -466,6 +470,10 @@
                                                 %p
                                                     %center
                                                         #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
+                                                        -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                            %p
+                                                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
+                                                                    Edit
                                             %td
                                                 %p
                                                     %center
@@ -613,6 +621,32 @@
                         =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
                             Save
 
+#modal-edit-milestone-assigned.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Assign New Developer
+            .modal-body
+                %label
+                    Current Assigned Developer
+                %div{id:"dev"}
+                %hr{style:"height:10px;color:white"} 
+                %label
+                    New Developer
+                = form_tag "edit_milestone_assign", method: 'POST' do
+                    .form-group
+                        =select_tag :dev1,options_for_select(@mem_list_dev, params[:dev]),class:'form-control select-select2',prompt:"-- SELECT --",required:true,id:"new-assigned-dev",onchange:'selectAssigned()'
+                    .form-group
+                        =text_field_tag :ms_id,params[:ms_id],class:'form-control',id:"ms_id4",style:"display:none"
+                    %hr{style:"height:5px;color:white"}
+                    %div{style:"color:red;display:none",id:"confirm-assigned"}
+                        %p
+                            Assigned developer not changed. Continue?
+                    .form-group
+                        =button_tag type: 'submit', class: 'btn btn-primary' do
+                            Save
+
 #modal-for-enhancement.modal.fade
     .modal-dialog
         .modal-content
@@ -635,12 +669,15 @@
     .btt-linkto:hover{color:#0A58CA;}
 
 :javascript
+
+    var idAll=''
+
     function putMSId(n)
     {
         var returnId = document.getElementById('ms_id')
-        var passId   = document.getElementById("m-"+n).value
+        idAll   = document.getElementById("m-"+n).value
         document.getElementById("deets").innerHTML = document.getElementById('d-'+n).innerHTML
-        returnId.value = passId
+        returnId.value = idAll
     }    
 
     function putMSId2(n)
@@ -649,6 +686,7 @@
         var passId   = document.getElementById("m-"+n).value
         document.getElementById("deets2").innerHTML = document.getElementById('d-'+n).innerHTML
         returnId.value = passId
+        idAll=n
     }    
 
     function putMSId3(n)
@@ -657,7 +695,25 @@
         var passId   = document.getElementById("m-"+n).value
         document.getElementById("date1").innerHTML = document.getElementById('date-'+n).value
         returnId.value = passId
+        idAll=n
     }    
+
+    function putMSId4(n)
+    {
+        var returnId = document.getElementById('ms_id4')
+        var passId   = document.getElementById("m-"+n).value
+        document.getElementById("dev").innerHTML = document.getElementById('dev-'+n).value
+        returnId.value = passId
+        idAll=n
+    }    
+
+    function selectAssigned()
+    {
+        if(document.getElementById("devid-"+idAll).value==document.getElementById("new-assigned-dev").value)
+            document.getElementById("confirm-assigned").style.display="block"
+        else
+            document.getElementById("confirm-assigned").style.display="none"
+    }
 
     function updateStatus(n)
     {
