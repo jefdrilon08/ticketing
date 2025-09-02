@@ -259,11 +259,28 @@ class ConcernTicketsController < ApplicationController
 
   def auto_close_overdue_tickets
     ConcernTicketDetail.where(status: "verification").find_each do |detail|
-      deadline = detail.data && detail.data["auto_close_deadline"]
+      detail.data ||= {}
+      detail.data["status_history"] ||= {}
+      deadline = detail.data["auto_close_deadline"]
+
+      if deadline.blank?
+        verification_date_str = detail.data["status_history"]["verification"]
+        if verification_date_str.present?
+          begin
+            verification_date = Time.parse(verification_date_str)
+          rescue
+            next
+          end
+          concern_ticket = detail.concern_ticket
+          auto_close_days = concern_ticket.data && concern_ticket.data["auto_close_days"].to_i > 0 ? concern_ticket.data["auto_close_days"].to_i : 4
+          deadline = (verification_date + auto_close_days.days).strftime("%Y-%m-%d %H:%M:%S")
+          detail.data["auto_close_deadline"] = deadline
+          detail.save
+        end
+      end
+
       if deadline && Time.current >= Time.parse(deadline)
-        detail.data ||= {}
-        detail.data["status_history"] ||= {}
-        detail.data["status_history"]["closed"] = Time.current.iso8601
+        detail.data["status_history"]["closed"] = Time.current.strftime("%Y-%m-%d %H:%M:%S")
         detail.data["closed_by"] = "System"
         detail.update(status: "closed", data: detail.data)
       end
