@@ -100,6 +100,7 @@ class SystemTicketsController < ApplicationController
             end
         end
 
+        onhold=[]
         pending=[]
         checked=[]
         approved=[]
@@ -303,22 +304,28 @@ class SystemTicketsController < ApplicationController
         end
 
         temp_sorted.each do |x|
-            case x[8]
-            when "pending"
-                pending.push(x)
-            when "checked"
-                checked.push(x)
-            when "approved"
-                approved.push(x)
-            when "processing"
-                processing.push(x)
-            when "for verification"
-                for_verification.push(x)
-            when "done","done (auto-closed)"
-                done.push(x)
+            if x[9] then onhold.push(x)
+            else
+                case x[8]
+                when "pending"
+                    pending.push(x)
+                when "checked"
+                    checked.push(x)
+                when "approved"
+                    approved.push(x)
+                when "processing"
+                    processing.push(x)
+                when "for verification"
+                    for_verification.push(x)
+                when "done","done (auto-closed)"
+                    done.push(x)
+                end
             end
         end
 
+        onhold.each do |x|
+            @system_tix_desc.push(x)
+        end
 
         pending.each do |x|
             @system_tix_desc.push(x)
