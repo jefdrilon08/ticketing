@@ -284,7 +284,7 @@ class SystemTicketsController < ApplicationController
 
             end
         end
-
+ 
         temp_sorted=[]
         
         high.each do |x|
