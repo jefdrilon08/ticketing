@@ -103,7 +103,7 @@
                 %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
                 %td.text-center
                   = select_tag "roles_#{ct_user.id}", 
-                    options_for_select(["Developer", "Requester", "Unassigned"], ct_user.task&.capitalize || "Unassigned"), 
+                    options_for_select(["Developer", "Requester", "Viewer", "Unassigned"], ct_user.task&.capitalize || "Unassigned"), 
                     class: "form-control form-select-sm", 
                     data: { id: ct_user.id, field: "roles" }
                 %td.text-center
