@@ -261,6 +261,9 @@ class ConcernTicketsController < ApplicationController
     ConcernTicketDetail.where(status: "verification").find_each do |detail|
       detail.data ||= {}
       detail.data["status_history"] ||= {}
+
+      #skip kapag naka hold
+      next if detail.data["is_held"] == "true"
       deadline = detail.data["auto_close_deadline"]
 
       if deadline.blank?
