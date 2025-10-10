@@ -607,8 +607,8 @@ class SystemTicketsController < ApplicationController
                 } end
         end
 
-        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"]
-            if @role==2 || @role==3 || @role==5 && @ticket.start_date!=nil
+        if ["approved"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket.start_date!=nil
+            if @role==2 || @role==3 || @role==5
                 @subheader_side_actions << {
                 id: "btn-status",
                 link: "edit_ticket_status/#{params[:id]}",
