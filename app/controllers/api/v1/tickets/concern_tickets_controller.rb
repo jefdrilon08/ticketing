@@ -127,48 +127,7 @@ module Api
           end
         end
 
-        # def update_status
-        #   Rails.logger.debug "Received update request: #{params.inspect}"
-        #   @ctd_status = ConcernTicketDetail.find_by(ticket_number: params[:ticket_number])
-
-        #   if @ctd_status
-        #     update_params = { status: params[:status] }
-        #     update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
-
-        #     data = @ctd_status.data || {}
-        #     status_history = data["status_history"] || {}
-
-        #     unless status_history[params[:status]]
-        #       status_history[params[:status]] = Time.current.iso8601
-        #     end
-
-        #     data["status_history"] = status_history
-
-        #     # logs
-        #     if params[:status] == "closed"
-        #       data["closed_by"] = current_user.id
-        #     end
-
-        #     if params[:status] == "verification"
-        #       concern_ticket = ConcernTicket.find(@ctd_status.concern_ticket_id)
-        #       auto_close_days = concern_ticket.data && concern_ticket.data["auto_close_days"].to_i > 0 ? concern_ticket.data["auto_close_days"].to_i : 4
-        #       data["auto_close_deadline"] = (Time.current + auto_close_days.days).iso8601
-        #     end
-
-        #     update_params[:data] = data
-
-        #     if @ctd_status.update(update_params)
-        #       render json: { success: true, status: @ctd_status.status, ticket_number: @ctd_status.ticket_number }
-        #     else
-        #       render json: { success: false, errors: @ctd_status.errors.full_messages }, status: :unprocessable_entity
-        #     end
-        #   else
-        #     render json: { success: false, error: "Ticket not found" }, status: :not_found
-        #   end
-        # end
-
         def update_status #para sa Ticket Status or Concern Ticket Detail
-          Rails.logger.debug "Received update request: #{params.inspect}"
           @ctd_status = ConcernTicketDetail.find_by(ticket_number: params[:ticket_number])
 
           if @ctd_status
@@ -194,6 +153,20 @@ module Api
               data["auto_close_deadline"] = (Time.current + auto_close_days.days).strftime("%Y-%m-%d %H:%M:%S")
             end
 
+            data["monitoring"] ||= {}
+
+            if params[:status] == "processing" && params[:reprocess].to_s == "true"
+              if data["monitoring"]["reprocess"].present?
+                data["monitoring"]["reprocess"]["reprocess_count"] = data["monitoring"]["reprocess"]["reprocess_count"].to_i + 1
+              else
+                data["monitoring"]["reprocess"] = {
+                  "reprocess_count" => 1,
+                  "reprocess_by" => current_user.id,
+                  "date" => Time.current.strftime("%Y-%m-%d %H:%M:%S")
+                }
+              end
+            end
+
             update_params[:data] = data
 
             if @ctd_status.update(update_params)
@@ -207,7 +180,7 @@ module Api
         end
 
         def update_member_status
-          Rails.logger.debug "Params received: #{params.inspect}"
+          # Rails.logger.debug "Params received: #{params.inspect}"
           ct_user = ConcernTicketUser.find(params[:id])
 
           roles = params[:roles].downcase if params[:roles].present?
