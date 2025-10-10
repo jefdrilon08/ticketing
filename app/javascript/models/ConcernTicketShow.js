@@ -74,19 +74,17 @@ var _bindEvents = function() {
     });
 
     $(document).on("click", ".update-status", function() {
-        console.log("Button clicked!");
 
         var $button = $(this);
         var ticketNumber = $button.data("ticket-number");
         var newStatus = $button.data("status");
+        var reprocess = $button.data("reprocess") ? 'true' : 'false';
 
-        console.log("Ticket:", ticketNumber, "New Status:", newStatus);
-
-        _updateTicketStatus(ticketNumber, newStatus, $button);
+        _updateTicketStatus(ticketNumber, newStatus, $button, reprocess);
     });
 };
 
-var _updateTicketStatus = function(ticketNumber, newStatus, $button) {
+var _updateTicketStatus = function(ticketNumber, newStatus, $button, reprocess) {
     $.ajax({
         url: "/api/v1/tickets/concern_tickets/update_status",
         method: "POST",
@@ -95,7 +93,7 @@ var _updateTicketStatus = function(ticketNumber, newStatus, $button) {
         headers: {
             "X-CSRF-Token": _authenticityToken
         },
-        data: JSON.stringify({ ticket_number: ticketNumber, status: newStatus }),
+        data: JSON.stringify({ ticket_number: ticketNumber, status: newStatus, reprocess: reprocess }),
 
         success: function(response) {
             if (response.success) {
