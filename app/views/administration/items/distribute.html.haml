@@ -87,36 +87,45 @@
         = form_with url: create_distribute_administration_item_path(@item), method: :post, local: true do |f|
           = f.hidden_field :item_id, value: @item.id
           .row.mt-3
+            %div{ style: "display:none", id: "dropdown-data", data: { clusters: @clusters.map { |c| { id: c.id, name: c.name.titleize, area_id: c.area_id } }.to_json, branches: @branches.map { |b| { id: b.id, name: b.name.titleize, cluster_id: b.cluster_id } }.to_json } }
             .col-md-4
               .form-group
-                = f.label :item_name, "Item Name"
+                = f.label :item_name, "Item Name:"
                 = f.text_field :item_name, value: @item.name, class: "form-control", readonly: true
             .col-md-4
               .form-group
-                = f.label :mr_number, "MR Number"
+                = f.label :mr_number, "MR Number:"
                 = f.text_field :mr_number, id: "distribution_mr_number", class: "form-control", required: true
             .col-md-4
               .form-group
-                = f.label :receive_by, "Received By"
+                = f.label :receive_by, "Received By:"
                 = f.select :receive_by, options_for_select(@users.map { |u| [("#{u.first_name} #{u.last_name}".strip.presence || u.username || u.email).to_s.titleize, u.id] }), { include_blank: "--SELECT--" }, class: "form-control select2", required: true
           .row.mt-3
             .col-md-4
               .form-group
-                = f.label :distribute_name, "Distribute Name"
+                = f.label :distribute_name, "Distribute Name:"
                 = f.text_field :distribute_name, class: "form-control", required: true
             .col-md-4
               .form-group
-                = f.label :inventory_number, "Inventory Number"
+                = f.label :inventory_number, "Inventory Number:"
                 = f.text_field :inventory_number, id: "distribution_inventory_number", class: "form-control", required: true
             .col-md-4
               .form-group
-                = f.label :distributed_by, "Distributed By"
+                = f.label :distributed_by, "Distributed By:"
                 = f.select :distributed_by, options_for_select(@distributors.map { |u| [("#{u.first_name} #{u.last_name}".strip.presence || u.username || u.email).to_s.titleize, u.id] }), { include_blank: "--SELECT--" }, class: "form-control select2", required: true
           .row.mt-3
             .col-md-4
               .form-group
-                = f.label :branch_id, "Branch"
-                = f.select :branch_id, options_for_select(@branches.map { |b| [b.name.titleize, b.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true
+                = f.label :area_id, "Area:"
+                = f.select :area_id, options_for_select(@areas.map { |a| [a.name.titleize, a.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "area-select"
+            .col-md-4
+              .form-group
+                = f.label :cluster_id, "Cluster:"
+                = f.select :cluster_id, options_for_select(@clusters.map { |c| [c.name.titleize, c.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "cluster-select"
+            .col-md-4
+              .form-group
+                = f.label :branch_id, "Branch:"
+                = f.select :branch_id, options_for_select(@branches.map { |b| [b.name.titleize, b.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "branch-select"
             .col-md-4.d-flex.align-items-center.justify-content-end
               .form-check.mt-2
                 = f.check_box :attached_mr_sticker, { class: "form-check-input", id: "attached_mr_sticker" }, true, false

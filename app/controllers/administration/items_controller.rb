@@ -130,10 +130,12 @@ module Administration
 
   def distribute
     @item = Item.includes(:items_category, :sub_category).find(params[:id])
+    @areas = Area.order(:name)
+    @clusters = Cluster.order(:name)
     @branches = Branch.where(active: true).order(:name)
     @users = User.order(:first_name, :last_name)
     @distributors = User.all.select { |u| (u.roles & ["MIS", "OAS"]).any? }
-                       .sort_by { |u| [u.first_name.to_s.downcase, u.last_name.to_s.downcase] }
+                      .sort_by { |u| [u.first_name.to_s.downcase, u.last_name.to_s.downcase] }
   end
 
   def create_distribute
@@ -142,6 +144,8 @@ module Administration
   
     item_distribution = ItemDistribution.new(
       item_id: params[:item_id],
+      area_id: params[:area_id],
+      cluster_id: params[:cluster_id],
       branch_id: params[:branch_id],
       distributed_by: params[:distributed_by],
       receive_by: params[:receive_by],

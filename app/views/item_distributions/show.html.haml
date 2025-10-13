@@ -35,6 +35,23 @@
                 %label{ for: "inventory_number" } Inventory Number
               .col-sm-8
                 %input.form-control{ type: "text", id: "inventory_number", name: "item_distribution[inventory_number]", value: @item_distribution.inventory_number, disabled: true }
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "area_id" } Area
+              .col-sm-8
+                %select.form-control{ id: "area_id", name: "item_distribution[area_id]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @areas.values.sort_by { |a| a.name.to_s.downcase }.each do |area|
+                    %option{ value: area.id, selected: (@item_distribution.area_id.to_s == area.id.to_s) }= area.name.titleize
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "cluster_id" } Cluster
+              .col-sm-8
+                %select.form-control{ id: "cluster_id", name: "item_distribution[cluster_id]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @clusters.values.sort_by { |c| c.name.to_s.downcase }.each do |cluster|
+                    %option{ value: cluster.id, selected: (@item_distribution.cluster_id.to_s == cluster.id.to_s) }= cluster.name.titleize
 
             .row.mb-3
               .col-sm-4
