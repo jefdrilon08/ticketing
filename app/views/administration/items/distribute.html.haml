@@ -118,7 +118,7 @@
               .form-group
                 = f.label :area_id, "Area:"
                 = f.select :area_id, options_for_select(@areas.map { |a| [a.name.titleize, a.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "area-select"
-            .col-md-4
+            .col-md-4 
               .form-group
                 = f.label :cluster_id, "Cluster:"
                 = f.select :cluster_id, options_for_select(@clusters.map { |c| [c.name.titleize, c.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "cluster-select"
