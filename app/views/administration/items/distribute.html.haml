@@ -125,7 +125,7 @@
             .col-md-4
               .form-group
                 = f.label :branch_id, "Branch:"
-                = f.select :branch_id, options_for_select(@branches.map { |b| [b.name.titleize, b.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "branch-select"
+                = f.select :branch_id, options_for_select(@branches.map { |b| [b.name.titleize, b.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: false, id: "branch-select"
             .col-md-4.d-flex.align-items-center.justify-content-end
               .form-check.mt-2
                 = f.check_box :attached_mr_sticker, { class: "form-check-input", id: "attached_mr_sticker" }, true, false
