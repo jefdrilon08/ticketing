@@ -43,6 +43,8 @@ class ItemDistributionsController < ApplicationController
     @item = Item.find_by(id: @item_distribution.item_id)
     @branches = Branch.all.index_by(&:id)
     @users = User.all.index_by(&:id)
+    @areas = Area.all.index_by(&:id)
+    @clusters = Cluster.all.index_by(&:id)
     @branch = @branches[@item_distribution.branch_id]
     @receive_by_user = @users[@item_distribution.receive_by]
     @distributed_by_user = @users[@item_distribution.distributed_by]
@@ -95,6 +97,8 @@ class ItemDistributionsController < ApplicationController
     permitted = params.require(:item_distribution).permit(
       :mr_number,
       :inventory_number,
+      :area_id,
+      :cluster_id,  
       :branch_id,
       :receive_by,
       :distributed_by,
