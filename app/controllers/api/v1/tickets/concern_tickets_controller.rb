@@ -132,7 +132,9 @@ module Api
 
           if @ctd_status
             update_params = { status: params[:status] }
-            update_params[:assigned_user_id] = current_user.id if params[:status] == "processing"
+            if params[:status] == "processing" && params[:reprocess].to_s != "true"
+              update_params[:assigned_user_id] = current_user.id
+            end
 
             data = @ctd_status.data || {}
             status_history = data["status_history"] || {}

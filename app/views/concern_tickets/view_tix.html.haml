@@ -147,7 +147,7 @@
       = button_tag "Reprocess",
         { class: "btn btn-info fs-6 me-2 update-status",
           data: { ticket_number: @concern_ticket_details.ticket_number, status: "processing", reprocess: true } }
-    = link_to "Back", concern_ticket_path(@concern_ticket), class: "btn btn-secondary fs-6" 
+    %button.btn.btn-secondary.fs-6{ type: "button", onclick: "window.history.back();" } Back
 
 = render "concern_tickets/modals/edit_all_fields"
 -# = render "concern_tickets/modals/edit_branch"
