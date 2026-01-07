@@ -95,6 +95,7 @@ class ItemDistributionsController < ApplicationController
   def update
     @item_distribution = ItemDistribution.find(params[:id])
     permitted = params.require(:item_distribution).permit(
+      :distribute_name,
       :mr_number,
       :inventory_number,
       :area_id,
