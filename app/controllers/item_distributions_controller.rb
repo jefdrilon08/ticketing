@@ -7,6 +7,14 @@ class ItemDistributionsController < ApplicationController
     #   @item_distributions = @item_distributions.where("mr_number ILIKE ?", "%#{params[:mr_number]}%")
     # end
 
+    
+    if params[:items_category_id].present?
+      @item_distributions = @item_distributions.joins(:item).where(items: { items_category_id: params[:items_category_id] })
+    end
+
+    if params[:sub_category_id].present?
+      @item_distributions = @item_distributions.joins(:item).where(items: { sub_category_id: params[:sub_category_id] })
+    end
     if params[:branch_id].present?
       @item_distributions = @item_distributions.where(branch_id: params[:branch_id])
     end
@@ -28,8 +36,17 @@ class ItemDistributionsController < ApplicationController
 
     @branches = Branch.all.index_by(&:id)
 
+    # item_ids = ItemDistribution.distinct.pluck(:item_id)
+    # @filter_items = Item.where(id: item_ids).order(:name).group_by(&:name).map { |_, items| items.first }
+
     item_ids = ItemDistribution.distinct.pluck(:item_id)
     @filter_items = Item.where(id: item_ids).order(:name).group_by(&:name).map { |_, items| items.first }
+
+    category_ids = Item.distinct.pluck(:items_category_id).compact
+    @filter_categories = ItemsCategory.where(id: category_ids).order(:name)
+
+    sub_category_ids = Item.distinct.pluck(:sub_category_id).compact
+    @filter_sub_categories = SubCategory.where(id: sub_category_ids).order(:name)
 
     distributor_ids = ItemDistribution.distinct.pluck(:distributed_by)
     @filter_distributors = User.where(id: distributor_ids).order(:first_name, :last_name)
@@ -38,7 +55,6 @@ class ItemDistributionsController < ApplicationController
   end
 
   def show
-    
     @item_distribution = ItemDistribution.find(params[:id])
     @item = Item.find_by(id: @item_distribution.item_id)
     @branches = Branch.all.index_by(&:id)

@@ -4,11 +4,18 @@
     -#   .form-group
     -#     %label MR Number
     -#     = text_field_tag :mr_number, params[:mr_number], class: "form-control form-control-sm"
-    .col-md-3.col-12
+    .col-md-2.col-12
       .form-group
-        %label Branch
-        = select_tag :branch_id,
-          options_for_select(@branches.values.sort_by { |b| b.name.to_s.downcase }.map { |b| [b.name.to_s.titleize, b.id] }, params[:branch_id]),
+        %label Item Category
+        = select_tag :items_category_id,
+          options_for_select(@filter_categories.map { |c| [c.name.to_s.titleize, c.id] }, params[:items_category_id]),
+          class: "form-control select-select2 form-control-sm",
+          prompt: "-- SELECT --"
+    .col-md-2.col-12
+      .form-group
+        %label Sub-Category
+        = select_tag :sub_category_id,
+          options_for_select(@filter_sub_categories.map { |s| [s.name.to_s.titleize, s.id] }, params[:sub_category_id]),
           class: "form-control select-select2 form-control-sm",
           prompt: "-- SELECT --"
     .col-md-3.col-12
@@ -18,7 +25,14 @@
           options_for_select(@filter_items.map { |item| [item.name.to_s.titleize, item.id] }, params[:item_id]),
           class: "form-control select-select2 form-control-sm",
           prompt: "-- SELECT --"
-    .col-md-3.col-12
+    .col-md-2.col-12
+      .form-group
+        %label Branch
+        = select_tag :branch_id,
+          options_for_select(@branches.values.sort_by { |b| b.name.to_s.downcase }.map { |b| [b.name.to_s.titleize, b.id] }, params[:branch_id]),
+          class: "form-control select-select2 form-control-sm",
+          prompt: "-- SELECT --"
+    .col-md-2.col-12
       .form-group
         %label Distributed By
         = select_tag :distributed_by,

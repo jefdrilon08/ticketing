@@ -1,56 +1,68 @@
-:css
-  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
+-# :css
+-#   @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css");
 
-= render partial: "index_filter"
-%table#data-table.display.table.table-bordered.table-hover.table-sm
-  %thead
-    %tr
-      %th
-      %th.text-center Category
-      %th.text-center Sub Category
-      %th.text-center Item Name
-      %th.text-center Brand
-      %th.text-center Model
-      %th.text-center Serial Number
-      %th.text-center Date Purchased
-      %th.text-center Status
-      %th.text-center{ style: 'width:10%' } Actions
-  %tbody
-    - @items_list.each do |a|
-      %tr
-        %td{ style: "text-align: center;"}
-          = link_to administration_item_path(a), title: "View Item" do
-            %i.fa-solid.fa-magnifying-glass.fa-lg
-        %td{ style: "text-transform: uppercase;" }= a.items_category&.name || "N/A"
-        %td{ style: "text-transform: uppercase;" }= a.sub_category&.name || "N/A"
-        %td{ style: "text-transform: uppercase;" }= a.name
-        %td{ style: "text-transform: uppercase;" }= a.brand&.name.presence || "N/A"
-        %td{ style: "text-transform: uppercase;" }= a.model.presence || "N/A"
-        %td{ style: "text-transform: uppercase;" }= a.serial_number.presence || "N/A"
-        %td{ style: "text-transform: uppercase;" }= a.date_purchased.present? ? a.date_purchased.strftime("%Y-%m-%d") : "N/A"
-        %td.text-center
-          - case a.status.to_s.downcase
-          - when "active"
-            %span.badge.bg-success Active
-          - when "pending"
-            %span.badge.bg-warning Pending
-          - when "processing"
-            %span.badge.bg-info Processing
-          - when "deffective"
-            %span.badge.bg-danger Deffective
-          - when "depreciated"
-            %span.badge.bg-secondary Depreciated
-          - else
-            %span.badge.bg-secondary= a.status.presence || "N/A"
-        %td.text-center
-          = link_to 'Update', edit_administration_item_path(a), class: "btn btn-info btn-sm", title: "Update Item"
-          %button.btn.btn-sm.btn-danger.delete-button{
-            data: { id: a.id },
-            title: "Delete Item",
-            type: "button"
-          }
-            %i.fa.fa-times
-            Delete
+.card-header.bg-dark.text-white
+  %h4.mb-0 ITEM LIST
 
-.pagination-container.mt-3.d-flex.justify-content-center
-  = paginate @items_list
+.card-body
+  = render partial: "index_filter"
+  - if @items_list.present?
+    %table#data-table.display.table.table-bordered.table-hover.table-sm
+      %thead
+        %tr
+          %th.text-center Category
+          %th.text-center Sub Category
+          %th.text-center Item Name
+          %th.text-center Brand
+          %th.text-center Model
+          %th.text-center Serial Number
+          %th.text-center Date Purchased
+          %th.text-center Status
+          %th.text-center Actions
+      %tbody
+        
+        - @items_list.each do |a|
+          %tr
+            -# %td{ style: "text-align: center;"}
+            -#   = link_to administration_item_path(a), title: "View Item" do
+            -#     %i.fa-solid.fa-magnifying-glass.fa-lg
+            %td{ style: "text-transform: uppercase;" }= a.items_category&.name || "N/A"
+            %td{ style: "text-transform: uppercase;" }= a.sub_category&.name || "N/A"
+            %td{ style: "text-transform: uppercase;" }= a.name
+            %td{ style: "text-transform: uppercase;" }= a.brand&.name.presence || "N/A"
+            %td{ style: "text-transform: uppercase;" }= a.model.presence || "N/A"
+            %td{ style: "text-transform: uppercase;" }= a.serial_number.presence || "N/A"
+            %td{ style: "text-transform: uppercase;" }= a.date_purchased.present? ? a.date_purchased.strftime("%Y-%m-%d") : "N/A"
+            %td.text-center
+              - case a.status.to_s.downcase
+              - when "active"
+                %span.badge.bg-success Active
+              - when "pending"
+                %span.badge.bg-warning Pending
+              - when "processing"
+                %span.badge.bg-info Processing
+              - when "deffective"
+                %span.badge.bg-danger Deffective
+              - when "depreciated"
+                %span.badge.bg-secondary Depreciated
+              - else
+                %span.badge.bg-secondary= a.status.presence || "N/A"
+            %td.text-center
+              = link_to administration_item_path(a), class: "btn btn-info btn-sm", title: "View Item", style: "width:40px; height:32px;" do
+                %i.bi.bi-eye
+              -# = link_to 'Update', edit_administration_item_path(a), class: "btn btn-info btn-sm", title: "Update Item"
+              -# %button.btn.btn-sm.btn-danger.delete-button{
+              -#   data: { id: a.id },
+              -#   title: "Delete Item",
+              -#   type: "button"
+              -# }
+              -#   %i.fa.fa-times
+              -#   Delete
+  - else
+    .alert.alert-info.text-center
+      %i.bi.bi-info-circle
+      No items found.
+
+  .pagination-container.mt-3.d-flex.justify-content-center
+    = paginate @items_list
+  

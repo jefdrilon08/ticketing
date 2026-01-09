@@ -49,6 +49,16 @@ module Administration
 
     def show
       @item = Item.includes(:items_category, :sub_category).find(params[:id])
+      Rails.logger.info "Item Details: #{@item.attributes.inspect}"
+
+      delete_action = {
+        id: "btn-delete",
+        link: administration_item_path(@item),
+        class: "fa fa-trash",
+        text: "Delete",
+        method: :delete,
+        data: { confirm: "Are you sure?" }
+      }
 
       if @item.status.to_s.downcase == "pending"
         @subheader_side_actions = [
@@ -57,10 +67,11 @@ module Administration
             link: distribute_administration_item_path(@item),
             class: "fa fa-box",
             text: "Distribute"
-          }
+          },
+          delete_action
         ]
       else
-        @subheader_side_actions = []
+        @subheader_side_actions = [ delete_action ]
       end
     end
 
@@ -118,14 +129,12 @@ module Administration
     @item = Item.find(params[:id])
 
     if @item.destroy
-      render json: { message: 'Item deleted successfully.' }, status: :ok
+      redirect_to administration_items_path, notice: 'Item deleted successfully.'
     else
-      render json: { messages: ['Error deleting item.'] }, status: :unprocessable_entity
+      redirect_to administration_items_path, alert: 'Error deleting item.'
     end
   rescue ActiveRecord::InvalidForeignKey, ActiveRecord::DeleteRestrictionError
-    render json: {
-      messages: ['Unable to delete. This item is being used as a Parent Item.']
-    }, status: :unprocessable_entity
+    redirect_to administration_items_path, alert: 'Unable to delete. This item is being used as a Parent Item.'
   end
 
   def distribute

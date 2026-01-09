@@ -1,6 +1,6 @@
 .card{ data: { controller: "administration-items" } }
   .card-header
-    %h4 NEW ITEM
+    %h4= @item.persisted? ? "EDIT ITEM" : "NEW ITEM"
   .card-body
     = form_for [:administration, @item], url: @item.persisted? ? administration_item_path(@item) : administration_items_path, method: @item.persisted? ? :patch : :post, html: { id: "item-form" } do |f|
       = hidden_field_tag "all_sub_categories", @sub_categories.to_json, id: "all-sub-categories-json"
@@ -80,7 +80,8 @@
             #child-items-section{ style: "display: none;" }
               = render 'administration/items/new_child', inventory: @item, child_mode: (@item.persisted? ? 'update' : 'add')
         .form-group.mt-3.text-end
-          = f.submit @item.persisted? ? "Update" : "Submit", class: "btn btn-primary"
+          = f.submit @item.persisted? ? "Save" : "Submit", class: "btn btn-success"
+          %button.btn.btn-secondary.fs-6{ type: "button", onclick: "window.history.back();" } Back
 
   = stylesheet_link_tag 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
   = javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js'
