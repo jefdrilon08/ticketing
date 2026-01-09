@@ -1,51 +1,51 @@
-%h2.text-center.text-primary.mt-4 Edit Item Distribution
-%hr(style="height:2px; background-color:#007bff;")
+-# %h2.text-center.text-primary.mt-4 Edit Item Distribution
+-# %hr(style="height:2px; background-color:#007bff;")
 
-.container.mt-4
-  .row
-    .col-md-8.offset-md-2
-      .card.shadow-sm
-        .card-header.bg-primary.text-white
-          %h4.mb-0.text-center Edit Distribution Information
-        .card-body
-          - if @item_distribution.errors.any?
-            .alert.alert-danger
-              %h4= pluralize(@item_distribution.errors.count, "error") + " prohibited this distribution from being saved:"
-              %ul
-                - @item_distribution.errors.full_messages.each do |message|
-                  %li= message
+-# .container.mt-4
+-#   .row
+-#     .col-md-8.offset-md-2
+-#       .card.shadow-sm
+-#         .card-header.bg-primary.text-white
+-#           %h4.mb-0.text-center Edit Distribution Information
+-#         .card-body
+-#           - if @item_distribution.errors.any?
+-#             .alert.alert-danger
+-#               %h4= pluralize(@item_distribution.errors.count, "error") + " prohibited this distribution from being saved:"
+-#               %ul
+-#                 - @item_distribution.errors.full_messages.each do |message|
+-#                   %li= message
 
-          = form_with model: @item_distribution, local: true do |f|
-            %table.table.table-bordered.table-striped
-              %tbody
-                %tr
-                  %th Item
-                  %td
-                    = f.select :item_table, options_for_select(@items.map(&:name), @item_distribution.item_table), { prompt: "Select an item" }, class: "form-control"
-                %tr
-                  %th Branch
-                  %td
-                    - if @branches.any?
-                      = f.select :branch_id, options_for_select(@branches.map(&:name), @item_distribution.branch_id), { prompt: "Select a branch" }, class: "form-control"
-                    - else
-                      %p.text-danger No branches available. Please add branches first.
-                %tr
-                  %th Employee
-                  %td
-                    = f.select :employee_id, options_for_select(@employees.map(&:first_name), @item_distribution.employee_id), { prompt: "Select an employee" }, class: "form-control"
-                %tr
-                  %th Quantity
-                  %td
-                    = f.text_field :quantity, class: "form-control", placeholder: "Enter quantity"
-                %tr
-                  %th Distributed By
-                  %td
-                    = f.text_field :distributed_by, class: "form-control", placeholder: "Enter distributor's name"
-                %tr
-                  %th Received By
-                  %td
-                    = f.text_field :receive_by, class: "form-control", placeholder: "Enter receiver's name"
+-#           = form_with model: @item_distribution, local: true do |f|
+-#             %table.table.table-bordered.table-striped
+-#               %tbody
+-#                 %tr
+-#                   %th Item
+-#                   %td
+-#                     = f.select :item_table, options_for_select(@items.map(&:name), @item_distribution.item_table), { prompt: "Select an item" }, class: "form-control"
+-#                 %tr
+-#                   %th Branch
+-#                   %td
+-#                     - if @branches.any?
+-#                       = f.select :branch_id, options_for_select(@branches.map(&:name), @item_distribution.branch_id), { prompt: "Select a branch" }, class: "form-control"
+-#                     - else
+-#                       %p.text-danger No branches available. Please add branches first.
+-#                 %tr
+-#                   %th Employee
+-#                   %td
+-#                     = f.select :employee_id, options_for_select(@employees.map(&:first_name), @item_distribution.employee_id), { prompt: "Select an employee" }, class: "form-control"
+-#                 %tr
+-#                   %th Quantity
+-#                   %td
+-#                     = f.text_field :quantity, class: "form-control", placeholder: "Enter quantity"
+-#                 %tr
+-#                   %th Distributed By
+-#                   %td
+-#                     = f.text_field :distributed_by, class: "form-control", placeholder: "Enter distributor's name"
+-#                 %tr
+-#                   %th Received By
+-#                   %td
+-#                     = f.text_field :receive_by, class: "form-control", placeholder: "Enter receiver's name"
 
-            .d-flex.justify-content-center.gap-3.mt-3
-              = f.submit "Update Distribution", class: "btn btn-primary btn-sm"
-              = link_to "Back to Distributions", item_distributions_path, class: "btn btn-secondary btn-sm"
+-#             .d-flex.justify-content-center.gap-3.mt-3
+-#               = f.submit "Update Distribution", class: "btn btn-primary btn-sm"
+-#               = link_to "Back to Distributions", item_distributions_path, class: "btn btn-secondary btn-sm"

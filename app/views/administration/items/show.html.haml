@@ -127,3 +127,8 @@
       .mt-4
         %h5 Child Item Details
         %p.text-muted No child details available.
+
+    .row.mt-3
+      .col-12.d-flex.justify-content-end.align-items-center.gap-2
+        = link_to 'Edit', edit_administration_item_path(@item), class: "btn btn-primary", title: "Update Item"
+        %button.btn.btn-secondary.fs-6{ type: "button", onclick: "window.history.back();" } Back
