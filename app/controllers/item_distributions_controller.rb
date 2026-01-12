@@ -6,7 +6,6 @@ class ItemDistributionsController < ApplicationController
     # if params[:mr_number].present?
     #   @item_distributions = @item_distributions.where("mr_number ILIKE ?", "%#{params[:mr_number]}%")
     # end
-
     
     if params[:items_category_id].present?
       @item_distributions = @item_distributions.joins(:item).where(items: { items_category_id: params[:items_category_id] })
@@ -25,6 +24,10 @@ class ItemDistributionsController < ApplicationController
 
     if params[:distributed_by].present?
       @item_distributions = @item_distributions.where(distributed_by: params[:distributed_by])
+    end
+
+    if params[:status].present?
+      @item_distributions = @item_distributions.where(status: params[:status])
     end
 
     @item_distributions = @item_distributions
@@ -50,6 +53,9 @@ class ItemDistributionsController < ApplicationController
 
     distributor_ids = ItemDistribution.distinct.pluck(:distributed_by)
     @filter_distributors = User.where(id: distributor_ids).order(:first_name, :last_name)
+
+    status_vals = ItemDistribution.distinct.pluck(:status).compact.uniq
+    @filter_statuses = status_vals.sort
 
     @users = User.all.index_by(&:id)
   end
