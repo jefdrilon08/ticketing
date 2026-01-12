@@ -18,7 +18,7 @@
           options_for_select(@filter_sub_categories.map { |s| [s.name.to_s.titleize, s.id] }, params[:sub_category_id]),
           class: "form-control select-select2 form-control-sm",
           prompt: "-- SELECT --"
-    .col-md-3.col-12
+    .col-md-2.col-12
       .form-group
         %label Item Name
         = select_tag :item_id,
@@ -37,6 +37,13 @@
         %label Distributed By
         = select_tag :distributed_by,
           options_for_select(@filter_distributors.map { |u| ["#{u.first_name} #{u.last_name}".strip.titleize, u.id] }, params[:distributed_by]),
+          class: "form-control select-select2 form-control-sm",
+          prompt: "-- SELECT --"
+    .col-md-1.col-12
+      .form-group
+        %label Status
+        = select_tag :status,
+          options_for_select((@filter_statuses || []).map { |s| [s.to_s.titleize, s] }, params[:status]),
           class: "form-control select-select2 form-control-sm",
           prompt: "-- SELECT --"
     .col-auto
