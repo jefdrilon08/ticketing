@@ -12,6 +12,7 @@
               %th Distribute Name
               %th Item Name
               %th Serial Number
+              %th Date Purchased
               %th MR Number
               %th Inventory Number
               %th Branch
@@ -28,6 +29,7 @@
                 %td= dist.item_id && Item.find_by(id: dist.item_id)&.name || "N/A"
                 - item = Item.find_by(id: dist.item_id)
                 %td= item&.serial_number.presence || "-"
+                %td= item&.date_purchased&.strftime("%Y-%m-%d") || "-"
                 %td= dist.mr_number
                 %td= dist.inventory_number
                 %td= @branches[dist.branch_id]&.name&.to_s&.titleize || "-"
@@ -36,7 +38,7 @@
                 %td= receive_by_user ? "#{receive_by_user.first_name} #{receive_by_user.last_name}".to_s.titleize : "-"
                 - distributed_by_user = @users[dist.distributed_by]
                 %td= distributed_by_user ? "#{distributed_by_user.first_name} #{distributed_by_user.last_name}".to_s.titleize : "-"
-                %td= dist.distributed_at&.strftime("%Y-%m-%d %H:%M") || "-"
+                %td= dist.distributed_at&.strftime("%Y-%m-%d") || "-"
                 %td.text-center
                   - if dist.status.to_s.downcase == "approved"
                     %span.badge.bg-success Approved
