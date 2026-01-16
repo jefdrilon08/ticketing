@@ -113,7 +113,28 @@
             %button.btn.btn-primary#editBtn{ type: "button", onclick: "enableEdit()" } Edit
             %button.btn.btn-success#saveBtn{ type: "submit", style: "display:none" } Save
             = link_to "Back", item_distributions_path, class: "btn btn-secondary"
-
+  .card-footer
+    .mt-2
+      %h5 Transfer History
+      - if @item_distribution.data && @item_distribution.data["transfer_details"].present?
+        %table.table.table-bordered.table-striped
+          %thead
+            %tr
+              %th Previous User
+              -# %th Previous Area
+              -# %th Previous Cluster
+              %th Previous Branch
+              %th Transfer Date
+          %tbody
+            - @item_distribution.data["transfer_details"].each do |transfer|
+              %tr
+                %td= transfer["previous_distribute_name"] || "N/A"
+                -# %td= transfer["previous_area"] || "N/A"
+                -# %td= transfer["previous_cluster"] || "N/A"
+                %td= transfer["previous_branch"] || "N/A"
+                %td= transfer["transfer_date"] || "N/A"
+      - else
+        %p.text-muted No transfer history available.
 = render "item_distributions/modals/transfer_item_distribution"
 
 :javascript
