@@ -93,7 +93,7 @@ class ItemDistributionsController < ApplicationController
         data: { confirm: "Are you sure you want to void this distribution?" }
       }
     end
-    if @item_distribution.status == "approved"
+    if @item_distribution.status == "approved" || @item_distribution.status == "Approved"
       @subheader_side_actions << {
         id: "btn-transfer",
         link: "#modal-transfer-distribution",
