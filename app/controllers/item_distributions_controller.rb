@@ -1,4 +1,5 @@
 class ItemDistributionsController < ApplicationController
+  before_action :authenticate_user!
 
   def index
     @item_distributions = ItemDistribution.all
@@ -92,6 +93,16 @@ class ItemDistributionsController < ApplicationController
         data: { confirm: "Are you sure you want to void this distribution?" }
       }
     end
+    if @item_distribution.status == "approved"
+      @subheader_side_actions << {
+        id: "btn-transfer",
+        link: "#modal-transfer-distribution",
+        class: "fa fa-arrow-right",
+        text: "Transfer",
+        method: :post,
+        data: { "bs-toggle" => "modal", "bs-target" => "#modal-transfer-distribution" }
+      }
+    end
   end
 
   def approve
@@ -141,4 +152,46 @@ class ItemDistributionsController < ApplicationController
       render :show, status: :unprocessable_entity
     end
   end
+
+  def transfer
+    @item_distribution = ItemDistribution.find(params[:id])
+    permitted = params.require(:item_distribution).permit(
+      :area_id,
+      :cluster_id,
+      :branch_id,
+      :receive_by,
+      :distributed_by,
+      :distribute_name
+    )
+
+    previous_area = Area.find_by(id: @item_distribution.area_id)
+    previous_cluster = Cluster.find_by(id: @item_distribution.cluster_id)
+    previous_branch = Branch.find_by(id: @item_distribution.branch_id)
+    previous_distributed_by_user = User.find_by(id: @item_distribution.distributed_by)
+    previous_receive_by_user = User.find_by(id: @item_distribution.receive_by)
+
+    @item_distribution.data ||= {}
+    @item_distribution.data["transfer_details"] ||= []
+
+    transfer_record = {
+      transfer_date: Time.current.strftime("%Y-%m-%d"),
+      previous_area: previous_area&.name || "N/A",
+      previous_cluster: previous_cluster&.name || "N/A",
+      previous_branch: previous_branch&.name || "N/A",
+      previous_distribute_name: @item_distribution.distribute_name,
+      previous_distributed_by: "#{previous_distributed_by_user&.first_name} #{previous_distributed_by_user&.last_name}".strip || "N/A",
+      previous_receive_by: "#{previous_receive_by_user&.first_name} #{previous_receive_by_user&.last_name}".strip || "N/A"
+    }
+
+    @item_distribution.data["transfer_details"] << transfer_record
+    @item_distribution.assign_attributes(permitted)
+
+    if @item_distribution.save
+      redirect_to item_distribution_path(@item_distribution), notice: "Distribution transferred successfully!"
+    else
+      flash.now[:alert] = @item_distribution.errors.full_messages.join(", ")
+      render :show, status: :unprocessable_entity
+    end
+  end
+
 end

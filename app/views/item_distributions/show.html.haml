@@ -114,6 +114,8 @@
             %button.btn.btn-success#saveBtn{ type: "submit", style: "display:none" } Save
             = link_to "Back", item_distributions_path, class: "btn btn-secondary"
 
+= render "item_distributions/modals/transfer_item_distribution"
+
 :javascript
   function enableEdit() {
     var form = document.getElementById('itemDistForm');
@@ -131,3 +133,4 @@
     document.getElementById('editBtn').style.display = 'none';
     document.getElementById('saveBtn').style.display = '';
   }
+
