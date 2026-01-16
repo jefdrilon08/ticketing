@@ -53,11 +53,13 @@ module Administration
 
       delete_action = {
         id: "btn-delete",
-        link: administration_item_path(@item),
+        link: "#",
         class: "fa fa-trash",
-        text: "Delete",
-        method: :delete,
-        data: { confirm: "Are you sure?" }
+        data: {
+          method: :delete,
+          confirm: "Are you sure you want to delete this Item?"
+        },
+        text: "Delete"
       }
 
       if @item.status.to_s.downcase == "pending"
