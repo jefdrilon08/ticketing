@@ -1,0 +1,29 @@
+#modal-pull-out.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-keyboard" => "false" }
+  .modal-dialog.modal-md
+    .modal-content.bg-white.p-3
+      .modal-header
+        %h5.modal-title.text-primary Pull Out Details
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      %hr.mt-0.mb-3
+
+      .modal-body
+        %form{ id: "pullOutForm", action: pull_out_item_distribution_path(@item_distribution), method: "post" }
+          = hidden_field_tag :authenticity_token, form_authenticity_token
+          .container-fluid
+            .row
+              .col-md-12
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_item_name" } Item Name
+                  .col-sm-8
+                    %input.form-control{ type: "text", id: "modal_item_name", value: @item&.name || "N/A", disabled: true }
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_reason" } Reason
+                  .col-sm-8
+                    %input.form-control{ type: "text", id: "modal_reason", name: "reason" }
+    
+      .modal-footer
+        %button.btn.btn-primary{ type: "submit", form: "pullOutForm" } Pull Out
+        %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Close
