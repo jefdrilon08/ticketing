@@ -2,6 +2,14 @@
   .card-header
     %h4= @item.persisted? ? "EDIT ITEM" : "NEW ITEM"
   .card-body
+    - if flash[:alert].present?
+      .alert.alert-danger.alert-dismissible.fade.show{ role: "alert" }
+        = flash[:alert]
+        %button.btn-close{ type: "button", "data-bs-dismiss" => "alert", "aria-label" => "Close" }
+    - if flash[:notice].present?
+      .alert.alert-success.alert-dismissible.fade.show{ role: "alert" }
+        = flash[:notice]
+        %button.btn-close{ type: "button", "data-bs-dismiss" => "alert", "aria-label" => "Close" }
     = form_for [:administration, @item], url: @item.persisted? ? administration_item_path(@item) : administration_items_path, method: @item.persisted? ? :patch : :post, html: { id: "item-form" } do |f|
       = hidden_field_tag "all_sub_categories", @sub_categories.to_json, id: "all-sub-categories-json"
       .container-fluid

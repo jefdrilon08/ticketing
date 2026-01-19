@@ -724,7 +724,7 @@ Rails.application.routes.draw do
   #ITEM DISTRIBUTION
   get "/item_distribution", to: "item_distributions#index", as: :items_distribution
 
-  resources :item_distributions, only: [:index, :show, :update] do
+  resources :item_distributions, only: [:index, :show, :update, :destroy] do
     member do
       get :approve
       get :void
