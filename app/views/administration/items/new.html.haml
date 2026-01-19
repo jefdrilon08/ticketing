@@ -69,7 +69,7 @@
         .row.mt-3
           .col
             %label(for="input-status") Status
-            = f.select :status, options_for_select([["Active", "Active"],["Pending", "Pending"],["Processing", "Processing"],["Deffective", "Deffective"],["Depreciated", "Depreciated"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status", required: true }
+            = f.select :status, options_for_select([["Active", "active"],["Pending", "pending"],["Processing", "processing"],["Deffective", "deffective"],["Depreciated", "depreciated"]], @item.status), { prompt: "--SELECT--" }, { class: "form-control", id: "input-status", required: true }
           .col
             .form-check
               = f.hidden_field :is_parent, value: false

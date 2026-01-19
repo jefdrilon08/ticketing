@@ -107,16 +107,16 @@
                     checked: @item_distribution.data && @item_distribution.data["is_sticker_attached"].to_s == "true"
                   }
                   %label.form-check-label{ for: "attached_mr_sticker" } Attached MR Sticker?
-
+  
         .row.mt-3
           .col-12.d-flex.justify-content-end.align-items-center.gap-2
             %button.btn.btn-primary#editBtn{ type: "button", onclick: "enableEdit()" } Edit
             %button.btn.btn-success#saveBtn{ type: "submit", style: "display:none" } Save
             = link_to "Back", item_distributions_path, class: "btn btn-secondary"
-  .card-footer
-    .mt-2
-      %h5 Transfer History
-      - if @item_distribution.data && @item_distribution.data["transfer_details"].present?
+  - if @item_distribution.data && @item_distribution.data["transfer_details"].present?
+    .card-footer
+      .mt-2
+        %h5 Transfer History
         %table.table.table-bordered.table-striped
           %thead
             %tr
@@ -133,9 +133,12 @@
                 -# %td= transfer["previous_cluster"] || "N/A"
                 %td= transfer["previous_branch"] || "N/A"
                 %td= transfer["transfer_date"] || "N/A"
-      - else
-        %p.text-muted No transfer history available.
+  - else
+    .card-footer
+      .mt-2
+        %p.text-muted &nbsp;
 = render "item_distributions/modals/transfer_item_distribution"
+= render "item_distributions/modals/pull_out"
 
 :javascript
   function enableEdit() {

@@ -75,7 +75,7 @@ class ItemDistributionsController < ApplicationController
 
     @subheader_side_actions = []
 
-    unless ["void", "approved"].include?(@item_distribution.status.to_s.downcase)
+    unless ["void", "approved", "pull_out"].include?(@item_distribution.status.to_s.downcase)
       @subheader_side_actions << {
         id: "btn-approve",
         link: approve_item_distribution_path(@item_distribution),
@@ -101,6 +101,14 @@ class ItemDistributionsController < ApplicationController
         text: "Transfer",
         method: :post,
         data: { "bs-toggle" => "modal", "bs-target" => "#modal-transfer-distribution" }
+      }
+      @subheader_side_actions << {
+        id: "btn-pull-out",
+        link: "#modal-pull-out",
+        class: "fa fa-undo",
+        text: "Pull Out",
+        method: :post,
+        data: { "bs-toggle" => "modal", "bs-target" => "#modal-pull-out" }
       }
     end
   end
@@ -194,4 +202,31 @@ class ItemDistributionsController < ApplicationController
     end
   end
 
+    def pull_out
+    @item_distribution = ItemDistribution.find(params[:id])
+    reason = params[:reason]
+
+    pull_out_record = {
+      pull_out_date: Time.current.strftime("%Y-%m-%d"),
+      pull_out_reason: reason
+    }
+
+    @item_distribution.data ||= {}
+    @item_distribution.data["pull_out_details"] ||= []
+    @item_distribution.data["pull_out_details"] << pull_out_record
+    @item_distribution.update(status: "pull_out", data: @item_distribution.data)
+
+    if @item_distribution.item_id.present?
+      item = Item.find_by(id: @item_distribution.item_id)
+      if item
+        item_data = item.data || {}
+        item_data["pull_out_details"] ||= []
+        item_data["pull_out_details"] << pull_out_record
+        item.update(status: "pull_out", data: item_data)
+      end
+    end
+
+    redirect_to item_distributions_path, notice: "Item distribution pulled out successfully!"
+  end
+  
 end

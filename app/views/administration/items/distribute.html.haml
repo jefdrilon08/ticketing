@@ -22,6 +22,8 @@
             %span.badge.bg-danger Deffective
           - when "depreciated"
             %span.badge.bg-secondary Depreciated
+          - when "pull_out"
+            %span.badge.bg-dark Pull Out
           - else
             %span.badge.bg-secondary= @item.status.presence || "N/A"
     .row.mt-2
