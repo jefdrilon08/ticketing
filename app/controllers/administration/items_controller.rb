@@ -93,6 +93,16 @@ module Administration
       @item = Item.new(item_params)
       process_suppliers(@item)
 
+      if @item.serial_number.present? && Item.where(serial_number: @item.serial_number).exists?
+        @items_list = Item.all.sort_by(&:name)
+        @item_categories = ::ItemsCategory.all
+        @sub_categories = ::SubCategory.all
+        @brands = ::Brand.all
+        flash.now[:alert] = "An item with this serial number already exists!"
+        render :new
+        return
+      end
+
       child_details = []
       if params[:item][:data] && params[:item][:data][:child_details].present?
         child_details = JSON.parse(params[:item][:data][:child_details]) rescue []

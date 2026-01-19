@@ -20,6 +20,16 @@
 
                 .row.mb-3
                   .col-sm-4
+                    %label{ for: "modal_pull_out_by" } Pull Out By
+                  .col-sm-8
+                    %select.form-control{ id: "modal_pull_out_by", name: "pull_out_by" }
+                      %option{ value: "" } --SELECT--
+                      - (@pull_out_users || []).each do |user|
+                        - name = "#{user.first_name} #{user.last_name}".strip.presence || user.username || user.email
+                        %option{ value: user.id }= name.titleize
+
+                .row.mb-3
+                  .col-sm-4
                     %label{ for: "modal_reason" } Reason
                   .col-sm-8
                     %input.form-control{ type: "text", id: "modal_reason", name: "reason" }

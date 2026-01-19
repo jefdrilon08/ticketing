@@ -72,6 +72,8 @@ class ItemDistributionsController < ApplicationController
     @receive_by_user = @users[@item_distribution.receive_by]
     @distributed_by_user = @users[@item_distribution.distributed_by]
     @distributors = User.all.select { |u| (u.roles & ["MIS", "OAS"]).any? }
+    @pull_out_users = User.all.select { |u| (u.roles & ["MIS", "OAS"]).any? }
+                      .sort_by { |u| [u.first_name.to_s.downcase, u.last_name.to_s.downcase] }
 
     @subheader_side_actions = []
 
@@ -109,6 +111,18 @@ class ItemDistributionsController < ApplicationController
         text: "Pull Out",
         method: :post,
         data: { "bs-toggle" => "modal", "bs-target" => "#modal-pull-out" }
+      }
+    end
+    if current_user.id.to_s == "8e43afba-c232-4d01-beae-7eae75f2b88c"
+      @subheader_side_actions << {
+        id: "btn-delete",
+        link: "#",
+        class: "fa fa-trash",
+        data: {
+          method: :delete,
+          confirm: "Are you sure you want to delete this Item?"
+        },
+        text: "Delete"
       }
     end
   end
@@ -202,19 +216,34 @@ class ItemDistributionsController < ApplicationController
     end
   end
 
-    def pull_out
+  def pull_out
     @item_distribution = ItemDistribution.find(params[:id])
     reason = params[:reason]
+    pull_out_by_id = params[:pull_out_by]
+    pull_out_by_user = User.find_by(id: pull_out_by_id)
+    pull_out_by_name = pull_out_by_user ? "#{pull_out_by_user.first_name} #{pull_out_by_user.last_name}".strip : "N/A"
 
     pull_out_record = {
       pull_out_date: Time.current.strftime("%Y-%m-%d"),
-      pull_out_reason: reason
+      pull_out_reason: reason,
+      pull_out_by_id: pull_out_by_id,
+      pull_out_by_name: pull_out_by_name
     }
+
+    head_office_area_id = "06a78557-bbc4-491a-bef9-b6c2e6938671"
+    head_office_cluster_id = "0866e43d-543b-44bb-ba6d-b5605840c3ca"
+    head_office_branch_id = "b9659f7e-c4d5-4b8b-be3b-508bd7c6a583"
 
     @item_distribution.data ||= {}
     @item_distribution.data["pull_out_details"] ||= []
     @item_distribution.data["pull_out_details"] << pull_out_record
-    @item_distribution.update(status: "pull_out", data: @item_distribution.data)
+    @item_distribution.update(
+      status: "pull_out",
+      area_id: head_office_area_id,
+      cluster_id: head_office_cluster_id,
+      branch_id: head_office_branch_id,
+      data: @item_distribution.data
+    )
 
     if @item_distribution.item_id.present?
       item = Item.find_by(id: @item_distribution.item_id)
@@ -227,6 +256,17 @@ class ItemDistributionsController < ApplicationController
     end
 
     redirect_to item_distributions_path, notice: "Item distribution pulled out successfully!"
+  end
+
+  def destroy
+    @item_distribution = ItemDistribution.find(params[:id])
+    if @item_distribution.destroy
+      redirect_to item_distributions_path, notice: "Item distribution deleted successfully!"
+    else
+      redirect_to item_distributions_path, alert: "Error deleting item distribution."
+    end
+  rescue ActiveRecord::InvalidForeignKey, ActiveRecord::DeleteRestrictionError
+    redirect_to item_distributions_path, alert: "Unable to delete. This item distribution is being referenced elsewhere."
   end
   
 end
