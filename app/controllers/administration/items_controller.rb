@@ -72,6 +72,18 @@ module Administration
           },
           delete_action
         ]
+      elsif @item.status.to_s.downcase == "pull_out"
+        @subheader_side_actions = [
+          {
+            id: "btn-purchase",
+            link: "#modal-purchase-item",
+            class: "fa fa-tag",
+            text: "Purchase",
+            data: { "bs-toggle" => "modal", "bs-target" => "#modal-purchase-item" }
+          }
+        ]
+      elsif @item.status.to_s.downcase == "purchased"
+        @subheader_side_actions = []
       else
         @subheader_side_actions = [ delete_action ]
       end
@@ -173,12 +185,41 @@ module Administration
     if item_distribution.save
       if params[:item_id].present?
         item = Item.find_by(id: params[:item_id])
-        item.update(status: "Processing") if item
+        item.update(status: "processing") if item
       end
       redirect_to administration_items_path, notice: "Distribution saved!"
     else
       redirect_back fallback_location: administration_items_path, alert: item_distribution.errors.full_messages.join(", ")
     end
+  end
+
+  def purchase
+    @item = Item.find(params[:id])
+    employee_id = params[:employee_id]
+    purchase_date = params[:purchase_date]
+    purchase_price = params[:purchase_price]
+    purchase_notes = params[:purchase_notes]
+
+    if employee_id.blank? || purchase_date.blank?
+      redirect_to administration_item_path(@item), alert: "Employee and Purchase Date are required!"
+      return
+    end
+
+    @item.data ||= {}
+    @item.data["purchase_details"] ||= []
+
+    purchase_record = {
+      purchase_date: purchase_date,
+      purchase_price: purchase_price,
+      purchase_notes: purchase_notes,
+      employee_name: employee_id,
+      purchased_at: Time.current.strftime("%Y-%m-%d")
+    }
+
+    @item.data["purchase_details"] << purchase_record
+    @item.update(status: "purchased", data: @item.data)
+
+    redirect_to administration_items_path, notice: "Item purchased successfully!"
   end
 
     private

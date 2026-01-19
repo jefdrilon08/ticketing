@@ -27,7 +27,8 @@
     .col-md-1.col-6
       .form-group
         %label Status
-        = select_tag :status, options_for_select([['Active', 'Active'],['Pending', 'Pending'],['Processing', 'Processing'],['Deffective', 'Deffective'],['Depreciated', 'Depreciated']], params[:status]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
+        = select_tag :status, options_for_select([['Active', 'active'],['Pending', 'pending'],['Processing', 'processing'], ['Pull Out', 'pull_out'], ['Purchased', 'purchased']], params[:status]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
+        -# = select_tag :status, options_for_select([['Active', 'active'],['Pending', 'pending'],['Processing', 'processing'],['Deffective', 'deffective'],['Depreciated', 'depreciated'], ['Pull Out', 'pull_out']], params[:status]), class: "form-control select-select2 form-control-sm", prompt: "-- SELECT --"
     .col-auto
       .form-group
         %label Actions

@@ -11,7 +11,15 @@
 
 .card
   .card-header
-    %h4.mb-0 Item Details
+    .d-flex.justify-content-between.align-items-center
+      %h4.mb-0 Item Details
+      - if @item.status.to_s.downcase == "purchased" && @item.data && @item.data["purchase_details"].present?
+        - latest_purchase = @item.data["purchase_details"].last
+        %small.text-muted
+          Purchased by 
+          %strong= latest_purchase["employee_name"]
+          at 
+          %strong= latest_purchase["purchased_at"]
 
   .card-body
     .row
@@ -93,6 +101,10 @@
               %span.badge.bg-danger Deffective
             - when "depreciated"
               %span.badge.bg-secondary Depreciated
+            - when "pull_out"
+              %span.badge.bg-dark Pull Out
+            - when "purchased"
+              %span.badge.bg-primary Purchased
             - else
               %span.badge.bg-secondary= @item&.status.presence || "N/A"
 
@@ -132,3 +144,5 @@
       .col-12.d-flex.justify-content-end.align-items-center.gap-2
         = link_to 'Edit', edit_administration_item_path(@item), class: "btn btn-primary", title: "Update Item"
         %button.btn.btn-secondary.fs-6{ type: "button", onclick: "window.history.back();" } Back
+
+= render "administration/items/modals/purchase"

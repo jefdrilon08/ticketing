@@ -44,6 +44,8 @@
                     %span.badge.bg-success Approved
                   - elsif dist.status.to_s.downcase == "pending" || dist.status.blank?
                     %span.badge.bg-warning Pending
+                  - elsif dist.status.to_s.downcase == "pull_out"
+                    %span.badge.bg-dark Pull Out
                   - else
                     %span.badge.bg-secondary= dist.status.titleize
                 %td.text-center

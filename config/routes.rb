@@ -715,6 +715,7 @@ Rails.application.routes.draw do
     resources :items, only: [:index, :new, :create, :edit, :update, :show, :destroy] do
       member do
         get :distribute
+        post :purchase
         post :create_distribute
       end
     end
@@ -728,6 +729,7 @@ Rails.application.routes.draw do
       get :approve
       get :void
       post :transfer
+      post :pull_out
     end
   end
 

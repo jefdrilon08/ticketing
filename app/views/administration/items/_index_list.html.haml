@@ -45,6 +45,10 @@
                 %span.badge.bg-danger Deffective
               - when "depreciated"
                 %span.badge.bg-secondary Depreciated
+              - when "pull_out"
+                %span.badge.bg-dark Pull Out
+              - when "purchased"
+                %span.badge.bg-primary Purchased
               - else
                 %span.badge.bg-secondary= a.status.presence || "N/A"
             %td.text-center
