@@ -1,6 +1,6 @@
 .card
   .card-header.bg-dark.text-white
-    %h4.mb-0 Item Distribution List
+    %h4.mb-0 ITEM DISTRIBUTION LIST
 
   .card-body
     = render 'index_filter'
@@ -12,6 +12,7 @@
               %th Distribute Name
               %th Item Name
               %th Serial Number
+              %th Date Purchased
               %th MR Number
               %th Inventory Number
               %th Branch
@@ -28,6 +29,7 @@
                 %td= dist.item_id && Item.find_by(id: dist.item_id)&.name || "N/A"
                 - item = Item.find_by(id: dist.item_id)
                 %td= item&.serial_number.presence || "-"
+                %td= item&.date_purchased&.strftime("%Y-%m-%d") || "-"
                 %td= dist.mr_number
                 %td= dist.inventory_number
                 %td= @branches[dist.branch_id]&.name&.to_s&.titleize || "-"
@@ -36,12 +38,14 @@
                 %td= receive_by_user ? "#{receive_by_user.first_name} #{receive_by_user.last_name}".to_s.titleize : "-"
                 - distributed_by_user = @users[dist.distributed_by]
                 %td= distributed_by_user ? "#{distributed_by_user.first_name} #{distributed_by_user.last_name}".to_s.titleize : "-"
-                %td= dist.distributed_at&.strftime("%Y-%m-%d %H:%M") || "-"
+                %td= dist.distributed_at&.strftime("%Y-%m-%d") || "-"
                 %td.text-center
                   - if dist.status.to_s.downcase == "approved"
                     %span.badge.bg-success Approved
                   - elsif dist.status.to_s.downcase == "pending" || dist.status.blank?
                     %span.badge.bg-warning Pending
+                  - elsif dist.status.to_s.downcase == "pull_out"
+                    %span.badge.bg-dark Pull Out
                   - else
                     %span.badge.bg-secondary= dist.status.titleize
                 %td.text-center
@@ -53,8 +57,9 @@
                       -#   %i.bi.bi-check
                       -# = button_to void_item_distribution_path(dist), method: :post, class: "btn btn-danger btn-sm flex-fill", data: { confirm: "Are you sure you want to void this distribution?" } do
                       -#   %i.bi.bi-x
-                   
+
         = paginate @item_distributions
       - else
-        .alert.alert-warning.text-center
+        .alert.alert-info.text-center
+          %i.bi.bi-info-circle
           No item distributions found.

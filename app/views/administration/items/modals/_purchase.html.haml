@@ -1,0 +1,47 @@
+#modal-purchase-item.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-keyboard" => "false" }
+  .modal-dialog.modal-md
+    .modal-content.bg-white.p-3
+      .modal-header
+        %h5.modal-title.text-primary Purchase Item
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      %hr.mt-0.mb-3
+
+      .modal-body
+        %form{ id: "purchaseItemForm", action: purchase_administration_item_path(@item), method: "post" }
+          = hidden_field_tag :authenticity_token, form_authenticity_token
+          .container-fluid
+            .row
+              .col-md-12
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_item_name" } Item Purchase
+                  .col-sm-8
+                    %input.form-control{ type: "text", id: "modal_item_name", value: @item&.name || "N/A", disabled: true }
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_employee_id" } Purchase by
+                  .col-sm-8
+                    %input.form-control{ type: "text", id: "modal_employee_id", name: "employee_id", placeholder: "Enter name" }
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_purchase_date" } Date Purchased
+                  .col-sm-8
+                    %input.form-control{ type: "date", id: "modal_purchase_date", name: "purchase_date" }
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_purchase_price" } Amount
+                  .col-sm-8
+                    %input.form-control{ type: "number", id: "modal_purchase_price", name: "purchase_price", step: "0.01" }
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_purchase_notes" } Notes
+                  .col-sm-8
+                    %textarea.form-control{ id: "modal_purchase_notes", name: "purchase_notes", rows: "3" }
+
+      .modal-footer
+        %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Close
+        %button.btn.btn-primary{ type: "submit", form: "purchaseItemForm" } Purchase

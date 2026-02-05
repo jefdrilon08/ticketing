@@ -711,20 +711,25 @@ Rails.application.routes.draw do
   end
 
   # ITEMS
-  post "items/create", to: "administration/items#create"
-  put "items/update", to: "administration/items#update"
-  delete "items/destroy", to: "administration/items#destroy"
-  get 'items/:id/distribute', to: 'administration/items#distribute', as: :distribute_administration_item
+  namespace :administration do
+    resources :items, only: [:index, :new, :create, :edit, :update, :show, :destroy] do
+      member do
+        get :distribute
+        post :purchase
+        post :create_distribute
+      end
+    end
+  end
 
-  post 'items/:id/create_distribute', to: 'administration/items#create_distribute', as: :create_distribute_administration_item
-    
   #ITEM DISTRIBUTION
   get "/item_distribution", to: "item_distributions#index", as: :items_distribution
 
-  resources :item_distributions, only: [:index, :show, :update] do
+  resources :item_distributions, only: [:index, :show, :update, :destroy] do
     member do
       get :approve
       get :void
+      post :transfer
+      post :pull_out
     end
   end
 

@@ -49,6 +49,18 @@ module Administration
 
     def show
       @item = Item.includes(:items_category, :sub_category).find(params[:id])
+      Rails.logger.info "Item Details: #{@item.attributes.inspect}"
+
+      delete_action = {
+        id: "btn-delete",
+        link: "#",
+        class: "fa fa-trash",
+        data: {
+          method: :delete,
+          confirm: "Are you sure you want to delete this Item?"
+        },
+        text: "Delete"
+      }
 
       if @item.status.to_s.downcase == "pending"
         @subheader_side_actions = [
@@ -57,16 +69,39 @@ module Administration
             link: distribute_administration_item_path(@item),
             class: "fa fa-box",
             text: "Distribute"
+          },
+          delete_action
+        ]
+      elsif @item.status.to_s.downcase == "pull_out"
+        @subheader_side_actions = [
+          {
+            id: "btn-purchase",
+            link: "#modal-purchase-item",
+            class: "fa fa-tag",
+            text: "Purchase",
+            data: { "bs-toggle" => "modal", "bs-target" => "#modal-purchase-item" }
           }
         ]
-      else
+      elsif @item.status.to_s.downcase == "purchased"
         @subheader_side_actions = []
+      else
+        @subheader_side_actions = [ delete_action ]
       end
     end
 
     def create
       @item = Item.new(item_params)
       process_suppliers(@item)
+
+      if @item.serial_number.present? && Item.where(serial_number: @item.serial_number).exists?
+        @items_list = Item.all.sort_by(&:name)
+        @item_categories = ::ItemsCategory.all
+        @sub_categories = ::SubCategory.all
+        @brands = ::Brand.all
+        flash.now[:alert] = "An item with this serial number already exists!"
+        render :new
+        return
+      end
 
       child_details = []
       if params[:item][:data] && params[:item][:data][:child_details].present?
@@ -118,14 +153,12 @@ module Administration
     @item = Item.find(params[:id])
 
     if @item.destroy
-      render json: { message: 'Item deleted successfully.' }, status: :ok
+      redirect_to administration_items_path, notice: 'Item deleted successfully.'
     else
-      render json: { messages: ['Error deleting item.'] }, status: :unprocessable_entity
+      redirect_to administration_items_path, alert: 'Error deleting item.'
     end
   rescue ActiveRecord::InvalidForeignKey, ActiveRecord::DeleteRestrictionError
-    render json: {
-      messages: ['Unable to delete. This item is being used as a Parent Item.']
-    }, status: :unprocessable_entity
+    redirect_to administration_items_path, alert: 'Unable to delete. This item is being used as a Parent Item.'
   end
 
   def distribute
@@ -162,12 +195,41 @@ module Administration
     if item_distribution.save
       if params[:item_id].present?
         item = Item.find_by(id: params[:item_id])
-        item.update(status: "Processing") if item
+        item.update(status: "processing") if item
       end
       redirect_to administration_items_path, notice: "Distribution saved!"
     else
       redirect_back fallback_location: administration_items_path, alert: item_distribution.errors.full_messages.join(", ")
     end
+  end
+
+  def purchase
+    @item = Item.find(params[:id])
+    employee_id = params[:employee_id]
+    purchase_date = params[:purchase_date]
+    purchase_price = params[:purchase_price]
+    purchase_notes = params[:purchase_notes]
+
+    if employee_id.blank? || purchase_date.blank?
+      redirect_to administration_item_path(@item), alert: "Employee and Purchase Date are required!"
+      return
+    end
+
+    @item.data ||= {}
+    @item.data["purchase_details"] ||= []
+
+    purchase_record = {
+      purchase_date: purchase_date,
+      purchase_price: purchase_price,
+      purchase_notes: purchase_notes,
+      employee_name: employee_id,
+      purchased_at: Time.current.strftime("%Y-%m-%d")
+    }
+
+    @item.data["purchase_details"] << purchase_record
+    @item.update(status: "purchased", data: @item.data)
+
+    redirect_to administration_items_path, notice: "Item purchased successfully!"
   end
 
     private

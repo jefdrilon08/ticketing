@@ -1,0 +1,79 @@
+#modal-transfer-distribution.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-keyboard" => "false" }
+  .modal-dialog.modal-lg
+    .modal-content.bg-white.p-3
+      .modal-header
+        %h5.modal-title.text-primary Transfer Item Distribution
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      %hr.mt-0.mb-3
+
+      .modal-body
+        %form{ id: "transferDistForm", action: transfer_item_distribution_path(@item_distribution), method: "post" }
+          = hidden_field_tag :authenticity_token, form_authenticity_token
+          -# = hidden_field_tag :_method, "patch"
+          .container-fluid
+            .row
+              .col-md-6
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_item_name" } Item Name
+                  .col-sm-8
+                    %input.form-control{ type: "text", id: "modal_item_name", value: @item&.name || "N/A", disabled: true }
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_area_id" } Area
+                  .col-sm-8
+                    %select.form-control{ id: "modal_area_id", name: "item_distribution[area_id]" }
+                      %option{ value: "" } --SELECT--
+                      - @areas.values.sort_by { |a| a.name.to_s.downcase }.each do |area|
+                        %option{ value: area.id, selected: (@item_distribution.area_id.to_s == area.id.to_s) }= area.name.titleize
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_cluster_id" } Cluster
+                  .col-sm-8
+                    %select.form-control{ id: "modal_cluster_id", name: "item_distribution[cluster_id]" }
+                      %option{ value: "" } --SELECT--
+                      - @clusters.values.sort_by { |c| c.name.to_s.downcase }.each do |cluster|
+                        %option{ value: cluster.id, selected: (@item_distribution.cluster_id.to_s == cluster.id.to_s) }= cluster.name.titleize
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_branch_id" } Branch
+                  .col-sm-8
+                    %select.form-control{ id: "modal_branch_id", name: "item_distribution[branch_id]" }
+                      %option{ value: "" } --SELECT--
+                      - @branches.values.sort_by { |b| b.name.to_s.downcase }.each do |branch|
+                        %option{ value: branch.id, selected: (@item_distribution.branch_id.to_s == branch.id.to_s) }= branch.name.titleize
+
+              .col-md-6
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_distribute_name" } Distribute Name
+                  .col-sm-8
+                    %input.form-control{ type: "text", id: "modal_distribute_name", name: "item_distribution[distribute_name]", value: @item_distribution.distribute_name}
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_receive_by" } Received By
+                  .col-sm-8
+                    %select.form-control{ id: "modal_receive_by", name: "item_distribution[receive_by]" }
+                      %option{ value: "" } --SELECT--
+                      - @users.values.sort_by { |u| "#{u.first_name} #{u.last_name}".to_s.downcase }.each do |user|
+                        - name = "#{user.first_name} #{user.last_name}".strip.presence || user.username || user.email
+                        %option{ value: user.id, selected: (@item_distribution.receive_by.to_s == user.id.to_s) }= name.titleize
+
+                .row.mb-3
+                  .col-sm-4
+                    %label{ for: "modal_distributed_by" } Distributed By
+                  .col-sm-8
+                    %select.form-control{ id: "modal_distributed_by", name: "item_distribution[distributed_by]" }
+                      %option{ value: "" } --SELECT--
+                      - @distributors.sort_by { |u| "#{u.first_name} #{u.last_name}".to_s.downcase }.each do |user|
+                        - name = "#{user.first_name} #{user.last_name}".strip.presence || user.username || user.email
+                        %option{ value: user.id, selected: (@item_distribution.distributed_by.to_s == user.id.to_s) }= name.titleize
+
+      .modal-footer
+        %button.btn.btn-primary{ type: "submit", form: "transferDistForm" } Transfer
+        %button.btn.btn-secondary{ "data-bs-dismiss" => "modal" } Close
+        
