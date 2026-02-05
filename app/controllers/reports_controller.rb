@@ -22,12 +22,35 @@ class ReportsController < ApplicationController
     "closed" => "Closed"
   }
 
-  def concern_tickets
-  load_data_store_records
-  @concern_tickets = ConcernTicket.order(:name)
-  @concern_name_options = ConcernTicket.distinct.order(:name).pluck(:name, :id)
+    def concern_tickets
+    @concern_tickets = ConcernTicket.order(:name)
 
-  render 'concern_tickets/reports/reports'
+    @records = DataStore
+      .where.not("data ->> 'concern_ticket_id' IS NULL")
+      .where.not("data ->> 'concern_ticket_id' = ''")
+
+    if params[:concern_ticket_id].present?
+      @records = @records.where("data ->> 'concern_ticket_id' = ?", params[:concern_ticket_id].to_s)
+    end
+
+    if params[:start_date].present? && params[:end_date].present?
+      s = parse_date(params[:start_date])
+      e = parse_date(params[:end_date])
+      @records = @records.where("end_date >= ? AND start_date <= ?", s, e) if s && e
+    elsif params[:start_date].present?
+      s = parse_date(params[:start_date])
+      @records = @records.where("start_date >= ?", s) if s
+    elsif params[:end_date].present?
+      e = parse_date(params[:end_date])
+      @records = @records.where("end_date <= ?", e) if e
+    end
+
+    @records = @records.order(created_at: :desc)
+
+    concern_ticket_ids = @records.map { |r| r.data["concern_ticket_id"] }.compact.uniq
+    @concern_tickets_map = ConcernTicket.where(id: concern_ticket_ids).index_by(&:id)
+
+    render 'concern_tickets/reports/reports'
   end
 
   def view_report_by_data_store

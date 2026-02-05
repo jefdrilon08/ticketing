@@ -112,7 +112,7 @@
           .col-12.d-flex.justify-content-end.align-items-center.gap-2
             %button.btn.btn-primary#editBtn{ type: "button", onclick: "enableEdit()" } Edit
             %button.btn.btn-success#saveBtn{ type: "submit", style: "display:none" } Save
-            = link_to "Back", item_distributions_path, class: "btn btn-secondary"
+            %button.btn.btn-secondary.fs-6{ type: "button", onclick: "window.history.back();" } Back
   - if @item_distribution.data && @item_distribution.data["transfer_details"].present?
     .card-footer
       .mt-2
