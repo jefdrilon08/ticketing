@@ -34,8 +34,9 @@ class ItemDistributionsController < ApplicationController
     @item_distributions = @item_distributions
       .includes(item: :items_category)
       .joins(:item)
+      .joins('LEFT JOIN items_categories ON items_categories.id = items.items_category_id')
       .joins('LEFT JOIN branches ON branches.id = item_distributions.branch_id')
-      .order(:status, 'items.name', 'branches.name', :distributed_by)
+      .order('items_categories.name', :status, 'items.name', 'branches.name', :distributed_by)
       .page(params[:page]).per(20)
 
     @branches = Branch.all.index_by(&:id)
