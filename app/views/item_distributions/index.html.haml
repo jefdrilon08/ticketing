@@ -10,34 +10,36 @@
           %thead
             %tr
               %th Distribute Name
+              %th Item Category
               %th Item Name
               %th Serial Number
-              %th Date Purchased
               %th MR Number
               %th Inventory Number
               %th Branch
               -# %th Check Voucher
               %th Received By
-              %th Distributed By
-              %th Distributed At
+              %th Date Purchased
+              %th Date Distributed
+              -# %th Distributed By
               %th.text-center Status
               %th.text-center Actions
           %tbody
             - @item_distributions.each do |dist|
+              - item = @items_map[dist.item_id]
               %tr
                 %td= dist.distribute_name.presence || "-"
-                %td= dist.item_id && Item.find_by(id: dist.item_id)&.name || "N/A"
-                - item = Item.find_by(id: dist.item_id)
+                %td= @categories_map[item&.items_category_id]&.name&.to_s&.titleize || "-"
+                %td= item&.name || "N/A"
                 %td= item&.serial_number.presence || "-"
-                %td= item&.date_purchased&.strftime("%Y-%m-%d") || "-"
                 %td= dist.mr_number
                 %td= dist.inventory_number
                 %td= @branches[dist.branch_id]&.name&.to_s&.titleize || "-"
                 -# %td= dist.check_voucher                
                 - receive_by_user = @users[dist.receive_by]
                 %td= receive_by_user ? "#{receive_by_user.first_name} #{receive_by_user.last_name}".to_s.titleize : "-"
-                - distributed_by_user = @users[dist.distributed_by]
-                %td= distributed_by_user ? "#{distributed_by_user.first_name} #{distributed_by_user.last_name}".to_s.titleize : "-"
+                %td= item&.date_purchased&.strftime("%Y-%m-%d") || "-"
+                -# - distributed_by_user = @users[dist.distributed_by]
+                -# %td= distributed_by_user ? "#{distributed_by_user.first_name} #{distributed_by_user.last_name}".to_s.titleize : "-"
                 %td= dist.distributed_at&.strftime("%Y-%m-%d") || "-"
                 %td.text-center
                   - if dist.status.to_s.downcase == "approved"

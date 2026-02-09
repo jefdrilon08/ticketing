@@ -32,7 +32,7 @@ class ItemDistributionsController < ApplicationController
     end
 
     @item_distributions = @item_distributions
-      .includes(:item)
+      .includes(item: :items_category)
       .joins(:item)
       .joins('LEFT JOIN branches ON branches.id = item_distributions.branch_id')
       .order(:status, 'items.name', 'branches.name', :distributed_by)
@@ -40,11 +40,12 @@ class ItemDistributionsController < ApplicationController
 
     @branches = Branch.all.index_by(&:id)
 
-    # item_ids = ItemDistribution.distinct.pluck(:item_id)
-    # @filter_items = Item.where(id: item_ids).order(:name).group_by(&:name).map { |_, items| items.first }
-
     item_ids = ItemDistribution.distinct.pluck(:item_id)
     @filter_items = Item.where(id: item_ids).order(:name).group_by(&:name).map { |_, items| items.first }
+    
+    @items_map = Item.where(id: item_ids).index_by(&:id)
+    category_ids = @items_map.values.map(&:items_category_id).compact.uniq
+    @categories_map = ItemsCategory.where(id: category_ids).index_by(&:id)
 
     category_ids = Item.distinct.pluck(:items_category_id).compact
     @filter_categories = ItemsCategory.where(id: category_ids).order(:name)

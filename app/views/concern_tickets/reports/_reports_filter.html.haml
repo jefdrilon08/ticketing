@@ -1,0 +1,29 @@
+= form_tag reports_concern_tickets_path, method: 'get', id: "filter-form" do
+  .row.g-2
+    .col-md-3.col-12
+      .form-group
+        %label Concern Ticket
+        = select_tag :concern_ticket_id,
+          options_for_select(@concern_tickets.map { |ct| [ct.name.to_s.titleize, ct.id] }, params[:concern_ticket_id]),
+          class: "form-control form-control-sm",
+          prompt: "-- SELECT --"
+
+    .col-md-3.col-12
+      .form-group
+        %label Start Date
+        = text_field_tag :start_date, params[:start_date], class: 'form-control form-control-sm', type: :date
+
+    .col-md-3.col-12
+      .form-group
+        %label End Date
+        = text_field_tag :end_date, params[:end_date], class: 'form-control form-control-sm', type: :date
+
+    .col-auto
+      .form-group
+        %label
+          Actions
+        .form-group
+          .btn-group
+            = button_tag type: 'submit', class: 'btn btn-info btn-sm btn-block', id: "search-btn" do
+              .bi.bi-search
+              
