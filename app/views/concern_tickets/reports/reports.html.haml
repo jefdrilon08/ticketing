@@ -5,9 +5,10 @@
                  type: 'button',
                  class: 'btn btn-primary',
                  data: { bs_toggle: 'modal', bs_target: '#reportsModal' }
-
-
+-# .ml-3
+= render partial: 'concern_tickets/reports/reports_filter'
 .modal.fade#reportsModal{ tabindex: "-1", role: "dialog", aria: { labelledby: "reportsModalLabel", hidden: "true" } }
+    
   .modal-dialog.modal-dialog-centered{ role: "document" }
     .modal-content
       .modal-header
@@ -69,7 +70,7 @@
                     = "N/A"
           - else
             %tr
-              %td.text-center.text-muted{ colspan: 4 } No records found.
-            
+              %td.text-center.text-muted{ colspan: 5 } No records found.
+
 .paginate-container.mt-3.d-flex.justify-content-center
   = paginate @records if @records.respond_to?(:total_pages) && @records.total_pages > 1

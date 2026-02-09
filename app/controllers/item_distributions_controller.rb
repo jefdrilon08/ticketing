@@ -113,7 +113,7 @@ class ItemDistributionsController < ApplicationController
         data: { "bs-toggle" => "modal", "bs-target" => "#modal-pull-out" }
       }
     end
-    if current_user.id.to_s == "8e43afba-c232-4d01-beae-7eae75f2b88c"
+    if current_user.id == "8e43afba-c232-4d01-beae-7eae75f2b88c"
       @subheader_side_actions << {
         id: "btn-delete",
         link: "#",
