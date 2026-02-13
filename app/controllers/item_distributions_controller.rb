@@ -23,6 +23,10 @@ class ItemDistributionsController < ApplicationController
       @item_distributions = @item_distributions.where(item_id: params[:item_id])
     end
 
+    if params[:serial_number].present?
+      @item_distributions = @item_distributions.joins(:item).where("items.serial_number ILIKE ?", "%#{params[:serial_number]}%")
+    end
+
     if params[:distributed_by].present?
       @item_distributions = @item_distributions.where(distributed_by: params[:distributed_by])
     end
