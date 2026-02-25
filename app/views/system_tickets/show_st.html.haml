@@ -1,6 +1,7 @@
 .card.some{:style=>"padding:1%"}
   %h2
-    Edit #{@system_name}
+    Editing #{@system_name}
+  %hr{:style=>"color:white"}
   =form_tag "/system_tickets/make_private",method: 'POST' do
     .form-group
       =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
@@ -16,6 +17,22 @@
           %center
             %h4
               Currently public. Click to make system private.
+  %hr{:style=>"color:white"}
+  =form_tag "/system_tickets/require_testing",method: 'POST' do
+    .form-group
+      =text_field_tag :id,params[:id],class:'form-control',style:'display:none'
+    -if SystemTicket.find(params[:id]).data["testing_required"]
+      .form-group
+        =button_tag type: 'submit', class: 'btn btn-warning',style:'margin-top:-15px' do
+          %center
+            %h4
+              Testing required.
+    -else
+      .form-group
+        =button_tag type: 'submit', class: 'btn btn-success',style:'margin-top:-15px' do
+          %center
+            %h4
+              Testing not required.
   %hr{:style=>"color:white"}
   .card.some{:style=>"padding:1%"}
     %div.row
