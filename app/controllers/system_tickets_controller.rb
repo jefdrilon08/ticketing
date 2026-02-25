@@ -546,7 +546,7 @@ class SystemTicketsController < ApplicationController
             @ticket.data["team_members"].each do |y|
                 if x==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
                 end
-                temp2=SystemTicketsUser.where(user_id:x,system_ticket_id:SystemTicketDesc.find(@ticket.id).system_ticket_id)[0].id
+                temp2=SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:SystemTicketDesc.find(@ticket.id).system_ticket_id)[0].id
             end
             if temp==0 then
                 if SystemTicketsUser.find(temp2).status=="active"||SystemTicketsUser.find(temp2).status=="admin"&&SystemTicketsUser.find(temp2).status!="inactive" then
