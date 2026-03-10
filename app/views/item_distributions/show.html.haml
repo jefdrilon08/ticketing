@@ -113,36 +113,68 @@
                     checked: @item_distribution.data && @item_distribution.data["is_sticker_attached"].to_s == "true"
                   }
                   %label.form-check-label{ for: "attached_mr_sticker" } Attached MR Sticker?
-  
-        .row.mt-3
-          .col-12.d-flex.justify-content-end.align-items-center.gap-2
-            %button.btn.btn-primary#editBtn{ type: "button", onclick: "enableEdit()" } Edit
-            %button.btn.btn-success#saveBtn{ type: "submit", style: "display:none" } Save
-            %button.btn.btn-secondary.fs-6{ type: "button", onclick: "window.history.back();" } Back
-  - if @item_distribution.data && @item_distribution.data["transfer_details"].present?
-    .card-footer
-      .mt-2
-        %h5 Transfer History
-        %table.table.table-bordered.table-striped
-          %thead
-            %tr
-              %th Previous User
-              -# %th Previous Area
-              -# %th Previous Cluster
-              %th Previous Branch
-              %th Transfer Date
-          %tbody
-            - @item_distribution.data["transfer_details"].each do |transfer|
+
+  - if @item&.data && @item.data["child_details"].present?
+    .card.mt-3
+      .card-header.bg-dark.text-white
+        %h5.mb-0 Child Item Details
+      .card-body
+        .table-responsive
+          %table.table.table-bordered.table-striped.table-hover
+            %thead.table-light
               %tr
-                %td= transfer["previous_distribute_name"] || "N/A"
-                -# %td= transfer["previous_area"] || "N/A"
-                -# %td= transfer["previous_cluster"] || "N/A"
-                %td= transfer["previous_branch"] || "N/A"
-                %td= transfer["transfer_date"] || "N/A"
+                %th Item Name
+                %th Category
+                %th Sub Category
+                %th Brand
+                %th Model
+                %th Serial Number
+                %th Unit
+                -# %th Unit Price
+            %tbody
+              - @item.data["child_details"].each do |child|
+                %tr
+                  %td= child["name"] || "-"
+                  %td= child["item_category"] || "-"
+                  %td= child["sub_category"] || "-"
+                  %td= child["brand"] || "-"
+                  %td= child["model"] || "-"
+                  %td= child["serial_number"] || "-"
+                  %td= child["unit"] || "-"
+                  -# %td= "₱ #{number_with_precision(child["unit_price"].to_f, precision: 2)}" || "-"
+  - if @item_distribution.data && @item_distribution.data["transfer_details"].present?
+    .card.mt-3
+      .card-header.bg-dark.text-white
+        %h5.mb-0 Transfer History
+      .card-body
+        .table-responsive
+          %table.table.table-bordered.table-striped.table-hover
+            %thead
+              %tr
+                %th Previous User
+                -# %th Previous Area
+                -# %th Previous Cluster
+                %th Previous Branch
+                %th Transfer Date
+            %tbody
+              - @item_distribution.data["transfer_details"].each do |transfer|
+                %tr
+                  %td= transfer["previous_distribute_name"] || "N/A"
+                  -# %td= transfer["previous_area"] || "N/A"
+                  -# %td= transfer["previous_cluster"] || "N/A"
+                  %td= transfer["previous_branch"] || "N/A"
+                  %td= transfer["transfer_date"] || "N/A"
   - else
     .card-footer
       .mt-2
         %p.text-muted &nbsp;
+
+  .row.mt-3
+    .col-12.d-flex.justify-content-end.align-items-center
+      %button.btn.btn-primary.me-2.mb-2#editBtn{ type: "button", onclick: "enableEdit()" } Edit
+      %button.btn.btn-success.me-2.mb-2#saveBtn{ type: "submit", style: "display:none" } Save
+      %button.btn.btn-secondary.fs-6.me-2.mb-2{ type: "button", onclick: "window.history.back();" } Back
+
 = render "item_distributions/modals/transfer_item_distribution"
 = render "item_distributions/modals/pull_out"
 
