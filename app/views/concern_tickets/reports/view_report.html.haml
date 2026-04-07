@@ -41,7 +41,8 @@
               %td.text-center.text-muted.italic{ colspan: status_groups.size + 1 } No concern ticket details found.
         %tfoot.table-light
           %tr.text-center.fw-bold
-            %th Total
+            - grand_total = from_summary.values.flatten.count
+            %th= "Total (#{grand_total})"
             - status_groups.each do |status|
               - total_count = from_summary.values.flatten.count { |d| d["status"] == status }
               %th= total_count

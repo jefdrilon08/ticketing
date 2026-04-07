@@ -65,6 +65,12 @@
           .col-md-6
             .row.mb-3
               .col-sm-4
+                %label{ for: "category" } Item Category
+              .col-sm-8
+                %input.form-control{ type: "text", id: "category", value: @item&.items_category&.name&.to_s&.titleize || "N/A", disabled: true }
+
+            .row.mb-3
+              .col-sm-4
                 %label{ for: "receive_by" } Received By
               .col-sm-8
                 %select.form-control{ id: "receive_by", name: "item_distribution[receive_by]", disabled: true }
@@ -112,7 +118,7 @@
           .col-12.d-flex.justify-content-end.align-items-center.gap-2
             %button.btn.btn-primary#editBtn{ type: "button", onclick: "enableEdit()" } Edit
             %button.btn.btn-success#saveBtn{ type: "submit", style: "display:none" } Save
-            = link_to "Back", item_distributions_path, class: "btn btn-secondary"
+            %button.btn.btn-secondary.fs-6{ type: "button", onclick: "window.history.back();" } Back
   - if @item_distribution.data && @item_distribution.data["transfer_details"].present?
     .card-footer
       .mt-2
@@ -148,6 +154,7 @@
         el.type !== "hidden" &&
         el.name !== "authenticity_token" &&
         el.id !== "item_name" &&
+        el.id !== "category" &&
         el.id !== "status" &&
         el.id !== "serial_number"
       ) {

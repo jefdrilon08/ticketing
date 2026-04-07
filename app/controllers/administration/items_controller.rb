@@ -85,7 +85,7 @@ module Administration
       elsif @item.status.to_s.downcase == "purchased"
         @subheader_side_actions = []
       else
-        @subheader_side_actions = [ delete_action ]
+        @subheader_side_actions = []
       end
     end
 

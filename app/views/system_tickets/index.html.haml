@@ -34,6 +34,13 @@
                             -else
                                 %p{:style=>"margin-bottom:4px;font-weight:bold;color:green"} 
                                     Public
+                            -if x.data.key?("testing_required")
+                                -if x.data["testing_required"]
+                                    %p{:style=>"margin-bottom:4px;font-weight:bold;"}
+                                        Testing required
+                                -else
+                                    %p{:style=>"margin-bottom:4px;font-weight:bold;"} 
+                                        Testing not required
                             -if current_user.id==x.user_id.to_s
                                 =link_to "/system_tickets_#{x.id}/edit" do
                                     %p

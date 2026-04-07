@@ -105,6 +105,7 @@ class SystemTicketsController < ApplicationController
         checked=[]
         approved=[]
         processing=[]
+        for_testing=[]
         for_verification=[]
         done=[]
 
@@ -315,6 +316,8 @@ class SystemTicketsController < ApplicationController
                     approved.push(x)
                 when "processing"
                     processing.push(x)
+                when "for testing"
+                    for_testing.push(x)
                 when "for verification"
                     for_verification.push(x)
                 when "done","done (auto-closed)"
@@ -340,6 +343,10 @@ class SystemTicketsController < ApplicationController
         end
 
         processing.each do |x|
+            @system_tix_desc.push(x)
+        end
+
+        for_testing.each do |x|
             @system_tix_desc.push(x)
         end
 
@@ -372,6 +379,12 @@ class SystemTicketsController < ApplicationController
         @def_milestones=[]
         @autoclose=SystemTicket.find(@system_id).data["autoclose"][0].to_i
         members=SystemTicketsUser.where(system_ticket_id:params[:id])
+
+        if !SystemTicket.find(params[:id]).data.key?("testing_required")
+            @s_data_testing=SystemTicket.find(params[:id]).data
+            @s_data_testing["testing_required"]=false
+            SystemTicket.update(data:@s_data_testing)
+        end
 
         if SystemTicket.find(@system_id).data["default_milestones"].present?
             then @def_milestones=SystemTicket.find(@system_id).data["default_milestones"]
@@ -518,6 +531,7 @@ class SystemTicketsController < ApplicationController
 
           if system_ticket_user.status=="active"||system_ticket_user.status=="admin"
             if x[1] != "Main Dev"
+                puts x
                 @mem_list.push([name, system_ticket_user.role, system_ticket_user.id])
               else
                 @maindev = [name,x[0]]
@@ -531,11 +545,13 @@ class SystemTicketsController < ApplicationController
             temp=0
             temp2= ""
             @ticket.data["team_members"].each do |y|
-                if x==SystemTicketsUser.find(y[0]).user_id.to_s then temp+=1
+                if x==SystemTicketsUser.find(y[0]).user_id then temp+=1
                 end
-                temp2=SystemTicketsUser.where(user_id:x,system_ticket_id:SystemTicketDesc.find(@ticket.id).system_ticket_id)[0].id
+                if SystemTicketsUser.where(user_id:x,system_ticket_id:@ticket.system_ticket_id).length>0
+                    temp2=SystemTicketsUser.where(user_id:x,system_ticket_id:@ticket.system_ticket_id)[0].id
+                end
             end
-            if temp==0 then
+            if temp==0 && temp2!=""
                 if SystemTicketsUser.find(temp2).status=="active"||SystemTicketsUser.find(temp2).status=="admin"&&SystemTicketsUser.find(temp2).status!="inactive" then
                     @not_a_mem.push(temp2)
                 end
@@ -621,15 +637,39 @@ class SystemTicketsController < ApplicationController
         end
 
         if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
-            if @role==2 || @role==3 || @role==5
-            @subheader_side_actions << {
-              id: "btn-status",
-              link: "edit_ticket_status/#{params[:id]}",
-              class: "fa fa-check",
-              data: { id: @ticket.id },
-              text: "For verification"
-            } end
-              end
+            if @role==2 || @role==3 || @role==5   
+                puts "pumasok123"     
+                if SystemTicket.find(@ticket.system_ticket_id).data.key?("testing_required")
+                    puts "true 123"
+                    if SystemTicket.find(@ticket.system_ticket_id).data["testing_required"]
+                        puts "true 345"
+                        @subheader_side_actions << {
+                        id: "btn-status",
+                        link: "edit_ticket_status/#{params[:id]}",
+                        class: "fa fa-check",
+                        data: { id: @ticket.id },
+                        text: "For testing"
+                        } 
+                    else 
+                        puts "not true 567"
+                        @subheader_side_actions << {
+                            id: "btn-status",
+                            link: "edit_ticket_status/#{params[:id]}",
+                            class: "fa fa-check",
+                            data: { id: @ticket.id },
+                            text: "For verification"
+                            } 
+                    end 
+                else @subheader_side_actions << {
+                        id: "btn-status",
+                        link: "edit_ticket_status/#{params[:id]}",
+                        class: "fa fa-check",
+                        data: { id: @ticket.id },
+                        text: "For verification"
+                        } 
+                end
+            end
+        end
 
         if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
             if @role==1 || @role==5 || @ticket.requested_by==current_user.id
@@ -646,6 +686,24 @@ class SystemTicketsController < ApplicationController
                         class: "fa fa-check",
                         data: { id: @ticket.id},
                         text: "Verify"
+                } end
+        end
+
+        if ["for testing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
+            if @role==1 || @role==5 || @ticket.requested_by==current_user.id
+                @subheader_side_actions << {
+                        id: "btn-status-enhancement",
+                        link: "#",
+                        class: "fa fa-plus",
+                        data: { id: @ticket.id,"bs-target": "#modal-for-enhancement","bs-toggle":"modal"},
+                        text: "For Enhancement"
+                }
+                @subheader_side_actions << {
+                        id: "btn-status",
+                        link: "edit_ticket_status/#{params[:id]}",
+                        class: "fa fa-check",
+                        data: { id: @ticket.id},
+                        text: "For Verification"
                 } end
         end
   
@@ -666,6 +724,12 @@ class SystemTicketsController < ApplicationController
             when "approved"
                 new_status= "processing"
             when "processing"
+                if(SystemTicket.find(edit_tixdesc.system_ticket_id).data["testing_required"])
+                    new_status= "for testing"
+                else
+                    new_status= "for verification"
+                end
+            when "for testing"
                 new_status= "for verification"
             when "for verification"
                 new_status= "done"
@@ -1054,9 +1118,15 @@ class SystemTicketsController < ApplicationController
     end
 
     def make_private
-        if SystemTicket.find(params[:id]).is_private then SystemTicket.find(params[:id]).update!(is_private:false)
-        else SystemTicket.find(params[:id]).update!(is_private:true)
-        end
+        SystemTicket.find(params[:id]).update!(is_private:!SystemTicket.find(params[:id]).is_private)
+        redirect_back(fallback_location: root_path)
+    end
+
+    def require_testing
+        s_d=SystemTicket.find(params[:id]).data
+        s_d["testing_required"]=!s_d["testing_required"]
+
+        SystemTicket.find(params[:id]).update(data:s_d)
 
         redirect_to "/system_tickets_#{params[:id]}/edit"
     end

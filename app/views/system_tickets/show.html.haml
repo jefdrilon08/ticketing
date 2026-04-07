@@ -75,6 +75,12 @@
                                             %p{:style=>"width:104px"}
                                                 .badge.bg-secondary
                                                     #{@ticket.status} 
+                                - when "for testing"
+                                    %td
+                                        %center
+                                            %p{:style=>"width:104px"}
+                                                .badge.bg-primary
+                                                    #{@ticket.status} 
                                 -else
                                     %td
                                         %center
