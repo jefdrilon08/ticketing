@@ -76,7 +76,7 @@ module Api
         end
 
         def create_ticket
-          submit_token = params[:submit_token]
+          submit_token = params[:submit_token] 
           
           if session[:used_tokens].nil?
             session[:used_tokens] = []
