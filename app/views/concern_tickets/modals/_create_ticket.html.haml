@@ -56,15 +56,31 @@
 
             .message
             = hidden_field_tag :concern_ticket_id, params[:id]
+            = hidden_field_tag :submit_token, SecureRandom.hex(16), id: 'submit-token'
           .modal-footer.d-flex.justify-content-center
             .controls
-              = button_tag type: 'submit', class: 'btn btn-primary' do
+              = button_tag type: 'submit', class: 'btn btn-primary', id: 'submit-ticket-btn', data: { disable_with: 'Processing...' } do
                 %bi.bi-save.me-2 
                 Add Concern
               &nbsp;
               = button_tag type: 'button', class: 'btn btn-secondary', "data-bs-dismiss" => "modal" do
                 %bi.bi-x-lg
-                Close
+                Close 
 
-= render "concern_tickets/modals/create_concern_type"
-= render "concern_tickets/modals/create_concern_for"
+:javascript
+  (function() {
+    let isSubmitting = false;
+    const form = document.querySelector('#create-ticket-form');
+    
+    form.addEventListener('submit', function(e) {
+      if (isSubmitting) {
+        e.preventDefault();
+        return false;
+      }
+      
+      isSubmitting = true;
+      const btn = document.querySelector('#submit-ticket-btn');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+    });
+  })();

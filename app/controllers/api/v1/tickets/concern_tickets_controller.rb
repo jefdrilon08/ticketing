@@ -76,6 +76,21 @@ module Api
         end
 
         def create_ticket
+          submit_token = params[:submit_token] 
+          
+          if session[:used_tokens].nil?
+            session[:used_tokens] = []
+          end
+          
+          if session[:used_tokens].include?(submit_token)
+            flash[:warning] = "Ticket already being created. Please wait..."
+            redirect_back(fallback_location: request.referer || root_path)
+            return
+          end
+          
+          session[:used_tokens] << submit_token
+          session[:used_tokens] = session[:used_tokens].last(50)
+
           concern_ticket = ConcernTicket.find(params[:concern_ticket_id])
 
           max_retries = 5
@@ -132,7 +147,9 @@ module Api
 
           if @ctd_status
             update_params = { status: params[:status] }
-            if params[:status] == "processing" && params[:reprocess].to_s != "true"
+            #//pag palit ng assigned member 
+            # if params[:status] == "processing" && params[:reprocess].to_s != "true" 
+            if params[:status] == "processing" && params[:reprocess].to_s == "false"
               update_params[:assigned_user_id] = current_user.id
             end
 
