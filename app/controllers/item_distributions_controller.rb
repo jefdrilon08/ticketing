@@ -138,7 +138,7 @@ class ItemDistributionsController < ApplicationController
     @item_distribution.update(status: "approved")
     if @item_distribution.item_id.present?
       item = Item.find_by(id: @item_distribution.item_id)
-      item.update(status: "Active") if item
+      item.update(status: "active") if item
     end
     redirect_to item_distributions_path, notice: "Distribution approved!"
   end
@@ -148,7 +148,7 @@ class ItemDistributionsController < ApplicationController
     @item_distribution.update(status: "void")
     if @item_distribution.item_id.present?
       item = Item.find_by(id: @item_distribution.item_id)
-      item.update(status: "Pending") if item
+      item.update(status: "pending") if item
     end
     redirect_to item_distributions_path, alert: "Distribution voided!"
   end
