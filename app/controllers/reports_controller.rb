@@ -2,7 +2,7 @@ class ReportsController < ApplicationController
 
   def index
     @concern_tickets = ConcernTicket.order(:name)
-    render 'concern_tickets/reports/reports'
+    render 'concern_tickets/reports/index'
   end
 
   def reports
@@ -22,7 +22,7 @@ class ReportsController < ApplicationController
     "closed" => "Closed"
   }
 
-    def concern_tickets
+  def concern_tickets
     @concern_tickets = ConcernTicket.order(:name)
 
     @records = DataStore
@@ -51,6 +51,18 @@ class ReportsController < ApplicationController
     @concern_tickets_map = ConcernTicket.where(id: concern_ticket_ids).index_by(&:id)
 
     render 'concern_tickets/reports/reports'
+  end
+
+  def description
+    @concern_tickets = ConcernTicket.order(:name)
+    @records = DataStore
+      .where.not("data ->> 'concern_ticket_id' IS NULL")
+      .where.not("data ->> 'concern_ticket_id' = ''")
+      .order(created_at: :desc)
+    concern_ticket_ids = @records.map { |r| r.data["concern_ticket_id"] }.compact.uniq
+    @concern_tickets_map = ConcernTicket.where(id: concern_ticket_ids).index_by(&:id) 
+
+    render 'concern_tickets/reports/description'
   end
 
   def view_report_by_data_store
