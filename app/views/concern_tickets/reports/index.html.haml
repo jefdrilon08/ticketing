@@ -1,0 +1,27 @@
+= title 
+.row
+  .col
+    %h3{ style: 'font-weight: bold' } 
+      CONCERN TICKET REPORTS
+    .card.mb-4
+      %h5.mb-0.card-header.bg-dark.text-white
+      .card-body.p-3
+        .table-responsive
+          %table.table.table-sm.table-hover.table-bordered
+            %thead
+              %tr
+                %th.text-center Type of Report
+                %th.text-center Actions
+            %tbody
+              %tr
+                %td.text-center Summary Report
+                %td.text-center
+                  = link_to reports_concern_tickets_path, class: "btn btn-primary", title: "View Reports", data: { bs_toggle: "tooltip" } do
+                    %i.bi.bi-eye
+              %tr
+                %td.text-center Ticket Description
+                %td.text-center
+                  = link_to description_concern_tickets_path, class: "btn btn-primary", title: "View Reports", data: { bs_toggle: "tooltip" } do
+                    %i.bi.bi-eye
+-# .pagination-container.mt-3.d-flex.justify-content-center
+-#   = paginate @records

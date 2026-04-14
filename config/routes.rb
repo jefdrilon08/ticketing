@@ -35,7 +35,8 @@ Rails.application.routes.draw do
   # Reports
   get 'reports', to: 'reports#index', as: :reports
   get 'reports/view_report/:id', to: 'reports#view_report', as: :view_report
-  get 'reports/concern_tickets', to: 'reports#concern_tickets', as: :reports_concern_tickets
+  get 'reports/concern_tickets/summary', to: 'reports#concern_tickets', as: :reports_concern_tickets
+  get 'reports/concern_tickets/description', to: 'reports#description', as: :description_concern_tickets
   get 'view_report_by_data_store/:id', to: 'reports#view_report_by_data_store', as: 'view_report_by_data_store'
   post 'reports/create_data_store', to: 'reports#create_data_store', as: :create_data_store_reports
   

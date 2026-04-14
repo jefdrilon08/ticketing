@@ -147,9 +147,7 @@ module Api
 
           if @ctd_status
             update_params = { status: params[:status] }
-            #//pag palit ng assigned member 
-            # if params[:status] == "processing" && params[:reprocess].to_s != "true" 
-            if params[:status] == "processing" && params[:reprocess].to_s == "false"
+            if params[:status] == "processing"
               update_params[:assigned_user_id] = current_user.id
             end
 

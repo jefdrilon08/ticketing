@@ -1,13 +1,12 @@
-.container
-  .d-flex.justify-content-between.align-items-center.mb-3.gap-3
-    %h2.mb-0 SUMMARY REPORT
-    = button_tag 'New',
-                 type: 'button',
-                 class: 'btn btn-primary',
-                 data: { bs_toggle: 'modal', bs_target: '#reportsModal' }
+.d-flex.justify-content-between.align-items-center.mb-3.gap-3
+  %h2.mb-0 TICKET DESCRIPTION LIST
+  = button_tag 'New',
+               type: 'button',
+               class: 'btn btn-primary me-5',
+               data: { bs_toggle: 'modal', bs_target: '#reportsModal' }
 -# .ml-3
 = render partial: 'concern_tickets/reports/reports_filter'
-.modal.fade#reportsModal{ tabindex: "-1", role: "dialog", aria: { labelledby: "reportsModalLabel", hidden: "true" } }
+-# .modal.fade#reportsModal{ tabindex: "-1", role: "dialog", aria: { labelledby: "reportsModalLabel", hidden: "true" } }
     
   .modal-dialog.modal-dialog-centered{ role: "document" }
     .modal-content
@@ -38,7 +37,7 @@
 
 .card.mb-4
   .card-header.bg-dark.text-white
-    %h5.mb-0 Concern Ticket Summary Report
+    %h5.mb-0 Concern Tickets Description
 
   .card-body.p-0
     .table-responsive
