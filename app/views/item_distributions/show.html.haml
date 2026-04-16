@@ -11,6 +11,22 @@
           .col-md-6
             .row.mb-3
               .col-sm-4
+                %label{ for: "distribute_number" } Distribute Number
+              .col-sm-8
+                %input.form-control{
+                  type: "text",
+                  id: "distribute_number",
+                  name: "item_distribution[distribute_number]",
+                  value: @item_distribution.data&.dig("distribute_number") || "",
+                  disabled: true
+                }
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "category" } Item Category
+              .col-sm-8
+                %input.form-control{ type: "text", id: "category", value: @item&.items_category&.name&.to_s&.titleize || "N/A", disabled: true }
+            .row.mb-3
+              .col-sm-4
                 %label{ for: "item_name" } Item Name
               .col-sm-8
                 %input.form-control{ type: "text", id: "item_name", value: @item&.name || "N/A", disabled: true }
@@ -35,40 +51,21 @@
                 %label{ for: "inventory_number" } Inventory Number
               .col-sm-8
                 %input.form-control{ type: "text", id: "inventory_number", name: "item_distribution[inventory_number]", value: @item_distribution.inventory_number, disabled: true }
-            .row.mb-3
-              .col-sm-4
-                %label{ for: "area_id" } Area
-              .col-sm-8
-                %select.form-control{ id: "area_id", name: "item_distribution[area_id]", disabled: true }
-                  %option{ value: "" } --SELECT--
-                  - @areas.values.sort_by { |a| a.name.to_s.downcase }.each do |area|
-                    %option{ value: area.id, selected: (@item_distribution.area_id.to_s == area.id.to_s) }= area.name.titleize
 
             .row.mb-3
-              .col-sm-4
-                %label{ for: "cluster_id" } Cluster
               .col-sm-8
-                %select.form-control{ id: "cluster_id", name: "item_distribution[cluster_id]", disabled: true }
-                  %option{ value: "" } --SELECT--
-                  - @clusters.values.sort_by { |c| c.name.to_s.downcase }.each do |cluster|
-                    %option{ value: cluster.id, selected: (@item_distribution.cluster_id.to_s == cluster.id.to_s) }= cluster.name.titleize
-
-            .row.mb-3
-              .col-sm-4
-                %label{ for: "branch_id" } Branch
-              .col-sm-8
-                %select.form-control{ id: "branch_id", name: "item_distribution[branch_id]", disabled: true }
-                  %option{ value: "" } --SELECT--
-                  - @branches.values.sort_by { |b| b.name.to_s.downcase }.each do |branch|
-                    %option{ value: branch.id, selected: (@item_distribution.branch_id.to_s == branch.id.to_s) }= branch.name.titleize
+                .form-check
+                  %input.form-check-input{
+                    type: "checkbox",
+                    id: "attached_mr_sticker",
+                    name: "item_distribution[attached_mr_sticker]",
+                    value: "true",
+                    disabled: true,
+                    checked: @item_distribution.data && @item_distribution.data["is_sticker_attached"].to_s == "true"
+                  }
+                  %label.form-check-label{ for: "attached_mr_sticker" } Attached MR Sticker?
 
           .col-md-6
-            .row.mb-3
-              .col-sm-4
-                %label{ for: "category" } Item Category
-              .col-sm-8
-                %input.form-control{ type: "text", id: "category", value: @item&.items_category&.name&.to_s&.titleize || "N/A", disabled: true }
-
             .row.mb-3
               .col-sm-4
                 %label{ for: "receive_by" } Received By
@@ -102,17 +99,31 @@
                 %input.form-control{ type: "text", id: "status", name: "item_distribution[status]", value: @item_distribution.status&.titleize || "-", disabled: true }
 
             .row.mb-3
+              .col-sm-4
+                %label{ for: "area_id" } Area
               .col-sm-8
-                .form-check
-                  %input.form-check-input{
-                    type: "checkbox",
-                    id: "attached_mr_sticker",
-                    name: "item_distribution[attached_mr_sticker]",
-                    value: "true",
-                    disabled: true,
-                    checked: @item_distribution.data && @item_distribution.data["is_sticker_attached"].to_s == "true"
-                  }
-                  %label.form-check-label{ for: "attached_mr_sticker" } Attached MR Sticker?
+                %select.form-control{ id: "area_id", name: "item_distribution[area_id]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @areas.values.sort_by { |a| a.name.to_s.downcase }.each do |area|
+                    %option{ value: area.id, selected: (@item_distribution.area_id.to_s == area.id.to_s) }= area.name.titleize
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "cluster_id" } Cluster
+              .col-sm-8
+                %select.form-control{ id: "cluster_id", name: "item_distribution[cluster_id]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @clusters.values.sort_by { |c| c.name.to_s.downcase }.each do |cluster|
+                    %option{ value: cluster.id, selected: (@item_distribution.cluster_id.to_s == cluster.id.to_s), data: { area_id: cluster.area_id } }= cluster.name.titleize
+
+            .row.mb-3
+              .col-sm-4
+                %label{ for: "branch_id" } Branch
+              .col-sm-8
+                %select.form-control{ id: "branch_id", name: "item_distribution[branch_id]", disabled: true }
+                  %option{ value: "" } --SELECT--
+                  - @branches.values.sort_by { |b| b.name.to_s.downcase }.each do |branch|
+                    %option{ value: branch.id, selected: (@item_distribution.branch_id.to_s == branch.id.to_s), data: { cluster_id: branch.cluster_id } }= branch.name.titleize
 
     - if @item&.data && @item.data["child_details"].present?
       .card.mt-3
@@ -195,4 +206,78 @@
     });
     document.getElementById('editBtn').style.display = 'none';
     document.getElementById('saveBtn').style.display = '';
+//<<<<<<< item_number
+    setupDependentSelects();
   }
+
+  function setupDependentSelects() {
+    const areaSelect = document.getElementById('area_id');
+    const clusterSelect = document.getElementById('cluster_id');
+    const branchSelect = document.getElementById('branch_id');
+    const originalClusterId = clusterSelect.value;
+    const originalBranchId = branchSelect.value;
+
+    areaSelect.removeEventListener('change', handleAreaChange);
+    clusterSelect.removeEventListener('change', handleClusterChange);
+
+    function handleAreaChange() {
+      const selectedAreaId = areaSelect.value;
+      Array.from(clusterSelect.options).forEach(function(option) {
+        if (option.value === "") {
+          option.style.display = "block";
+        } else {
+          option.style.display = option.dataset.areaId === selectedAreaId ? "block" : "none";
+        }
+      });
+      
+      if (originalClusterId && document.querySelector(`#cluster_id option[value="${originalClusterId}"]`)) {
+        const originalOption = document.querySelector(`#cluster_id option[value="${originalClusterId}"]`);
+        if (originalOption.dataset.areaId === selectedAreaId) {
+          clusterSelect.value = originalClusterId;
+          clusterSelect.dispatchEvent(new Event('change'));
+        } else {
+          clusterSelect.value = "";
+          branchSelect.value = "";
+        }
+      } else {
+        clusterSelect.value = "";
+        branchSelect.value = "";
+      }
+    }
+
+    function handleClusterChange() {
+      const selectedClusterId = clusterSelect.value;
+      Array.from(branchSelect.options).forEach(function(option) {
+        if (option.value === "") {
+          option.style.display = "block";
+        } else {
+          option.style.display = option.dataset.clusterId === selectedClusterId ? "block" : "none";
+        }
+      });
+
+      if (originalBranchId && document.querySelector(`#branch_id option[value="${originalBranchId}"]`)) {
+        const originalOption = document.querySelector(`#branch_id option[value="${originalBranchId}"]`);
+        if (originalOption.dataset.clusterId === selectedClusterId) {
+          branchSelect.value = originalBranchId;
+        } else {
+          branchSelect.value = "";
+        }
+      } else {
+        branchSelect.value = "";
+      }
+    }
+
+    areaSelect.addEventListener('change', handleAreaChange);
+    clusterSelect.addEventListener('change', handleClusterChange);
+
+    if (areaSelect.value) {
+      handleAreaChange();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setupDependentSelects();
+  });
+//=======
+  }
+//>>>>>>> main
