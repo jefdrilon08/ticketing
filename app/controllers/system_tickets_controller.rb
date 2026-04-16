@@ -29,19 +29,24 @@ class SystemTicketsController < ApplicationController
             puts SystemTicket.where(computer_system_id:x.id).empty?
             if SystemTicket.where(computer_system_id:x.id).empty? then @tickets-=[x]
             else 
-                is_member=0
+                is_member=false
                 if SystemTicket.where(computer_system_id:x.id)[0].is_private   
                     SystemTicket.where(computer_system_id:x.id)[0].data["team_members"].each do |y|
-                        if y==current_user.id.to_s then is_member=is_member+1
-                        end
+                        if y==current_user.id 
+                            is_member=true
+                        end 
                     end
-                    puts "pumasok"
-                    if is_member!=0 then @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0]) end
+                    if is_member
+                        @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0]) end
                 else
                     @final_tix_list.push(SystemTicket.where(computer_system_id:x.id)[0])
                 end
             end
         end
+
+        @tickets_all=SystemTicket.all
+
+        
 
         puts "final"
         puts @final_tix_list
@@ -62,6 +67,24 @@ class SystemTicketsController < ApplicationController
         a_system=SystemTicket.find(params[:id])
         a_system_data=a_system.data
         a_tickets=SystemTicketDesc.where(system_ticket_id:params[:id])
+
+        can_enter=0
+
+        if a_system.is_private
+            a_system.data["team_members"].each do |x|
+                puts "lolol#{x} = #{current_user.id}"
+                if x==current_user.id
+                    can_enter+=1
+                end
+            end
+            else
+                can_enter=1
+        end
+
+        if can_enter==0
+            redirect_to "/system_tickets"
+        end
+
         a_tickets.each do |x|
             x_data=x.data
             if x.status=="for verification"
@@ -940,22 +963,28 @@ class SystemTicketsController < ApplicationController
 
     def edit_member
 
+        puts "testing123123123"
         puts params
         edit_data_mem= SystemTicket.find(params[:id])
-        edit_data_mem_data=edit_data_mem.data
+        # edit_data_mem_data=edit_data_mem.data
 
-        lo0p=edit_data_mem_data["team_members"].count
+        lo0p=params[:edit_count].to_i
         i=0
 
-        while i <= lo0p
-            edit_data_mem_data["team_members"].each do |x|
-                temp=SystemTicketsUser.where(user_id:x,system_ticket_id:params[:id])[0]
-                if temp.id==params["o-#{i}"].to_s && temp.role!="Main Dev"
+        while i<=lo0p
+        #         temp=SystemTicketsUser.where(user_id:params["o-#{i}"],system_ticket_id:params[:id])[0]
+        #         if temp.role!="Main Dev"
+        #             if params["t-#{i}"]==nil then temp.update(role:params["t-#{i}"])
+        #             else temp.update(role:params["t-#{i}"])
+        #             end 
+        #         end
+        #     i+=1
+            temp=SystemTicketsUser.find(params["o-#{i}"])
+                if temp.role!="Main Dev"
                     if params["t-#{i}"]==nil then temp.update(role:params["t-#{i}"])
                     else temp.update(role:params["t-#{i}"])
                     end 
                 end
-            end
             i+=1
         end
 
@@ -1076,12 +1105,13 @@ class SystemTicketsController < ApplicationController
     end
 
     def add_member_st
+        puts "jacezz"
         puts params
 
         mem_add= SystemTicket.find(params[:id])
         mem_add_data= mem_add[:data]
 
-        params[:members].each do|x|
+        params[:members_add].each do |x|
             mem_add_data["team_members"].push(x)
             SystemTicketsUser.new(
                                         user_id:x,
