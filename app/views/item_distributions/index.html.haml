@@ -9,6 +9,7 @@
         %table.table.table-bordered.table-hover
           %thead
             %tr
+              %th Distribute Number
               %th Distribute Name
               %th Item Category
               %th Item Name
@@ -27,6 +28,7 @@
             - @item_distributions.each do |dist|
               - item = @items_map[dist.item_id]
               %tr
+                %td= dist.data && dist.data["distribute_number"] ? dist.data["distribute_number"] : "-"
                 %td= dist.distribute_name.presence || "-"
                 %td= @categories_map[item&.items_category_id]&.name&.to_s&.titleize || "-"
                 %td= item&.name || "N/A"

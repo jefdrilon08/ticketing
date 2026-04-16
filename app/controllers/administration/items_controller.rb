@@ -174,7 +174,8 @@ module Administration
   def create_distribute
     attached_param = params.dig(:item_distribution, :attached_mr_sticker) || params[:attached_mr_sticker]
     is_sticker_attached = attached_param.to_s == "1" || attached_param.to_s.downcase == "true"
-  
+    distribute_number = "DIST-#{Time.current.strftime("%Y%m%d%H%M")}"
+
     item_distribution = ItemDistribution.new(
       item_id: params[:item_id],
       area_id: params[:area_id],
@@ -184,6 +185,7 @@ module Administration
       receive_by: params[:receive_by],
       mr_number: params[:mr_number],
       data: {
+        distribute_number: distribute_number,
         is_sticker_attached: is_sticker_attached
       },
       inventory_number: params[:inventory_number],

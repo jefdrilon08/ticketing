@@ -160,15 +160,18 @@ class ItemDistributionsController < ApplicationController
       :mr_number,
       :inventory_number,
       :area_id,
-      :cluster_id,  
+      :cluster_id,
       :branch_id,
       :receive_by,
       :distributed_by,
       :distributed_at,
-      :attached_mr_sticker
+      :attached_mr_sticker,
+      :distribute_number
     )
+
     data = @item_distribution.data || {}
     data["is_sticker_attached"] = (permitted[:attached_mr_sticker].to_s == "true" || permitted[:attached_mr_sticker] == "1")
+    data["distribute_number"] = permitted.delete(:distribute_number) if permitted.key?(:distribute_number)
 
     @item_distribution.assign_attributes(permitted.except(:attached_mr_sticker))
     @item_distribution.data = data
