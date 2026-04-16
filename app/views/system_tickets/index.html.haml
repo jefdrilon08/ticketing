@@ -19,6 +19,7 @@
                     No records found.
                 %hr{:style=>"height:30px;color:white"}
         -else
+            -i=0
             -@final_tix_list.each do |x|
                 -join_stat=0
                 .col-3{:style=>"padding:20px"}
@@ -73,6 +74,7 @@
                                             = button_tag type: 'submit',class:'btt-linkto' do
                                                 %p
                                                     Join
+                -i+=1
 :css
     form {display: inline;}
     .form-group {display: inline;}
