@@ -206,7 +206,6 @@
     });
     document.getElementById('editBtn').style.display = 'none';
     document.getElementById('saveBtn').style.display = '';
-//<<<<<<< item_number
     setupDependentSelects();
   }
 
@@ -229,7 +228,7 @@
           option.style.display = option.dataset.areaId === selectedAreaId ? "block" : "none";
         }
       });
-      
+
       if (originalClusterId && document.querySelector(`#cluster_id option[value="${originalClusterId}"]`)) {
         const originalOption = document.querySelector(`#cluster_id option[value="${originalClusterId}"]`);
         if (originalOption.dataset.areaId === selectedAreaId) {
@@ -278,6 +277,3 @@
   document.addEventListener('DOMContentLoaded', function() {
     setupDependentSelects();
   });
-//=======
-  }
-//>>>>>>> main
