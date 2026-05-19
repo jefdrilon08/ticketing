@@ -224,6 +224,9 @@
                                             =button_tag type: 'submit', class: 'btn btn-dark',style:"margin:7% 0 0 10px;padding:0.5% 5% 0.5% 5%",id:"sub-btn",title:"Delete ticket" do
                                                 %i.bi.bi-trash
 
+    .paginate-container.mt-3.d-flex.justify-content-center
+        = paginate @system_tix_desc if @system_tix_desc.respond_to?(:total_pages) && @system_tix_desc.total_pages > 1
+
     -if @system_tix_desc.empty?
         %center
             %h4{:style=>"margin:50px"}

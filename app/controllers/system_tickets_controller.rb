@@ -509,6 +509,16 @@ class SystemTicketsController < ApplicationController
         end
     end
 
+    def create_requirement
+        puts params
+        @record=SystemTicketDesc.find(params[:id])
+        @record_d=@record.data
+        @record_d["requirements"].push([params[:details],"off"])
+        @record.update(data:@record_d)
+
+        redirect_to "/system_tickets/#{params[:id]}"
+    end
+
     def show
         @role=0
         @all_done=0
@@ -660,12 +670,9 @@ class SystemTicketsController < ApplicationController
         end
 
         if ["processing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
-            if @role==2 || @role==3 || @role==5   
-                puts "pumasok123"     
+            if @role==2 || @role==3 || @role==5       
                 if SystemTicket.find(@ticket.system_ticket_id).data.key?("testing_required")
-                    puts "true 123"
                     if SystemTicket.find(@ticket.system_ticket_id).data["testing_required"]
-                        puts "true 345"
                         @subheader_side_actions << {
                         id: "btn-status",
                         link: "edit_ticket_status/#{params[:id]}",
@@ -674,7 +681,6 @@ class SystemTicketsController < ApplicationController
                         text: "For testing"
                         } 
                     else 
-                        puts "not true 567"
                         @subheader_side_actions << {
                             id: "btn-status",
                             link: "edit_ticket_status/#{params[:id]}",
@@ -694,7 +700,17 @@ class SystemTicketsController < ApplicationController
             end
         end
 
-        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
+        req_done=true
+
+        if(SystemTicket.find(@ticket.system_ticket_id).data["testing_required"])
+            @ticket.data["requirements"].each do |x|
+                if x[1]=="false"
+                    req_done=false
+                end
+            end
+        end
+
+        if ["for verification"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0 
             if @role==1 || @role==5 || @ticket.requested_by==current_user.id
                 @subheader_side_actions << {
                         id: "btn-status-enhancement",
@@ -712,7 +728,18 @@ class SystemTicketsController < ApplicationController
                 } end
         end
 
-        if ["for testing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0
+        if ["for testing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0 && !req_done
+            if @role==1 || @role==5 || @ticket.requested_by==current_user.id
+                @subheader_side_actions << {
+                        id: "btn-status-enhancement",
+                        link: "#",
+                        class: "fa fa-plus",
+                        data: { id: @ticket.id,"bs-target": "#modal-for-enhancement","bs-toggle":"modal"},
+                        text: "For Enhancement"
+                } end
+        end
+
+        if ["for testing"].include?(@ticket.status) && !@ticket.data["on_hold"] && @ticket[:start_date]!=nil && @all_done==0 && req_done
             if @role==1 || @role==5 || @ticket.requested_by==current_user.id
                 @subheader_side_actions << {
                         id: "btn-status-enhancement",
@@ -729,6 +756,17 @@ class SystemTicketsController < ApplicationController
                         text: "For Verification"
                 } end
         end
+
+        if !@ticket.data.include?("requirements")
+            puts "wala pa req"
+            temp=@ticket.data
+            temp["requirements"]=[]
+            @ticket.update!(data:temp)
+        else
+            @requirements=@ticket.data["requirements"]
+        end
+
+
   
 
     end
@@ -879,6 +917,34 @@ class SystemTicketsController < ApplicationController
         else
             render :edit, status: :unprocessable_entity
         end
+    end
+
+    def edit_requirement_details
+        edit_requirement=SystemTicketDesc.find(params[:id])
+        erd=edit_requirement.data
+
+        erd["requirements"][params[:index].to_i]=params[:details]
+
+        edit_requirement.update(data:erd)
+
+        redirect_to "/system_tickets/#{params[:id]}"
+    end
+
+    def checkbox
+        puts params
+
+        new_cb=params[:newcheck].split(",")
+
+        ncb=SystemTicketDesc.find(params[:id])
+        ncbd=ncb.data
+
+        ncbd["requirements"].each.with_index(0) do |x,i|
+            x[1]=new_cb[i]
+        end
+
+        ncb.update(data:ncbd)
+
+        redirect_to "/system_tickets/#{params[:id]}"
     end
 
     def edit_milestone_target_date
