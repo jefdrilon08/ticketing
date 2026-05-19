@@ -1,0 +1,25 @@
+#modal-new-requirement.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Add Requirement
+            .modal-body
+                =form_tag "create_requirement",method: 'POST' do
+                    %table.table{:style=>"border-color:white;font-size:110%"}  
+                        %tr
+                            %label
+                                Details
+                            .form-group
+                                =text_area_tag :details,params[:details],class:'form-control',required:true
+                        %tr 
+                            %p
+                        %tr   
+                            %td
+                                .form-group
+                                    =text_field_tag :id,params[:id]=@ticket.id,class:'form-control',style:'display:none'
+                                .form-group
+                                    =button_tag type: 'submit', class: 'btn btn-primary' do
+                                        Add Requirement
+
+                            

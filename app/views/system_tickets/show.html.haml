@@ -276,231 +276,531 @@
                             %p{:style=>"min-height:40px"}
                                 No data.
             %hr
-            .card.some{:style=>"padding:1%;"}
-                %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:0px"}
-                    %tr
-                        %td{:style=>"width:15%"}
-                            %h3
-                                Milestones
-                        %td{:style=>"padding-top:12px"}
-                            -if !@ticket.data["on_hold"]
-                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
-                                    -if @role==3 || @role==5|| @role==2
-                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
-                                            Add milestone    
-                    
-                %table.table{:style=>"border-color:white;font-size:115%"}
-                    %table.table.table-bordered.table-sm
-                        %tr
-                            %th{:style=>"width:30%"}
-                                %p
-                                    %center
-                                        Details
-                            %th{:style=>"width:5%"}
-                                %p
-                                    %center
-                                        Status
-                            %th{:style=>"width:10%"}
-                                %p
-                                    %center
-                                        Target Date
-                            %th{:style=>"width:10%"}
-                                %p
-                                    %center
-                                        Start Date
-                            %th{:style=>"width:10%"}
-                                %p
-                                    %center
-                                        End Date
-                            %th{:style=>"width:10%"}
-                                %p
-                                    %center
-                                        Assigned Dev
-                            %th{:style=>"width:5%"}
-                                %p
-                                    %center
-                                        Action
-                        - if !@empty
-                            - @milestones.each do |x|
-                                -if x.start_date==nil
-                                    %tr
-                                        %td
-                                            %p
-                                                %center
-                                                    .form-group
-                                                        =text_field_tag :ms_id,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
-                                                    %p{:id=>"d-#{@milestones.index(x)}"}
-                                                        #{x.milestone_details}&nbsp
-                                                    - case x.status
-                                                        - when 'pending'
-                                                            -if !@ticket.data["on_hold"]
-                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
-                                                                    -if @role==3 || @role==5 
-                                                                        %p{:style=>"margin-top:-15px"}
-                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
-                                                                                Edit
-                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
-                                                                        %p{:style=>"margin-top:-15px"}
-                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
-                                                                                Edit
-                                        %td
-                                            %p
-                                                %center
-                                                    - case x.status
-                                                    - when 'pending'
-                                                        .badge.bg-warning
-                                                            #{x.status}
-                                                    - when 'done'
-                                                    - when 'auto-closed'
-                                                        .badge.bg-dark
-                                                            #{x.status}
-                                        %td
-                                            %p
-                                                %center
-                                                    #{x.target_date}
-                                            %p 
-                                                %center
-                                                    =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
-                                                    =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
-                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
-                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
-                                                    - case x.status
-                                                        - when 'pending'
-                                                            -if !@ticket.data["on_hold"]
-                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
-                                                                    -if @role==3 || @role==5
-                                                                        %p{:style=>"margin-top:-15px"}
-                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
-                                                                                Edit
-                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
-                                                                        %p{:style=>"margin-top:-15px"}
-                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
-                                                                                Edit
-                                        %td
-                                            -if @role==3 || @role==5
+            %div.row
+                -if SystemTicket.find(@ticket.system_ticket_id).data["testing_required"]
+                    %div.col-4
+                        .card.some{:style=>"padding:2%;"}
+                            %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:0px"}
+                                %tr
+                                    %td{:style=>"width:15%"}
+                                        %h3
+                                            Requirements
+                                    %td{:style=>"padding-top:12px"}
+                                        -if !@ticket.data["on_hold"]
+                                            -if @ticket.status!="done" && @ticket.status!="auto-closed" && @ticket.status!="for verification"
+                                                -if @role==3 || @role==5|| @role==2
+                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-requirement" },id:'btn-new-requirement' do
+                                                        Add requirement  
+                                %table.table{:style=>"border-color:white;font-size:115%"} 
+                                    %table.table.table-bordered.table-sm
+                                        %tr
+                                            %th{:style=>"width:10%"}
+                                                %p
+                                            %th{:style=>"width:70%"}
                                                 %p
                                                     %center
-                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
-                                                            Set date
-                                            -elsif @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                        Details
+                                            %th{:style=>"width:10%"}
                                                 %p
                                                     %center
-                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
-                                                            Set date
-                                            -else
-                                                %p 
-                                                    %center 
-                                                        #{"--"}
-                                        %td
-                                            %p
-                                                %center
-                                                    #{"--"}
-                                        %td
-                                            %p
-                                                %center
-                                                    #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
-                                                    -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                        Action
+                                            %th{:style=>"width:10%"}
+                                                %p
+                                            -@requirements.each.with_index(1) do |x,i|
+                                                %tr
+                                                    %td
                                                         %p
-                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
-                                                                Edit
-                                        %td
-                                            %p
-                                -else
-                                    %tr
-                                        = form_tag "edit_milestone", method: 'POST' do
-                                            %td
-                                                %p
-                                                    %center
-                                                        .form-group
-                                                            =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
-                                                        .form-group
-                                                            =text_field_tag :temp,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
-                                                        %p{:id=>"d-#{@milestones.index(x)}"}
-                                                            #{x.milestone_details}&nbsp
-                                                        - case x.status
-                                                            - when 'pending'
-                                                                -if !@ticket.data["on_hold"]
-                                                                    -if @ticket.status!="done" && @ticket.status!="auto-closed"
-                                                                        -if @role==3 || @role==5
-                                                                            %p{:style=>"margin-top:-15px"}
-                                                                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
-                                                                                    Edit
-                                                                        -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
-                                                                            %p{:style=>"margin-top:-15px"}
-                                                                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
-                                                                                    Edit
-                                            %td
-                                                %p
-                                                    %center
-                                                        - case x.status
-                                                        - when 'pending'
-                                                            .badge.bg-warning
-                                                                #{x.status}
-                                                        - when 'done'
-                                                            .badge.bg-dark
-                                                                #{x.status}
-                                            %td
-                                                %p
-                                                    %center
-                                                        #{x.target_date}
-                                                %p 
-                                                %center
-                                                    =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
-                                                    =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
-                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
-                                                    =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
-                                                    - case x.status
-                                                        - when 'pending'
-                                                            -if !@ticket.data["on_hold"]
-                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
-                                                                    -if @role==3 || @role==5
-                                                                        %p{:style=>"margin-top:-15px"}
-                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
-                                                                                Edit
-                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
-                                                                        %p{:style=>"margin-top:-15px"}
-                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
-                                                                                Edit
-                                            %td
-                                                %p
-                                                    %center
-                                                        #{x.start_date}
-                                            %td
-                                                %p
-                                                    %center
-                                                        -if x.end_date==nil
-                                                            #{"--"}
-                                                        -else
-                                                            #{x.end_date}
-                                            %td
-                                                %p
-                                                    %center
-                                                        #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
-                                                        -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                            %center
+                                                                #{i}
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                =text_field_tag :temp,x[0],class:'form-control',id:"cb-item-#{i}",value:x[0],style:"display:none"
+                                                                #{x[0]}
+                                                    %td
+                                                        -if @role==6||@ticket.requested_by==current_user.id
                                                             %p
-                                                                = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
-                                                                    Edit
-                                            %td
-                                                %p
-                                                    %center
-                                                        - case x.status
-                                                            - when 'pending'
+                                                                %center
+                                                                    =text_field_tag :temp,x[0],class:'form-control',id:"req-#{i-1}",value:x[0],style:"display:none"
+                                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-requirement-details"}, onclick:"reqId(#{i-1})" do
+                                                                        Edit
+                                                    %td
+                                                        -if @ticket.status=="for testing" 
+                                                            -if@role==6||@ticket.requested_by==current_user.id
+                                                                %p
+                                                                    %center
+                                                                        =check_box_tag "a", value:x[1], id:"cb-#{i}", onclick:"checkboxVal(#{i},value)"
+                                                        -else
+                                                            %p
+                                                                %center
+                                                                    =check_box_tag "a", value:x[1], id:"cb-#{i}", onclick:"checkboxVal(#{i},value)", disabled:"disabled"
+                                    .form-group
+                                        =text_field_tag :temp,"a",class:'form-control', id:"req-length",value:@requirements.count,style:"display:none"
+                                        %div{:id=>"edit-req-stat"}
+                                            %right 
+                                                =link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-change-checklist" },id:'btn-new-milestone' do
+                                                    =button_tag type: 'submit', class: 'btn btn-primary', onclick:"submitNewCheck()" do
+                                                        Save
+                                    -if @requirements==[]
+                                        %center
+                                            %hr{:style=>"height:30px;color:white"}
+                                            %h4
+                                                No requirement found.
+                                            %hr{:style=>"height:30px;color:white"}
+                -if SystemTicket.find(@ticket.system_ticket_id).data["testing_required"]            
+                    %div.col-8
+                        .card.some{:style=>"padding:1%;"}
+                            %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:0px"}
+                                %tr
+                                    %td{:style=>"width:15%"}
+                                        %h3
+                                            Milestones
+                                    %td{:style=>"padding-top:12px"}
+                                        -if !@ticket.data["on_hold"]
+                                            -if @ticket.status!="done" && @ticket.status!="auto-closed" && @ticket.status!="for verification"
+                                                -if @role==3 || @role==5|| @role==2
+                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
+                                                        Add milestone    
+                                
+                            %table.table{:style=>"border-color:white;font-size:115%"}
+                                %table.table.table-bordered.table-sm
+                                    %tr
+                                        %th{:style=>"width:30%"}
+                                            %p
+                                                %center
+                                                    Details
+                                        %th{:style=>"width:5%"}
+                                            %p
+                                                %center
+                                                    Status
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    Target Date
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    Start Date
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    End Date
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    Assigned Dev
+                                        %th{:style=>"width:5%"}
+                                            %p
+                                                %center
+                                                    Action
+                                    - if !@empty
+                                        - @milestones.each do |x|
+                                            -if x.start_date==nil
+                                                %tr
+                                                    %td
+                                                        %p
+                                                            %center
                                                                 .form-group
-                                                                    =text_field_tag :ms_id,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
-                                                                -if !@ticket.data["on_hold"]
-                                                                    -if @ticket.status!="done" && @ticket.status!="pending" && @ticket.status!="approved" && @ticket.status!="done (auto-closed)"
-                                                                        -if @role==3 || @role==5
-                                                                            = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
-                                                                                Update
-                                                                        -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id        
-                                                                            = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
-                                                                                Update
-                    -if @empty
-                        %center
-                            %hr{:style=>"height:30px;color:white"}
-                            %h4
-                                No milestone found
-                            %hr{:style=>"height:30px;color:white"}
+                                                                    =text_field_tag :ms_id,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                                %p{:id=>"d-#{@milestones.index(x)}"}
+                                                                    #{x.milestone_details}&nbsp
+                                                                - case x.status
+                                                                    - when 'pending'
+                                                                        -if !@ticket.data["on_hold"]
+                                                                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                -if @role==3 || @role==5 
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                                                -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                - case x.status
+                                                                - when 'pending'
+                                                                    .badge.bg-warning
+                                                                        #{x.status}
+                                                                - when 'done'
+                                                                - when 'auto-closed'
+                                                                    .badge.bg-dark
+                                                                        #{x.status}
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                #{x.target_date}
+                                                        %p 
+                                                            %center
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
+                                                                - case x.status
+                                                                    - when 'pending'
+                                                                        -if !@ticket.data["on_hold"]
+                                                                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                -if @role==3 || @role==5
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                                                -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                    %td
+                                                        -if @role==3 || @role==5
+                                                            %p
+                                                                %center
+                                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
+                                                                        Set date
+                                                        -elsif @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                            %p
+                                                                %center
+                                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
+                                                                        Set date
+                                                        -else
+                                                            %p 
+                                                                %center 
+                                                                    #{"--"}
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                #{"--"}
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
+                                                                -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                                    %p
+                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
+                                                                            Edit
+                                                    %td
+                                                        %p
+                                            -else
+                                                %tr
+                                                    = form_tag "edit_milestone", method: 'POST' do
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    .form-group
+                                                                        =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                                    .form-group
+                                                                        =text_field_tag :temp,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
+                                                                    %p{:id=>"d-#{@milestones.index(x)}"}
+                                                                        #{x.milestone_details}&nbsp
+                                                                    - case x.status
+                                                                        - when 'pending'
+                                                                            -if !@ticket.data["on_hold"]
+                                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                    -if @role==3 || @role==5
+                                                                                        %p{:style=>"margin-top:-15px"}
+                                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                                Edit
+                                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                        %p{:style=>"margin-top:-15px"}
+                                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                                Edit
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    - case x.status
+                                                                    - when 'pending'
+                                                                        .badge.bg-warning
+                                                                            #{x.status}
+                                                                    - when 'done'
+                                                                        .badge.bg-dark
+                                                                            #{x.status}
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    #{x.target_date}
+                                                            %p 
+                                                            %center
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
+                                                                - case x.status
+                                                                    - when 'pending'
+                                                                        -if !@ticket.data["on_hold"]
+                                                                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                -if @role==3 || @role==5
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                                                -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    #{x.start_date}
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    -if x.end_date==nil
+                                                                        #{"--"}
+                                                                    -else
+                                                                        #{x.end_date}
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
+                                                                    -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                                        %p
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
+                                                                                Edit
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    - case x.status
+                                                                        - when 'pending'
+                                                                            .form-group
+                                                                                =text_field_tag :ms_id,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
+                                                                            -if !@ticket.data["on_hold"]
+                                                                                -if @ticket.status!="done" && @ticket.status!="pending" && @ticket.status!="approved" && @ticket.status!="done (auto-closed)"
+                                                                                    -if @role==3 || @role==5
+                                                                                        = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
+                                                                                            Update
+                                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id        
+                                                                                        = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
+                                                                                            Update
+                                -if @empty
+                                    %center
+                                        %hr{:style=>"height:30px;color:white"}
+                                        %h4
+                                            No milestone found.
+                                        %hr{:style=>"height:30px;color:white"}                  
+                -else
+                    %div
+                        .card.some{:style=>"padding:1%;"}
+                            %table.table{:style=>"border-color:white;font-size:115%;margin-bottom:0px"}
+                                %tr
+                                    %td{:style=>"width:15%"}
+                                        %h3
+                                            Milestones
+                                    %td{:style=>"padding-top:12px"}
+                                        -if !@ticket.data["on_hold"]
+                                            -if @ticket.status!="done" && @ticket.status!="auto-closed" && @ticket.status!="for verification"
+                                                -if @role==3 || @role==5|| @role==2
+                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-new-milestone" },id:'btn-new-milestone' do
+                                                        Add milestone    
+                                
+                            %table.table{:style=>"border-color:white;font-size:115%"}
+                                %table.table.table-bordered.table-sm
+                                    %tr
+                                        %th{:style=>"width:30%"}
+                                            %p
+                                                %center
+                                                    Details
+                                        %th{:style=>"width:5%"}
+                                            %p
+                                                %center
+                                                    Status
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    Target Date
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    Start Date
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    End Date
+                                        %th{:style=>"width:10%"}
+                                            %p
+                                                %center
+                                                    Assigned Dev
+                                        %th{:style=>"width:5%"}
+                                            %p
+                                                %center
+                                                    Action
+                                    - if !@empty
+                                        - @milestones.each do |x|
+                                            -if x.start_date==nil
+                                                %tr
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                .form-group
+                                                                    =text_field_tag :ms_id,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                                %p{:id=>"d-#{@milestones.index(x)}"}
+                                                                    #{x.milestone_details}&nbsp
+                                                                - case x.status
+                                                                    - when 'pending'
+                                                                        -if !@ticket.data["on_hold"]
+                                                                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                -if @role==3 || @role==5 
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                                                -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                - case x.status
+                                                                - when 'pending'
+                                                                    .badge.bg-warning
+                                                                        #{x.status}
+                                                                - when 'done'
+                                                                - when 'auto-closed'
+                                                                    .badge.bg-dark
+                                                                        #{x.status}
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                #{x.target_date}
+                                                        %p 
+                                                            %center
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
+                                                                - case x.status
+                                                                    - when 'pending'
+                                                                        -if !@ticket.data["on_hold"]
+                                                                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                -if @role==3 || @role==5
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                                                -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                    %td
+                                                        -if @role==3 || @role==5
+                                                            %p
+                                                                %center
+                                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
+                                                                        Set date
+                                                        -elsif @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                            %p
+                                                                %center
+                                                                    = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-set-start-date-milestone"},onclick:"putMSId(#{@milestones.index(x)});return false" do
+                                                                        Set date
+                                                        -else
+                                                            %p 
+                                                                %center 
+                                                                    #{"--"}
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                #{"--"}
+                                                    %td
+                                                        %p
+                                                            %center
+                                                                #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
+                                                                -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                                    %p
+                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
+                                                                            Edit
+                                                    %td
+                                                        %p
+                                            -else
+                                                %tr
+                                                    = form_tag "edit_milestone", method: 'POST' do
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    .form-group
+                                                                        =text_field_tag :temp,x.id,class:'form-control',id:"m-#{@milestones.index(x)}",style:'display:none'
+                                                                    .form-group
+                                                                        =text_field_tag :temp,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
+                                                                    %p{:id=>"d-#{@milestones.index(x)}"}
+                                                                        #{x.milestone_details}&nbsp
+                                                                    - case x.status
+                                                                        - when 'pending'
+                                                                            -if !@ticket.data["on_hold"]
+                                                                                -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                    -if @role==3 || @role==5
+                                                                                        %p{:style=>"margin-top:-15px"}
+                                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                                Edit
+                                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                        %p{:style=>"margin-top:-15px"}
+                                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-details"},onclick:"putMSId2(#{@milestones.index(x)});return false" do
+                                                                                                Edit
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    - case x.status
+                                                                    - when 'pending'
+                                                                        .badge.bg-warning
+                                                                            #{x.status}
+                                                                    - when 'done'
+                                                                        .badge.bg-dark
+                                                                            #{x.status}
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    #{x.target_date}
+                                                            %p 
+                                                            %center
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"t-#{@milestones.index(x)}",style:'display:none'
+                                                                =text_field_tag :temp,x.id,class:'form-control',id:"date-#{@milestones.index(x)}",value:"#{x.target_date}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"dev-#{@milestones.index(x)}",value:"#{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}",style:"display:none"
+                                                                =text_field_tag :temp,x.assigned_person,class:'form-control',id:"devid-#{@milestones.index(x)}",value:"#{x.assigned_person}",style:"display:none"
+                                                                - case x.status
+                                                                    - when 'pending'
+                                                                        -if !@ticket.data["on_hold"]
+                                                                            -if @ticket.status!="done" && @ticket.status!="auto-closed"
+                                                                                -if @role==3 || @role==5
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                                                -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id
+                                                                                    %p{:style=>"margin-top:-15px"}
+                                                                                        = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-target-date"},onclick:"putMSId3(#{@milestones.index(x)});return false" do
+                                                                                            Edit
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    #{x.start_date}
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    -if x.end_date==nil
+                                                                        #{"--"}
+                                                                    -else
+                                                                        #{x.end_date}
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).last_name}, #{User.find(SystemTicketsUser.find(x.assigned_person).user_id).first_name}
+                                                                    -if @role==3 || @role==5 && @ticket.status!="done" && x.status=="pending"
+                                                                        %p
+                                                                            = link_to "#", data: { "bs-toggle": "modal", "bs-target": "#modal-edit-milestone-assigned"},onclick:"putMSId4(#{@milestones.index(x)});return false" do
+                                                                                Edit
+                                                        %td
+                                                            %p
+                                                                %center
+                                                                    - case x.status
+                                                                        - when 'pending'
+                                                                            .form-group
+                                                                                =text_field_tag :ms_id,x.id,class:'form-control',id:"u-#{@milestones.index(x)}",style:'display:none'
+                                                                            -if !@ticket.data["on_hold"]
+                                                                                -if @ticket.status!="done" && @ticket.status!="pending" && @ticket.status!="approved" && @ticket.status!="done (auto-closed)"
+                                                                                    -if @role==3 || @role==5
+                                                                                        = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
+                                                                                            Update
+                                                                                    -if @role==2 && SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id).count>0 && x.assigned_person==SystemTicketsUser.where(user_id:current_user.id,system_ticket_id:@ticket.system_ticket_id)[0].id        
+                                                                                        = button_tag onclick:'updateStatus()',type: 'submit',class:'btt-linkto' do
+                                                                                            Update
+                                -if @empty
+                                    %center
+                                        %hr{:style=>"height:30px;color:white"}
+                                        %h4
+                                            No milestone found.
+                                        %hr{:style=>"height:30px;color:white"}
 .card.some{:style=>"padding:1%;"}
     %div{:style=>"height:650px;padding:0px 50px",:id=>"chat-div"}
         %div
@@ -603,6 +903,28 @@
                     .form-group
                         =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
                             Save
+
+#modal-edit-requirement-details.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Edit Details
+            .modal-body
+                %label
+                    Old Details
+                %div{id:"req"}
+                %hr{style:"height:10px;color:white"} 
+                %label
+                    New Details
+                = form_tag "edit_requirement_details", method: 'POST' do
+                    .form-group
+                        =text_area_tag :index,params[:dindex],id:'req-index',class:'form-control',required:true,style:"display:none"
+                        =text_area_tag :details,params[:details],class:'form-control',required:true
+                        =text_area_tag :id,params[:id],class:'form-control',required:true,style:"display:none"
+                        %hr{style:"height:5px;color:white"}
+                        =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
+                            Save
                 
 #modal-edit-milestone-target-date.modal.fade
     .modal-dialog
@@ -670,13 +992,143 @@
                         =button_tag type: 'submit', class: 'btn btn-primary',id:"editDetails" do
                             Move to Processing
 
+#modal-change-checklist.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-header
+                %h3.modal-title 
+                    Check Requirements
+            .modal-body
+                %hr{style:"height:15px;color:white"}
+                %div{:id=>"allCheckedNot",:style=>"display:none"}
+                    %p{:style=>"font-weight:bold"}
+                        Checked:
+                    %ul{:id=>"cbChecked"}
+                    %p{:style=>"font-weight:bold"}
+                        Unchecked:
+                    %ul{:id=>"cbUnchecked"}
+                %div{:id=>"allChecked",:style=>"display:none"}
+                    %p{:style=>"font-weight:bold"}
+                        All items checked. ✓
+                %div{:id=>"allUnchecked",:style=>"display:none"}
+                    %p{:style=>"font-weight:bold"}
+                        All items unchecked. ✗
+                %hr{style:"height:15px;color:white"}
+                = form_tag "checkbox", method: 'POST' do
+                    .form-group
+                        =text_area_tag :id,params[:id],class:'form-control',required:true,style:"display:none"
+                        =text_area_tag :newcheck,params[:newcheck],class:'form-control',id:'newCheck',style:"display:none"
+                        =button_tag type: 'submit', class: 'btn btn-primary',onclick:"submitArray()",id:"sub-btn" do
+                            Save
+
 :css
     .btt-linkto{background:none!important;border:none;padding:0!important;color:#0D6EFD;text-decoration:underline;cursor:pointer;}
     .btt-linkto:hover{color:#0A58CA;}
 
 :javascript
-
     var idAll=''
+    var cbArray=[]
+    var new_cbArray=[]
+
+    onload=checkboxes(document.getElementById("req-length").value);
+
+    function checkboxes(n)
+    {
+        console.log("pumasok")
+        console.log(n)
+        var i=0
+
+        while(n>i)
+        {
+            console.log(document.getElementById("cb-"+(i+1)).value)
+
+            if(document.getElementById("cb-"+(i+1)).value=="true")
+                document.getElementById("cb-"+(i+1)).checked=true
+            else 
+                document.getElementById("cb-"+(i+1)).checked=false
+
+            cbArray.push(String(document.getElementById("cb-"+(i+1)).checked))
+            new_cbArray.push(String(document.getElementById("cb-"+(i+1)).checked))
+            i++
+        }
+
+        document.getElementById("edit-req-stat").style.display="none"
+    }
+
+    function checkboxUpdate(n,v)
+    {
+        console.log
+        new_cbArray[n-1]=v
+
+        if(JSON.stringify(new_cbArray)==JSON.stringify(cbArray))
+        {
+            document.getElementById("edit-req-stat").style.display="none"
+        }
+        else
+        {
+            document.getElementById("edit-req-stat").style.display="block"
+        }
+    }
+
+    function checkboxVal(n,b)
+    {
+        console.log(n);
+        console.log(b==String(document.getElementById("cb-"+n).checked))
+
+        checkboxUpdate(n,String(document.getElementById("cb-"+n).checked))
+    } 
+
+    function submitNewCheck()
+    {
+
+        var checked=document.getElementById('cbChecked')
+        var unchecked=document.getElementById('cbUnchecked')
+
+        checked.innerHTML=""
+        unchecked.innerHTML=""
+
+
+        let checked2=0
+
+        document.getElementById("newCheck").value=new_cbArray
+
+        for(i=0;new_cbArray.length>i;i++)
+        {
+            let li = document.createElement('li')
+                li.innerText=document.getElementById("cb-item-"+(i+1)).value
+            
+            if(new_cbArray[i]=="true")
+            {
+                checked.appendChild(li)
+                checked2++
+            }
+            else
+            {
+                unchecked.appendChild(li)
+            }
+        }
+
+        console.log(unchecked.length==0)
+
+        if(checked2==new_cbArray.length)
+        {
+            document.getElementById("allChecked").style.display="block"
+            document.getElementById("allCheckedNot").style.display="none"
+            document.getElementById("allUnchecked").style.display="none"
+        }
+        if(checked2!=new_cbArray.length&&checked2>0)
+        {
+            document.getElementById("allCheckedNot").style.display="block"
+            document.getElementById("allChecked").style.display="none"
+            document.getElementById("allUnchecked").style.display="none"
+        }
+        if(checked2==0)
+        {
+            document.getElementById("allCheckedNot").style.display="none"
+            document.getElementById("allChecked").style.display="none"
+            document.getElementById("allUnchecked").style.display="block"
+        }
+    }
 
     function putMSId(n)
     {
@@ -713,6 +1165,13 @@
         idAll=n
     }    
 
+    function reqId(n)
+    {
+        document.getElementById("req").innerHTML = document.getElementById('req-'+n).value
+        document.getElementById("req-index").value = n
+        idAll=n
+    }  
+
     function selectAssigned()
     {
         if(document.getElementById("devid-"+idAll).value==document.getElementById("new-assigned-dev").value)
@@ -730,6 +1189,7 @@
 
 
 = render partial: "system_tickets/modals/new_milestone"
+= render partial: "system_tickets/modals/new_requirement"
 = render partial: "system_tickets/modals/main_dev"
 = render partial: "system_tickets/modals/members"
 = render partial: "system_tickets/modals/set_start_date"
