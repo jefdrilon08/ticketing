@@ -232,11 +232,22 @@ class ItemDistributionsController < ApplicationController
     pull_out_by_user = User.find_by(id: pull_out_by_id)
     pull_out_by_name = pull_out_by_user ? "#{pull_out_by_user.first_name} #{pull_out_by_user.last_name}".strip : "N/A"
 
+    previous_area = Area.find_by(id: @item_distribution.area_id)&.name || "N/A"
+    previous_cluster = Cluster.find_by(id: @item_distribution.cluster_id)&.name || "N/A"
+    previous_branch = Branch.find_by(id: @item_distribution.branch_id)&.name || "N/A"
+    previous_mr_number = @item_distribution.respond_to?(:mr_number) ? @item_distribution.mr_number : nil
+    previous_inventory_number = @item_distribution.respond_to?(:inventory_number) ? @item_distribution.inventory_number : nil
+
     pull_out_record = {
       pull_out_date: Time.current.strftime("%Y-%m-%d"),
       pull_out_reason: reason,
       pull_out_by_id: pull_out_by_id,
-      pull_out_by_name: pull_out_by_name
+      pull_out_by_name: pull_out_by_name,
+      previous_mr_number: previous_mr_number,
+      previous_inventory_number: previous_inventory_number,
+      previous_area: previous_area,
+      previous_cluster: previous_cluster,
+      previous_branch: previous_branch
     }
 
     head_office_area_id = "06a78557-bbc4-491a-bef9-b6c2e6938671"
@@ -260,6 +271,18 @@ class ItemDistributionsController < ApplicationController
         item_data = item.data || {}
         item_data["pull_out_details"] ||= []
         item_data["pull_out_details"] << pull_out_record
+
+        if @item_distribution.data.present?
+          if @item_distribution.data["transfer_details"].present?
+            item_data["transfer_details"] ||= []
+            item_data["transfer_details"] |= @item_distribution.data["transfer_details"]
+          end
+
+          if @item_distribution.data.key?("is_sticker_attached")
+            item_data["is_sticker_attached"] = @item_distribution.data["is_sticker_attached"]
+          end
+        end
+
         item.update(status: "pull_out", data: item_data)
       end
     end

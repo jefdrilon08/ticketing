@@ -1,0 +1,120 @@
+#modal-return-item.modal.fade{ tabindex: "-1", "aria-hidden" => "true", "data-bs-keyboard" => "false" }
+  .modal-dialog.modal-md
+    .modal-content.bg-white.p-3
+      .modal-header
+        %h5.modal-title.text-primary Return Item
+        %button.btn-close{ "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      %hr.mt-0.mb-3
+
+      .modal-body
+        = form_with url: return_administration_item_path(@item), method: :post, local: true, id: "returnItemForm" do |f|
+          %div{ style: "display:none", id: "return-dropdown-data", data: { clusters: (@clusters || []).map { |c| { id: c.id, name: c.name.titleize, area_id: c.area_id } }.to_json, branches: (@branches || []).map { |b| { id: b.id, name: b.name.titleize, cluster_id: b.cluster_id } }.to_json } }
+          .container-fluid
+            .row
+              .col-md-12
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :item_name, "Item Name:"
+                  .col-sm-8
+                    = f.text_field :item_name, value: @item&.name || "N/A", class: "form-control", disabled: true
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :mr_number, "MR Number:"
+                  .col-sm-8
+                    = f.text_field :mr_number, value: @previous_mr_number, class: "form-control", readonly: true
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :inventory_number, "Inventory Number:"
+                  .col-sm-8
+                    = f.text_field :inventory_number, value: @previous_inventory_number, class: "form-control", readonly: true
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :distribute_name, "Return/Distribute to: (Name):"
+                  .col-sm-8
+                    = f.text_field :distribute_name, class: "form-control", required: true
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :receive_by, "Received By:"
+                  .col-sm-8
+                    = f.select :receive_by, options_for_select((@users || []).map { |u| [("#{u.first_name} #{u.last_name}".strip.presence || u.username || u.email).to_s.titleize, u.id] }), { include_blank: "--SELECT--" }, class: "form-control select2", required: true
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :area_id, "Area:"
+                  .col-sm-8
+                    = f.select :area_id, options_for_select((@areas || []).map { |a| [a.name.titleize, a.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "return-area-select"
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :cluster_id, "Cluster:"
+                  .col-sm-8
+                    = f.select :cluster_id, options_for_select((@clusters || []).map { |c| [c.name.titleize, c.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "return-cluster-select"
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :branch_id, "Branch:"
+                  .col-sm-8
+                    = f.select :branch_id, options_for_select((@branches || []).map { |b| [b.name.titleize, b.id] }), { include_blank: "--SELECT--" }, class: "form-control", required: true, id: "return-branch-select"
+
+                .row.mb-3
+                  .col-sm-4
+                    = f.label :return_notes, "Note:"
+                  .col-sm-8
+                    = f.text_area :return_notes, class: "form-control", rows: 3
+
+          .modal-footer
+            %button.btn.btn-secondary{"data-bs-dismiss" => "modal", type: "button"} Close
+            = f.submit "Return", class: "btn btn-primary"
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdownData = document.getElementById('return-dropdown-data');
+    if (!dropdownData) return;
+    
+    const clusters = JSON.parse(dropdownData.dataset.clusters || '[]');
+    const branches = JSON.parse(dropdownData.dataset.branches || '[]');
+    
+    const areaSelect = document.getElementById('return-area-select');
+    const clusterSelect = document.getElementById('return-cluster-select');
+    const branchSelect = document.getElementById('return-branch-select');
+    
+    if (!areaSelect || !clusterSelect || !branchSelect) return;
+    
+    function updateClusters() {
+      const selectedAreaId = areaSelect.value;
+      const filteredClusters = selectedAreaId ? clusters.filter(c => c.area_id === selectedAreaId) : [];
+      
+      clusterSelect.innerHTML = '<option value="">--SELECT--</option>';
+      filteredClusters.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.textContent = c.name;
+        clusterSelect.appendChild(option);
+      });
+      
+      clusterSelect.value = '';
+      updateBranches();
+    }
+    
+    function updateBranches() {
+      const selectedClusterId = clusterSelect.value;
+      const filteredBranches = selectedClusterId ? branches.filter(b => b.cluster_id === selectedClusterId) : [];
+      
+      branchSelect.innerHTML = '<option value="">--SELECT--</option>';
+      filteredBranches.forEach(b => {
+        const option = document.createElement('option');
+        option.value = b.id;
+        option.textContent = b.name;
+        branchSelect.appendChild(option);
+      });
+      
+      branchSelect.value = '';
+    }
+    
+    areaSelect.addEventListener('change', updateClusters);
+    clusterSelect.addEventListener('change', updateBranches);
+  });

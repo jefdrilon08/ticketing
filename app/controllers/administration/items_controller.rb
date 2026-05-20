@@ -50,6 +50,15 @@ module Administration
     def show
       @item = Item.includes(:items_category, :sub_category).find(params[:id])
       Rails.logger.info "Item Details: #{@item.attributes.inspect}"
+      @areas = Area.order(:name)
+      @clusters = Cluster.order(:name)
+      @branches = Branch.where(active: true).order(:name)
+      @users = User.order(:first_name, :last_name)
+
+      pull_out_details = @item.data&.[]('pull_out_details') || []
+      last_pull_out = pull_out_details.last || {}
+      @previous_mr_number = last_pull_out['previous_mr_number']
+      @previous_inventory_number = last_pull_out['previous_inventory_number']
 
       delete_action = {
         id: "btn-delete",
@@ -80,6 +89,13 @@ module Administration
             class: "fa fa-tag",
             text: "Purchase",
             data: { "bs-toggle" => "modal", "bs-target" => "#modal-purchase-item" }
+          },
+          {
+            id: "btn-return",
+            link: "#modal-return-item",
+            class: "fa fa-undo",
+            text: "Return",
+            data: { "bs-toggle" => "modal", "bs-target" => "#modal-return-item" }
           }
         ]
       elsif @item.status.to_s.downcase == "purchased"
@@ -232,6 +248,56 @@ module Administration
     @item.update(status: "purchased", data: @item.data)
 
     redirect_to administration_items_path, notice: "Item purchased successfully!"
+  end
+
+  def return
+    @item = Item.find(params[:id])
+    permitted = params.permit(
+      :mr_number,
+      :inventory_number,
+      :distribute_name,
+      :area_id,
+      :cluster_id,
+      :branch_id,
+      :receive_by,
+      :return_notes
+    )
+
+    if permitted[:mr_number].blank? || permitted[:inventory_number].blank? || permitted[:area_id].blank? || permitted[:cluster_id].blank? || permitted[:branch_id].blank? || permitted[:receive_by].blank?
+      redirect_to administration_item_path(@item), alert: "Please fill in all required return fields."
+      return
+    end
+
+    item_data = @item.data.to_h
+    return_data = {
+      return_notes: permitted[:return_notes]
+    }
+    return_data["child_details"] = item_data["child_details"] if item_data["child_details"].present?
+    return_data["transfer_details"] = item_data["transfer_details"] if item_data["transfer_details"].present?
+    return_data["pull_out_details"] = item_data["pull_out_details"] if item_data["pull_out_details"].present?
+    return_data["is_sticker_attached"] = item_data["is_sticker_attached"] unless item_data["is_sticker_attached"].nil?
+
+    item_distribution = ItemDistribution.new(
+      item_id: @item.id,
+      area_id: permitted[:area_id],
+      cluster_id: permitted[:cluster_id],
+      branch_id: permitted[:branch_id],
+      receive_by: permitted[:receive_by],
+      distributed_by: current_user.id,
+      mr_number: permitted[:mr_number],
+      inventory_number: permitted[:inventory_number],
+      distribute_name: permitted[:distribute_name],
+      status: "approved",
+      distributed_at: Time.current,
+      data: return_data
+    )
+
+    if item_distribution.save
+      @item.update(status: "active") if @item
+      redirect_to administration_items_path, notice: "Item returned and added to item distributions."
+    else
+      redirect_to administration_item_path(@item), alert: item_distribution.errors.full_messages.join(", ")
+    end
   end
 
     private
