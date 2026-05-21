@@ -524,7 +524,7 @@ class SystemTicketsController < ApplicationController
         @all_done=0
         @not_a_mem=[]
         @mem_list_dev=[]
-        @all_dev=[]
+        @all_dev=[] 
         @milestones=[]
         @chat=SystemTicketDesc.find(params[:id])[:data]["chat"]
         @ticket   = SystemTicketDesc.find(params[:id])
