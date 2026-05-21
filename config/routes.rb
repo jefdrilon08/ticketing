@@ -717,6 +717,7 @@ Rails.application.routes.draw do
       member do
         get :distribute
         post :purchase
+        post :return
         post :create_distribute
       end
     end
