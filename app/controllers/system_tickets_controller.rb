@@ -545,6 +545,15 @@ class SystemTicketsController < ApplicationController
         # if @ticket[:data]["attached_file"]!=nil then @file=@ticket[:data]["attached_file"].attachment_url end
         #     puts "file_try"
         #     render json: @file
+
+        if !@ticket.data.include?("requirements")
+            temp=@ticket.data
+            temp["requirements"]=[]
+            @ticket.update!(data:temp)
+        end
+        
+            @requirements=@ticket.data["requirements"]
+
         set_md= @ticket.data["team_members"]
         @mem_list= []
         @maindev= ""
@@ -756,18 +765,6 @@ class SystemTicketsController < ApplicationController
                         text: "For Verification"
                 } end
         end
-
-        if !@ticket.data.include?("requirements")
-            puts "wala pa req"
-            temp=@ticket.data
-            temp["requirements"]=[]
-            @ticket.update!(data:temp)
-        else
-            @requirements=@ticket.data["requirements"]
-        end
-
-
-  
 
     end
 
