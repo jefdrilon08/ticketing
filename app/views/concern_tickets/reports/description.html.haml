@@ -1,12 +1,23 @@
-.d-flex.justify-content-between.align-items-center.mb-3.gap-3
-  %h2.mb-0 TICKET DESCRIPTION LIST
-  = button_tag 'New',
-               type: 'button',
-               class: 'btn btn-primary me-5',
-               data: { bs_toggle: 'modal', bs_target: '#reportsModal' }
--# .ml-3
+.container-fluid.px-3
+  .row.mb-4
+    .col-12.d-flex.align-items-center.gap-3
+      %h3.mb-0{ style: 'font-weight: bold' } TICKET DESCRIPTION LIST
+      = button_tag 'New',
+                   type: 'button',
+                   class: 'btn btn-sm btn-primary',
+                   data: { bs_toggle: 'modal', bs_target: '#reportsModal' }
+  .breadcrumbs.mb-3
+    %nav{:aria => {:label => 'breadcrumb'}}
+      %ol.breadcrumb.mb-0
+        %li.breadcrumb-item
+          = link_to 'Home', root_path
+        %li.breadcrumb-item
+          = link_to 'Concern Ticket Reports', reports_path
+        %li.breadcrumb-item.active{:aria => {'current' => 'page'}}
+          Ticket Description
+
 = render partial: 'concern_tickets/reports/reports_filter'
--# .modal.fade#reportsModal{ tabindex: "-1", role: "dialog", aria: { labelledby: "reportsModalLabel", hidden: "true" } }
+.modal.fade#reportsModal{ tabindex: "-1", role: "dialog", aria: { labelledby: "reportsModalLabel", hidden: "true" } }
     
   .modal-dialog.modal-dialog-centered{ role: "document" }
     .modal-content
@@ -14,7 +25,7 @@
         %h5.modal-title#reportsModalLabel Select Concern Ticket
         %button.btn-close{ type: "button", data: { bs_dismiss: "modal" }, aria: { label: "Close" } }
 
-      = form_with model: DataStore.new, url: create_data_store_reports_path, method: :post, local: true do |f|
+      = form_with model: DataStore.new, url: create_description_reports_path, method: :post, local: true do |f|
         .modal-body.p-3
           .mb-3
             = f.label :concern_ticket_id, "Choose a Concern Ticket", class: "form-label"
@@ -61,9 +72,9 @@
                 %td= record.created_at.present? ? record.created_at.strftime("%b %d, %Y %I:%M %p") : "N/A"
                 %td
                   - if ticket
-                    = link_to view_report_by_data_store_path(record.id),
+                    = link_to view_description_by_data_store_path(record.id),
                               class: 'btn btn-sm btn-primary',
-                              data: { 'bs-toggle': 'tooltip' }, title: 'View Report' do
+                              data: { 'bs-toggle': 'tooltip' }, title: 'View Description' do
                       %i.bi.bi-eye
                   - else
                     = "N/A"

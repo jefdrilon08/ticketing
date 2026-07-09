@@ -5,13 +5,13 @@ class ReportsController < ApplicationController
     render 'concern_tickets/reports/index'
   end
 
-  def reports
-  load_data_store_records
-  @concern_tickets = ConcernTicket.order(:name)
-  @concern_fors = load_concern_fors(@records)
+  # def reports #show
+  # load_data_store_records
+  # @concern_tickets = ConcernTicket.order(:name)
+  # @concern_fors = load_concern_fors(@records)
 
-  render 'concern_tickets/reports/reports'
-  end
+  # render 'concern_tickets/reports/reports'
+  # end
 
   STATUS_MAP = {
     "open" => "Open",
@@ -22,10 +22,81 @@ class ReportsController < ApplicationController
     "closed" => "Closed"
   }
 
-  def concern_tickets
+  def filter
+    permitted = data_store_params
+    start_date = parse_date(permitted[:start_date])
+    end_date = parse_date(permitted[:end_date])
+    start_date, end_date = end_date, start_date if start_date && end_date && start_date > end_date
+
+    details = ConcernTicketDetail.where(concern_ticket_id: permitted[:concern_ticket_id])
+    if start_date && end_date
+      details = details.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    elsif start_date
+      details = details.where("created_at >= ?", start_date.beginning_of_day)
+    elsif end_date
+      details = details.where("created_at <= ?", end_date.end_of_day)
+    end
+
+    concern_ticket_ids = details.pluck(:concern_ticket_id).uniq
+    assigned_user_ids = details.pluck(:assigned_user_id).compact.uniq
+
+    developer_ctus = ConcernTicketUser.where(
+      concern_ticket_id: concern_ticket_ids,
+      user_id: assigned_user_ids
+    ).where("LOWER(TRIM(task)) LIKE ?", "%developer%")
+
+    developer_map = developer_ctus.each_with_object({}) do |ctu, map|
+      map[[ctu.concern_ticket_id, ctu.user_id]] = true
+    end
+
+    serialized_details = details.map do |detail|
+      assigned_is_dev = developer_map[[detail.concern_ticket_id, detail.assigned_user_id]] || false
+
+      {
+        id: detail.id,
+        ticket_number: detail.ticket_number,
+        description: detail.description,
+        status: detail.status,
+        branch_id: detail.branch_id,
+        requested_user_id: detail.requested_user_id,
+        concern_type_id: detail.concern_type_id,
+        assigned_user_id: detail.assigned_user_id,
+        assigned_user_is_developer: assigned_is_dev,
+        created_at: detail.created_at,
+        updated_at: detail.updated_at,
+        name_for_id: detail.name_for_id.to_s,
+        concern_ticket_id: detail.concern_ticket_id.to_s,
+        data: detail.data
+      }
+    end
+
+    @data_store = DataStore.find_or_initialize_by(
+      data: {
+        concern_ticket_id: permitted[:concern_ticket_id].to_s,
+        start_date: permitted[:start_date],
+        end_date: permitted[:end_date],
+        concern_ticket_details: serialized_details
+      },
+      status: "active",
+      start_date: permitted[:start_date],
+      end_date: permitted[:end_date]
+    )
+
+    @data_store.meta = {
+      concern_ticket_id: permitted[:concern_ticket_id].to_s,
+      data_store_type: "SUMMARY_REPORT"
+    }
+
+    @data_store.save if @data_store.new_record?
+
+    redirect_to view_report_by_data_store_path(@data_store.id)
+  end
+
+  def show_summary_report #show summary report
     @concern_tickets = ConcernTicket.order(:name)
 
     @records = DataStore
+      .where("meta ->> 'data_store_type' = ?", "SUMMARY_REPORT")
       .where.not("data ->> 'concern_ticket_id' IS NULL")
       .where.not("data ->> 'concern_ticket_id' = ''")
 
@@ -53,103 +124,7 @@ class ReportsController < ApplicationController
     render 'concern_tickets/reports/reports'
   end
 
-  def description
-    @concern_tickets = ConcernTicket.order(:name)
-    @records = DataStore
-      .where.not("data ->> 'concern_ticket_id' IS NULL")
-      .where.not("data ->> 'concern_ticket_id' = ''")
-      .order(created_at: :desc)
-    concern_ticket_ids = @records.map { |r| r.data["concern_ticket_id"] }.compact.uniq
-    @concern_tickets_map = ConcernTicket.where(id: concern_ticket_ids).index_by(&:id) 
-
-    render 'concern_tickets/reports/description'
-  end
-
-  def view_report_by_data_store
-  @data_store = DataStore.find(params[:id])
-  
-  # Extract concern_ticket_id from the stored data
-  ticket_id = @data_store.data["concern_ticket_id"]
-
-  # Find the ConcernTicket record
-  @concern_ticket = ConcernTicket.find_by(id: ticket_id)
-
-  build_report_data(@data_store)
-  @concern_fors = load_concern_fors([@data_store])
-
-  render 'concern_tickets/reports/view_report'
-  end
-
-
-  def create_data_store
-  permitted = data_store_params
-  start_date = parse_date(permitted[:start_date])
-  end_date = parse_date(permitted[:end_date])
-  start_date, end_date = end_date, start_date if start_date && end_date && start_date > end_date
-
-  details = ConcernTicketDetail.where(concern_ticket_id: permitted[:concern_ticket_id])
-  if start_date && end_date
-    details = details.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
-  elsif start_date
-    details = details.where("created_at >= ?", start_date.beginning_of_day)
-  elsif end_date
-    details = details.where("created_at <= ?", end_date.end_of_day)
-  end
-
-  concern_ticket_ids = details.pluck(:concern_ticket_id).uniq
-  assigned_user_ids = details.pluck(:assigned_user_id).compact.uniq
-
-  developer_ctus = ConcernTicketUser.where(
-    concern_ticket_id: concern_ticket_ids,
-    user_id: assigned_user_ids
-  ).where("LOWER(TRIM(task)) LIKE ?", "%developer%")
-
-  developer_map = developer_ctus.each_with_object({}) do |ctu, map|
-    map[[ctu.concern_ticket_id, ctu.user_id]] = true
-  end
-
-  serialized_details = details.map do |detail|
-    assigned_is_dev = developer_map[[detail.concern_ticket_id, detail.assigned_user_id]] || false
-
-    {
-      id: detail.id,
-      ticket_number: detail.ticket_number,
-      description: detail.description,
-      status: detail.status,
-      branch_id: detail.branch_id,
-      requested_user_id: detail.requested_user_id,
-      concern_type_id: detail.concern_type_id,
-      assigned_user_id: detail.assigned_user_id,
-      assigned_user_is_developer: assigned_is_dev,
-      created_at: detail.created_at,
-      updated_at: detail.updated_at,
-      name_for_id: detail.name_for_id.to_s,
-      concern_ticket_id: detail.concern_ticket_id.to_s,
-      data: detail.data
-    }
-  end
-
-  @data_store = DataStore.new(
-    data: {
-      concern_ticket_id: permitted[:concern_ticket_id].to_s,
-      start_date: permitted[:start_date],
-      end_date: permitted[:end_date],
-      concern_ticket_details: serialized_details
-    },
-    status: "active",
-    start_date: permitted[:start_date],
-    end_date: permitted[:end_date]
-  )
-
-  if @data_store.save
-    redirect_to view_report_by_data_store_path(@data_store.id), notice: "DataStore created successfully."
-  else
-    flash[:alert] = "Failed to create DataStore."
-    redirect_to reports_concern_tickets_path
-  end
-  end
-
-  def filter
+  def create_data_store #create/new summary report
     permitted = data_store_params
     start_date = parse_date(permitted[:start_date])
     end_date = parse_date(permitted[:end_date])
@@ -174,46 +149,168 @@ class ReportsController < ApplicationController
 
     developer_map = developer_ctus.each_with_object({}) do |ctu, map|
       map[[ctu.concern_ticket_id, ctu.user_id]] = true
-  end
+    end
 
-  serialized_details = details.map do |detail|
-    assigned_is_dev = developer_map[[detail.concern_ticket_id, detail.assigned_user_id]] || false
+    serialized_details = details.map do |detail|
+      assigned_is_dev = developer_map[[detail.concern_ticket_id, detail.assigned_user_id]] || false
 
-    {
-      id: detail.id,
-      ticket_number: detail.ticket_number,
-      description: detail.description,
-      status: detail.status,
-      branch_id: detail.branch_id,
-      requested_user_id: detail.requested_user_id,
-      concern_type_id: detail.concern_type_id,
-      assigned_user_id: detail.assigned_user_id,
-      assigned_user_is_developer: assigned_is_dev,
-      created_at: detail.created_at,
-      updated_at: detail.updated_at,
-      name_for_id: detail.name_for_id.to_s,
-      concern_ticket_id: detail.concern_ticket_id.to_s,
-      data: detail.data
-    }
-  end
+      {
+        id: detail.id,
+        ticket_number: detail.ticket_number,
+        description: detail.description,
+        status: detail.status,
+        branch_id: detail.branch_id,
+        requested_user_id: detail.requested_user_id,
+        concern_type_id: detail.concern_type_id,
+        assigned_user_id: detail.assigned_user_id,
+        assigned_user_is_developer: assigned_is_dev,
+        created_at: detail.created_at,
+        updated_at: detail.updated_at,
+        name_for_id: detail.name_for_id.to_s,
+        concern_ticket_id: detail.concern_ticket_id.to_s,
+        data: detail.data
+      }
+    end
 
-  @data_store = DataStore.find_or_initialize_by(
-    data: {
+    data_store_meta = {
       concern_ticket_id: permitted[:concern_ticket_id].to_s,
-      start_date: permitted[:start_date],
-      end_date: permitted[:end_date],
-      concern_ticket_details: serialized_details
-    },
-    status: "active",
-    start_date: permitted[:start_date],
-    end_date: permitted[:end_date]
-  )
+      data_store_type: "SUMMARY_REPORT"
+    }
 
-  if @data_store.new_record?
-    @data_store.save
+    @data_store = DataStore.new(
+      data: {
+        concern_ticket_id: permitted[:concern_ticket_id].to_s,
+        start_date: permitted[:start_date],
+        end_date: permitted[:end_date],
+        concern_ticket_details: serialized_details
+      },
+      meta: data_store_meta,
+      status: "active",
+      start_date: permitted[:start_date],
+      end_date: permitted[:end_date]
+    )
+
+    if @data_store.save
+      redirect_to view_report_by_data_store_path(@data_store.id), notice: "DataStore created successfully."
+    else
+      flash[:alert] = "Failed to create DataStore."
+      redirect_to reports_concern_tickets_path
+    end
   end
 
-    redirect_to view_report_by_data_store_path(@data_store.id)
+
+  def view_report_by_data_store #view summary report
+    @data_store = DataStore.find(params[:id])
+    
+    # Extract concern_ticket_id from the stored data
+    ticket_id = @data_store.data["concern_ticket_id"]
+
+    # Find the ConcernTicket record
+    @concern_ticket = ConcernTicket.find_by(id: ticket_id)
+
+    build_report_data(@data_store)
+    @concern_fors = load_concern_fors([@data_store])
+
+    render 'concern_tickets/reports/view_report'
+  end
+
+
+  def view_description #show description report
+    @concern_tickets = ConcernTicket.order(:name)
+    @records = DataStore
+      .where("meta ->> 'data_store_type' = ?", "DESCRIPTION_REPORT")
+      .where.not("data ->> 'concern_ticket_id' IS NULL")
+      .where.not("data ->> 'concern_ticket_id' = ''")
+      .order(created_at: :desc)
+    concern_ticket_ids = @records.map { |r| r.data["concern_ticket_id"] }.compact.uniq
+    @concern_tickets_map = ConcernTicket.where(id: concern_ticket_ids).index_by(&:id) 
+
+    render 'concern_tickets/reports/description' #file path
+  end
+
+
+  def create_description # create/new description report
+    permitted = data_store_params
+    start_date = parse_date(permitted[:start_date])
+    end_date = parse_date(permitted[:end_date])
+    start_date, end_date = end_date, start_date if start_date && end_date && start_date > end_date
+
+    details = ConcernTicketDetail.where(concern_ticket_id: permitted[:concern_ticket_id])
+    if start_date && end_date
+      details = details.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    elsif start_date
+      details = details.where("created_at >= ?", start_date.beginning_of_day)
+    elsif end_date
+      details = details.where("created_at <= ?", end_date.end_of_day)
+    end
+
+    concern_ticket_ids = details.pluck(:concern_ticket_id).uniq
+    assigned_user_ids = details.pluck(:assigned_user_id).compact.uniq
+
+    developer_ctus = ConcernTicketUser.where(
+      concern_ticket_id: concern_ticket_ids,
+      user_id: assigned_user_ids
+    ).where("LOWER(TRIM(task)) LIKE ?", "%developer%")
+
+    developer_map = developer_ctus.each_with_object({}) do |ctu, map|
+      map[[ctu.concern_ticket_id, ctu.user_id]] = true
+    end
+
+    serialized_details = details.map do |detail|
+      assigned_is_dev = developer_map[[detail.concern_ticket_id, detail.assigned_user_id]] || false
+
+      {
+        id: detail.id,
+        ticket_number: detail.ticket_number,
+        description: detail.description,
+        status: detail.status,
+        branch_id: detail.branch_id,
+        requested_user_id: detail.requested_user_id,
+        concern_type_id: detail.concern_type_id,
+        assigned_user_id: detail.assigned_user_id,
+        assigned_user_is_developer: assigned_is_dev,
+        created_at: detail.created_at,
+        updated_at: detail.updated_at,
+        name_for_id: detail.name_for_id.to_s,
+        concern_ticket_id: detail.concern_ticket_id.to_s,
+        data: detail.data
+      }
+    end
+
+    data_store_meta = {
+      concern_ticket_id: permitted[:concern_ticket_id].to_s,
+      data_store_type: "DESCRIPTION_REPORT"
+    }
+
+    @data_store = DataStore.new(
+      data: {
+        concern_ticket_id: permitted[:concern_ticket_id].to_s,
+        start_date: permitted[:start_date],
+        end_date: permitted[:end_date],
+        concern_ticket_details: serialized_details
+      },
+      meta: data_store_meta,
+      status: "active",
+      start_date: permitted[:start_date],
+      end_date: permitted[:end_date]
+    )
+
+    if @data_store.save
+      redirect_to view_report_by_data_store_path(@data_store.id), notice: "Description DataStore created successfully."
+    else
+      flash[:alert] = "Failed to create Description DataStore."
+      redirect_to view_description_concern_tickets_path
+    end
+  end
+
+  def view_description_by_data_store
+    @data_store = DataStore.find(params[:id])
+    ticket_id = @data_store.data["concern_ticket_id"]
+    @concern_ticket = ConcernTicket.find_by(id: ticket_id
+    )
+    build_report_data(@data_store)
+    @concern_fors = load_concern_fors([@data_store])
+    render 'concern_tickets/reports/view_description'
   end
 
 
