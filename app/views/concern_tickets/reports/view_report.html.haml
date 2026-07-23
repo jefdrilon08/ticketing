@@ -1,9 +1,10 @@
 //VIEW DETAILS OF SUMMARY REPORTS
 .border.rounded.p-3.mb-4
-  .d-flex.justify-content-between.align-items-center
+  .d-flex.justify-content-between.align-items-center.mb-3
     %h2.mb-0
       Ticket Details Report:
       %span.bg-warning.px-2.rounded= @concern_ticket&.name || "Unknown"
+
   
   - if @data_store.present?
     .mt-2.text-muted

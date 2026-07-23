@@ -39,11 +39,13 @@ Rails.application.routes.draw do
   get 'reports/summary', to: 'reports#show_summary_report', as: :reports_concern_tickets
   post 'reports/create_data_store', to: 'reports#create_data_store', as: :create_data_store_reports
   get 'reports/summary/:id', to: 'reports#view_report_by_data_store', as: 'view_report_by_data_store'
+  delete 'reports/summary/:id', to: 'reports#destroy_summary_report', as: :destroy_summary_report
 
   # Description Report
   get 'reports/description', to: 'reports#view_description', as: :view_description_concern_tickets
   post 'reports/create_description', to: 'reports#create_description', as: :create_description_reports
   get 'reports/description/:id', to: 'reports#view_description_by_data_store', as: 'view_description_by_data_store'
+  delete 'reports/description/:id', to: 'reports#destroy_description_report', as: :destroy_description_report
   #url/file_path, as: method_path/link_to
   
   # online applications
