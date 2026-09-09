@@ -201,6 +201,16 @@ class ReportsController < ApplicationController
 
   def view_report_by_data_store #view summary report
     @data_store = DataStore.find(params[:id])
+    @subheader_side_actions = [
+      {
+        id: "btn-delete-report",
+        link: destroy_summary_report_path(@data_store.id),
+        class: "fa fa-trash",
+        text: "Delete",
+        method: :delete,
+        data: { confirm: "Delete this summary report?" }
+      }
+    ]
     
     # Extract concern_ticket_id from the stored data
     ticket_id = @data_store.data["concern_ticket_id"]
@@ -296,7 +306,7 @@ class ReportsController < ApplicationController
     )
 
     if @data_store.save
-      redirect_to view_report_by_data_store_path(@data_store.id), notice: "Description DataStore created successfully."
+      redirect_to view_description_concern_tickets_path(@data_store.id), notice: "Description DataStore created successfully."
     else
       flash[:alert] = "Failed to create Description DataStore."
       redirect_to view_description_concern_tickets_path
@@ -305,6 +315,16 @@ class ReportsController < ApplicationController
 
   def view_description_by_data_store
     @data_store = DataStore.find(params[:id])
+    @subheader_side_actions = [
+      {
+        id: "btn-delete-description-report",
+        link: destroy_description_report_path(@data_store.id),
+        class: "fa fa-trash",
+        text: "Delete",
+        method: :delete,
+        data: { confirm: "Delete this description report?" }
+      }
+    ]
     ticket_id = @data_store.data["concern_ticket_id"]
     @concern_ticket = ConcernTicket.find_by(id: ticket_id
     )
@@ -313,6 +333,23 @@ class ReportsController < ApplicationController
     render 'concern_tickets/reports/view_description'
   end
 
+  def destroy_summary_report
+    data_store = DataStore.find_by(id: params[:id])
+    if data_store&.destroy
+      redirect_to reports_concern_tickets_path, notice: "Summary report deleted successfully."
+    else
+      redirect_to reports_concern_tickets_path, alert: "Could not delete summary report."
+    end
+  end
+
+  def destroy_description_report
+    data_store = DataStore.find_by(id: params[:id])
+    if data_store&.destroy
+      redirect_to view_description_concern_tickets_path, notice: "Description report deleted successfully."
+    else
+      redirect_to view_description_concern_tickets_path, alert: "Could not delete description report."
+    end
+  end
 
   private
 
