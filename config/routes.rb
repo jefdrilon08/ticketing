@@ -736,11 +736,11 @@ Rails.application.routes.draw do
 
   resources :item_distributions, only: [:index, :show, :update, :destroy] do
     member do
-      get :approve
-      get :void
+      post :approve
+      post :void
       post :transfer
       post :pull_out
-    end
+    end  
   end
 
   # STOCK
