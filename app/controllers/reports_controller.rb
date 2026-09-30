@@ -219,6 +219,8 @@ class ReportsController < ApplicationController
     @concern_ticket = ConcernTicket.find_by(id: ticket_id)
 
     build_report_data(@data_store)
+    @out_of_range_by_month = out_of_range_ticket_counts_by_month(ticket_id)
+    @out_of_range_tickets = @out_of_range_by_month.values.sum
     @concern_fors = load_concern_fors([@data_store])
 
     render 'concern_tickets/reports/view_report'
@@ -380,6 +382,25 @@ class ReportsController < ApplicationController
     
   end
 
+  def out_of_range_ticket_counts_by_month(concern_ticket_id)
+    ConcernTicketDetail.where(concern_ticket_id: concern_ticket_id)
+      .select(:status, :created_at, :data)
+      .each_with_object(Hash.new(0)) do |detail, counts|
+        raw_status = detail.status.to_s.strip.downcase.tr("_", " ")
+        next if raw_status == "closed"
+
+        status = if detail.data.is_a?(Hash) && detail.data["is_held"] == "true"
+          "Hold"
+        else
+          STATUS_MAP[raw_status] || raw_status.titleize
+        end
+        next if ["Closed", "For Verification"].include?(status)
+
+        month = detail.created_at&.to_date&.beginning_of_month
+        counts[month] += 1
+      end
+  end
+
   def build_report_data(data_store)
 
 
@@ -417,6 +438,14 @@ class ReportsController < ApplicationController
     @new_tickets = @details.count { |d| d["status"] == "Open" }
     @done_tickets = @details.count { |d| d["status"] == "Closed" }
     @hold_tickets = @details.count { |d| d["status"] == "Hold" } 
+    @out_of_range_tickets = @details.count do |d|
+      !["Closed", "For Verification"].include?(d["status"])
+    end
+    @out_of_range_by_month = @details
+      .reject { |d| ["Closed", "For Verification"].include?(d["status"]) }
+      .group_by do |d|
+        Date.parse(d["created_at"].to_s).beginning_of_month rescue nil
+      end
 
     @from_summary = @details.group_by { |d| d["name_for_id"].to_s }
 

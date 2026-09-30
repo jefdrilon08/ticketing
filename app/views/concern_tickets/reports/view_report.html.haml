@@ -18,6 +18,14 @@
     %span.badge.bg-primary.fs-6 Total: #{@total_tickets}
     %span.badge.bg-success.text-light.fs-6 New: #{@new_tickets}
     %span.badge.bg-danger.fs-6 Done: #{@done_tickets}
+    %span.badge.bg-warning.text-dark.fs-6 Out of Range: #{@out_of_range_tickets}
+
+- if @out_of_range_by_month.present?
+  .mb-3
+    %strong Out of Range by Month:
+    .d-flex.flex-wrap.gap-2.mt-2
+      - @out_of_range_by_month.sort_by { |month, _| month || Date.new(1, 1, 1) }.each do |month, count|
+        %span.badge.bg-light.text-dark.border= "#{month ? month.strftime('%B %Y') : 'Unknown date'}: #{count}"
 
 #reports-results
   - status_groups = ["Open", "Hold", "Processing", "For Verification", "Closed"]

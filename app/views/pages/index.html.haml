@@ -3,7 +3,7 @@
     .card
       .card-body
         #react-root
-        %ul.nav.nav-tabs{:role => "tablist"}
+        %ul.nav.nav-tabs.align-items-center{:role => "tablist"}
           %li.nav-item
             %a.nav-link.active.show{"aria-controls" => "concern_tickets", "aria-selected" => "true", "data-bs-toggle" => "tab", :href => "#home", :role => "tab"} 
               Concern Tickets
@@ -11,6 +11,17 @@
             %li.nav-item
               %a.nav-link{"aria-controls" => "system_tickets", "aria-selected" => "false", "data-bs-toggle" => "tab", :href => "#system_tickets", :role => "tab"} 
                 User Story
+          %li.nav-item.ms-auto.py-2
+            %small.text-muted= Time.zone.today.strftime("%B %-d, %Y")
+          -if current_user.is_mis?
+            %li.nav-item.py-2
+              .d-flex.flex-wrap.align-items-center.justify-content-end.gap-2
+                #today-open-ticket-badges.d-flex.flex-wrap.align-items-center.gap-1
+                  %span.badge.bg-success= @today_open_concern_tickets.to_a.size
+                  - @today_open_concern_tickets.to_a.each do |ticket|
+                    - concern_badge_colors = %w[primary danger warning info secondary dark]
+                    - concern_badge_color = concern_badge_colors[ticket.concern_ticket_id.to_s.bytes.sum % concern_badge_colors.length]
+                    = link_to ticket.concern_ticket&.name || "Concern Ticket", view_tix_concern_ticket_path(ticket), class: "badge bg-#{concern_badge_color} #{'text-dark' if %w[warning info].include?(concern_badge_color)} text-decoration-none"
         
         .tab-content.border-start.border-bottom.border-end
           #home.p-3.tab-pane.active.show{:role => "tabpanel"}
@@ -18,6 +29,16 @@
           -if current_user.is_mis?
             #system_tickets.p-3.tab-pane{:role => "tabpanel"}
               = render partial: "system_tickets"
-
 = render partial: "dashboard/modals/generate_daily_report"
 = render partial: "dashboard/modals/generate_accounting_report"
+
+- if current_user.is_mis?
+  :javascript
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(function(tab) {
+      tab.addEventListener('shown.bs.tab', function(event) {
+        var ticketBadges = document.getElementById('today-open-ticket-badges');
+        if (ticketBadges) {
+          ticketBadges.hidden = event.target.getAttribute('href') !== '#home';
+        }
+      });
+    });
