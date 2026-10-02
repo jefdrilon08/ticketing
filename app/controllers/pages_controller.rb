@@ -8,7 +8,7 @@ class PagesController < ApplicationController
   end
 
   def index
-    @concern_tickets = ConcernTicket.includes(:concern_types, :concern_ticket_details).map do |ct|
+    @concern_tickets = ConcernTicket.includes(:concern_types, concern_ticket_details: :concern_for).map do |ct|
       eligible_users = ConcernTicketUser.where(
         concern_ticket_id: ct.id,
         task: "developer",
@@ -23,7 +23,14 @@ class PagesController < ApplicationController
 
       ct.attributes.merge(
         concern_types: ct.concern_types.map { |ctype| ctype.attributes },
-        concern_ticket_details: ct.concern_ticket_details.map(&:attributes),
+        concern_ticket_details: ct.concern_ticket_details.map do |detail|
+          created_at = detail.created_at.in_time_zone
+          detail.attributes.merge(
+            created_at_date: created_at.to_date.iso8601,
+            created_at_hour: created_at.strftime("%Y-%m-%d %H:00"),
+            concern_from: detail.concern_for&.name.presence || "Unspecified"
+          )
+        end,
         eligible_users: eligible_users
       )
     end
@@ -32,6 +39,12 @@ class PagesController < ApplicationController
     @progress_tickets = @ctd.select { |ticket| ticket.status == "processing" }
     @forverification_tickets = @ctd.select { |ticket| ticket.status == "verification" }
     @closed_tickets = @ctd.select { |ticket| ticket.status == "closed" }
+    if current_user.is_mis?
+      @today_open_concern_tickets = ConcernTicketDetail
+        .includes(:concern_ticket, :concern_type, :concern_for, :requested_user, :branch)
+        .where(status: "open", created_at: Time.zone.today.all_day)
+        .order(created_at: :desc)
+    end
 
     all_concern_types = ConcernType.all.map { |ct| { id: ct.id, name: ct.name, concern_id: ct.concern_id } }
 
