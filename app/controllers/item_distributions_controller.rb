@@ -107,7 +107,6 @@ class ItemDistributionsController < ApplicationController
         link: "#modal-transfer-distribution",
         class: "fa fa-arrow-right",
         text: "Transfer",
-        method: :post,
         data: { "bs-toggle" => "modal", "bs-target" => "#modal-transfer-distribution" }
       }
       @subheader_side_actions << {
@@ -115,7 +114,6 @@ class ItemDistributionsController < ApplicationController
         link: "#modal-pull-out",
         class: "fa fa-undo",
         text: "Pull Out",
-        method: :post,
         data: { "bs-toggle" => "modal", "bs-target" => "#modal-pull-out" }
       }
     end
@@ -140,7 +138,7 @@ class ItemDistributionsController < ApplicationController
       item = Item.find_by(id: @item_distribution.item_id)
       item.update(status: "active") if item
     end
-    redirect_to item_distributions_path, notice: "Distribution approved!"
+    redirect_to item_distribution_path(@item_distribution), notice: "Distribution approved!"
   end
 
   def void
@@ -287,7 +285,7 @@ class ItemDistributionsController < ApplicationController
       end
     end
 
-    redirect_to item_distributions_path, notice: "Item distribution pulled out successfully!"
+    redirect_to item_distribution_path(@item_distribution), notice: "Item distribution pulled out successfully!"
   end
 
   def destroy

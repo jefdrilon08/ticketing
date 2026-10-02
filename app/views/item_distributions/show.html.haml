@@ -186,6 +186,8 @@
         %button.btn.btn-success.me-2.mb-2#saveBtn{ type: "submit", form: "itemDistForm", style: "display:none" } Save
         %button.btn.btn-secondary.fs-6.me-2.mb-2{ type: "button", onclick: "window.history.back();" } Back
 
+
+
 = render "item_distributions/modals/transfer_item_distribution"
 = render "item_distributions/modals/pull_out"
 
@@ -273,6 +275,80 @@
       handleAreaChange();
     }
   }
+
+  function setupModalDependentSelects() {
+    const areaSelect = document.getElementById('modal_area_id');
+    const clusterSelect = document.getElementById('modal_cluster_id');
+    const branchSelect = document.getElementById('modal_branch_id');
+    if (!areaSelect || !clusterSelect || !branchSelect) return;
+
+    const originalClusterId = clusterSelect.value;
+    const originalBranchId = branchSelect.value;
+
+    function handleModalAreaChange() {
+      const selectedAreaId = areaSelect.value;
+      Array.from(clusterSelect.options).forEach(function(option) {
+        if (option.value === "") {
+          option.style.display = "block";
+        } else {
+          option.style.display = option.dataset.areaId === selectedAreaId ? "block" : "none";
+        }
+      });
+
+      if (originalClusterId && document.querySelector(`#modal_cluster_id option[value="${originalClusterId}"]`)) {
+        const originalOption = document.querySelector(`#modal_cluster_id option[value="${originalClusterId}"]`);
+        if (originalOption.dataset.areaId === selectedAreaId) {
+          clusterSelect.value = originalClusterId;
+          clusterSelect.dispatchEvent(new Event('change'));
+        } else {
+          clusterSelect.value = "";
+          branchSelect.value = "";
+        }
+      } else {
+        clusterSelect.value = "";
+        branchSelect.value = "";
+      }
+    }
+
+    function handleModalClusterChange() {
+      const selectedClusterId = clusterSelect.value;
+      Array.from(branchSelect.options).forEach(function(option) {
+        if (option.value === "") {
+          option.style.display = "block";
+        } else {
+          option.style.display = option.dataset.clusterId === selectedClusterId ? "block" : "none";
+        }
+      });
+
+      if (originalBranchId && document.querySelector(`#modal_branch_id option[value="${originalBranchId}"]`)) {
+        const originalOption = document.querySelector(`#modal_branch_id option[value="${originalBranchId}"]`);
+        if (originalOption.dataset.clusterId === selectedClusterId) {
+          branchSelect.value = originalBranchId;
+        } else {
+          branchSelect.value = "";
+        }
+      } else {
+        branchSelect.value = "";
+      }
+    }
+
+    areaSelect.removeEventListener('change', handleModalAreaChange);
+    clusterSelect.removeEventListener('change', handleModalClusterChange);
+    areaSelect.addEventListener('change', handleModalAreaChange);
+    clusterSelect.addEventListener('change', handleModalClusterChange);
+
+    // Initialize visibility based on current selections
+    handleModalAreaChange();
+    handleModalClusterChange();
+  }
+
+  // Initialize modal dependent selects when transfer modal is shown
+  document.addEventListener('DOMContentLoaded', function() {
+    const transferModal = document.getElementById('modal-transfer-distribution');
+    if (transferModal) {
+      transferModal.addEventListener('shown.bs.modal', setupModalDependentSelects);
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', function() {
     setupDependentSelects();
