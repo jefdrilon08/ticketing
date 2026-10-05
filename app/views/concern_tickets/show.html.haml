@@ -55,7 +55,7 @@
                   .badge.bg-warning For Verification
                 - when "closed"
                   - status_history = ticket.data && ticket.data["status_history"] || {}
-                  - closed_date = status_history["closed"].present? ? Time.parse(status_history["closed"]).strftime("%b %d, %Y") : nil
+                  - closed_date = status_history["closed"].present? ? Time.parse(status_history["closed"]).strftime("%b %d, %Y %I:%M %p") : nil
                   .d-inline-flex.flex-column.align-items-center
                     .badge.bg-danger Closed
                     - if current_user.is_mis? && closed_date.present?
