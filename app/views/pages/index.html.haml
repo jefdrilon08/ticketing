@@ -19,7 +19,7 @@
                 #today-open-ticket-badges.d-flex.flex-wrap.align-items-center.gap-1
                   %span.badge.bg-success= @today_open_concern_tickets.to_a.size
                   - @today_open_concern_tickets.to_a.each do |ticket|
-                    - concern_badge_colors = %w[primary danger warning info secondary dark]
+                    - concern_badge_colors = %w[primary danger warning info success]
                     - concern_badge_color = concern_badge_colors[ticket.concern_ticket_id.to_s.bytes.sum % concern_badge_colors.length]
                     = link_to ticket.concern_ticket&.name || "Concern Ticket", view_tix_concern_ticket_path(ticket), class: "badge bg-#{concern_badge_color} #{'text-dark' if %w[warning info].include?(concern_badge_color)} text-decoration-none"
         

@@ -30,7 +30,7 @@ function createPieChart(concernTicket, concernTypes) {
   if (chartInstances['pie']) {
     chartInstances['pie'].destroy();
   }
-
+ 
   const ctx = canvas.getContext('2d');
   chartInstances['pie'] = new Chart(ctx, {
     type: 'pie',
