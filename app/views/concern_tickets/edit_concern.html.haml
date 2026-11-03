@@ -74,18 +74,18 @@
     .row.mt-3
       .col-12
         .card.border.p-3
-          %h5 Assign Branches to IT Personnel
-          %p.text-muted Select one or more branches.
-          = hidden_field_tag :branch_assignments_present, "1"
+          %h5 Assign Areas to IT Personnel
+          %p.text-muted Select one or more areas.
+          = hidden_field_tag :area_assignments_present, "1"
           - developers = @concern_ticket.concern_ticket_users.includes(:user).sort_by { |member| [member.user.last_name.downcase, member.user.first_name.downcase] }
-          - assignments = (@concern_ticket.data || {}).fetch("branch_developers", {})
+          - assignments = (@concern_ticket.data || {}).fetch("area_developers", {})
           .row
             - developers.each do |member|
-              .col-12.col-md-6.form-group.mb-3.developer-branches-row{ hidden: member.task != "developer" || member.status != "active", data: { member_id: member.id } }
-                = label_tag "branch_picker_#{member.id}", "#{member.user.last_name.titleize}, #{member.user.first_name.titleize}"
-                - selected_branches = assignments.select { |_, member_id| member_id == member.id.to_s }.keys
-                = select_tag "developer_branches[#{member.id}][]", options_from_collection_for_select(@branches || Branch.order(:name), :id, :name, selected_branches), multiple: true, id: "developer_branches_#{member.id}", class: "form-control developer-branches-select", disabled: member.task != "developer" || member.status != "active", data: { member_id: member.id }
-          %p#branch-assignment-error.text-danger.mt-2{ role: "alert", hidden: true }
+              .col-12.col-md-6.form-group.mb-3.developer-areas-row{ hidden: member.task != "developer" || member.status != "active", data: { member_id: member.id } }
+                = label_tag "area_picker_#{member.id}", "#{member.user.last_name.titleize}, #{member.user.first_name.titleize}"
+                - selected_areas = assignments.select { |_, member_id| member_id == member.id.to_s }.keys
+                = select_tag "developer_areas[#{member.id}][]", options_from_collection_for_select(@areas || Area.order(:name), :id, :name, selected_areas), multiple: true, id: "developer_areas_#{member.id}", class: "form-control developer-areas-select", disabled: member.task != "developer" || member.status != "active", data: { member_id: member.id }
+          %p#area-assignment-error.text-danger.mt-2{ role: "alert", hidden: true }
 
     &nbsp;
     .row
@@ -243,18 +243,18 @@
     });
     loadExistingRecords();
 
-    const branchSelects = Array.from(document.querySelectorAll(".developer-branches-select"));
-    const branchPickers = new Map();
+    const areaSelects = Array.from(document.querySelectorAll(".developer-areas-select"));
+    const areaPickers = new Map();
 
-    function refreshBranchPickers() {
+    function refreshAreaPickers() {
       const assigned = new Set();
-      branchSelects.filter((select) => !select.disabled).forEach(function (select) {
+      areaSelects.filter((select) => !select.disabled).forEach(function (select) {
         Array.from(select.selectedOptions).forEach((option) => assigned.add(option.value));
       });
-      branchSelects.forEach(function (select) {
-        const { picker, tags } = branchPickers.get(select);
+      areaSelects.forEach(function (select) {
+        const { picker, tags } = areaPickers.get(select);
         picker.disabled = select.disabled;
-        picker.replaceChildren(new Option("-- Select a branch --", ""));
+        picker.replaceChildren(new Option("-- Select an area --", ""));
         Array.from(select.options).forEach(function (option) {
           if (!assigned.has(option.value)) picker.add(new Option(option.textContent, option.value));
         });
@@ -272,7 +272,7 @@
           remove.disabled = select.disabled;
           remove.addEventListener("click", function () {
             option.selected = false;
-            refreshBranchPickers();
+            refreshAreaPickers();
             picker.focus();
           });
           tag.append(name, remove);
@@ -281,61 +281,61 @@
         if (tags.childElementCount === 0) {
           const placeholder = document.createElement("span");
           placeholder.className = "text-muted";
-          placeholder.textContent = "No branches selected";
+          placeholder.textContent = "No areas selected";
           tags.appendChild(placeholder);
         }
       });
-      document.getElementById("branch-assignment-error").hidden = true;
+      document.getElementById("area-assignment-error").hidden = true;
     }
 
-    branchSelects.forEach(function (select) {
+    areaSelects.forEach(function (select) {
       const container = document.createElement("div");
       container.className = "border rounded p-2 bg-white";
       const tags = document.createElement("div");
       tags.className = "d-flex flex-wrap gap-2 mb-2";
       tags.setAttribute("aria-live", "polite");
       const picker = document.createElement("select");
-      picker.id = `branch_picker_${select.dataset.memberId}`;
+      picker.id = `area_picker_${select.dataset.memberId}`;
       picker.className = "form-control";
       picker.addEventListener("change", function () {
         if (!picker.value) return;
         const option = Array.from(select.options).find((option) => option.value === picker.value);
         if (option) option.selected = true;
-        refreshBranchPickers();
+        refreshAreaPickers();
       });
       container.append(tags, picker);
       select.after(container);
       select.hidden = true;
       select.style.display = "none";
-      branchPickers.set(select, { picker, tags });
+      areaPickers.set(select, { picker, tags });
     });
-    refreshBranchPickers();
+    refreshAreaPickers();
 
     document.querySelectorAll('select[data-field="roles"], select[data-field="status"]').forEach(function (field) {
       field.addEventListener("change", function () {
         const memberId = field.dataset.id;
         const role = document.querySelector(`select[data-id="${memberId}"][data-field="roles"]`);
         const status = document.querySelector(`select[data-id="${memberId}"][data-field="status"]`);
-        const select = document.getElementById(`developer_branches_${memberId}`);
+        const select = document.getElementById(`developer_areas_${memberId}`);
         select.disabled = role.value !== "developer" || status.value !== "active";
-        select.closest(".developer-branches-row").hidden = select.disabled;
-        refreshBranchPickers();
+        select.closest(".developer-areas-row").hidden = select.disabled;
+        refreshAreaPickers();
       });
     });
     document.getElementById("edit-concern-form").addEventListener("submit", function (event) {
-      const branches = new Set();
+      const areas = new Set();
       const duplicates = new Set();
-      document.querySelectorAll(".developer-branches-select:not(:disabled)").forEach(function (select) {
+      document.querySelectorAll(".developer-areas-select:not(:disabled)").forEach(function (select) {
         Array.from(select.selectedOptions).forEach(function (option) {
-          if (branches.has(option.value)) duplicates.add(option.textContent);
-          branches.add(option.value);
+          if (areas.has(option.value)) duplicates.add(option.textContent);
+          areas.add(option.value);
         });
       });
-      const error = document.getElementById("branch-assignment-error");
+      const error = document.getElementById("area-assignment-error");
       error.hidden = duplicates.size === 0;
       if (duplicates.size > 0) {
         event.preventDefault();
-        error.textContent = "These branches are selected for multiple developers: " + Array.from(duplicates).join(", ") + ". Remove duplicate selections before saving.";
+        error.textContent = "These areas are selected for multiple developers: " + Array.from(duplicates).join(", ") + ". Remove duplicate selections before saving.";
         error.scrollIntoView({ block: "center", behavior: "smooth" });
       }
     });
