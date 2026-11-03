@@ -219,7 +219,7 @@ class ReportsController < ApplicationController
     @concern_ticket = ConcernTicket.find_by(id: ticket_id)
 
     build_report_data(@data_store)
-    @out_of_range_by_month = out_of_range_ticket_counts_by_month(ticket_id)
+    @out_of_range_by_month = out_of_range_ticket_counts_by_month(ticket_id, @data_store.end_date)
     @out_of_range_tickets = @out_of_range_by_month.values.sum
     @concern_fors = load_concern_fors([@data_store])
 
@@ -382,8 +382,12 @@ class ReportsController < ApplicationController
     
   end
 
-  def out_of_range_ticket_counts_by_month(concern_ticket_id)
-    ConcernTicketDetail.where(concern_ticket_id: concern_ticket_id)
+  def out_of_range_ticket_counts_by_month(concern_ticket_id, end_date)
+    details = ConcernTicketDetail.where(concern_ticket_id: concern_ticket_id)
+    end_date = parse_date(end_date.to_s)
+    details = details.where("created_at <= ?", end_date.end_of_day) if end_date
+
+    details
       .select(:status, :created_at, :data)
       .each_with_object(Hash.new(0)) do |detail, counts|
         raw_status = detail.status.to_s.strip.downcase.tr("_", " ")

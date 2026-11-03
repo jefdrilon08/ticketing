@@ -1,61 +1,69 @@
 .card.some{ style: "padding:1%" }
   %h2 Edit Concern Ticket
-  = form_for @concern_ticket, url: concern_ticket_path(@concern_ticket), method: :patch do |f|
-    .row
-      .col-md-3.col-12
-        .form-group
-          %label Name
-          = text_field_tag :name, @concern_ticket.name, id: "input-name", class: "form-control", required: true, placeholder: "Enter Name"
-      .col-md-3.col-12
-        .form-group
-          %label Ticket Name
-          = text_field_tag :ticket_name, @concern_ticket.ticket_name, id: "input-ticket-name", class: "form-control", required: true, placeholder: "ex.:ABC", size: 6, maxlength: 6
-      .col-md-3.col-12
-        .form-group
-          %label Computer System
-          = select_tag :computer_system_id, 
-            options_from_collection_for_select(@computer_systems&.sort_by(&:name) || [], :id, :name, @concern_ticket.computer_system_id),
-            class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-            required: false, 
-            prompt: "-- SELECT --"
-    .row
-      .col-md-3.col-12
-        .form-group
-          %label Ticket Auto Close (days)
-          = number_field_tag :auto_close_days, @concern_ticket.data && @concern_ticket.data["auto_close_days"], id: "input-auto-close-days", class: "form-control", min: 0, placeholder: "Enter days to auto close"
-      .col-md-3.col-12
-        .form-group
-          .form-check
-            = hidden_field_tag :is_private, "0"
-            = check_box_tag :is_private, "1", @concern_ticket.is_private, id: "is-private-checkbox", class: "form-check-input"
-            %label.form-check-label{for: "is-private-checkbox"} Is Private?
-          .form-check.mt-2
-            = hidden_field_tag :connect_to_item, "0"
-            = check_box_tag :connect_to_item, "1", @concern_ticket.connect_to_item, id: "connect-to-item-checkbox", class: "form-check-input"
-            %label.form-check-label{for: "connect-to-item-checkbox"} Connect to Item?
+  = form_for @concern_ticket, url: concern_ticket_path(@concern_ticket), method: :patch, html: { id: "edit-concern-form" } do |f|
+    .card.border.p-3.mb-3
+      %h5 Concern Details
+      .row
+        .col-md-3.col-12
+          .form-group
+            %label Name
+            = text_field_tag :name, @concern_ticket.name, id: "input-name", class: "form-control", required: true, placeholder: "Enter Name"
+        .col-md-3.col-12
+          .form-group
+            %label Ticket Name
+            = text_field_tag :ticket_name, @concern_ticket.ticket_name, id: "input-ticket-name", class: "form-control", required: true, placeholder: "ex.:ABC", size: 6, maxlength: 6
+        .col-md-3.col-12
+          .form-group
+            %label Computer System
+            = select_tag :computer_system_id,
+              options_from_collection_for_select(@computer_systems&.sort_by(&:name) || [], :id, :name, @concern_ticket.computer_system_id),
+              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm",
+              required: false,
+              prompt: "-- SELECT --"
+        .col-md-3.col-12
+          .form-group
+            = label_tag :concern_leader_id, "Concern Leader"
+            - leader_options = @concern_ticket.concern_ticket_users.includes(:user).where(task: "developer", status: "active").sort_by { |member| [member.user.last_name.downcase, member.user.first_name.downcase] }
+            = select_tag :concern_leader_id, options_for_select(leader_options.map { |member| ["#{member.user.last_name.titleize}, #{member.user.first_name.titleize}", member.user_id] }, @concern_ticket.user_id), class: "form-control"
+      .row
+        .col-md-3.col-12
+          .form-group
+            %label Ticket Auto Close (days)
+            = number_field_tag :auto_close_days, @concern_ticket.data && @concern_ticket.data["auto_close_days"], id: "input-auto-close-days", class: "form-control", min: 0, placeholder: "Enter days to auto close"
+        .col-md-3.col-12
+          .form-group
+            .form-check
+              = hidden_field_tag :is_private, "0"
+              = check_box_tag :is_private, "1", @concern_ticket.is_private, id: "is-private-checkbox", class: "form-check-input"
+              %label.form-check-label{for: "is-private-checkbox"} Is Private?
+            .form-check.mt-2
+              = hidden_field_tag :connect_to_item, "0"
+              = check_box_tag :connect_to_item, "1", @concern_ticket.connect_to_item, id: "connect-to-item-checkbox", class: "form-check-input"
+              %label.form-check-label{for: "connect-to-item-checkbox"} Connect to Item?
 
-    &nbsp;
-    .row
-      .col-md-6.col-12
-        .form-group
-          %label Concern From
-          .input-group
-            = text_field_tag :concern_for, "", id: "concern-for-input", class: "form-control", placeholder: "Enter Concern For"
-            = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-for"
+    .card.border.p-3.mb-3
+      %h5 Concern From and Concern Types
+      .row
+        .col-md-6.col-12
+          .form-group
+            %label Concern From
+            .input-group
+              = text_field_tag :concern_for, "", id: "concern-for-input", class: "form-control", placeholder: "Enter Concern For"
+              = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-for"
 
-      .col-md-6.col-12
-        .form-group
-          %label Concern Type
-          .input-group
-            = text_field_tag :concern, "", id: "concern-type-input", class: "form-control", placeholder: "Enter Concern Type"
-            = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-type"
+        .col-md-6.col-12
+          .form-group
+            %label Concern Type
+            .input-group
+              = text_field_tag :concern, "", id: "concern-type-input", class: "form-control", placeholder: "Enter Concern Type"
+              = button_tag "Add", type: "button", class: "btn btn-outline-primary", id: "add-concern-type"
 
       .row
         .col-md-6.col-12
           .form-group
             %label Concern From Records:
             %ul#concern-records-list.list-group.mt-2.w-100.p-0
-        = hidden_field_tag :selected_concern_fors, "", id: "selected-concern-fors" 
+        = hidden_field_tag :selected_concern_fors, "", id: "selected-concern-fors"
 
         .col-md-6.col-12
           .form-group
@@ -63,58 +71,71 @@
             %ul#concern-type-records-list.list-group.mt-2.w-100.p-0
         = hidden_field_tag :selected_concern_types, "", id: "selected-concern-types"
 
-    &nbsp;      
+    .row.mt-3
+      .col-12
+        .card.border.p-3
+          %h5 Assign Branches to IT Personnel
+          %p.text-muted Select one or more branches.
+          = hidden_field_tag :branch_assignments_present, "1"
+          - developers = @concern_ticket.concern_ticket_users.includes(:user).sort_by { |member| [member.user.last_name.downcase, member.user.first_name.downcase] }
+          - assignments = (@concern_ticket.data || {}).fetch("branch_developers", {})
+          .row
+            - developers.each do |member|
+              .col-12.col-md-6.form-group.mb-3.developer-branches-row{ hidden: member.task != "developer" || member.status != "active", data: { member_id: member.id } }
+                = label_tag "branch_picker_#{member.id}", "#{member.user.last_name.titleize}, #{member.user.first_name.titleize}"
+                - selected_branches = assignments.select { |_, member_id| member_id == member.id.to_s }.keys
+                = select_tag "developer_branches[#{member.id}][]", options_from_collection_for_select(@branches || Branch.order(:name), :id, :name, selected_branches), multiple: true, id: "developer_branches_#{member.id}", class: "form-control developer-branches-select", disabled: member.task != "developer" || member.status != "active", data: { member_id: member.id }
+          %p#branch-assignment-error.text-danger.mt-2{ role: "alert", hidden: true }
+
+    &nbsp;
     .row
       .col-12.text-end
         = f.submit "Save Changes", class: "btn btn-success"
-        &nbsp;  
+        &nbsp;
         = link_to 'Cancel', concern_tickets_path, class: 'btn btn-secondary'
-  
-  = form_tag "/api/v1/tickets/concern_tickets/add_member_concern_ticket", method: :post do
-    = hidden_field_tag :concern_ticket_id, @concern_ticket.id
-    .row
-      .col-md-6.col-12
-        .form-group.mt-5
-          %label Add Team Members:
-          .d-flex
-            = select_tag :ct_user_id, 
-              options_from_collection_for_select(@ct_users, :id, ->(u) { "#{u.last_name.titleize}, #{u.first_name.titleize}" }),
-              class: "form-control form-select-sm bg-secondary-subtle text-dark border-0 shadow-sm flex-grow-1", 
-              required: true, 
-              prompt: "-- SELECT --"
-            = button_tag "Add", type: "submit", class: "btn btn-sm btn-primary ms-2"
 
-  .row  
-    .col-md-12
-      .form-group    
-        %label Members:
-        %table.table.table-bordered.mt-2
-          %thead
-            %tr
-              %th.text-center{ style: "width: 1%;" }
-              %th.text-center Member Name
-              %th.text Roles
-              %th.text Status
-              %th.text-center Action
-          %tbody
-            - @concern_ticket.concern_ticket_users.sort_by { |ct_user| "#{ct_user.user.last_name.downcase}, #{ct_user.user.first_name.downcase}" }.each do |ct_user|
+  .card.border.p-3.mt-3
+    %h5 Team Members
+    = form_tag "/api/v1/tickets/concern_tickets/add_member_concern_ticket", method: :post do
+      = hidden_field_tag :concern_ticket_id, @concern_ticket.id
+      .row
+        .col-md-6.col-12
+          .form-group
+            %label Add Team Members:
+            .d-flex
+              = select_tag :ct_user_id,
+                options_from_collection_for_select(@ct_users, :id, ->(u) { "#{u.last_name.titleize}, #{u.first_name.titleize}" }),
+                class: "form-control form-select-sm bg-secondary-subtle text-dark border-0 shadow-sm flex-grow-1",
+                required: true,
+                prompt: "-- SELECT --"
+              = button_tag "Add", type: "submit", class: "btn btn-sm btn-primary ms-2"
+
+    .row
+      .col-md-12
+        .form-group
+          %label Members:
+          %table.table.table-bordered.mt-2
+            %thead
               %tr
-                %td.text-center{ style: "background-color: #{ct_user.task == 'unassigned' || ct_user.status == 'inactive' ? 'red' : 'green'};" }
-                %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
-                %td.text-center
-                  = select_tag "roles_#{ct_user.id}", 
-                    options_for_select(["Developer", "Requester", "Viewer", "Unassigned"], ct_user.task&.capitalize || "Unassigned"), 
-                    class: "form-control form-select-sm", 
-                    data: { id: ct_user.id, field: "roles" }
-                %td.text-center
-                  = select_tag "status_#{ct_user.id}", 
-                    options_for_select(["Active", "Inactive"], ct_user.status.titleize || "Active"), 
-                    class: "form-control form-select-sm", 
-                    data: { id: ct_user.id, field: "status" }
-                %td.text-center
-                  = button_tag "Save", 
-                    class: "btn btn-sm btn-success save-member-btn", 
-                    data: { id: ct_user.id }
+                %th.text-center{ style: "width: 1%;" }
+                %th.text-center Member Name
+                %th.text Roles
+                %th.text Status
+            %tbody
+              - @concern_ticket.concern_ticket_users.includes(:user).sort_by { |ct_user| "#{ct_user.user.last_name.downcase}, #{ct_user.user.first_name.downcase}" }.each do |ct_user|
+                %tr
+                  %td.text-center{ style: "background-color: #{ct_user.task == 'unassigned' || ct_user.status == 'inactive' ? 'red' : 'green'};" }
+                  %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
+                  %td.text-center
+                    = select_tag "member_settings[#{ct_user.id}][task]",
+                      options_for_select([["Developer", "developer"], ["Requester", "requester"], ["Viewer", "viewer"], ["Unassigned", "unassigned"]], ct_user.task || "unassigned"),
+                      class: "form-control form-select-sm",
+                      form: "edit-concern-form", data: { id: ct_user.id, field: "roles" }
+                  %td.text-center
+                    = select_tag "member_settings[#{ct_user.id}][status]",
+                      options_for_select([["Active", "active"], ["Inactive", "inactive"]], ct_user.status || "active"),
+                      class: "form-control form-select-sm",
+                      form: "edit-concern-form", data: { id: ct_user.id, field: "status" }
 :javascript
   document.addEventListener("DOMContentLoaded", function () {
     function addToList(name, status, listId, hiddenFieldId) {
@@ -222,38 +243,100 @@
     });
     loadExistingRecords();
 
-    document.querySelectorAll(".save-member-btn").forEach(function (button) {
-      button.addEventListener("click", function () {
-        const memberId = button.dataset.id;
-        const rolesField = document.querySelector(`select[data-id="${memberId}"][data-field="roles"]`);
-        const statusField = document.querySelector(`select[data-id="${memberId}"][data-field="status"]`);
+    const branchSelects = Array.from(document.querySelectorAll(".developer-branches-select"));
+    const branchPickers = new Map();
 
-        const updatedData = {
-          roles: rolesField.value,
-          status: statusField.value,
-        };
-
-        fetch(`/api/v1/tickets/concern_ticket_users/${memberId}/update_member_status`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
-          },
-          body: JSON.stringify(updatedData),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              location.reload();
-            } else {
-              alert("Failed to update member: " + data.error);
-            }
-          })
-          .catch((error) => {
-            console.error("Error updating member:", error);
-            alert("An error occurred while updating the member.");
+    function refreshBranchPickers() {
+      const assigned = new Set();
+      branchSelects.filter((select) => !select.disabled).forEach(function (select) {
+        Array.from(select.selectedOptions).forEach((option) => assigned.add(option.value));
+      });
+      branchSelects.forEach(function (select) {
+        const { picker, tags } = branchPickers.get(select);
+        picker.disabled = select.disabled;
+        picker.replaceChildren(new Option("-- Select a branch --", ""));
+        Array.from(select.options).forEach(function (option) {
+          if (!assigned.has(option.value)) picker.add(new Option(option.textContent, option.value));
+        });
+        tags.replaceChildren();
+        Array.from(select.selectedOptions).forEach(function (option) {
+          const tag = document.createElement("span");
+          tag.className = "badge bg-primary d-inline-flex align-items-center";
+          const name = document.createElement("span");
+          name.textContent = option.textContent;
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.className = "btn btn-sm p-0 ms-2 text-white";
+          remove.textContent = "×";
+          remove.setAttribute("aria-label", "Remove " + option.textContent);
+          remove.disabled = select.disabled;
+          remove.addEventListener("click", function () {
+            option.selected = false;
+            refreshBranchPickers();
+            picker.focus();
           });
+          tag.append(name, remove);
+          tags.appendChild(tag);
+        });
+        if (tags.childElementCount === 0) {
+          const placeholder = document.createElement("span");
+          placeholder.className = "text-muted";
+          placeholder.textContent = "No branches selected";
+          tags.appendChild(placeholder);
+        }
+      });
+      document.getElementById("branch-assignment-error").hidden = true;
+    }
+
+    branchSelects.forEach(function (select) {
+      const container = document.createElement("div");
+      container.className = "border rounded p-2 bg-white";
+      const tags = document.createElement("div");
+      tags.className = "d-flex flex-wrap gap-2 mb-2";
+      tags.setAttribute("aria-live", "polite");
+      const picker = document.createElement("select");
+      picker.id = `branch_picker_${select.dataset.memberId}`;
+      picker.className = "form-control";
+      picker.addEventListener("change", function () {
+        if (!picker.value) return;
+        const option = Array.from(select.options).find((option) => option.value === picker.value);
+        if (option) option.selected = true;
+        refreshBranchPickers();
+      });
+      container.append(tags, picker);
+      select.after(container);
+      select.hidden = true;
+      select.style.display = "none";
+      branchPickers.set(select, { picker, tags });
+    });
+    refreshBranchPickers();
+
+    document.querySelectorAll('select[data-field="roles"], select[data-field="status"]').forEach(function (field) {
+      field.addEventListener("change", function () {
+        const memberId = field.dataset.id;
+        const role = document.querySelector(`select[data-id="${memberId}"][data-field="roles"]`);
+        const status = document.querySelector(`select[data-id="${memberId}"][data-field="status"]`);
+        const select = document.getElementById(`developer_branches_${memberId}`);
+        select.disabled = role.value !== "developer" || status.value !== "active";
+        select.closest(".developer-branches-row").hidden = select.disabled;
+        refreshBranchPickers();
       });
     });
-    
+    document.getElementById("edit-concern-form").addEventListener("submit", function (event) {
+      const branches = new Set();
+      const duplicates = new Set();
+      document.querySelectorAll(".developer-branches-select:not(:disabled)").forEach(function (select) {
+        Array.from(select.selectedOptions).forEach(function (option) {
+          if (branches.has(option.value)) duplicates.add(option.textContent);
+          branches.add(option.value);
+        });
+      });
+      const error = document.getElementById("branch-assignment-error");
+      error.hidden = duplicates.size === 0;
+      if (duplicates.size > 0) {
+        event.preventDefault();
+        error.textContent = "These branches are selected for multiple developers: " + Array.from(duplicates).join(", ") + ". Remove duplicate selections before saving.";
+        error.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    });
   });
