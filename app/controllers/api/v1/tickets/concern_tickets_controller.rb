@@ -113,7 +113,7 @@ module Api
               concern_type_id: params[:concern_type_id],
               branch_id: params[:branch_id],
               requested_user_id: current_user.id,
-              assigned_user_id: concern_ticket.user_id
+              assigned_user_id: concern_ticket.assignee_for_branch(params[:branch_id])
             )
 
             if params[:attachments].present?
@@ -203,11 +203,19 @@ module Api
           roles = params[:roles].downcase if params[:roles].present?
           status = params[:status].downcase if params[:status].present?
 
-          if ct_user.update(task: roles, status: status)
-            render json: { success: true }
-          else
-            render json: { success: false, error: ct_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+          unless %w[developer requester viewer unassigned].include?(roles) && %w[active inactive].include?(status)
+            render json: { success: false, error: "Invalid role or status." }, status: :unprocessable_entity
+            return
           end
+
+          if params.key?(:branch_ids)
+            ct_user.update_branch_assignment!(task: roles, status: status, branch_ids: params[:branch_ids])
+          else
+            ct_user.update!(task: roles, status: status)
+          end
+          render json: { success: true }
+        rescue ArgumentError, ActiveRecord::RecordInvalid => e
+          render json: { success: false, error: e.message }, status: :unprocessable_entity
         end
 
         def add_member_ct
