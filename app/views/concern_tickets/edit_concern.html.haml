@@ -1,5 +1,8 @@
 .card.some{ style: "padding:1%" }
+  - concern_members = @edit_members || @concern_ticket.concern_ticket_users.includes(:user).to_a
   %h2 Edit Concern Ticket
+  - if flash[:error].present?
+    .alert.alert-danger{ role: "alert" }= flash[:error]
   = form_for @concern_ticket, url: concern_ticket_path(@concern_ticket), method: :patch, html: { id: "edit-concern-form" } do |f|
     .card.border.p-3.mb-3
       %h5 Concern Details
@@ -23,8 +26,8 @@
         .col-md-3.col-12
           .form-group
             = label_tag :concern_leader_id, "Concern Leader"
-            - leader_options = @concern_ticket.concern_ticket_users.includes(:user).where(task: "developer", status: "active").sort_by { |member| [member.user.last_name.downcase, member.user.first_name.downcase] }
-            = select_tag :concern_leader_id, options_for_select(leader_options.map { |member| ["#{member.user.last_name.titleize}, #{member.user.first_name.titleize}", member.user_id] }, @concern_ticket.user_id), class: "form-control"
+            - leader_options = concern_members.select { |member| member.task == "developer" && member.status == "active" }.sort_by { |member| [member.user.last_name.downcase, member.user.first_name.downcase] }
+            = select_tag :concern_leader_id, options_for_select(leader_options.map { |member| ["#{member.user.last_name.titleize}, #{member.user.first_name.titleize}", member.user_id] }, @concern_ticket.user_id), class: "form-control", required: true
       .row
         .col-md-3.col-12
           .form-group
@@ -77,13 +80,13 @@
           %h5 Assign Areas to IT Personnel
           %p.text-muted Select one or more areas.
           = hidden_field_tag :area_assignments_present, "1"
-          - developers = @concern_ticket.concern_ticket_users.includes(:user).sort_by { |member| [member.user.last_name.downcase, member.user.first_name.downcase] }
+          - developers = concern_members.sort_by { |member| [member.user.last_name.downcase, member.user.first_name.downcase] }
           - assignments = (@concern_ticket.data || {}).fetch("area_developers", {})
           .row
             - developers.each do |member|
               .col-12.col-md-6.form-group.mb-3.developer-areas-row{ hidden: member.task != "developer" || member.status != "active", data: { member_id: member.id } }
                 = label_tag "area_picker_#{member.id}", "#{member.user.last_name.titleize}, #{member.user.first_name.titleize}"
-                - selected_areas = assignments.select { |_, member_id| member_id == member.id.to_s }.keys
+                - selected_areas = params[:area_assignments_present].present? ? Array(params[:developer_areas]&.[](member.id.to_s)) : assignments.select { |_, member_id| member_id == member.id.to_s }.keys
                 = select_tag "developer_areas[#{member.id}][]", options_from_collection_for_select(@areas || Area.order(:name), :id, :name, selected_areas), multiple: true, id: "developer_areas_#{member.id}", class: "form-control developer-areas-select", disabled: member.task != "developer" || member.status != "active", data: { member_id: member.id }
           %p#area-assignment-error.text-danger.mt-2{ role: "alert", hidden: true }
 
@@ -102,9 +105,10 @@
         .col-md-6.col-12
           .form-group
             %label Add Team Members:
+            - member_user_ids = @concern_ticket.concern_ticket_users.pluck(:user_id).to_set
             .d-flex
               = select_tag :ct_user_id,
-                options_from_collection_for_select(@ct_users, :id, ->(u) { "#{u.last_name.titleize}, #{u.first_name.titleize}" }),
+                options_for_select(@ct_users.map { |user| ["#{user.last_name.titleize}, #{user.first_name.titleize}", user.id, { style: member_user_ids.include?(user.id) ? "color: green;" : "color: black;", data: { already_added: member_user_ids.include?(user.id) } }] }),
                 class: "form-control form-select-sm bg-secondary-subtle text-dark border-0 shadow-sm flex-grow-1",
                 required: true,
                 prompt: "-- SELECT --"
@@ -114,7 +118,11 @@
       .col-md-12
         .form-group
           %label Members:
-          %table.table.table-bordered.mt-2
+          .row
+            .col-md-3.col-12
+              = label_tag :member_role_filter, "Filter by role"
+              = select_tag :member_role_filter, options_for_select([["All roles", ""], ["Developer", "developer"], ["Requester", "requester"], ["Viewer", "viewer"], ["Unassigned", "unassigned"]]), class: "form-control form-select-sm"
+          %table#concern-members-table.table.table-bordered.mt-2
             %thead
               %tr
                 %th.text-center{ style: "width: 1%;" }
@@ -122,8 +130,8 @@
                 %th.text Roles
                 %th.text Status
             %tbody
-              - @concern_ticket.concern_ticket_users.includes(:user).sort_by { |ct_user| "#{ct_user.user.last_name.downcase}, #{ct_user.user.first_name.downcase}" }.each do |ct_user|
-                %tr
+              - concern_members.sort_by { |ct_user| "#{ct_user.user.last_name.downcase}, #{ct_user.user.first_name.downcase}" }.each do |ct_user|
+                %tr{ data: { user_id: ct_user.user_id } }
                   %td.text-center{ style: "background-color: #{ct_user.task == 'unassigned' || ct_user.status == 'inactive' ? 'red' : 'green'};" }
                   %td.text-center= "#{ct_user.user.last_name.titleize}, #{ct_user.user.first_name.titleize}"
                   %td.text-center
@@ -138,6 +146,46 @@
                       form: "edit-concern-form", data: { id: ct_user.id, field: "status" }
 :javascript
   document.addEventListener("DOMContentLoaded", function () {
+    const memberRoleFilter = document.getElementById("member_role_filter");
+    const memberRows = document.querySelectorAll("#concern-members-table tbody tr");
+    function filterMembers() {
+      memberRows.forEach(function (row) {
+        const role = row.querySelector('select[data-field="roles"]').value.toLowerCase();
+        row.hidden = memberRoleFilter.value !== "" && role !== memberRoleFilter.value;
+      });
+    }
+    memberRoleFilter.addEventListener("change", filterMembers);
+    document.querySelectorAll('#concern-members-table select[data-field="roles"]').forEach(function (select) {
+      select.addEventListener("change", filterMembers);
+    });
+    filterMembers();
+
+    const leaderSelect = document.getElementById("concern_leader_id");
+    function refreshLeaderOptions() {
+      const selectedLeader = leaderSelect.value;
+      leaderSelect.replaceChildren();
+      memberRows.forEach(function (row) {
+        const role = row.querySelector('select[data-field="roles"]').value;
+        const status = row.querySelector('select[data-field="status"]').value;
+        if (role === "developer" && status === "active") {
+          leaderSelect.add(new Option(row.cells[1].textContent.trim(), row.dataset.userId));
+        }
+      });
+      leaderSelect.value = selectedLeader;
+      leaderSelect.setCustomValidity(leaderSelect.value ? "" : "Select an active developer as the concern leader before saving.");
+    }
+    leaderSelect.addEventListener("change", function () { leaderSelect.setCustomValidity(""); });
+    leaderSelect.value = #{raw json_escape((params[:concern_leader_id] || @concern_ticket.user_id).to_json)};
+    refreshLeaderOptions();
+
+    const memberPicker = document.getElementById("ct_user_id");
+    function highlightExistingMember() {
+      const selected = memberPicker.selectedOptions[0];
+      memberPicker.style.color = selected && selected.dataset.alreadyAdded === "true" ? "green" : "";
+    }
+    memberPicker.addEventListener("change", highlightExistingMember);
+    highlightExistingMember();
+
     function addToList(name, status, listId, hiddenFieldId) {
       const list = document.getElementById(listId);
       const hiddenField = document.getElementById(hiddenFieldId);
@@ -320,6 +368,7 @@
         select.disabled = role.value !== "developer" || status.value !== "active";
         select.closest(".developer-areas-row").hidden = select.disabled;
         refreshAreaPickers();
+        refreshLeaderOptions();
       });
     });
     document.getElementById("edit-concern-form").addEventListener("submit", function (event) {

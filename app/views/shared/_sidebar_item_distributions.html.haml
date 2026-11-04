@@ -1,11 +1,11 @@
 %li{ class: "#{['item_distributions'].include?(params[:controller]) ? 'active' : ''}" }
   .icon-link
-    = link_to "#", class: "" do
+    = link_to "#item-distributions-submenu", role: "button", data: { sidebar_toggle: true }, "aria-expanded" => "false", "aria-controls" => "item-distributions-submenu" do
       %i.bi.bi-box
       %span.link-name
         Item Distribution
     %i.bi.bi-caret-down.arrow
-  %ul.sub-menu
+  %ul.sub-menu#item-distributions-submenu
     %li
       = link_to "#", class: "link-name" do
         Item Distribution

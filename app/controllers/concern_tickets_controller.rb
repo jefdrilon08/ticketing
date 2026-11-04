@@ -139,6 +139,9 @@ class ConcernTicketsController < ApplicationController
         assignments = params.fetch(:developer_areas, ActionController::Parameters.new).permit!
         @concern_ticket.assign_developer_areas(assignments)
       end
+      if params[:area_assignments_present].present? && params[:concern_leader_id].blank?
+        raise ArgumentError, "Select an active developer as the concern leader before saving."
+      end
       @concern_ticket.assign_concern_leader(params[:concern_leader_id])
       if @concern_ticket.save!
   
@@ -175,8 +178,16 @@ class ConcernTicketsController < ApplicationController
       end
     end
   rescue ActiveRecord::RecordInvalid, ArgumentError => e
-    flash[:error] = e.message
-    redirect_to edit_concern_ticket_path(@concern_ticket)
+    flash.now[:error] = e.message
+    @areas = Area.select(:id, :name).order(:name)
+    @computer_systems = ComputerSystem.select(:id, :name)
+    @ct_users = User.select(:id, :first_name, :last_name).order(:last_name, :first_name)
+    @edit_members = @concern_ticket.concern_ticket_users.includes(:user).to_a
+    @edit_members.each do |member|
+      settings = params[:member_settings]&.[](member.id.to_s)
+      member.assign_attributes(task: settings[:task], status: settings[:status]) if settings.present?
+    end
+    render :edit_concern, status: :unprocessable_entity
   end
 
   def join
@@ -211,10 +222,45 @@ class ConcernTicketsController < ApplicationController
     @concern_type = ConcernType.find(@concern_ticket_details.concern_type_id)
     @concern_froms = ConcernFor.where(concern_id: @concern_ticket_details.concern_ticket_id).order(:name)
     @concern_types = ConcernType.where(concern_id: @concern_ticket_details.concern_ticket_id).order(:name)
-    @ticket_users = ConcernTicketUser
-                    .where(concern_ticket_id: @concern_ticket.id, task: "developer")
-                    .includes(:user)
-                    .sort_by { |tu| tu.user.first_name.downcase }
+    @transfer_users = ConcernTicketUser.joins(:user)
+      .where(concern_ticket_id: @concern_ticket.id, task: "developer", status: "active")
+      .where.not(user_id: @concern_ticket_details.assigned_user_id)
+      .includes(:user).order("users.first_name", "users.last_name")
+  end
+
+  def transfer
+    ticket = ConcernTicketDetail.find(params[:id])
+    developer = ConcernTicketUser.exists?(concern_ticket_id: ticket.concern_ticket_id,
+      user_id: current_user.id, task: "developer", status: "active")
+    unless current_user.is_mis? || developer
+      return head :forbidden
+    end
+
+    ticket.with_lock do
+      unless ticket.status.in?(["open", "processing"]) && ticket.data&.[]("is_held") != "true"
+        return redirect_to view_tix_concern_ticket_path(ticket), alert: "This ticket cannot be transferred."
+      end
+
+      recipient = ConcernTicketUser.joins(:user).find_by(
+        concern_ticket_id: ticket.concern_ticket_id, task: "developer", status: "active",
+        user_id: params[:assigned_person_id])
+      if recipient.nil? || recipient.user_id == ticket.assigned_user_id
+        return redirect_to view_tix_concern_ticket_path(ticket), alert: "Choose another active IT personnel."
+      end
+
+      data = (ticket.data || {}).deep_dup
+      data["monitoring"] ||= {}
+      data["monitoring"]["transfer"] ||= []
+      data["monitoring"]["transfer"] << {
+        "transfer_by" => current_user.full_name,
+        "transfer_to" => recipient.user.full_name,
+        "date" => Time.current.strftime("%Y-%m-%d %H:%M")
+      }
+      ticket.update!(assigned_user_id: recipient.user_id, data: data)
+    end
+    redirect_to view_tix_concern_ticket_path(ticket), notice: "Ticket transferred successfully!"
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to view_tix_concern_ticket_path(ticket), alert: e.record.errors.full_messages.to_sentence
   end
 
   def chat_message
@@ -248,28 +294,25 @@ class ConcernTicketsController < ApplicationController
     @concern_ticket = ConcernTicket.find(params[:id])
     @closed_details = @concern_ticket.concern_ticket_details
                                     .where(status: 'closed')
-                                    .order(updated_at: :desc)
+                                    .where("NULLIF(data->>'closed_by', '') IS NOT NULL")
+                                    .order(updated_at: :desc, id: :desc)
+                                    .page(params[:page]).per(25)
     user_ids = @closed_details.map { |d| d.data&.[]("closed_by") }.compact.uniq
     @users = User.where(id: user_ids).index_by(&:id)
   end
 
   def view_monitoring
     @concern_ticket = ConcernTicket.find(params[:id])
-    @details = @concern_ticket.concern_ticket_details.select do |detail|
-      assigns = detail.data&.dig("monitoring", "assign")
-      assigns.present? && assigns.any?
+    transferred = @concern_ticket.concern_ticket_details
+      .where("json_array_length(COALESCE(data->'monitoring'->'transfer', '[]'::json)) > 0")
+    @branches = Branch.where(id: transferred.select(:branch_id)).order(:name)
+
+    @details = transferred.includes(:branch, :concern_for)
+    if params[:ticket_number].present?
+      @details = @details.where("ticket_number ILIKE ?", "%#{ConcernTicketDetail.sanitize_sql_like(params[:ticket_number].strip)}%")
     end
-    @branches = Branch.where(id: @details.map(&:branch_id).uniq)
-    @concern_fors = ConcernFor.where(id: @details.map(&:name_for_id).uniq)
-    user_ids = []
-    @details.each do |detail|
-      assigns = detail.data&.dig("monitoring", "assign") || []
-      assigns.each do |entry|
-        user_ids << entry["reassigned_by"]
-        user_ids << entry["new_assigned_user"]
-      end
-    end
-    @users = User.where(id: user_ids.uniq).index_by(&:id)
+    @details = @details.where(branch_id: params[:branch_id]) if params[:branch_id].present?
+    @details = @details.order(created_at: :desc, id: :desc).page(params[:page]).per(10)
   end
 
   private

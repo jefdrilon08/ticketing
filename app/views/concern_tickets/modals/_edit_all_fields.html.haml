@@ -41,14 +41,6 @@
               class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
               id: "input-concern-category", prompt: "-- SELECT --"
 
-          .form-group.mb-3
-            %label.font-weight-bold Assigned Person
-            = select_tag :assigned_person_id, 
-              options_for_select((@ticket_users || []).sort_by { |tu| "#{tu.user.first_name} #{tu.user.last_name}".downcase }.map { |tu| ["#{tu.user.first_name.titleize} #{tu.user.last_name.titleize}", tu.user.id] },
-              @concern_ticket_details.assigned_user_id),
-              class: "form-control bg-secondary-subtle text-dark border-0 shadow-sm", 
-              id: "input-assigned-person", prompt: "-- SELECT --"
-
           .modal-footer.d-flex.justify-content-center
             .controls
               = button_tag type: 'submit', class: 'btn btn-primary' do

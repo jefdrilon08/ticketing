@@ -16,3 +16,6 @@
           = link_to detail.ticket_number, view_tix_concern_ticket_path(detail)
         %td= user ? "#{user.first_name} #{user.last_name}" : closed_by_id
         %td= detail.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+
+.pagination-container.mt-3.d-flex.justify-content-center
+  = paginate @closed_details

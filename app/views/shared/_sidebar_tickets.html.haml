@@ -1,11 +1,11 @@
-%li{ class: "#{['members', 'online_applications'].include?(params[:controller]) ? 'active' : ''}" }
+%li{ class: "#{['system_tickets', 'concern_tickets'].include?(params[:controller]) ? 'active' : ''}" }
   .icon-link
-    = link_to "#", class: "" do
+    = link_to "#tickets-submenu", role: "button", data: { sidebar_toggle: true }, "aria-expanded" => "false", "aria-controls" => "tickets-submenu" do
       %i.bi.bi-ticket-detailed-fill
       %span.link-name
         Tickets
     %i.bi.bi-caret-down.arrow
-  %ul.sub-menu
+  %ul.sub-menu#tickets-submenu
     %li
       = link_to "#", class: "link-name" do
         Tickets

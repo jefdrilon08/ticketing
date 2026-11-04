@@ -148,7 +148,15 @@ module Api
           if @ctd_status
             update_params = { status: params[:status] }
             if params[:status] == "processing"
-              update_params[:assigned_user_id] = current_user.id
+              developer = ConcernTicketUser.exists?(
+                concern_ticket_id: @ctd_status.concern_ticket_id,
+                user_id: current_user.id,
+                task: "developer",
+                status: "active"
+              )
+              if current_user.is_mis? || developer
+                update_params[:assigned_user_id] = current_user.id
+              end
             end
 
             data = @ctd_status.data || {}
@@ -203,19 +211,11 @@ module Api
           roles = params[:roles].downcase if params[:roles].present?
           status = params[:status].downcase if params[:status].present?
 
-          unless %w[developer requester viewer unassigned].include?(roles) && %w[active inactive].include?(status)
-            render json: { success: false, error: "Invalid role or status." }, status: :unprocessable_entity
-            return
-          end
-
-          if params.key?(:area_ids)
-            ct_user.update_area_assignment!(task: roles, status: status, area_ids: params[:area_ids])
+          if ct_user.update(task: roles, status: status)
+            render json: { success: true }
           else
-            ct_user.update!(task: roles, status: status)
+            render json: { success: false, error: ct_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
           end
-          render json: { success: true }
-        rescue ArgumentError, ActiveRecord::RecordInvalid => e
-          render json: { success: false, error: e.message }, status: :unprocessable_entity
         end
 
         def add_member_ct
@@ -266,21 +266,6 @@ module Api
             if params[:concern_category].present?
               @ticket_details.data ||= {}
               @ticket_details.data["category"] = params[:concern_category]
-              updated = true
-            end
-
-            if params[:assigned_person_id].present?
-              if @ticket_details.assigned_user_id != params[:assigned_person_id]
-                @ticket_details.data ||= {}
-                @ticket_details.data["monitoring"] ||= {}
-                @ticket_details.data["monitoring"]["assign"] ||= []
-                @ticket_details.data["monitoring"]["assign"] << {
-                  "reassigned_by" => current_user.id,
-                  "new_assigned_user" => params[:assigned_person_id],
-                  "date" => Time.current.strftime("%Y-%m-%d %H:%M")
-                }
-              end
-              @ticket_details.assigned_user_id = params[:assigned_person_id]
               updated = true
             end
 

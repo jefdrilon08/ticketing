@@ -1,35 +1,53 @@
-%h4.mb-4 Monitoring History
+.card
+  .card-body
+    %h4.mb-2 Monitoring History
+    %p.text-muted.mb-4 Ticket Tracking of #{@concern_ticket.name}.
 
-- if @details.present?
-  %table.table.table-bordered.table-hover.table-sm
-    %thead
-      %tr
-        %th Ticket Number
-        %th Concern From
-        %th Branch
-        %th Old Assigned User
-        %th New Assigned User
-        %th Date
-    %tbody
-      - @details.sort_by { |detail| detail.created_at }.reverse.each do |detail|
-        - assigns = detail.data&.dig("monitoring", "assign") || []
-        - if assigns.any?
-          - assigns.each_with_index do |entry, idx|
-            - old_user_id = idx == 0 ? nil : assigns[idx - 1]["new_assigned_user"]
-            - next if old_user_id.nil?
-            %tr
-              %td= link_to detail.ticket_number, view_tix_concern_ticket_path(detail.id)
-              %td= @concern_fors.find { |cf| cf.id == detail.name_for_id }&.name || detail.name_for_id || "N/A"
-              %td= @branches.find { |b| b.id == detail.branch_id }&.name || detail.branch_id || "N/A"
-              %td= @users[old_user_id]&.full_name || old_user_id
-              %td= @users[entry["new_assigned_user"]]&.full_name || entry["new_assigned_user"]
-              %td= entry["date"]
-        - else
-          %tr
-            %td= detail.ticket_number
-            %td= @concern_fors.find { |cf| cf.id == detail.name_for_id }&.name || detail.name_for_id || "N/A"
-            %td= @branches.find { |b| b.id == detail.branch_id }&.name || detail.branch_id || "N/A"
-            %td{:colspan => 3}
-              %span.text-muted No assignment/reassignment history found.
-- else
-  %p.text-danger No ticket details with monitoring history
+    = form_with url: view_monitoring_concern_ticket_path(@concern_ticket), method: :get, local: true, class: "card card-body mb-4" do
+      .row.g-3.align-items-end
+        .col-md-3
+          = label_tag :ticket_number, "Ticket Number", class: "form-label"
+          = text_field_tag :ticket_number, params[:ticket_number], class: "form-control", placeholder: "Search ticket number"
+        .col-md-3
+          = label_tag :branch_id, "Branch", class: "form-label"
+          = select_tag :branch_id, options_from_collection_for_select(@branches, :id, :name, params[:branch_id]), include_blank: "-- SELECT --", class: "form-control"
+        .col-auto
+          %label.form-label Actions
+          .form-group
+            .btn-group
+              = button_tag type: "submit", class: "btn btn-info btn-sm btn-block", id: "search-btn", "aria-label" => "Filter tickets", title: "Filter tickets" do
+                .bi.bi-search
+
+    - if @details.present?
+      - @details.each do |detail|
+        %section.card.mb-4{ "aria-label" => "Transfer history for #{detail.ticket_number}" }
+          .card-header.bg-light
+            .d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
+              %h5.mb-0= link_to detail.ticket_number, view_tix_concern_ticket_path(detail.id)
+              - badge_class = { "open" => "bg-success", "processing" => "bg-primary", "verification" => "bg-warning text-dark", "closed" => "bg-danger" }.fetch(detail.status, "bg-secondary")
+              %span.badge{ class: badge_class }= detail.status == "verification" ? "For Verification" : detail.status.to_s.humanize
+            .text-muted.small.mt-2
+              %span
+                %strong Concern From:
+                = detail.concern_for&.name || "N/A"
+              %span.ms-3
+                %strong Branch:
+                = detail.branch&.name || "N/A"
+          .card-body
+            %ol.list-unstyled.mb-0.ms-2{ "aria-label" => "Transfer timeline" }
+              - transfers = detail.data.dig("monitoring", "transfer")
+              - transfers.each do |entry|
+                %li.position-relative.border-start.ps-4.pb-4
+                  %span.position-absolute.top-0.start-0.translate-middle-x.rounded-circle.bg-primary{ style: "width: 12px; height: 12px; margin-top: 5px;", "aria-hidden" => "true" }
+                  .d-flex.align-items-center.flex-wrap.gap-2.mb-1
+                    - transfer_date = Time.zone.parse(entry["date"].to_s) rescue nil
+                    %time.text-muted.small= transfer_date ? transfer_date.strftime("%B %d, %Y %I:%M %p") : entry["date"]
+                  %p.mb-0
+                    %strong= entry["transfer_by"]
+                    transferred the ticket to
+                    %strong= entry["transfer_to"]
+      = paginate @details
+    - else
+      .border.rounded.bg-light.p-4.text-center
+        %h5.mb-2 No records found
+        %p.text-muted.mb-0 No monitoring records match the current filters.

@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   get "/concern_tickets/:id/view", to: "concern_tickets#view_tix", as: "view_tix_concern_ticket"
   post "/concern_tickets/join", to: "concern_tickets#join", as: "join_concern_ticket"
   post "/concern_tickets/:id/chat", to: "concern_tickets#chat_message", as: "chat_message_concern_ticket"
+  post "/concern_tickets/:id/transfer", to: "concern_tickets#transfer", as: "transfer_concern_ticket"
   get "/concern_tickets/:id/view_logs", to: "concern_tickets#view_logs", as: "view_logs_concern_ticket"
   get "/concern_tickets/:id/monitoring", to: "concern_tickets#view_monitoring", as: "view_monitoring_concern_ticket"
 

@@ -1,0 +1,16 @@
+#modal-transfer-ticket.modal.fade{ tabindex: "-1", "aria-hidden" => "true" }
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h5.modal-title Transfer Ticket
+        %button.btn-close{ type: "button", "data-bs-dismiss" => "modal", "aria-label" => "Close" }
+      = form_with url: transfer_concern_ticket_path(@concern_ticket_details), method: :post, local: true do
+        .modal-body
+          - if @transfer_users.any?
+            = label_tag :transfer_assigned_person_id, "IT Personnel"
+            = select_tag :assigned_person_id, options_for_select(@transfer_users.map { |member| [member.user.full_name, member.user_id] }), prompt: "-- SELECT --", required: true, class: "form-control", id: "transfer_assigned_person_id"
+          - else
+            %p.text-muted No other active IT personnel available.
+        .modal-footer
+          = button_tag "Cancel", type: "button", class: "btn btn-secondary", "data-bs-dismiss" => "modal"
+          = submit_tag "Transfer Ticket", class: "btn btn-primary", disabled: @transfer_users.empty?

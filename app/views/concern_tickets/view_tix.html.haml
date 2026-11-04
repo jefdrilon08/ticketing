@@ -140,6 +140,9 @@
         = button_tag "Move for Verification",
           { class: "btn btn-warning fs-6 me-2 update-status",
             data: { ticket_number: @concern_ticket_details.ticket_number, status: "verification" } }
+      - active_developer = developer_task && developer_task.status == "active"
+      - if @concern_ticket_details.status.in?(["open", "processing"]) && (active_developer || current_user.is_mis?)
+        = button_tag "Transfer Ticket", type: "button", class: "btn btn-primary fs-6 me-2", "data-bs-toggle": "modal", "data-bs-target": "#modal-transfer-ticket"
     - if @concern_ticket_details.status == "verification"
       = button_tag "Close Ticket",
         { class: "btn btn-danger fs-6 me-2 update-status",
@@ -150,6 +153,7 @@
     = link_to "Back", concern_ticket_path(@concern_ticket), class: "btn btn-secondary fs-6"
 
 = render "concern_tickets/modals/edit_all_fields"
+= render "concern_tickets/modals/transfer_ticket"
 -# = render "concern_tickets/modals/edit_branch"
 -# = render "concern_tickets/modals/edit_assigned_person"
 -# = render "concern_tickets/modals/edit_concern_from"

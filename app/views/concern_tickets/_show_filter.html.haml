@@ -49,14 +49,14 @@
           Actions
         .form-group
           .btn-group
-            = button_tag type: 'submit', class: 'btn btn-info btn-sm btn-block', id: "search-btn" do
+            = button_tag type: 'submit', class: 'btn btn-info btn-sm btn-block', id: "search-btn", title: "Filter Tickets", "aria-label" => "Filter Tickets", data: { bs_toggle: "tooltip" } do
               .bi.bi-search
-            = button_tag type: 'button', class: 'btn btn-secondary btn-sm btn-block no-print', onclick: 'printTable()', id: "print-btn" do
+            = button_tag type: 'button', class: 'btn btn-secondary btn-sm btn-block no-print', onclick: 'printTable()', id: "print-btn", title: "Print Tickets", "aria-label" => "Print Tickets", data: { bs_toggle: "tooltip" } do
               %i.bi.bi-printer.me-1
             - if current_user.username == "johnric"
-              = link_to view_logs_concern_ticket_path(@concern_ticket), class: 'btn btn-warning btn-sm btn-block', id: "logs-btn" do
+              = link_to view_logs_concern_ticket_path(@concern_ticket), class: 'btn btn-warning btn-sm btn-block', id: "logs-btn", title: "Ticket Logs", "aria-label" => "Ticket Logs", data: { bs_toggle: "tooltip" } do
                 %i.bi.bi-clock-history
             - if current_user.is_mis?
-              = link_to view_monitoring_concern_ticket_path(@concern_ticket), class: 'btn btn-success btn-sm btn-block', id: "monitoring-btn" do
-                %i.bi.bi-people
+              = link_to view_monitoring_concern_ticket_path(@concern_ticket), class: 'btn btn-success btn-sm btn-block', id: "monitoring-btn", title: "Monitoring History", "aria-label" => "Monitoring History", data: { bs_toggle: "tooltip" } do
+                %i.bi.bi-activity
               

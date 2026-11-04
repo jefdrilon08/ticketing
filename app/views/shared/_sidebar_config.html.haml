@@ -1,11 +1,11 @@
 %li{ class: "#{params[:controller] == '' ? 'active' : ''}" }
   .icon-link
-    = link_to "#", class: "" do
+    = link_to "#config-submenu", role: "button", data: { sidebar_toggle: true }, "aria-expanded" => "false", "aria-controls" => "config-submenu" do
       %i.bi.bi-gear
       %span.link-name
         Config
     %i.bi.bi-caret-down.arrow
-  %ul.sub-menu
+  %ul.sub-menu#config-submenu
     %li
       = link_to "#", class: "link-name" do
         Config
