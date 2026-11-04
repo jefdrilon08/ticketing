@@ -208,8 +208,8 @@ module Api
             return
           end
 
-          if params.key?(:branch_ids)
-            ct_user.update_branch_assignment!(task: roles, status: status, branch_ids: params[:branch_ids])
+          if params.key?(:area_ids)
+            ct_user.update_area_assignment!(task: roles, status: status, area_ids: params[:area_ids])
           else
             ct_user.update!(task: roles, status: status)
           end

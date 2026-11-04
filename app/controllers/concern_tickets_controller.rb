@@ -111,7 +111,7 @@ class ConcernTicketsController < ApplicationController
 
   def edit_concern
     @concern_ticket = ConcernTicket.find(params[:id])
-    @branches = Branch.select(:id, :name).order(:name)
+    @areas = Area.select(:id, :name).order(:name)
     @computer_systems = ComputerSystem.select(:id, :name) || []
     @ct_users = User.select(:id, :first_name, :last_name).order(:last_name, :first_name)
   end
@@ -135,9 +135,9 @@ class ConcernTicketsController < ApplicationController
           @concern_ticket.concern_ticket_users.find(member_id).update!(task: settings[:task], status: settings[:status])
         end
       end
-      if params[:branch_assignments_present].present?
-        assignments = params.fetch(:developer_branches, ActionController::Parameters.new).permit!
-        @concern_ticket.assign_developer_branches(assignments)
+      if params[:area_assignments_present].present?
+        assignments = params.fetch(:developer_areas, ActionController::Parameters.new).permit!
+        @concern_ticket.assign_developer_areas(assignments)
       end
       @concern_ticket.assign_concern_leader(params[:concern_leader_id])
       if @concern_ticket.save!
